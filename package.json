@@ -1,0 +1,59 @@
+{
+  "name": "periodicjs",
+  "description": "Customizable CMS platform.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.x"
+  },
+  "author": {
+    "name": "Yaw Joseph Etse",
+    "email": "yaw.etse@gmail.com",
+    "url": "http://about.me/yawjosephetse"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/typesettin/periodic.git"
+  },
+  "scripts": {
+    "startdev": "supervisor -w content/config.json,app,lib,content/plugins,content/themes,package.json -e js,node,json -i public -- index.js -h localhost -p 8081",
+    "start": "supervisor -w content/config.json,content/plugins,content/themes,package.json -e js,node,json -- index.js -h localhost -p 8081",
+    "test": "mocha -R spec --recursive"
+  },
+  "dependencies": {
+    "util-extend": "^1.0.1",
+    "ejs": "^1.0.0",
+    "express": "^4.3.2",
+    "body-parser": "^1.2.2",
+    "cookie-parser": "^1.1.0",
+    "serve-favicon": "^2.0.0",
+    "express-session": "^1.2.1"
+  },
+  "devDependencies": {
+    "browserify": ">=3.46.0",
+    "chai": "1.5.0",
+    "grunt": "0.4.1",
+    "grunt-contrib-jshint": "0.4.3",
+    "grunt-contrib-watch": "0.4.1",
+    "grunt-simple-mocha": "0.4.0",
+    "grunt-jsbeautifier": "0.1.7",
+    "mocha": "1.9.0",
+    "grunt-browserify": "^2.0.8",
+    "grunt-contrib-less": "^0.11.0",
+    "jsdoc": "^3.3.0-alpha5",
+    "grunt-jsdoc": "^0.5.4",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-cssmin": "^0.9.0"
+  },
+  "keywords": [
+    "content management framework",
+    "typeset",
+    "wysiwyg",
+    "ui manager",
+    "CMS",
+    "CDS",
+    "Content Delivery System",
+    "Content Management System",
+    "Periodic Decoupled Framework"
+  ]
+}
