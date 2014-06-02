@@ -1,0 +1,20 @@
+{
+	"name": "Periodical",
+	"cookies":{
+		"cookieParser":"asdfsfa"
+	},
+	"application":{
+		"port": "8080",
+		"environment": "development"
+	},
+	"sessions":{
+		"enabled":false,
+		"type":"mongo"
+	},
+	"userauth":{
+		"enabled":false,
+		"rememberme":false,
+		"passport":false
+	}, 
+	"debug": true
+}

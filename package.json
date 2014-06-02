@@ -1,6 +1,6 @@
 {
   "name": "periodicjs",
-  "description": "Customizable CMS platform.",
+  "description": "Customizable CMS platform",
   "version": "0.0.1",
   "main": "index.js",
   "engines": {
@@ -16,7 +16,7 @@
     "url": "git://github.com/typesettin/periodic.git"
   },
   "scripts": {
-    "startdev": "supervisor -w content/config.json,app,lib,content/plugins,content/themes,package.json -e js,node,json -i public -- index.js -p 8080",
+    "startdev": "supervisor -w app,lib,content/config,content/config/config.json,content/plugins,content/themes,package.json -e js,node,json -i public -- index.js",
     "start": "supervisor -w content/config.json,content/plugins,content/themes,package.json -e js,node,json -- index.js -e prodution -p 80",
     "test": "mocha -R spec --recursive"
   },
@@ -28,7 +28,10 @@
     "cookie-parser": "^1.1.0",
     "serve-favicon": "^2.0.0",
     "express-session": "^1.2.1",
-    "morgan": "~1.1.1"
+    "morgan": "~1.1.1",
+    "optimist": "^0.6.1",
+    "response-time": "^2.0.0",
+    "compression": "^1.0.3"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

@@ -4,7 +4,9 @@
 		<title> app title: <%= locals.title %></title>
 	</head>
 	<body>
-		<p>test ejs - <%= randomdata %></p>
-		<p><%= locals.testFunction("blah boo") %></p>
+		<% for(var x = 0; x <5; x++){ %>
+			<p>test ejs - <%= randomdata %></p>
+			<p><%= locals.testFunction("blah boo") %></p>
+		<% } %>
 	</body>
 </html>
