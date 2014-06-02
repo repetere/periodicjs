@@ -16,8 +16,8 @@
     "url": "git://github.com/typesettin/periodic.git"
   },
   "scripts": {
-    "startdev": "supervisor -w content/config.json,app,lib,content/plugins,content/themes,package.json -e js,node,json -i public -- index.js -h localhost -p 8081",
-    "start": "supervisor -w content/config.json,content/plugins,content/themes,package.json -e js,node,json -- index.js -h localhost -p 8081",
+    "startdev": "supervisor -w content/config.json,app,lib,content/plugins,content/themes,package.json -e js,node,json -i public -- index.js -p 8080",
+    "start": "supervisor -w content/config.json,content/plugins,content/themes,package.json -e js,node,json -- index.js -e prodution -p 80",
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {
@@ -27,7 +27,8 @@
     "body-parser": "^1.2.2",
     "cookie-parser": "^1.1.0",
     "serve-favicon": "^2.0.0",
-    "express-session": "^1.2.1"
+    "express-session": "^1.2.1",
+    "morgan": "~1.1.1"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

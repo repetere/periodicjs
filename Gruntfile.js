@@ -47,7 +47,7 @@ module.exports = function(grunt) {
         'Gruntfile.js',
         'config/**/*.js',
         'index.js',
-        'lib/**/*.js',
+        'app/**/*.js','!app/doc/**/*.js',
         'routes/**/*.js',
         'test/**/*.js',
         'client/**/*.js',
@@ -55,10 +55,10 @@ module.exports = function(grunt) {
     },
     jsdoc : {
         dist : {
-            src: ['lib/*.js', 'test/*.js'],
+            src: ['app/lib/*.js', 'test/*.js'],
             options: {
-                destination: 'doc/html',
-                configure: 'jsdoc.json'
+                destination: 'app/doc/html',
+                configure: 'app/config/jsdoc.json'
             }
         }
     },
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
           'package.json',
           'config/**/*.js',
           'index.js',
-          'lib/**/*.js',
+          'app/**/*.js',
           'client/**/*.js',
           'client/**/*.less',
           'test/**/*.js',

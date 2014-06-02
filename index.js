@@ -1,10 +1,10 @@
 /*
- * manuscript
- * http://github.com/typesettin/manuscript
+ * periodic
+ * http://github.com/typesettin/periodic
  *
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 
-var periodicapp = require('./lib/periodic');
+var periodic = require('./app/lib/periodic');
 
-periodicapp.listen(8080);
+periodic.app.listen(periodic.port);

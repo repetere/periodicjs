@@ -38,6 +38,7 @@ var express = require('express'),
 	session = require('express-session'),
 	ejs = require('ejs'),
 	app = express(),
+	expressAppLogger = require('morgan'),
 	config = {"samplesettings":"probtrue"};
 
 //https://github.com/expressjs/csurf
@@ -48,61 +49,65 @@ var express = require('express'),
 //https://github.com/senchalabs/connect/blob/master/Readme.md#middleware
 
 var init = {
+	viewSettings : function(){
+		app.set('view engine', 'ejs');
+		app.set('views', path.resolve(__dirname,'../views'));
+		app.engine('html', require('ejs').renderFile);
+		app.engine('ejs', require('ejs').renderFile);
+	},
 	expressSettings : function(){
-
+		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		app.use(cookieParser('optional secret string'));
+		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
 	staticCaching : function(){
-
+		app.use(express.static(path.resolve(__dirname,'../../public')));
 	},
 	userAuth : function(){
 
 	},
 	pageCaching : function(){
-
+//use compression
+// app.use(express.compress());
 	},
 	useLocals : function(){
-
+		app.locals.title = "test title";
+		app.locals.testFunction = function(paramvar){
+			return 'adding to test func - '+paramvar;
+		};
 	},
 	useCSRF : function(){
 
 	},
 	logErrors : function(){
-
+		app.use(function(req,res,next){
+			console.log('%s %s',req.method,req.url);
+			next();
+		});
+	},
+	appLogging : function(){
+		app.use(expressAppLogger());
 	},
 	applicationRouting : function(){
-
+		app.get('*',function(req,res){
+			console.log("got it");
+			res.render('home/index',{randomdata:'twerkin'});
+		});
 	},
-	serverStatus : function(){
-
-	},
+	serverStatus: function(){
+		console.log('Express server listening on port ' + app.get('port'));
+		console.log('Running in environment: '+app.get('env'));
+		expressAppLogger.info('looks good');
+	}
 };
 
-app.set('view engine', 'ejs');
-app.set('views', path.resolve(__dirname,'../app/views'));
-app.use(bodyParser());
-app.use(cookieParser('optional secret string'));
-app.use(favicon( path.resolve(__dirname,'../public/favicon.ico') ) );
-app.engine('html', require('ejs').renderFile);
-app.engine('ejs', require('ejs').renderFile);
-app.use(express.static(path.resolve(__dirname,'../public')));
-app.locals.title = "test title";
-app.locals.testFunction = function(paramvar){
-	return 'adding to test func - '+paramvar;
-};
-//use compression
-// app.use(express.compress());
+init.viewSettings();
+init.expressSettings();
+init.staticCaching();
+init.useLocals();
+init.logErrors();
+init.applicationRouting();
 
-require('./periodic-express-settings')(app);
-console.log(app.get('addedplugin'));
 
-app.use(function(req,res,next){
-	console.log('%s %s',req.method,req.url);
-	next();
-});
-
-app.get('*',function(req,res){
-	console.log("got it");
-	res.render('home/index',{randomdata:'twerkin'});
-});
-
-module.exports = app;
+module.exports.app = app;
+module.exports.port = 8080;
