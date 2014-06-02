@@ -31,7 +31,9 @@
     "morgan": "~1.1.1",
     "optimist": "^0.6.1",
     "response-time": "^2.0.0",
-    "compression": "^1.0.3"
+    "compression": "^1.0.3",
+    "mongoose": "^3.8.12",
+    "winston": "^0.7.3"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",
