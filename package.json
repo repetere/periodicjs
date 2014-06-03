@@ -33,7 +33,8 @@
     "response-time": "^2.0.0",
     "compression": "^1.0.3",
     "mongoose": "^3.8.12",
-    "winston": "^0.7.3"
+    "winston": "^0.7.3",
+    "npm": "^1.4.13"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",
