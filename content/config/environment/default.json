@@ -6,13 +6,14 @@
 		"environment": "development"
 	},
 	"cookies":{
-		"cookieParser":"asdfsfa"
+		"cookieParser":"defaultcookiejson"
 	},
 	"sessions":{
 		"enabled":false,
 		"type":"mongo"
 	},
 	"expressCompression": true,
+	"crsf": true,
 	"userauth":{
 		"enabled":false,
 		"rememberme":false,

@@ -1,16 +1,13 @@
 {
 	"name": "Periodic Web Client[dev]",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"application":{
 		"port": "3331",
 		"environment": "development"
 	},
-	"cookies":{
-		"cookieParser":"asdfsfa"
-	},
 	"sessions":{
-		"enabled":false,
-		"type":"mongo"
+		"enabled":true,
+		"type":"default"
 	},
 	"userauth":{
 		"enabled":false,

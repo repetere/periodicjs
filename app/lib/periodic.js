@@ -38,13 +38,18 @@ var express = require('express'),
 	session = require('express-session'),
 	responseTime = require('response-time'),
 	compress = require('compression'),
+	csrf = require('csurf'),
 	ejs = require('ejs'),
 	app = express(),
+	MongoStore = require('connect-mongo')(session),
 	expressAppLogger = require('morgan'),
 	appLog = require('../../content/config/logger'),
 	config = require('./config'),
+	pluginLoader = require('./plugins'),
 	appconfig,
-	logger;
+	plugins,
+	logger,
+	database = require('../../content/config/database');
 
 //https://github.com/expressjs/csurf
 //https://github.com/expressjs/timeout
@@ -55,7 +60,7 @@ var init = {
 	loadConfiguration : function(){
 		appconfig = new config();
 		if(appconfig.settings().debug){
-			logger.debug(appconfig.settings());
+			console.log(appconfig.settings());
 		}
 		app.set('port',appconfig.settings().application.port);
 		app.set('env',appconfig.settings().application.environment);
@@ -69,15 +74,12 @@ var init = {
 	expressSettings : function(){
 		app.use(responseTime(5));
 		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
-		app.use(cookieParser('optional secret string'));
+		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
 	staticCaching : function(){
 		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};
 		app.use(express.static(path.resolve(__dirname,'../../public'),expressStaticOptions));
-	},
-	userAuth : function(){
-
 	},
 	pageCaching : function(){
 		if(appconfig.settings().expressCompression){
@@ -89,9 +91,6 @@ var init = {
 		app.locals.testFunction = function(paramvar){
 			return 'adding to test func - '+paramvar;
 		};
-	},
-	useCSRF : function(){
-
 	},
 	logErrors : function(){
 		logger = new appLog(app.get('env'));
@@ -129,10 +128,46 @@ var init = {
 			res.render('home/index',{randomdata:'twerkin'});
 		});
 	},
+	useSessions: function(){
+		if(appconfig.settings().sessions.enabled){
+			var express_session_config = {};
+			if(appconfig.settings().sessions.type==="mongo"){
+				express_session_config = {
+					secret:'hjoiuu87go9hui',
+					maxAge: new Date(Date.now() + 3600000),
+					store: new MongoStore(
+						{url:database[app.get('env')].url},
+						function(err){
+							if(!err){
+								// logger.error(err || 'connect-mongodb setup ok possibly');
+								// logger.silly('connect-mongodb setup ok possibly');
+								console.log("ok mongo");
+							}
+						})
+				};
+			}
+			else{
+				express_session_config = {
+					secret:'hjoiuu87go9hui',
+					maxAge: new Date(Date.now() + 3600000)
+				};
+			}
+
+			app.use(session(express_session_config));
+			if(appconfig.settings().crsf){
+				logger.silly('using crsf');
+				app.use(csrf());
+			}
+		}
+	},
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
 		logger.info('Running in environment: '+app.get('env'));
 		logger.silly('looks good.');
+	},
+	loadPlugins: function(){
+		plugins = new pluginLoader(appconfig.settings());
+		plugins.loadPlugins(express,app,logger,appconfig.settings());
 	}
 };
 
@@ -143,7 +178,9 @@ init.expressSettings();
 init.staticCaching();
 init.pageCaching();
 init.useLocals();
+init.useSessions();
 init.applicationRouting();
+init.loadPlugins();
 init.serverStatus();
 
 

@@ -32,18 +32,9 @@ var config = function(){
 		configurationDefaultFile,
 		configurationFileJSON,
 		configurationOverrideFileJSON,
+		configurationDefaultFileJSON,
 		config ={};
-	// this.settings = {
-	// 	application : {
-	// 		environment : 'development',
-	// 		port : 8080
-	// 	}
-	// };
-	// this.config = {};
-	// 
-	// console.log("argv",argv);
-	// console.log("configurationFile",configurationFile);
-	// 
+
 	var readJSONFile = function(filename) {
 		return JSON.parse(fs.readFileSync(filename));
 	};
@@ -55,6 +46,10 @@ var config = function(){
 	this.settings = function(){
 		return config;
 	};
+
+	this.setConfig = function(name,value){
+		this[name] = value;
+	}.bind(this);
 
 	/** 
 	 * generate file path for config files
@@ -76,6 +71,7 @@ var config = function(){
 
 		/** set path of default config: content/config/environment/default.json */
 		configurationDefaultFile = this.getConfigFilePath('default');
+		configurationDefaultFileJSON = readJSONFile(configurationDefaultFile);
 
 		/** if no command line argument, use environment from user config file */
 		appEnvironment = (argv.e) ?
@@ -84,10 +80,14 @@ var config = function(){
 
 		/** set & load file path for base environment config */
 		configurationFile = this.getConfigFilePath(appEnvironment);
-		configurationFileJSON = (fs.exists(configurationFile)) ?  readJSONFile(configurationFile) : readJSONFile(configurationDefaultFile);
 
 		/** override environment data with user config */
-		config = extend (configurationFileJSON,configurationOverrideFileJSON);
+		config = extend (config,configurationDefaultFileJSON);
+		if(fs.existsSync(configurationFile)){
+			configurationFileJSON = readJSONFile(configurationFile);
+			config = extend (config,configurationFileJSON);
+		}
+		config = extend (config,configurationOverrideFileJSON);
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
