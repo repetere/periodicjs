@@ -49,7 +49,8 @@ var express = require('express'),
 	appconfig,
 	plugins,
 	logger,
-	database = require('../../content/config/database');
+	database = require('../../content/config/database'),
+	db;
 
 //https://github.com/expressjs/csurf
 //https://github.com/expressjs/timeout
@@ -64,6 +65,7 @@ var init = {
 		}
 		app.set('port',appconfig.settings().application.port);
 		app.set('env',appconfig.settings().application.environment);
+		db = database[app.get('env')].db;
 	},
 	viewSettings : function(){
 		app.set('view engine', 'ejs');
@@ -135,15 +137,7 @@ var init = {
 				express_session_config = {
 					secret:'hjoiuu87go9hui',
 					maxAge: new Date(Date.now() + 3600000),
-					store: new MongoStore(
-						{url:database[app.get('env')].url},
-						function(err){
-							if(!err){
-								// logger.error(err || 'connect-mongodb setup ok possibly');
-								// logger.silly('connect-mongodb setup ok possibly');
-								console.log("ok mongo");
-							}
-						})
+					store: new MongoStore({url:database[app.get('env')].url})
 				};
 			}
 			else{
@@ -167,7 +161,7 @@ var init = {
 	},
 	loadPlugins: function(){
 		plugins = new pluginLoader(appconfig.settings());
-		plugins.loadPlugins(express,app,logger,appconfig.settings());
+		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings()});
 	}
 };
 

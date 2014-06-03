@@ -8,6 +8,7 @@
 		"enabled":true,
 		"type":"mongo"
 	},
+	"theme":"minimal",
 	"userauth":{
 		"enabled":false,
 		"rememberme":false,

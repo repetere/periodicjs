@@ -52,9 +52,9 @@ var plugins = function(appsettings){
 		return path.join(path.resolve(__dirname,'../../content/plugins/node_modules/',pluginName), 'index.js' );
 	};
 
-	this.loadPlugins = function(express,app,logger,config){
+	this.loadPlugins = function(obj){
 		pluginFiles.forEach(function(file){
-			require(file)(express,app,logger,config);
+			require(file)(obj);
 		});
 	}.bind(this);
 
