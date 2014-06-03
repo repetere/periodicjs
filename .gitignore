@@ -1,5 +1,17 @@
+.DS_store
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.swp
+*.swo
+*.gz
+
 # Logs
-logs
+!logs
 *.log
 
 # Runtime data
