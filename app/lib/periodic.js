@@ -87,7 +87,7 @@ var init = {
 		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};
 		app.use(express.static(path.resolve(__dirname,'../../public'),expressStaticOptions));
 	},
-	pageCaching : function(){
+	pageCompression : function(){
 		if(appconfig.settings().expressCompression){
 			app.use(compress());
 		}
@@ -100,11 +100,6 @@ var init = {
 	},
 	logErrors : function(){
 		logger = new appLog(app.get('env'));
-
-		app.use(function(req,res,next){
-			console.log('%s %s',req.method,req.url);
-			next();
-		});
 
 		//log errors
 		app.use(function(err, req, res, next){
@@ -126,7 +121,19 @@ var init = {
 		});
 	},
 	appLogging : function(){
-		app.use(expressAppLogger({ format: 'dev', immediate: true }));
+		if(appconfig.settings().debug){
+			expressAppLogger.token('colorstatus', function(req, res){
+				var color = 32; // green
+				var status = res.statusCode;
+
+				if (status >= 500) {color = 31;} // red
+				else if (status >= 400) {color = 33;} // yellow
+				else if (status >= 300) {color = 36;} // cyan
+				return '\x1b[' + color + 'm'+status+'\x1b[90m';
+			});
+			expressAppLogger.format('app','\x1b[90m:remote-addr :method :url :colorstatus :response-time ms :date :referrer :user-agent\x1b[0m' );
+			app.use(expressAppLogger({format:"app"}));
+		}
 	},
 	applicationRouting : function(){
 		require('../routes/index')({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
@@ -162,7 +169,7 @@ var init = {
 	},
 	loadPlugins: function(){
 		plugins = new pluginLoader(appconfig.settings());
-		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings()});
+		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
 	}
 };
 
@@ -171,8 +178,9 @@ init.loadConfiguration();
 init.viewSettings();
 init.expressSettings();
 init.staticCaching();
-init.pageCaching();
+init.pageCompression();
 init.useLocals();
+init.appLogging();
 init.useSessions();
 init.applicationRouting();
 init.loadPlugins();

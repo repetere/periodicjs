@@ -73,6 +73,7 @@ postSchema.post('validate', function (doc) {
     console.log("model - workout.js - "+doc._id+' has been validated (but not saved yet)');
 });
 postSchema.post('save', function (doc) {
+    // this.db.models.Post.emit('created', this);
     console.log("model - workout.js - "+doc._id+' has been saved');
 });
 postSchema.post('remove', function (doc) {
