@@ -1,21 +1,36 @@
 'use strict';
 
+var path = require('path'),
+	fs = require('fs');
+
 module.exports = function(periodic){
 	// express,app,logger,config,db
-	var models = require('../../content/config/model')({mongoose : periodic.db.mongoose, dburl: periodic.db.url}),
+	var models = require('../../content/config/model')({
+			mongoose : periodic.db.mongoose,
+			dburl: periodic.db.url,
+			debug: periodic.settings.debug
+		}),
 		postRouter = periodic.express.Router(),
 		postController = require('../controller/post')(periodic),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
-		appRouter = periodic.express.Router();
+		appRouter = periodic.express.Router(),
+		themeRoute = path.join(path.resolve(__dirname,"../../content/themes",periodic.settings.theme),'routes.js');
+
+	if(periodic.settings.theme && fs.existsSync(themeRoute)){
+		require(themeRoute)(periodic);
+	}
 
 	appRouter.get('/',function(req,res){
-		console.log("got ijhgkjht");
+		console.log("got first index");
 		res.render('home/index',{randomdata:'twerkin'});
 	});
-	// appRouter.get('/',themeController.getPosts("mainposts",{limit:20,ids:"5,3,2,5",type:"test"}),themeController.getCollections("navCollections",{limit:50}),themeController.tagsCollections("navTags",{limit:50}),themeController.renderPage("home/index"));
-	
+	// periodic.app.get('/',function(req,res){
+	// 	console.log("override index");
+	// 	res.render('home/index',{randomdata:'index override'});
+	// });
+
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
 	postRouter.get('/:id',postController.show);
 	// postRouter.get('/group/:ids',postController.showType);

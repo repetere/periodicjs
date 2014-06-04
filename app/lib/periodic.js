@@ -32,6 +32,7 @@
  */
 var express = require('express'),
 	path = require('path'),
+	fs = require('fs'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
@@ -60,6 +61,29 @@ var express = require('express'),
 //https://github.com/senchalabs/connect/blob/master/Readme.md#middleware
 
 var init = {
+	logErrors : function(){
+		logger = new appLog(app.get('env'));
+
+		//log errors
+		app.use(function(err, req, res, next){
+			logger.error(err.stack);
+			console.log(err);
+			next(err);
+		});
+
+		//send client errors
+		//catch all errors
+		app.use(function (err, req, res, next) {
+			// console.log("err.name",err.name);
+			if (req.xhr) {
+				res.send(500, { error: 'Something blew up!' });
+			}
+			else {
+				res.status(500);
+				res.render('errors/500', { error: err });
+			}
+		});
+	},
 	loadConfiguration : function(){
 		appconfig = new config();
 		if(appconfig.settings().debug){
@@ -98,28 +122,6 @@ var init = {
 			return 'adding to test func - '+paramvar;
 		};
 	},
-	logErrors : function(){
-		logger = new appLog(app.get('env'));
-
-		//log errors
-		app.use(function(err, req, res, next){
-			logger.error(err.stack);
-			next(err);
-		});
-
-		//send client errors
-		//catch all errors
-		app.use(function (err, req, res, next) {
-			// console.log("err.name",err.name);
-			if (req.xhr) {
-				res.send(500, { error: 'Something blew up!' });
-			}
-			else {
-				res.status(500);
-				res.render('errors/500', { error: err });
-			}
-		});
-	},
 	appLogging : function(){
 		if(appconfig.settings().debug){
 			expressAppLogger.token('colorstatus', function(req, res){
@@ -134,9 +136,6 @@ var init = {
 			expressAppLogger.format('app','\x1b[90m:remote-addr :method :url :colorstatus :response-time ms :date :referrer :user-agent\x1b[0m' );
 			app.use(expressAppLogger({format:"app"}));
 		}
-	},
-	applicationRouting : function(){
-		require('../routes/index')({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
 	},
 	useSessions: function(){
 		if(appconfig.settings().sessions.enabled){
@@ -162,14 +161,18 @@ var init = {
 			}
 		}
 	},
-	serverStatus: function(){
-		logger.info('Express server listening on port ' + app.get('port'));
-		logger.info('Running in environment: '+app.get('env'));
-		logger.silly('looks good.');
+	applicationRouting : function(){
+		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};
+		require('../routes/index')(periodicObj);
 	},
 	loadPlugins: function(){
 		plugins = new pluginLoader(appconfig.settings());
 		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
+	},
+	serverStatus: function(){
+		logger.info('Express server listening on port ' + app.get('port'));
+		logger.info('Running in environment: '+app.get('env'));
+		logger.silly('looks good.');
 	}
 };
 
