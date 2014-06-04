@@ -1,0 +1,17 @@
+{
+	"name": "Periodic Web Client[dev]",
+	"version": "0.0.2",
+	"application":{
+		"port": "3331",
+		"environment": "development"
+	},
+	"sessions":{
+		"enabled":true,
+		"type":"default"
+	},
+	"userauth":{
+		"enabled":false,
+		"rememberme":false,
+		"passport":false
+	}
+}

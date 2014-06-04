@@ -1,0 +1,22 @@
+{
+	"name": "Periodic Web Client[dev]",
+	"version": "0.0.1",
+	"application":{
+		"port": "8080",
+		"environment": "development"
+	},
+	"cookies":{
+		"cookieParser":"defaultcookiejson"
+	},
+	"sessions":{
+		"enabled":false,
+		"type":"mongo"
+	},
+	"expressCompression": true,
+	"crsf": true,
+	"userauth":{
+		"enabled":false,
+		"rememberme":false,
+		"passport":false
+	}
+}

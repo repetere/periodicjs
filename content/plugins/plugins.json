@@ -1,0 +1,16 @@
+{
+	"plugins": [{
+			"name":"periodicjs.plugin.admin",
+			"version":"0.0.1",
+			"periodicCompatibility":"0.0.2",
+			"installed":true,
+			"enabled":true
+		},{
+			"name":"periodicjs.plugin.importfacebook",
+			"version":"0.0.1",
+			"periodicCompatibility":"0.0.6",
+			"installed":true,
+			"enabled":true
+		}
+	]
+}

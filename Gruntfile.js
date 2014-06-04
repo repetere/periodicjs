@@ -45,20 +45,17 @@ module.exports = function(grunt) {
       },
       all: [
         'Gruntfile.js',
-        'config/**/*.js',
         'index.js',
-        'lib/**/*.js',
-        'routes/**/*.js',
+        'app/**/*.js','!app/doc/**/*.js',
         'test/**/*.js',
-        'client/**/*.js',
       ]
     },
     jsdoc : {
         dist : {
-            src: ['lib/*.js', 'test/*.js'],
+            src: ['app/lib/*.js', 'test/*.js'],
             options: {
-                destination: 'doc/html',
-                configure: 'jsdoc.json'
+                destination: 'app/doc/html',
+                configure: 'app/config/jsdoc.json'
             }
         }
     },
@@ -109,9 +106,7 @@ module.exports = function(grunt) {
           'package.json',
           'config/**/*.js',
           'index.js',
-          'lib/**/*.js',
-          'client/**/*.js',
-          'client/**/*.less',
+          'app/**/*.js',
           'test/**/*.js',
         ],
         tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
