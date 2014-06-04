@@ -50,7 +50,9 @@ var express = require('express'),
 	plugins,
 	logger,
 	database = require('../../content/config/database'),
-	db;
+	db,
+	dburl,
+	mngse;
 
 //https://github.com/expressjs/csurf
 //https://github.com/expressjs/timeout
@@ -65,7 +67,9 @@ var init = {
 		}
 		app.set('port',appconfig.settings().application.port);
 		app.set('env',appconfig.settings().application.environment);
-		db = database[app.get('env')].db;
+		db = database[app.get('env')];
+		dburl = db.url;
+		mngse =  db.mongoose;
 	},
 	viewSettings : function(){
 		app.set('view engine', 'ejs');
@@ -125,10 +129,7 @@ var init = {
 		app.use(expressAppLogger({ format: 'dev', immediate: true }));
 	},
 	applicationRouting : function(){
-		app.get('/',function(req,res){
-			console.log("got it");
-			res.render('home/index',{randomdata:'twerkin'});
-		});
+		require('../routes/index')({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
 	},
 	useSessions: function(){
 		if(appconfig.settings().sessions.enabled){
