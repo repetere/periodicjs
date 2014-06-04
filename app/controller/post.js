@@ -1,32 +1,49 @@
 'use strict';
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/model/workout.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/model/media.js
-// https://github.com/yawetse/getperiodic/blob/master/webapp/db/schema.js
-// https://github.com/getperiodic/app.web-app/blob/master/dist/app/controller/home.js
-// https://github.com/getperiodic/app.web-app/blob/master/dist/app/routes/home.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/exercise.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/application.js
+
 var path = require('path'),
+	appController = require('./application'),
+	applicationController,
 	mongoose,
 	Post,
 	logger;
 
 var show = function(req,res,next){
-	var newPost = new Post({title:"test title",name:"test-title"});
+	applicationController.getViewTemplate({
+		id:req.controllerData.post.name,
+		templatetype:'post-single',
+		callback:function(templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					post:req.controllerData.post,
+					user:req.user
+				}
+			});
+	}});
+};
 
-	newPost.save(function(err){
-		console.log("trying to create new post");
-		if(err){
-			logger.error(err);
-			res.send(err);
-			console.log(err);
-		}
-		else{
-			logger.debug("post id: ",req.params.id);
-			logger.debug("showing new post");
-			res.render('home/index',{randomdata:'show post'});
-		}
-	});
+var create = function(req,res,next){
+	/*
+		// applicationController.loadModel({});
+		// var newPost = new Post({title:"test title",name:"test-title"});
+
+		// newPost.save(function(err){
+		// 	console.log("trying to create new post");
+		// 	if(err){
+		// 		logger.error(err);
+		// 		res.send(err);
+		// 		console.log(err);
+		// 	}
+		// 	else{
+		// 		logger.debug("post id: ",req.params.id);
+		// 		logger.debug("showing new post");
+		// 		res.render('home/index',{randomdata:'show post'});
+		// 	}
+		// });
+		// 
+	*/
 };
 
 var index = function(req,res,next){
@@ -42,14 +59,41 @@ var index = function(req,res,next){
 	});
 };
 
+var loadPost = function(req,res,next){
+	var params = req.params,
+		docid = params.id;
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+
+	applicationController.loadModel({
+		docid:docid,
+		model:Post,
+		callback:function(err,doc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.post = doc;
+				next();
+			}
+		}
+	});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
+	applicationController = new appController(resources);
 	Post = mongoose.model('Post');
 
 	return{
 		show:show,
-		index:index
+		index:index,
+		loadPost:loadPost
 	};
 };
 

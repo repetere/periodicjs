@@ -4,7 +4,7 @@ var path = require('path'),
 	fs = require('fs');
 
 module.exports = function(periodic){
-	// express,app,logger,config,db
+	// express,app,logger,config/settings,db
 	var models = require('../../content/config/model')({
 			mongoose : periodic.db.mongoose,
 			dburl: periodic.db.url,
@@ -16,7 +16,7 @@ module.exports = function(periodic){
 		collectionRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
-		themeRoute = path.join(path.resolve(__dirname,"../../content/themes",periodic.settings.theme),'routes.js');
+		themeRoute = path.join(periodic.settings.themepath,'routes.js');
 
 	if(periodic.settings.theme && fs.existsSync(themeRoute)){
 		require(themeRoute)(periodic);
@@ -32,7 +32,7 @@ module.exports = function(periodic){
 	// });
 
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
-	postRouter.get('/:id',postController.show);
+	postRouter.get('/:id',postController.loadPost,postController.show);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
 

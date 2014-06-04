@@ -39,6 +39,7 @@ var express = require('express'),
 	session = require('express-session'),
 	responseTime = require('response-time'),
 	compress = require('compression'),
+	flash = require('connect-flash'),
 	csrf = require('csurf'),
 	ejs = require('ejs'),
 	app = express(),
@@ -91,6 +92,9 @@ var init = {
 		}
 		app.set('port',appconfig.settings().application.port);
 		app.set('env',appconfig.settings().application.environment);
+		if(appconfig.settings().theme){
+			appconfig.setSetting('themepath',path.join(__dirname,'../../content/themes',appconfig.settings().theme));
+		}
 		db = database[app.get('env')];
 		dburl = db.url;
 		mngse =  db.mongoose;
@@ -103,6 +107,7 @@ var init = {
 	},
 	expressSettings : function(){
 		app.use(responseTime(5));
+		app.use(flash());
 		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
