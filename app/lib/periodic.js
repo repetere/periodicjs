@@ -151,7 +151,6 @@ var init = {
 
 			app.use(session(express_session_config));
 			if(appconfig.settings().crsf){
-				logger.silly('using crsf');
 				app.use(csrf());
 			}
 		}
@@ -159,7 +158,7 @@ var init = {
 	useLocals : function(){
 		if(appconfig.settings().crsf){
 			app.use(function(req,res,next){
-				app.locals.token = req.session.csrfSecret;
+				app.locals.token = req.csrfToken();
 				next();
 			});
 		}
@@ -185,7 +184,6 @@ var init = {
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
 		logger.info('Running in environment: '+app.get('env'));
-		logger.silly('looks good.');
 	}
 };
 

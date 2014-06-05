@@ -48,6 +48,7 @@ module.exports = function(grunt) {
         'index.js',
         'app/**/*.js','!app/doc/**/*.js',
         'test/**/*.js',
+        'content/extensions/node_modules/periodicjs.ext.login/controller/*.js'
       ]
     },
     jsdoc : {
@@ -108,6 +109,7 @@ module.exports = function(grunt) {
           'index.js',
           'app/**/*.js',
           'test/**/*.js',
+          'content/extensions/node_modules/periodicjs.ext.login/controller/*.js',
         ],
         tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
         options: {

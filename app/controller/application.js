@@ -163,6 +163,20 @@ var applicationController = function(resources){
 			}
 		}
 	};
+
+	this.removeEmptyObjectValues = function(obj) {
+		for (var property in obj) {
+			if (typeof obj[property] === "object") {
+				this.removeEmptyObjectValues(obj[property]);
+			}
+			else {
+				if (obj[property] === '' || obj[property] === ' ' || obj[property] === null || obj[property] === undefined || Object.keys(obj).length === 0) {
+				delete obj[property];
+				}
+			}
+		}
+		return obj;
+	}.bind(this);
 };
 
 module.exports = applicationController;
