@@ -16,8 +16,8 @@
     "url": "git://github.com/typesettin/periodic.git"
   },
   "scripts": {
-    "startdev": "supervisor -w app,content/plugins,content/config,content/config/config.json,content/plugins/plugins.json,package.json -e js,node,json -i public -- index.js",
-    "start": "supervisor -w app,content/config,content/config/config.json,content/plugins/plugins.json,package.json -e js,node,json -- index.js -e prodution -p 80",
+    "startdev": "supervisor -w app,content/extensions,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public -- index.js",
+    "start": "supervisor -w app,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -- index.js -e prodution -p 80",
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {

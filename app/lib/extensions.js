@@ -12,7 +12,7 @@ var fs = require('fs'),
 	semver = require('semver'),
 	path = require('path');
 /**
- * A module that represents a plugin manager.
+ * A module that represents a extension manager.
  * @{@link https://github.com/typesettin/periodic}
  * @author Yaw Joseph Etse
  * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
@@ -23,10 +23,10 @@ var fs = require('fs'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var plugins = function(appsettings){
-	var pluginFilePath = path.join(path.resolve(__dirname,'../../content/plugins/'), 'plugins.json' ) ,
-		pluginConfig = {},
-		pluginFiles = [];
+var extensions = function(appsettings){
+	var extensionFilePath = path.join(path.resolve(__dirname,'../../content/extensions/'), 'extensions.json' ) ,
+		extensionsConfig = {},
+		extensionsFiles = [];
 
 	var readJSONFile = function(filename) {
 		return JSON.parse(fs.readFileSync(filename));
@@ -37,23 +37,23 @@ var plugins = function(appsettings){
 	 * @return { string } file path for config file
 	 */
 	this.settings = function(){
-		return pluginConfig;
+		return extensionsConfig;
 	};
 
 	this.files = function(){
-		return pluginFiles;
+		return extensionsFiles;
 	};
 
 	this.savePluginConfig = function(name,value){
 		this[name] = value;
 	}.bind(this);
 
-	this.getPluginFilePath = function(pluginName){
-		return path.join(path.resolve(__dirname,'../../content/plugins/node_modules/',pluginName), 'index.js' );
+	this.getExtensionFilePath = function(extensionName){
+		return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'index.js' );
 	};
 
-	this.loadPlugins = function(obj){
-		pluginFiles.forEach(function(file){
+	this.loadExtensions = function(obj){
+		extensionsFiles.forEach(function(file){
 			require(file)(obj);
 		});
 	}.bind(this);
@@ -63,12 +63,12 @@ var plugins = function(appsettings){
 	 * @throws {Error} If missing config file
 	 */
 	this.init = function(appsettings){
-		// /** load pluginfile: content/plugin/plugins.json */
-		pluginConfig = readJSONFile(pluginFilePath);
+		// /** load pluginfile: content/plugin/extensions.json */
+		extensionsConfig = readJSONFile(extensionFilePath);
 
-		pluginConfig.plugins.forEach(function(val,index,arr){
+		extensionsConfig.extensions.forEach(function(val,index,arr){
 			if(semver.lte(val.periodicCompatibility,appsettings.version)){
-				pluginFiles.push(this.getPluginFilePath(val.name));
+				extensionsFiles.push(this.getExtensionFilePath(val.name));
 			}
 		}.bind(this));
 	}.bind(this);
@@ -76,4 +76,4 @@ var plugins = function(appsettings){
 	this.init(appsettings);
 };
 
-module.exports = plugins;
+module.exports = extensions;

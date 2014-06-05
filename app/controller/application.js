@@ -18,6 +18,38 @@ var applicationController = function(resources){
 		}
 		return valid;
 	}
+	this.getPluginViewTemplate = function(options){
+		var callback = options.callback,
+			templatePath = options.templatePath, // user/login
+			pluginname = options.pluginname, //periodicjs.plugin.login
+			themepath = options.themepath,
+			viewname = options.viewname,
+			themefileext = options.themefileext,
+			req = options.req,
+			res = options.res;
+
+		//theme path
+		var themetemplatefile = path.join(themepath,'views',viewname+'.'+themefileext),
+			plugintemplatefile = path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewname+'.'+themefileext);
+		// console.log("themetemplatefile",themetemplatefile);
+		// console.log("plugintemplatefile",plugintemplatefile);
+		fs.open(themetemplatefile,'r',function(err,file){
+			if(err){
+				fs.open(plugintemplatefile,'r',function(err,pluginfile){
+					if(err){
+						this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+					}
+					else{
+						callback(plugintemplatefile);
+
+					}
+				}.bind(this));
+			}
+			else{
+				callback(themetemplatefile);
+			}
+		}.bind(this));
+	}.bind(this);
 
 	this.getViewTemplate = function(options){
 		var callback = options.callback,
@@ -92,6 +124,7 @@ var applicationController = function(resources){
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 			req = options.req;
+		options.responseData.flash_messages = req.flash();
 		if(req.query.format === "json") {
 			res.send(options.responseData);
 		}

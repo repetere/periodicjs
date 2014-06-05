@@ -47,9 +47,9 @@ var express = require('express'),
 	expressAppLogger = require('morgan'),
 	appLog = require('../../content/config/logger'),
 	config = require('./config'),
-	pluginLoader = require('./plugins'),
+	extentionLoader = require('./extensions'),
 	appconfig,
-	plugins,
+	extensions,
 	logger,
 	database = require('../../content/config/database'),
 	db,
@@ -117,12 +117,6 @@ var init = {
 			app.use(compress());
 		}
 	},
-	useLocals : function(){
-		app.locals.title = "test title";
-		app.locals.testFunction = function(paramvar){
-			return 'adding to test func - '+paramvar;
-		};
-	},
 	appLogging : function(){
 		if(appconfig.settings().debug){
 			expressAppLogger.token('colorstatus', function(req, res){
@@ -162,13 +156,31 @@ var init = {
 			}
 		}
 	},
+	useLocals : function(){
+		if(appconfig.settings().crsf){
+			app.use(function(req,res,next){
+				app.locals.token = req.session.csrfSecret;
+				next();
+			});
+		}
+		else{
+			app.use(function(req,res,next){
+				app.locals.token = '';
+				next();
+			});
+		}
+		app.locals.title = "test title";
+		app.locals.testFunction = function(paramvar){
+			return 'adding to test func - '+paramvar;
+		};
+	},
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};
 		require('../routes/index')(periodicObj);
 	},
-	loadPlugins: function(){
-		plugins = new pluginLoader(appconfig.settings());
-		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
+	loadExtensions: function(){
+		extensions = new extentionLoader(appconfig.settings());
+		extensions.loadExtensions({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
 	},
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
@@ -184,11 +196,11 @@ init.viewSettings();
 init.expressSettings();
 init.staticCaching();
 init.pageCompression();
-init.useLocals();
 init.appLogging();
 init.useSessions();
+init.useLocals();
 init.applicationRouting();
-init.loadPlugins();
+init.loadExtensions();
 init.serverStatus();
 console.timeEnd('Server Starting');
 

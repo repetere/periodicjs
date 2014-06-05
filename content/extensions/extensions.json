@@ -1,18 +1,18 @@
 {
-	"plugins": [{
-			"name":"periodicjs.plugin.admin",
+	"extensions": [{
+			"name":"periodicjs.ext.admin",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.2",
 			"installed":true,
 			"enabled":true
 		},{
-			"name":"periodicjs.plugin.importfacebook",
+			"name":"periodicjs.ext.importfacebook",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.6",
 			"installed":false,
 			"enabled":false
 		},{
-			"name":"periodicjs.plugin.login",
+			"name":"periodicjs.ext.login",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.2",
 			"installed":true,
