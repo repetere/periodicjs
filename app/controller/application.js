@@ -22,20 +22,45 @@ var applicationController = function(resources){
 	this.getViewTemplate = function(options){
 		var callback = options.callback,
 			templatetype = options.templatetype,
+			themepath = options.themepath,
 			id = options.id,
-			templatepath = 'home/index';
-
-		console.log("id finish loading tempalte view");
+			req = options.req,
+			res = options.res,
+			themefileext = options.themefileext,
+			templatepath = 'home/index',
+			templateFolder,
+			templateFolderFiles,
+			templateFile,
+			templateFileBasename;
 
 		switch(templatetype){
 			case 'post-single':
-				callback('post/single');
+				templateFolder = path.join(themepath,'views/post/');
+				fs.readdir(templateFolder,function (err,files){
+					if(err){
+						this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+					}
+					else{
+						templateFolderFiles = files;
+						for(var i =0; i<templateFolderFiles.length; i++){
+							templateFileBasename = path.basename(templateFolderFiles[i],'.'+themefileext);
+							if(templateFileBasename==='single-'+id){
+								callback(path.join(templateFolder,templateFileBasename));
+								break;
+							}
+							else{
+								callback(path.join(templateFolder,'single'));
+								break;
+							}
+						}
+					}
+				}.bind(this));
 				break;
 			default:
 				callback(templatepath);
 				break;
 		}
-	};
+	}.bind(this);
 
 	this.loadModel = function(options) {
 		var model = options.model,
@@ -79,7 +104,7 @@ var applicationController = function(resources){
 		var err = options.err,
 			redirectUrl = options.redirectUrl,
 			req = options.req,
-			res = options.req,
+			res = options.res,
 			callback = options.callback;
 
 		if(req.query.format === "json") {

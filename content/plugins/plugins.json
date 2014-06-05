@@ -9,6 +9,12 @@
 			"name":"periodicjs.plugin.importfacebook",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.6",
+			"installed":false,
+			"enabled":false
+		},{
+			"name":"periodicjs.plugin.login",
+			"version":"0.0.1",
+			"periodicCompatibility":"0.0.2",
 			"installed":true,
 			"enabled":true
 		}

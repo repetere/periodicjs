@@ -55,11 +55,8 @@ var express = require('express'),
 	db,
 	dburl,
 	mngse;
-
-//https://github.com/expressjs/csurf
 //https://github.com/expressjs/timeout
 //https://github.com/expressjs/vhost
-//https://github.com/senchalabs/connect/blob/master/Readme.md#middleware
 
 var init = {
 	logErrors : function(){
@@ -68,7 +65,6 @@ var init = {
 		//log errors
 		app.use(function(err, req, res, next){
 			logger.error(err.stack);
-			console.log(err);
 			next(err);
 		});
 
@@ -181,8 +177,9 @@ var init = {
 	}
 };
 
-init.logErrors();
+console.time('Server Starting');
 init.loadConfiguration();
+init.logErrors();
 init.viewSettings();
 init.expressSettings();
 init.staticCaching();
@@ -193,6 +190,7 @@ init.useSessions();
 init.applicationRouting();
 init.loadPlugins();
 init.serverStatus();
+console.timeEnd('Server Starting');
 
 
 module.exports.app = app;

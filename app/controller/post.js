@@ -3,14 +3,19 @@
 var path = require('path'),
 	appController = require('./application'),
 	applicationController,
+	appSettings,
 	mongoose,
 	Post,
 	logger;
 
 var show = function(req,res,next){
 	applicationController.getViewTemplate({
+		res:res,
+		req:req,
 		id:req.controllerData.post.name,
 		templatetype:'post-single',
+		themepath:appSettings.themepath,
+		themefileext:appSettings.templatefileextension,
 		callback:function(templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
@@ -87,6 +92,7 @@ var loadPost = function(req,res,next){
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
+	appSettings = resources.settings;
 	applicationController = new appController(resources);
 	Post = mongoose.model('Post');
 

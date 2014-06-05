@@ -39,7 +39,8 @@
     "semver": "~2.3.0",
     "connect-mongo": "~0.4.1",
     "chai": "^1.9.1",
-    "connect-flash": "^0.1.1"
+    "connect-flash": "^0.1.1",
+    "passport": "~0.2.0"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",
