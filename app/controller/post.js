@@ -22,6 +22,9 @@ var show = function(req,res,next){
 				req:req,
 				renderView:templatepath,
 				responseData:{
+					pagedata: {
+						title:"single post"
+					},
 					post:req.controllerData.post,
 					user:req.user
 				}
