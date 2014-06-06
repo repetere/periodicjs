@@ -1,7 +1,8 @@
 'use strict';
 
 var path = require('path'),
-	fs = require('fs');
+	fs = require('fs'),
+	ExtentionLoader = require('../lib/extensions');
 
 module.exports = function(periodic){
 	// express,app,logger,config/settings,db
@@ -10,22 +11,23 @@ module.exports = function(periodic){
 			dburl: periodic.db.url,
 			debug: periodic.settings.debug
 		}),
+		homeController = require('../controller/home')(periodic),
 		postRouter = periodic.express.Router(),
 		postController = require('../controller/post')(periodic),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
-		themeRoute = path.join(periodic.settings.themepath,'routes.js');
+		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
+		extensions = new ExtentionLoader(periodic.settings);
+
+	extensions.loadExtensions(periodic);
 
 	if(periodic.settings.theme && fs.existsSync(themeRoute)){
 		require(themeRoute)(periodic);
 	}
 
-	appRouter.get('/',function(req,res){
-		console.log("got first index");
-		res.render('home/index',{randomdata:'twerkin'});
-	});
+	appRouter.get('/',homeController.index);
 	// periodic.app.get('/',function(req,res){
 	// 	console.log("override index");
 	// 	res.render('home/index',{randomdata:'index override'});

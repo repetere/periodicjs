@@ -47,9 +47,7 @@ var express = require('express'),
 	expressAppLogger = require('morgan'),
 	appLog = require('../../content/config/logger'),
 	config = require('./config'),
-	extentionLoader = require('./extensions'),
 	appconfig,
-	extensions,
 	logger,
 	database = require('../../content/config/database'),
 	db,
@@ -128,7 +126,7 @@ var init = {
 				else if (status >= 300) {color = 36;} // cyan
 				return '\x1b[' + color + 'm'+status+'\x1b[90m';
 			});
-			expressAppLogger.format('app','\x1b[90m:remote-addr :method :url :colorstatus :response-time ms :date :referrer :user-agent\x1b[0m' );
+			expressAppLogger.format('app','\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m' );
 			app.use(expressAppLogger({format:"app"}));
 		}
 	},
@@ -168,6 +166,12 @@ var init = {
 				next();
 			});
 		}
+		app.use(function(req,res,next){
+			app.locals.isLoggedIn = function(){
+				return req.user;
+			};
+			next();
+		});
 		app.locals.title = "test title";
 		app.locals.testFunction = function(paramvar){
 			return 'adding to test func - '+paramvar;
@@ -176,10 +180,6 @@ var init = {
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};
 		require('../routes/index')(periodicObj);
-	},
-	loadExtensions: function(){
-		extensions = new extentionLoader(appconfig.settings());
-		extensions.loadExtensions({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
 	},
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
@@ -198,7 +198,6 @@ init.appLogging();
 init.useSessions();
 init.useLocals();
 init.applicationRouting();
-init.loadExtensions();
 init.serverStatus();
 console.timeEnd('Server Starting');
 

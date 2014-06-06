@@ -1,5 +1,13 @@
 <nav>
 	<div class="container">
 		<h1><%= locals.title%></h1>
+		<div class="pull-right">
+		<% if(locals.isLoggedIn()){
+			%>(<%= user.username %> - <a href="/auth/logout">logout</a>)<%
+		} 
+		else{
+			%>(<a href="/auth/login">login</a>)<%
+		} %>
+		</div>
 	</div>
 </nav>

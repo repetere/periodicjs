@@ -88,6 +88,28 @@ var applicationController = function(resources){
 					}
 				}.bind(this));
 				break;
+			case 'home-index':
+				var homedefaulttemplatefile = path.join(process.cwd(),'app/views/home','index.'+themefileext),
+					homethemetemplatefile = path.join(themepath,'views','home/index.'+themefileext);
+				// console.log("homedefaulttemplatefile",homedefaulttemplatefile);
+				// console.log("homethemetemplatefile",homethemetemplatefile);
+				fs.open(homethemetemplatefile,'r',function(err,file){
+					if(err){
+						fs.open(homedefaulttemplatefile,'r',function(err,pluginfile){
+							if(err){
+								this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+							}
+							else{
+								callback(homedefaulttemplatefile);
+
+							}
+						}.bind(this));
+					}
+					else{
+						callback(homethemetemplatefile);
+					}
+				}.bind(this));
+				break;
 			default:
 				callback(templatepath);
 				break;
@@ -135,7 +157,7 @@ var applicationController = function(resources){
 
 	this.handleDocumentQueryErrorResponse = function(options){
 		var err = options.err,
-			redirectUrl = options.redirectUrl,
+			redirecturl = options.redirecturl,
 			req = options.req,
 			res = options.res,
 			callback = options.callback;
@@ -149,14 +171,14 @@ var applicationController = function(resources){
 			});
 		}
 		else {
-			if(options.flashError){
-				req.flash('error', options.errorFlash);
+			if(options.errorflash){
+				req.flash('error', options.errorflash);
 			}
 			if(callback){
 				callback();
 			}
-			else if(redirectUrl){
-				res.redirect(redirectUrl);
+			else if(redirecturl){
+				res.redirect(redirecturl);
 			}
 			else{
 				res.redirect('/404');

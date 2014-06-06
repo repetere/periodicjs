@@ -118,33 +118,29 @@ userSchema.pre('save', function(next, done) {
 });
 
 userSchema.post('init', function(doc) {
-    logger.verbose("model - user.js - " + doc._id + ' has been initialized from the db');
+    logger.info("model - user.js - " + doc._id + ' has been initialized from the db');
 });
 userSchema.post('validate', function(doc) {
-    logger.verbose("model - user.js - " + doc._id + ' has been validated (but not saved yet)');
+    logger.info("model - user.js - " + doc._id + ' has been validated (but not saved yet)');
 });
 userSchema.post('save', function(doc) {
-    logger.verbose("model - user.js - " + doc._id + ' has been saved');
+    logger.info("model - user.js - " + doc._id + ' has been saved');
 });
 userSchema.pre('remove', function(doc) {
     console.log('==================deleted============');
-    logger.verbose("model - user.js - " + doc._id + ' has been removed');
+    logger.info("model - user.js - " + doc._id + ' has been removed');
 });
 
 // Password verification
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
     var bcrypt = require('bcrypt');
-    // logger.silly("model - user.js - hashed password: "+this.password);
-    // console.log(this.password)
-
     if (this.password) {
-        // logger.silly("tyring bcrypt")
         bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
             if (err) {return cb(err);}
             cb(null, isMatch);
         });
     } else {
-        logger.silly("user has no pw");
+        logger.info("user has no pw");
         return cb(null, false);
     }
 };
@@ -191,7 +187,6 @@ userSchema.statics.validApiKey = function(userid, apikey, callback) {
 };
 
 userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
-    logger.silly("model - user.js - trying to fast register user");
     var bcrypt = require('bcrypt');
     var application_controller = require('../controller/application');
     var userdata = userdataparam;
@@ -209,43 +204,31 @@ userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
         if (callback) {
             callback(new Error("missing password"), userdata);
         }
-    } else if (userdata.password.length < 8) {
+    } else if (userdata.password.length < 6) {
         if (callback) {
-            callback(new Error("password is too short - min 8 characters"), userdata);
+            callback(new Error("password is too short - min 6 characters"), userdata);
         }
     } else {
         delete userdata.passwordconfirm;
         bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(userdata.password, salt, function(err, hash) {
-                // Store hash in your password DB.
                 userdata.password = hash;
-                logger.silly("model - user.js - to save user");
-                // logger.info(userdata)
                 if (userdata.username && !userdata.email) {
                     userdata.email = userdata.username;
                     delete userdata.username;
                 }
-                // logger.info(userdata)
                 var User = mongoose.model('User');
                 userdata.apikey = User.generateRandomTokenStatic();
-                // console.log(userdata)
+                console.log(__dirname,userdata);
 
                 var newUser = new User(userdata);
                 newUser.save(function(err, user) {
-                    logger.silly("model - user.js - trying to create user");
-                    // console.log("user",user)
-
                     if (err) {
                         logger.error(err);
                         if (callback) {
                             callback(err, userdata);
                         }
                     } else {
-                        // User.sendAsyncWelcomeEmail(user);
-                        // if(user.password){
-                        //     user.password = null;
-                        //     delete user.password;
-                        // }
                         if (callback) {
                             callback(false, user);
                         }
@@ -258,10 +241,12 @@ userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
 };
 
 var sendEmail = function(options, callback) {
-    // console.log("sending mail")
-    // console.log("options",options)
+    console.log("*********** FINISH ******* sending mail");
+    console.log("TODO: sending mail");
+    console.log("options",options);
     // console.log("options.emailTemplateFilename",options.emailTemplateFilename)
 
+/*
     var appconfig = require('../config/environment'),
         nodemailer = require("nodemailer"),
         smtpTransport = appconfig.environment.email.messenger.transport,
@@ -304,7 +289,7 @@ var sendEmail = function(options, callback) {
                 }
 
             });
-
+*/
 };
 userSchema.statics.sendAsyncWelcomeEmail = function(options, callback) {
     var emailOptions = {};
