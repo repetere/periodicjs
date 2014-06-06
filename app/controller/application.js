@@ -18,6 +18,7 @@ var applicationController = function(resources){
 		}
 		return valid;
 	}
+
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
 			templatePath = options.templatePath, // user/login
@@ -143,6 +144,27 @@ var applicationController = function(resources){
 		}
 	};
 
+	this.searchModel = function(options){
+		var	model = options.model,
+			query = options.query,
+			sort = options.sort,
+			offset = options.offset,
+			limit = options.limit,
+			callback = options.callback,
+			population = options.population;
+
+		sort = (sort)? sort : '-createdat';
+		offset = (offset)? offset : 0;
+		limit = (limit || limit >100)? limit : 30;
+
+		if(population){
+			model.find(query).sort(sort).limit(limit).skip(offset).populate(population).exec(callback);
+		}
+		else{
+			model.find(query).sort(sort).limit(limit).skip(offset).exec(callback);
+		}
+	};
+
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 			req = options.req;
@@ -199,6 +221,17 @@ var applicationController = function(resources){
 		}
 		return obj;
 	}.bind(this);
+
+	this.stripTags = function(textinput) {
+		// cleantext = textinput.replace(/(<([^>]+)>)/ig,"");
+		// return cleantext;
+		if (textinput) {
+			return textinput.replace(/[^a-z0-9@._]/gi, '-').toLowerCase();
+		}
+		else {
+			return false;
+		}
+	};
 };
 
 module.exports = applicationController;

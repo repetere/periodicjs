@@ -92,6 +92,50 @@ var loadPost = function(req,res,next){
 	});
 };
 
+var loadPosts = function(req,res,next){
+	var params = req.params,
+		query,
+		offset = req.query.offset,
+		sort = req.query.sort,
+		limit = req.query.limit,
+		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+	if(req.query.search===undefined || req.query.search.length<1){
+		query={};
+	}
+	else{
+		query = {
+			$or: [{
+				title: searchRegEx,
+				}, {
+				'name': searchRegEx,
+			}]
+		};
+	}
+
+	applicationController.searchModel({
+		model:Post,
+		query:query,
+		sort:sort,
+		limit:limit,
+		offset:offset,
+		callback:function(err,documents){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.posts = documents;
+				next();
+			}
+		}
+	});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -102,7 +146,8 @@ var controller = function(resources){
 	return{
 		show:show,
 		index:index,
-		loadPost:loadPost
+		loadPost:loadPost,
+		loadPosts:loadPosts
 	};
 };
 
