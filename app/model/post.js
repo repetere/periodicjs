@@ -10,6 +10,10 @@ var postSchema = new Schema({
         type: String,
         "default": "draft"
     },
+    publishat: {
+        type: Date,
+        "default": Date.now
+    },
     createdat: {
         type: Date,
         "default": Date.now
@@ -19,7 +23,9 @@ var postSchema = new Schema({
         "default": Date.now
     },
     title: String,
-    name: String,
+    name: {
+        type: String, unique: true
+    },
     dek: String,
     content: String,
     posttype: {

@@ -28,6 +28,27 @@ var index = function(req,res,next){
 			});
 	}});
 };
+var error404 = function(req,res,next){
+	applicationController.getViewTemplate({
+		res:res,
+		req:req,
+		templatetype:'home-404',
+		themepath:appSettings.themepath,
+		themefileext:appSettings.templatefileextension,
+		callback:function(templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:"Not Found"
+					},
+					user:req.user
+				}
+			});
+	}});
+};
 
 var controller = function(resources){
 	logger = resources.logger;
@@ -36,7 +57,8 @@ var controller = function(resources){
 	applicationController = new appController(resources);
 
 	return{
-		index:index
+		index:index,
+		error404:error404
 	};
 };
 

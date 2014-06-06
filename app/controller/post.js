@@ -32,28 +32,6 @@ var show = function(req,res,next){
 	}});
 };
 
-var create = function(req,res,next){
-	/*
-		// applicationController.loadModel({});
-		// var newPost = new Post({title:"test title",name:"test-title"});
-
-		// newPost.save(function(err){
-		// 	console.log("trying to create new post");
-		// 	if(err){
-		// 		logger.error(err);
-		// 		res.send(err);
-		// 		console.log(err);
-		// 	}
-		// 	else{
-		// 		logger.debug("post id: ",req.params.id);
-		// 		logger.debug("showing new post");
-		// 		res.render('home/index',{randomdata:'show post'});
-		// 	}
-		// });
-		// 
-	*/
-};
-
 var index = function(req,res,next){
 	console.log('index list');
 	Post.find({ title: /title/ }).exec(function(err,posts){
@@ -64,6 +42,20 @@ var index = function(req,res,next){
 		else{
 			res.send(posts);
 		}
+	});
+};
+
+var create = function(req, res, next) {
+	var newpost = applicationController.removeEmptyObjectValues(req.body);
+	newpost.name = applicationController.makeNiceName(newpost.title);
+
+    applicationController.createModel({
+	    model:Post,
+	    newdoc:newpost,
+	    res:res,
+        req:req,
+	    successredirect:'/admin/post/edit/',
+	    appendid:true
 	});
 };
 
@@ -98,6 +90,7 @@ var loadPosts = function(req,res,next){
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
+		population = 'tags collections authors primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
@@ -120,6 +113,7 @@ var loadPosts = function(req,res,next){
 		sort:sort,
 		limit:limit,
 		offset:offset,
+		population:population,
 		callback:function(err,documents){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -146,6 +140,7 @@ var controller = function(resources){
 	return{
 		show:show,
 		index:index,
+		create:create,
 		loadPost:loadPost,
 		loadPosts:loadPosts
 	};

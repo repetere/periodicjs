@@ -28,6 +28,7 @@ module.exports = function(periodic){
 	}
 
 	appRouter.get('/',homeController.index);
+	appRouter.get('/404|notfound',homeController.error404);
 	// periodic.app.get('/',function(req,res){
 	// 	console.log("override index");
 	// 	res.render('home/index',{randomdata:'index override'});
@@ -35,6 +36,7 @@ module.exports = function(periodic){
 
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
 	postRouter.get('/:id',postController.loadPost,postController.show);
+	postRouter.post('/new',postController.loadPost,postController.create);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
 
