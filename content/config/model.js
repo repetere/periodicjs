@@ -9,7 +9,10 @@ module.exports = function(options){
 		collectionSchema = require('../../app/model/collection.js'),
 		assetSchema = require('../../app/model/asset.js'),
 		tagSchema = require('../../app/model/tag.js');
-	mongoose.set('debug', true);
+
+	if(options.debug){
+		mongoose.set('debug', true);
+	}
 	mongoose.model('User',userSchema);
 	mongoose.model('Post',postSchema);
 	mongoose.model('Collection',collectionSchema);

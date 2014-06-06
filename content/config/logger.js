@@ -46,7 +46,7 @@ var logger = function(env){
 				new (winston.transports.File)({ filename: 'logs/'+fileNamePathAddition+'.app.log'})
 			],
 			exceptionHandlers:[
-				new (winston.transports.Console)({colorize: 'true'}),
+				new (winston.transports.Console)({colorize: 'true',json:'true'}),
 				new (winston.transports.File)({ filename: 'logs/'+fileNamePathAddition+'.exception-errors.log'})
 			],
 			handleExceptions: true

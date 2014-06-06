@@ -51,6 +51,11 @@ var config = function(){
 		this[name] = value;
 	}.bind(this);
 
+
+	this.setSetting = function(name,value){
+		config[name] = value;
+	}.bind(this);
+
 	/** 
 	 * generate file path for config files
 	 * @return { string } file path for config file

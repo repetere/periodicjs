@@ -32,12 +32,14 @@
  */
 var express = require('express'),
 	path = require('path'),
+	fs = require('fs'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
 	session = require('express-session'),
 	responseTime = require('response-time'),
 	compress = require('compression'),
+	flash = require('connect-flash'),
 	csrf = require('csurf'),
 	ejs = require('ejs'),
 	app = express(),
@@ -45,66 +47,18 @@ var express = require('express'),
 	expressAppLogger = require('morgan'),
 	appLog = require('../../content/config/logger'),
 	config = require('./config'),
-	pluginLoader = require('./plugins'),
 	appconfig,
-	plugins,
 	logger,
 	database = require('../../content/config/database'),
 	db,
 	dburl,
 	mngse;
-
-//https://github.com/expressjs/csurf
 //https://github.com/expressjs/timeout
 //https://github.com/expressjs/vhost
-//https://github.com/senchalabs/connect/blob/master/Readme.md#middleware
 
 var init = {
-	loadConfiguration : function(){
-		appconfig = new config();
-		if(appconfig.settings().debug){
-			console.log(appconfig.settings());
-		}
-		app.set('port',appconfig.settings().application.port);
-		app.set('env',appconfig.settings().application.environment);
-		db = database[app.get('env')];
-		dburl = db.url;
-		mngse =  db.mongoose;
-	},
-	viewSettings : function(){
-		app.set('view engine', 'ejs');
-		app.set('views', path.resolve(__dirname,'../views'));
-		app.engine('html', require('ejs').renderFile);
-		app.engine('ejs', require('ejs').renderFile);
-	},
-	expressSettings : function(){
-		app.use(responseTime(5));
-		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
-		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
-		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
-	},
-	staticCaching : function(){
-		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};
-		app.use(express.static(path.resolve(__dirname,'../../public'),expressStaticOptions));
-	},
-	pageCaching : function(){
-		if(appconfig.settings().expressCompression){
-			app.use(compress());
-		}
-	},
-	useLocals : function(){
-		app.locals.title = "test title";
-		app.locals.testFunction = function(paramvar){
-			return 'adding to test func - '+paramvar;
-		};
-	},
 	logErrors : function(){
 		logger = new appLog(app.get('env'));
-
-		app.use(function(req,res,next){
-			console.log('%s %s',req.method,req.url);
-			next();
-		});
 
 		//log errors
 		app.use(function(err, req, res, next){
@@ -125,11 +79,56 @@ var init = {
 			}
 		});
 	},
-	appLogging : function(){
-		app.use(expressAppLogger({ format: 'dev', immediate: true }));
+	loadConfiguration : function(){
+		appconfig = new config();
+		if(appconfig.settings().debug){
+			console.log(appconfig.settings());
+		}
+		app.set('port',appconfig.settings().application.port);
+		app.set('env',appconfig.settings().application.environment);
+		if(appconfig.settings().theme){
+			appconfig.setSetting('themepath',path.join(__dirname,'../../content/themes',appconfig.settings().theme));
+		}
+		db = database[app.get('env')];
+		dburl = db.url;
+		mngse =  db.mongoose;
 	},
-	applicationRouting : function(){
-		require('../routes/index')({express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse});
+	viewSettings : function(){
+		app.set('view engine', 'ejs');
+		app.set('views', path.resolve(__dirname,'../views'));
+		app.engine('html', require('ejs').renderFile);
+		app.engine('ejs', require('ejs').renderFile);
+	},
+	expressSettings : function(){
+		app.use(responseTime(5));
+		app.use(flash());
+		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
+		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
+	},
+	staticCaching : function(){
+		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};
+		app.use(express.static(path.resolve(__dirname,'../../public'),expressStaticOptions));
+	},
+	pageCompression : function(){
+		if(appconfig.settings().expressCompression){
+			app.use(compress());
+		}
+	},
+	appLogging : function(){
+		if(appconfig.settings().debug){
+			expressAppLogger.token('colorstatus', function(req, res){
+				var color = 32; // green
+				var status = res.statusCode;
+
+				if (status >= 500) {color = 31;} // red
+				else if (status >= 400) {color = 33;} // yellow
+				else if (status >= 300) {color = 36;} // cyan
+				return '\x1b[' + color + 'm'+status+'\x1b[90m';
+			});
+			expressAppLogger.format('app','\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m' );
+			app.use(expressAppLogger({format:"app"}));
+		}
 	},
 	useSessions: function(){
 		if(appconfig.settings().sessions.enabled){
@@ -150,33 +149,57 @@ var init = {
 
 			app.use(session(express_session_config));
 			if(appconfig.settings().crsf){
-				logger.silly('using crsf');
 				app.use(csrf());
 			}
 		}
 	},
+	useLocals : function(){
+		if(appconfig.settings().crsf){
+			app.use(function(req,res,next){
+				app.locals.token = req.csrfToken();
+				next();
+			});
+		}
+		else{
+			app.use(function(req,res,next){
+				app.locals.token = '';
+				next();
+			});
+		}
+		app.use(function(req,res,next){
+			app.locals.isLoggedIn = function(){
+				return req.user;
+			};
+			next();
+		});
+		app.locals.title = "test title";
+		app.locals.testFunction = function(paramvar){
+			return 'adding to test func - '+paramvar;
+		};
+	},
+	applicationRouting : function(){
+		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};
+		require('../routes/index')(periodicObj);
+	},
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
 		logger.info('Running in environment: '+app.get('env'));
-		logger.silly('looks good.');
-	},
-	loadPlugins: function(){
-		plugins = new pluginLoader(appconfig.settings());
-		plugins.loadPlugins({express:express,app:app,logger:logger,settings:appconfig.settings()});
 	}
 };
 
-init.logErrors();
+console.time('Server Starting');
 init.loadConfiguration();
+init.logErrors();
 init.viewSettings();
 init.expressSettings();
 init.staticCaching();
-init.pageCaching();
-init.useLocals();
+init.pageCompression();
+init.appLogging();
 init.useSessions();
+init.useLocals();
 init.applicationRouting();
-init.loadPlugins();
 init.serverStatus();
+console.timeEnd('Server Starting');
 
 
 module.exports.app = app;
