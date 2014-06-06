@@ -1,0 +1,6 @@
+<% include ../shared/flashmessages %>
+<h1 class="text-left"><%= pagedata.title %></h1>
+<hr/>
+<form action="/auth/login" method="post" autocomplete="on" id="login_form" name="login_form" class="form-horizontal text-left">
+	<% include login_form %>
+</form>

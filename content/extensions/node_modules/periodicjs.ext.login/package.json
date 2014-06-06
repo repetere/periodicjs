@@ -1,0 +1,28 @@
+{
+  "name": "periodicjs.ext.login",
+  "description": "Login for periodicjs",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.x"
+  },
+  "author": {
+    "name": "Yaw Joseph Etse",
+    "email": "yaw.etse@gmail.com",
+    "url": "http://about.me/yawjosephetse"
+  },
+  "repository": {},
+  "scripts": {},
+  "dependencies": {
+    "passport": "~0.2.0",
+    "passport-local": "~1.0.0",
+    "passport-facebook": "~1.0.3",
+    "passport-twitter": "~1.0.2",
+    "passport-google": "~0.3.0",
+    "bcrypt": "^0.7.8"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "periodicjs"
+  ]
+}
