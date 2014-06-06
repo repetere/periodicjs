@@ -1,5 +1,11 @@
 {
 	"extensions": [{
+			"name":"periodicjs.ext.login",
+			"version":"0.0.1",
+			"periodicCompatibility":"0.0.2",
+			"installed":true,
+			"enabled":true
+		},{
 			"name":"periodicjs.ext.admin",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.2",
@@ -11,12 +17,6 @@
 			"periodicCompatibility":"0.0.6",
 			"installed":false,
 			"enabled":false
-		},{
-			"name":"periodicjs.ext.login",
-			"version":"0.0.1",
-			"periodicCompatibility":"0.0.2",
-			"installed":true,
-			"enabled":true
 		}
 	]
 }

@@ -13,5 +13,12 @@
 		"enabled":false,
 		"rememberme":false,
 		"passport":false
+	},
+	"oauth":{
+		"facebook":{
+			"appid": "NEEDFBAPPID",
+			"appsecret": "NEEDFBAPPSECRET",
+			"callbackurl": "http://local.getperiodic.com:8080/auth/facebook/callback"
+		}
 	}
 }
