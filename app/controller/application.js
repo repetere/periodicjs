@@ -129,27 +129,30 @@ var applicationController = function(resources){
 	this.loadModel = function(options) {
 		var model = options.model,
 			docid = options.docid,
-			callback = options.callback;
+			callback = options.callback,
+			population = options.population,
+			query;
 
 		if (isValidObjectID(docid)) {
-			model.findOne({
+			query = {
 				$or: [{
 				name: docid
 				}, {
 				_id: docid
 				}]
-			},
-			function(err,doc){
-				callback(err,doc);
-			});
+			};
 		}
 		else {
-			model.findOne({
+			query = {
 				name: docid
-			},
-			function(err,doc){
-				callback(err,doc);
-			});
+			};
+		}
+
+		if(population){
+			model.findOne(query).populate(population).exec(callback);
+		}
+		else{
+			model.findOne(query).exec(callback);
 		}
 	};
 
@@ -189,9 +192,11 @@ var applicationController = function(resources){
 			}
 			else{
 				if(appendid){
+					req.flash("success","Saved");
 					res.redirect(successredirect+saveddoc._id);
 				}
 				else{
+					req.flash("success","Saved");
 					res.redirect(successredirect);
 				}
 			}

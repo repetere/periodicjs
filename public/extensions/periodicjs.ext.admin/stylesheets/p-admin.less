@@ -94,6 +94,10 @@ a:hover{
 	text-align: left;
 }
 
+._pea-text-center{
+	text-align: center;
+}
+
 ._pea-pull-left{
 	float: left;
 }
@@ -114,7 +118,7 @@ header{
 	#_pea_menu{
 	   	background: rgba(0,0,0,0.9);
 		position: fixed;
-		height: 1.4em;
+		height: 1.8em;
 		opacity: 0.6;
 		width: 100%;
 		z-index: 1;
@@ -191,7 +195,7 @@ header{
 			}
 		}
 	}
-	&._pea-ribbon-active{
+	&._mss-ribbon-active{
 		height: 2em; 
 		
 		#_pea_menu{
@@ -218,6 +222,9 @@ footer{
 	td,th,tr, thead tr, tbody tr, tfoot tr{
 		height: 2em;
 	}
+	td,th{
+		padding: 0.25em 0.4em;
+	}
 }
 
 ._pea-form{
@@ -240,6 +247,9 @@ footer{
 	.form-input-fullwith{
 		.pea-border();
 		width:94%;
+	}
+	.textarea-tall{
+		height: 20em;
 	}
 }
 
@@ -302,3 +312,6 @@ footer{
 	background: #000;
 	color: #ffffff;
 }
+
+@import "ribbon.less";
+@import "silkscreen.less";

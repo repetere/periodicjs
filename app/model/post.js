@@ -60,6 +60,7 @@ var postSchema = new Schema({
         type:ObjectId,
         ref:"Source"
     },
+    postauthorname: String,
     originalpost :{
         originalid: String,
         originaldate: Date,

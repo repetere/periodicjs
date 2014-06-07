@@ -48,13 +48,16 @@ var index = function(req,res,next){
 var create = function(req, res, next) {
 	var newpost = applicationController.removeEmptyObjectValues(req.body);
 	newpost.name = applicationController.makeNiceName(newpost.title);
+	newpost.postauthorname = req.user.username;
+	newpost.primaryauthor = req.user._id;
+	newpost.authors = [req.user._id];
 
     applicationController.createModel({
 	    model:Post,
 	    newdoc:newpost,
 	    res:res,
         req:req,
-	    successredirect:'/admin/post/edit/',
+	    successredirect:'/p-admin/post/edit/',
 	    appendid:true
 	});
 };
@@ -68,6 +71,32 @@ var loadPost = function(req,res,next){
 	applicationController.loadModel({
 		docid:docid,
 		model:Post,
+		callback:function(err,doc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.post = doc;
+				next();
+			}
+		}
+	});
+};
+
+var loadFullPost = function(req,res,next){
+	var params = req.params,
+		docid = params.id;
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+
+	applicationController.loadModel({
+		docid:docid,
+		model:Post,
+		population:'tags collections assets primaryasset authors primaryauthor',
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -142,6 +171,7 @@ var controller = function(resources){
 		index:index,
 		create:create,
 		loadPost:loadPost,
+		loadFullPost:loadFullPost,
 		loadPosts:loadPosts
 	};
 };
