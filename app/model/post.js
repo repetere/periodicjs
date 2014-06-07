@@ -67,11 +67,13 @@ var postSchema = new Schema({
         originaldata: Schema.Types.Mixed
     },
     link: String,
+    attributes: Schema.Types.Mixed,
     random: Number
 });
 
 
 postSchema.pre('save',function(next,done){
+    this.random = Math.random();
     var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
     if(this.name !== undefined && this.name.length <4){
         done(new Error('title is too short'));

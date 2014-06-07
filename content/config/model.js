@@ -7,6 +7,7 @@ module.exports = function(options){
 		userSchema = require('../../app/model/user.js'),
 		postSchema = require('../../app/model/post.js'),
 		collectionSchema = require('../../app/model/collection.js'),
+		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
 		tagSchema = require('../../app/model/tag.js');
 
@@ -16,6 +17,7 @@ module.exports = function(options){
 	mongoose.model('User',userSchema);
 	mongoose.model('Post',postSchema);
 	mongoose.model('Collection',collectionSchema);
+	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);
 	mongoose.model('Tag',tagSchema);
 };

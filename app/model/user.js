@@ -96,6 +96,7 @@ var userSchema = new Schema({
     foursquareAccessToken: String,
     foursquareId: String,
     foursquareName: String,
+    attributes: Schema.Types.Mixed,
     random: Number
 });
 

@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
-var tagSchema = new Schema({
+var categorySchema = new Schema({
     id: ObjectId,
     title: String,
     name: {
@@ -12,10 +12,10 @@ var tagSchema = new Schema({
     },
     dek: String,
     content: String,
-    author: {
+    authors: [{
         type:ObjectId,
         ref:"User"
-    },
+    }],
     primaryasset:{
         type:ObjectId,
         ref:"Asset"
@@ -30,13 +30,13 @@ var tagSchema = new Schema({
     },
     children: [{
         type:ObjectId,
-        ref:"Tag"
+        ref:"Category"
     }],
     attributes: Schema.Types.Mixed,
     random: Number
 });
 
-tagSchema.pre('save',function(next,done){
+categorySchema.pre('save',function(next,done){
     // var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
     // if(this.name !== undefined && this.name.length <4){
     //     done(new Error('title is too short'));
@@ -46,23 +46,23 @@ tagSchema.pre('save',function(next,done){
     next();
 });
 
-tagSchema.post('init', function (doc) {
+categorySchema.post('init', function (doc) {
     console.log("model - post.js - "+doc._id+' has been initialized from the db');
 });
-tagSchema.post('validate', function (doc) {
+categorySchema.post('validate', function (doc) {
     console.log("model - post.js - "+doc._id+' has been validated (but not saved yet)');
 });
-tagSchema.post('save', function (doc) {
+categorySchema.post('save', function (doc) {
     // this.db.models.Post.emit('created', this);
     console.log("model - post.js - "+doc._id+' has been saved');
 });
-tagSchema.post('remove', function (doc) {
+categorySchema.post('remove', function (doc) {
     console.log("model - post.js - "+doc._id+' has been removed');
 });
 
-tagSchema.statics.getRandomWorkout = function(options,callback){
+categorySchema.statics.getRandomWorkout = function(options,callback){
     var self = this;
     // queryHelper.getRandomDocument({model:self},callback);
 };
 
-module.exports = tagSchema;
+module.exports = categorySchema;

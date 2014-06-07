@@ -16,6 +16,7 @@ module.exports = function(periodic){
 		postController = require('../controller/post')(periodic),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
+		categoryRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
 		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
@@ -44,10 +45,15 @@ module.exports = function(periodic){
 	// tagRouter.get('/:id',tagController.show);
 	// tagRouter.get('/:ids/posts',tagController.show);
 
-	/* collections: get collection, get posts by collection, get posts by collection and tags */
+	/* collections(slideshows): get collection, get posts by collection, get posts by collection and tags */
 	// collectionRouter.get('/:id',collectionRouter.show);
-	// collectionRouter.get('/:id/posts',collectionRouter.show);
-	// collectionRouter.get('/:id/posts/:tags',collectionRouter.show);
+	// collectionRouter.get('/:id/post/:postid',collectionRouter.show);
+	// collectionRouter.get('/:id/page/:pagenumber',collectionRouter.show);
+
+	/* categories: get collection, get posts by collection, get posts by collection and tags */
+	// categoryRouter.get('/:id',categoryRouter.show);
+	// categoryRouter.get('/:id/posts',categoryRouter.show);
+	// categoryRouter.get('/:id/posts/:tags',categoryRouter.show);
 
 	/* searchs: search posts, search tags, search collections */
 	// searchRouter.get('/:searchquery',searchController.searchPosts);
