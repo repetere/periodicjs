@@ -90,12 +90,13 @@ var userSchema = new Schema({
     twitterAccessTokenSecret: String,
     twitterUsername: String,
     twitterId: String,
-    facebookAccessToken: String,
-    facebookUsername: String,
-    facebookId: String,
+    facebookaccesstoken: String,
+    facebookusername: String,
+    facebookid: String,
     foursquareAccessToken: String,
     foursquareId: String,
     foursquareName: String,
+    attributes: Schema.Types.Mixed,
     random: Number
 });
 

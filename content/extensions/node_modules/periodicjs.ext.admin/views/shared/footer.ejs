@@ -1,0 +1,30 @@
+	<footer>
+		<div class="_pea-container">
+			<div class="_pea-row">
+				<div class="_pea-col-span6">Thank you for curating with <a href="http://getperiodic.com" target="_blank">Periodic</a></div>
+				<div class="_pea-col-span6 _pea-text-right">
+					Version <%= periodic.version %>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script type="text/javascript">
+	//ribbonNotification.showRibbon( 'test flash message 5',4000,'error');
+	//silkscreenModal.showSilkscreen("title","message",14,"default");
+	window.addEventListener("load",function(e){
+		<%
+			var delayMultiplier=0;
+			for(x in flash_messages){
+				if(delayMultiplier === 0){
+					%>
+					ribbonNotification.showRibbon( '<%=flash_messages[x].join(". ") %>',4000,'<%= x %>');
+						
+					<%
+				}
+				delayMultiplier++;
+			};
+		%>
+	},false);
+	</script>
+</body>
+</html>

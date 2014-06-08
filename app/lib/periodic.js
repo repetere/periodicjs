@@ -176,6 +176,11 @@ var init = {
 		app.locals.testFunction = function(paramvar){
 			return 'adding to test func - '+paramvar;
 		};
+		app.locals.themehelper = {};
+		app.locals.themehelper.extensionPublicResourcePath = function(ext,resource){
+			var addPath = (resource)? resource+'/' : '';
+			return '/extensions/'+ext+'/'+addPath;
+		};
 	},
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};

@@ -16,6 +16,7 @@ module.exports = function(periodic){
 		postController = require('../controller/post')(periodic),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
+		categoryRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
 		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
@@ -28,6 +29,7 @@ module.exports = function(periodic){
 	}
 
 	appRouter.get('/',homeController.index);
+	appRouter.get('/404|notfound',homeController.error404);
 	// periodic.app.get('/',function(req,res){
 	// 	console.log("override index");
 	// 	res.render('home/index',{randomdata:'index override'});
@@ -35,6 +37,7 @@ module.exports = function(periodic){
 
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
 	postRouter.get('/:id',postController.loadPost,postController.show);
+	postRouter.post('/new',postController.loadPost,postController.create);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
 
@@ -42,16 +45,22 @@ module.exports = function(periodic){
 	// tagRouter.get('/:id',tagController.show);
 	// tagRouter.get('/:ids/posts',tagController.show);
 
-	/* collections: get collection, get posts by collection, get posts by collection and tags */
+	/* collections(slideshows): get collection, get posts by collection, get posts by collection and tags */
 	// collectionRouter.get('/:id',collectionRouter.show);
-	// collectionRouter.get('/:id/posts',collectionRouter.show);
-	// collectionRouter.get('/:id/posts/:tags',collectionRouter.show);
+	// collectionRouter.get('/:id/post/:postid',collectionRouter.show);
+	// collectionRouter.get('/:id/page/:pagenumber',collectionRouter.show);
+
+	/* categories: get collection, get posts by collection, get posts by collection and tags */
+	// categoryRouter.get('/:id',categoryRouter.show);
+	// categoryRouter.get('/:id/posts',categoryRouter.show);
+	// categoryRouter.get('/:id/posts/:tags',categoryRouter.show);
 
 	/* searchs: search posts, search tags, search collections */
 	// searchRouter.get('/:searchquery',searchController.searchPosts);
 	// searchRouter.get('/posts/:searchquery',searchController.searchPosts);
 	// searchRouter.get('/tags/:searchquery',searchController.searchTags);
 	// searchRouter.get('/collections/:searchquery',searchController.searchCollections);
+	appRouter.get('*',homeController.catch404);
 
 	periodic.app.use(appRouter);
 	periodic.app.use('/post',postRouter);

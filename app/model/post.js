@@ -10,6 +10,10 @@ var postSchema = new Schema({
         type: String,
         "default": "draft"
     },
+    publishat: {
+        type: Date,
+        "default": Date.now
+    },
     createdat: {
         type: Date,
         "default": Date.now
@@ -19,7 +23,9 @@ var postSchema = new Schema({
         "default": Date.now
     },
     title: String,
-    name: String,
+    name: {
+        type: String, unique: true
+    },
     dek: String,
     content: String,
     posttype: {
@@ -42,21 +48,32 @@ var postSchema = new Schema({
         type:ObjectId,
         ref:"Asset"
     },
+    authors: [{
+        type:ObjectId,
+        ref:"User"
+    }],
+    primaryauthor:{
+        type:ObjectId,
+        ref:"User"
+    },
     source: {
         type:ObjectId,
         ref:"Source"
     },
+    postauthorname: String,
     originalpost :{
         originalid: String,
         originaldate: Date,
         originaldata: Schema.Types.Mixed
     },
     link: String,
+    attributes: Schema.Types.Mixed,
     random: Number
 });
 
 
 postSchema.pre('save',function(next,done){
+    this.random = Math.random();
     var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
     if(this.name !== undefined && this.name.length <4){
         done(new Error('title is too short'));
@@ -67,17 +84,17 @@ postSchema.pre('save',function(next,done){
 });
 
 postSchema.post('init', function (doc) {
-    console.log("model - workout.js - "+doc._id+' has been initialized from the db');
+    console.log("model - post.js - "+doc._id+' has been initialized from the db');
 });
 postSchema.post('validate', function (doc) {
-    console.log("model - workout.js - "+doc._id+' has been validated (but not saved yet)');
+    console.log("model - post.js - "+doc._id+' has been validated (but not saved yet)');
 });
 postSchema.post('save', function (doc) {
     // this.db.models.Post.emit('created', this);
-    console.log("model - workout.js - "+doc._id+' has been saved');
+    console.log("model - post.js - "+doc._id+' has been saved');
 });
 postSchema.post('remove', function (doc) {
-    console.log("model - workout.js - "+doc._id+' has been removed');
+    console.log("model - post.js - "+doc._id+' has been removed');
 });
 
 postSchema.statics.getRandomWorkout = function(options,callback){

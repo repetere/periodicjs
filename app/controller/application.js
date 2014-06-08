@@ -6,8 +6,7 @@ var path = require('path'),
 var applicationController = function(resources){
 	var logger = resources.logger;
 	var theme = resources.settings.theme;
-	// logger.info(resources);
-	// this.attr = true;
+
 	function isValidObjectID(str) {
 		// coerce to string so the function can be generically used to test both strings and native objectIds created by the driver
 		str = str + '';
@@ -18,6 +17,7 @@ var applicationController = function(resources){
 		}
 		return valid;
 	}
+
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
 			templatePath = options.templatePath, // user/login
@@ -63,7 +63,28 @@ var applicationController = function(resources){
 			templateFolder,
 			templateFolderFiles,
 			templateFile,
-			templateFileBasename;
+			templateFileBasename,
+			defaultFile,
+			self = this;
+
+
+		function singleTemplateFileCheck(templatefile,defaultfile,callback){
+			fs.open(templatefile,'r',function(err,file){
+				if(err){
+					fs.open(defaultfile,'r',function(err,pluginfile){
+						if(err){
+							self.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+						}
+						else{
+							callback(defaultfile);
+						}
+					});
+				}
+				else{
+					callback(templatefile);
+				}
+			});
+		}
 
 		switch(templatetype){
 			case 'post-single':
@@ -89,59 +110,98 @@ var applicationController = function(resources){
 				}.bind(this));
 				break;
 			case 'home-index':
-				var homedefaulttemplatefile = path.join(process.cwd(),'app/views/home','index.'+themefileext),
-					homethemetemplatefile = path.join(themepath,'views','home/index.'+themefileext);
-				// console.log("homedefaulttemplatefile",homedefaulttemplatefile);
-				// console.log("homethemetemplatefile",homethemetemplatefile);
-				fs.open(homethemetemplatefile,'r',function(err,file){
-					if(err){
-						fs.open(homedefaulttemplatefile,'r',function(err,pluginfile){
-							if(err){
-								this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
-							}
-							else{
-								callback(homedefaulttemplatefile);
-
-							}
-						}.bind(this));
-					}
-					else{
-						callback(homethemetemplatefile);
-					}
-				}.bind(this));
+				defaultFile = path.join(process.cwd(),'app/views/home','index.'+themefileext),
+				templateFile = path.join(themepath,'views','home/index.'+themefileext);
+				singleTemplateFileCheck(templateFile,defaultFile,callback);
+				break;
+			case 'home-404':
+				defaultFile = path.join(process.cwd(),'app/views/home','error404.'+themefileext);
+				templateFile = path.join(themepath,'views','home/error404.'+themefileext);
+				singleTemplateFileCheck(templateFile,defaultFile,callback);
 				break;
 			default:
 				callback(templatepath);
 				break;
 		}
+
 	}.bind(this);
 
 	this.loadModel = function(options) {
 		var model = options.model,
 			docid = options.docid,
-			callback = options.callback;
+			callback = options.callback,
+			population = options.population,
+			query;
 
 		if (isValidObjectID(docid)) {
-			model.findOne({
+			query = {
 				$or: [{
 				name: docid
 				}, {
 				_id: docid
 				}]
-			},
-			function(err,doc){
-				callback(err,doc);
-			});
+			};
 		}
 		else {
-			model.findOne({
+			query = {
 				name: docid
-			},
-			function(err,doc){
-				callback(err,doc);
-			});
+			};
+		}
+
+		if(population){
+			model.findOne(query).populate(population).exec(callback);
+		}
+		else{
+			model.findOne(query).exec(callback);
 		}
 	};
+
+	this.searchModel = function(options){
+		var	model = options.model,
+			query = options.query,
+			sort = options.sort,
+			offset = options.offset,
+			limit = options.limit,
+			callback = options.callback,
+			population = options.population;
+
+		sort = (sort)? sort : '-createdat';
+		offset = (offset)? offset : 0;
+		limit = (limit || limit >100)? limit : 30;
+
+		if(population){
+			model.find(query).sort(sort).limit(limit).skip(offset).populate(population).exec(callback);
+		}
+		else{
+			model.find(query).sort(sort).limit(limit).skip(offset).exec(callback);
+		}
+	};
+
+	this.createModel = function(options) {
+		var model = options.model,
+			newdoc = options.newdoc,
+			req = options.req,
+			res = options.res,
+			successredirect = options.successredirect,
+			failredirect = options.failredirect,
+			appendid = options.appendid;
+
+		model.create(newdoc,function(err,saveddoc){
+			if(err){
+				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
+			}
+			else{
+				if(appendid){
+					req.flash("success","Saved");
+					res.redirect(successredirect+saveddoc._id);
+				}
+				else{
+					req.flash("success","Saved");
+					res.redirect(successredirect);
+				}
+			}
+		}.bind(this));
+	}.bind(this);
 
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
@@ -171,6 +231,7 @@ var applicationController = function(resources){
 			});
 		}
 		else {
+			logger.error(err);
 			if(options.errorflash){
 				req.flash('error', options.errorflash);
 			}
@@ -199,6 +260,24 @@ var applicationController = function(resources){
 		}
 		return obj;
 	}.bind(this);
+
+	this.stripTags = function(textinput) {
+		if (textinput) {
+			return textinput.replace(/[^a-z0-9@._]/gi, '-').toLowerCase();
+		}
+		else {
+			return false;
+		}
+	};
+
+	this.makeNiceName = function(username) {
+		if (username) {
+			return username.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+		}
+		else {
+			return false;
+		}
+	};
 };
 
 module.exports = applicationController;

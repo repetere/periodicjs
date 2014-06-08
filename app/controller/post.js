@@ -32,28 +32,6 @@ var show = function(req,res,next){
 	}});
 };
 
-var create = function(req,res,next){
-	/*
-		// applicationController.loadModel({});
-		// var newPost = new Post({title:"test title",name:"test-title"});
-
-		// newPost.save(function(err){
-		// 	console.log("trying to create new post");
-		// 	if(err){
-		// 		logger.error(err);
-		// 		res.send(err);
-		// 		console.log(err);
-		// 	}
-		// 	else{
-		// 		logger.debug("post id: ",req.params.id);
-		// 		logger.debug("showing new post");
-		// 		res.render('home/index',{randomdata:'show post'});
-		// 	}
-		// });
-		// 
-	*/
-};
-
 var index = function(req,res,next){
 	console.log('index list');
 	Post.find({ title: /title/ }).exec(function(err,posts){
@@ -64,6 +42,23 @@ var index = function(req,res,next){
 		else{
 			res.send(posts);
 		}
+	});
+};
+
+var create = function(req, res, next) {
+	var newpost = applicationController.removeEmptyObjectValues(req.body);
+	newpost.name = applicationController.makeNiceName(newpost.title);
+	newpost.postauthorname = req.user.username;
+	newpost.primaryauthor = req.user._id;
+	newpost.authors = [req.user._id];
+
+    applicationController.createModel({
+	    model:Post,
+	    newdoc:newpost,
+	    res:res,
+        req:req,
+	    successredirect:'/p-admin/post/edit/',
+	    appendid:true
 	});
 };
 
@@ -92,6 +87,78 @@ var loadPost = function(req,res,next){
 	});
 };
 
+var loadFullPost = function(req,res,next){
+	var params = req.params,
+		docid = params.id;
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+
+	applicationController.loadModel({
+		docid:docid,
+		model:Post,
+		population:'tags collections assets primaryasset authors primaryauthor',
+		callback:function(err,doc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.post = doc;
+				next();
+			}
+		}
+	});
+};
+
+var loadPosts = function(req,res,next){
+	var params = req.params,
+		query,
+		offset = req.query.offset,
+		sort = req.query.sort,
+		limit = req.query.limit,
+		population = 'tags collections authors primaryauthor',
+		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+	if(req.query.search===undefined || req.query.search.length<1){
+		query={};
+	}
+	else{
+		query = {
+			$or: [{
+				title: searchRegEx,
+				}, {
+				'name': searchRegEx,
+			}]
+		};
+	}
+
+	applicationController.searchModel({
+		model:Post,
+		query:query,
+		sort:sort,
+		limit:limit,
+		offset:offset,
+		population:population,
+		callback:function(err,documents){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.posts = documents;
+				next();
+			}
+		}
+	});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -102,7 +169,10 @@ var controller = function(resources){
 	return{
 		show:show,
 		index:index,
-		loadPost:loadPost
+		create:create,
+		loadPost:loadPost,
+		loadFullPost:loadFullPost,
+		loadPosts:loadPosts
 	};
 };
 

@@ -28,6 +28,47 @@ var index = function(req,res,next){
 			});
 	}});
 };
+var error404 = function(req,res,next){
+	applicationController.getViewTemplate({
+		res:res,
+		req:req,
+		templatetype:'home-404',
+		themepath:appSettings.themepath,
+		themefileext:appSettings.templatefileextension,
+		callback:function(templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:"Not Found"
+					},
+					user:req.user,
+					url:req.url
+				}
+			});
+	}});
+};
+
+var catch404 = function(req, res, next){
+	res.status(404);
+
+	// respond with html page
+	if (req.accepts('html')) {
+		error404(req, res, next);
+		return;
+	}
+	else if (req.accepts('json')) {
+		// respond with json
+	    res.send({ error: 'Not found' });
+	    return;
+	}
+	else{
+		// default to plain-text. send()
+		res.type('txt').send('Not found');
+	}
+};
 
 var controller = function(resources){
 	logger = resources.logger;
@@ -36,7 +77,9 @@ var controller = function(resources){
 	applicationController = new appController(resources);
 
 	return{
-		index:index
+		index:index,
+		error404:error404,
+		catch404:catch404
 	};
 };
 
