@@ -12,10 +12,10 @@ var categorySchema = new Schema({
     },
     dek: String,
     content: String,
-    authors: [{
+    author: {
         type:ObjectId,
         ref:"User"
-    }],
+    },
     primaryasset:{
         type:ObjectId,
         ref:"Asset"
@@ -31,7 +31,7 @@ var categorySchema = new Schema({
     children: [{
         type:ObjectId,
         ref:"Category"
-    }],
+    }], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
     attributes: Schema.Types.Mixed,
     random: Number
 });

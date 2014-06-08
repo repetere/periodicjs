@@ -44,10 +44,30 @@ var error404 = function(req,res,next){
 					pagedata: {
 						title:"Not Found"
 					},
-					user:req.user
+					user:req.user,
+					url:req.url
 				}
 			});
 	}});
+};
+
+var catch404 = function(req, res, next){
+	res.status(404);
+
+	// respond with html page
+	if (req.accepts('html')) {
+		error404(req, res, next);
+		return;
+	}
+	else if (req.accepts('json')) {
+		// respond with json
+	    res.send({ error: 'Not found' });
+	    return;
+	}
+	else{
+		// default to plain-text. send()
+		res.type('txt').send('Not found');
+	}
 };
 
 var controller = function(resources){
@@ -58,7 +78,8 @@ var controller = function(resources){
 
 	return{
 		index:index,
-		error404:error404
+		error404:error404,
+		catch404:catch404
 	};
 };
 
