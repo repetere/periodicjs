@@ -40,10 +40,13 @@ tagSchema.pre('save',function(next,done){
     var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
     if(this.name !== undefined && this.name.length <4){
         done(new Error('title is too short'));
-    } else if(this.name !== undefined && badname.test(this.name) ){
+    }
+    else if(this.name !== undefined && badname.test(this.name) ){
         done(new Error('Invalid title'));
     }
-    next();
+    else{
+        next();
+    }
 });
 
 tagSchema.post('init', function (doc) {

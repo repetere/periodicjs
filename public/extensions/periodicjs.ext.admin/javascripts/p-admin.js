@@ -565,11 +565,19 @@ module.exports=require(5)
 var ribbon = require('ribbonjs'),
 	silkscreen = require('silkscreenjs');
 
-
-window.onload = function(){
+window.addEventListener("load",function(){
 	window.silkscreenModal = new silkscreen(),
 	window.ribbonNotification = new ribbon({type:"info",idSelector:"#_pea_ribbon-element"});	
-}
+},false);
+
+window.makeNiceName = function(username) {
+	if (username) {
+		return username.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+	}
+	else {
+		return false;
+	}
+};
 },{"ribbonjs":1,"silkscreenjs":6}],12:[function(require,module,exports){
 
 

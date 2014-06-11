@@ -61,7 +61,7 @@ var init = {
 		logger = new appLog(app.get('env'));
 
 		//log errors
-		app.use(function(err, req, res, next){
+		app.use(function (err, req, res, next){
 			logger.error(err.stack);
 			next(err);
 		});
@@ -69,13 +69,13 @@ var init = {
 		//send client errors
 		//catch all errors
 		app.use(function (err, req, res, next) {
-			// console.log("err.name",err.name);
+			console.log("err.name",err.name);
 			if (req.xhr) {
 				res.send(500, { error: 'Something blew up!' });
 			}
 			else {
 				res.status(500);
-				res.render('errors/500', { error: err });
+				res.render('home/error500', { error: err });
 			}
 		});
 	},
@@ -154,6 +154,7 @@ var init = {
 		}
 	},
 	useLocals : function(){
+		app.locals = require('./staticviewhelper');
 		if(appconfig.settings().crsf){
 			app.use(function(req,res,next){
 				app.locals.token = req.csrfToken();
@@ -172,15 +173,6 @@ var init = {
 			};
 			next();
 		});
-		app.locals.title = "test title";
-		app.locals.testFunction = function(paramvar){
-			return 'adding to test func - '+paramvar;
-		};
-		app.locals.themehelper = {};
-		app.locals.themehelper.extensionPublicResourcePath = function(ext,resource){
-			var addPath = (resource)? resource+'/' : '';
-			return '/extensions/'+ext+'/'+addPath;
-		};
 	},
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};

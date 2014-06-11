@@ -109,6 +109,11 @@ var applicationController = function(resources){
 					}
 				}.bind(this));
 				break;
+			case 'search-results':
+				defaultFile = path.join(process.cwd(),'app/views/search','index.'+themefileext),
+				templateFile = path.join(themepath,'views','search/index.'+themefileext);
+				singleTemplateFileCheck(templateFile,defaultFile,callback);
+				break;
 			case 'home-index':
 				defaultFile = path.join(process.cwd(),'app/views/home','index.'+themefileext),
 				templateFile = path.join(themepath,'views','home/index.'+themefileext);
@@ -206,9 +211,13 @@ var applicationController = function(resources){
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 			req = options.req;
+
 		options.responseData.flash_messages = req.flash();
-		if(req.query.format === "json") {
+		if(req.query.format === "json" || req.params.ext === "json") {
 			res.send(options.responseData);
+		}
+		else if(req.query.callback) {
+			res.jsonp(options.responseData);
 		}
 		else{
 			res.render(options.renderView,options.responseData);
@@ -232,6 +241,7 @@ var applicationController = function(resources){
 		}
 		else {
 			logger.error(err);
+			logger.error(err.message,req.url);
 			if(options.errorflash){
 				req.flash('error', options.errorflash);
 			}
@@ -258,6 +268,13 @@ var applicationController = function(resources){
 				}
 			}
 		}
+		return obj;
+	}.bind(this);
+
+	this.removePrivateInfo = function(obj) {
+		obj.password=null;
+		obj.apikey=null;
+		console.log("removePrivateInfo obj",obj);
 		return obj;
 	}.bind(this);
 
