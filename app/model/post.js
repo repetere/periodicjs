@@ -36,6 +36,10 @@ var postSchema = new Schema({
         type:ObjectId,
         ref:"Tag"
     }],
+    categories: [{
+        type:ObjectId,
+        ref:"Category"
+    }],
     collections: [{
         type:ObjectId,
         ref:"Collection"

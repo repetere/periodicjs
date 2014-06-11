@@ -21,6 +21,7 @@ a:hover{
 	background: #fff;
 	border: 1px solid darken(#efefef,20%);
 	margin: 0.5em auto;
+	padding: 0.5em;
 	font-family: georgia,"times new roman", serif;
 }
 
@@ -246,10 +247,16 @@ footer{
 	}
 	.form-input-fullwith{
 		.pea-border();
-		width:94%;
+		width:99%;
 	}
 	.textarea-tall{
 		height: 20em;
+	}
+	._pea-container-forminput{
+		margin: 0 0 0.5em;
+		&.no-margin{
+			margin: 0;
+		}
 	}
 }
 
