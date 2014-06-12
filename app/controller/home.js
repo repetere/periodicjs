@@ -29,6 +29,7 @@ var index = function(req,res,next){
 	}});
 };
 var error404 = function(req,res,next){
+	res.status(404);
 	applicationController.getViewTemplate({
 		res:res,
 		req:req,

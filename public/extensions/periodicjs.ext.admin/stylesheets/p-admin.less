@@ -22,7 +22,7 @@ a:hover{
 	border: 1px solid darken(#efefef,20%);
 	margin: 0.5em auto;
 	padding: 0.5em;
-	font-family: georgia,"times new roman", serif;
+	font-family: 'Lucida Grande',georgia,"times new roman", serif;
 }
 
 ._pea-row{
@@ -291,7 +291,7 @@ footer{
 }
 
 .pea-border{
-	border: 1px solid darken(#efefef,20%);
+	border: 0.1em solid darken(#efefef,20%);
 }
 
 .col-span{
@@ -316,8 +316,11 @@ footer{
 	color: #ffffff;
 }
 ._pea-color-default{
-	background: #000;
-	color: #ffffff;
+	// background: #000;
+	// color: #ffffff;
+	// border: 0.1em solid #bcbcbc;
+	background: #eaeaea;
+	color: #333;
 }
 
 @import "ribbon.less";
@@ -331,6 +334,10 @@ footer{
 		._ltr-ulc {
 			li.addedTag{
 				// font-size: 80%;
+			}
+			li._ltr-li-wrapper {
+				width: 6em;
+				// float: left;
 			}
 		}
 	}

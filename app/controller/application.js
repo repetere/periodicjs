@@ -252,9 +252,9 @@ var applicationController = function(resources){
 				}
 				//save revision
 				var changesetdata = updatedoc;
-				delete changesetdata.docid;
-				delete changesetdata._csrf;
-				delete changesetdata.save_button;
+				if(changesetdata.docid){delete changesetdata.docid;}
+				if(changesetdata._csrf){delete changesetdata._csrf;}
+				if(changesetdata.save_button){delete changesetdata.save_button;}
 				if(options.saverevision){
 					model.findByIdAndUpdate(
 						id,
@@ -316,6 +316,7 @@ var applicationController = function(resources){
 			});
 		}
 		else {
+			res.status(404);
 			if(options.errorflash!==false){
 				req.flash('error', errormessage);
 			}

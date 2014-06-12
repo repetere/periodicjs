@@ -112,7 +112,7 @@ var loadFullPost = function(req,res,next){
 	applicationController.loadModel({
 		docid:docid,
 		model:Post,
-		population:'tags collections categories assets primaryasset authors primaryauthor',
+		population:'tags collections contenttypes categories assets primaryasset authors primaryauthor',
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({

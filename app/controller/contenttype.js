@@ -5,72 +5,39 @@ var path = require('path'),
 	applicationController,
 	appSettings,
 	mongoose,
-	User,
+	Contenttype,
 	logger;
 
-var show = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		id:req.controllerData.post.name,
-		templatetype:'post-single',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
-			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
-					pagedata: {
-						title:"single post"
-					},
-					post:req.controllerData.post,
-					user:req.user
+var create = function(req, res, next) {
+	if(req.controllerData.contenttype){
+		applicationController.handleDocumentQueryRender({
+			req:req,
+			res:res,
+			responseData:{
+				result:"success",
+				data:{
+					doc:req.controllerData.contenttype
 				}
-			});
-	}});
-};
-
-var index = function(req,res,next){
-	console.log('index list');
-	User.find({ title: /title/ }).exec(function(err,posts){
-		console.log("model search");
-		if(err){
-			res.send(err);
-		}
-		else{
-			res.send(posts);
-		}
-	});
-};
-
-var loadUser = function(req,res,next){
-	var params = req.params,
-		docid = params.id;
-
-	req.controllerData = (req.controllerData)?req.controllerData:{};
-
-	applicationController.loadModel({
-		docid:docid,
-		model:User,
-		callback:function(err,doc){
-			if(err){
-				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
-				});
 			}
-			else{
-				req.controllerData.post = doc;
-				next();
-			}
-		}
-	});
+		});
+	}
+	else{
+		var newcontenttype = applicationController.removeEmptyObjectValues(req.body);
+		newcontenttype.name = applicationController.makeNiceName(newcontenttype.title);
+		newcontenttype.author = req.user._id;
+
+	    applicationController.createModel({
+		    model:Contenttype,
+		    newdoc:newcontenttype,
+		    res:res,
+	        req:req,
+		    successredirect:'/p-admin/contenttype/edit/',
+		    appendid:true
+		});
+	}
 };
 
-var loadUsers = function(req,res,next){
+var loadContenttypes = function(req,res,next){
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -94,7 +61,7 @@ var loadUsers = function(req,res,next){
 	}
 
 	applicationController.searchModel({
-		model:User,
+		model:Contenttype,
 		query:query,
 		sort:sort,
 		limit:limit,
@@ -109,12 +76,39 @@ var loadUsers = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.users = documents;
+				req.controllerData.contenttypes = documents;
 				next();
 			}
 		}
 	});
 };
+
+var loadContenttype = function(req,res,next){
+	var params = req.params,
+		docid = params.id;
+		console.log("docid",docid);
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+
+	applicationController.loadModel({
+		docid:docid,
+		model:Contenttype,
+		callback:function(err,doc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.contenttype = doc;
+				next();
+			}
+		}
+	});
+};
+
 
 var searchResults = function(req,res,next){
 	applicationController.getViewTemplate({
@@ -132,7 +126,7 @@ var searchResults = function(req,res,next){
 					pagedata: {
 						title:"Search Results"
 					},
-					users:req.controllerData.users,
+					contenttypes:req.controllerData.contenttypes,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -144,13 +138,12 @@ var controller = function(resources){
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	User = mongoose.model('User');
+	Contenttype = mongoose.model('Contenttype');
 
 	return{
-		show:show,
-		index:index,
-		loadUser:loadUser,
-		loadUsers:loadUsers,
+		loadContenttypes:loadContenttypes,
+		loadContenttype:loadContenttype,
+		create:create,
 		searchResults:searchResults
 	};
 };
