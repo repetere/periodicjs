@@ -22,4 +22,8 @@ module.exports = function(options){
 	mongoose.model('Asset',assetSchema);
 	mongoose.model('Contenttype',contenttypeSchema);
 	mongoose.model('Tag',tagSchema);
+
+	// mongoose.connection.on('error', function (err) {
+	//  // Do something
+	// });
 };
