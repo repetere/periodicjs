@@ -172,7 +172,7 @@ var applicationController = function(resources){
 
 		sort = (sort)? sort : '-createdat';
 		offset = (offset)? offset : 0;
-		limit = (limit || limit >100)? limit : 30;
+		limit = (limit || limit >200)? limit : 30;
 
 		if(population){
 			model.find(query).sort(sort).limit(limit).skip(offset).populate(population).exec(callback);
@@ -189,14 +189,24 @@ var applicationController = function(resources){
 			res = options.res,
 			successredirect = options.successredirect,
 			failredirect = options.failredirect,
-			appendid = options.appendid;
+			appendid = options.appendid,
+			responseData={};
 
 		model.create(newdoc,function(err,saveddoc){
+			console.log("createModel err",err);
 			if(err){
 				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
 			}
 			else{
-				if(appendid){
+				if(req.query.format === "json" || req.params.ext === "json") {
+					req.flash("success","Saved");
+					responseData.result="success";
+					responseData.data = {};
+					responseData.data.flash_messages = req.flash();
+					responseData.data.doc = saveddoc;
+					res.send(responseData);
+				}
+				else if(appendid){
 					req.flash("success","Saved");
 					res.redirect(successredirect+saveddoc._id);
 				}
@@ -206,6 +216,67 @@ var applicationController = function(resources){
 				}
 			}
 		}.bind(this));
+	}.bind(this);
+
+	this.updateModel = function(options) {
+		var model = options.model,
+			id = options.id,
+			updatedoc = options.updatedoc,
+			req = options.req,
+			res = options.res,
+			successredirect = options.successredirect,
+			failredirect = options.failredirect,
+			appendid = options.appendid,
+			responseData={};
+
+		model.findByIdAndUpdate(id,{$set:updatedoc},function(err,saveddoc){
+			if(err){
+				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
+			}
+			else{
+				if(req.query.format === "json" || req.params.ext === "json") {
+					req.flash("success","Saved");
+					responseData.result="success";
+					responseData.data = {};
+					responseData.data.flash_messages = req.flash();
+					responseData.data.doc = saveddoc;
+					res.send(responseData);
+				}
+				else if(appendid){
+					req.flash("success","Saved");
+					res.redirect(successredirect+saveddoc._id);
+				}
+				else{
+					req.flash("success","Saved");
+					res.redirect(successredirect);
+				}
+				//save revision
+				var changesetdata = updatedoc;
+				delete changesetdata.docid;
+				delete changesetdata._csrf;
+				delete changesetdata.save_button;
+				if(options.saverevision){
+					model.findByIdAndUpdate(
+						id,
+						{$push: {"changes": {changeset: updatedoc}}},
+						// {safe: true, upsert: true},
+						function(err, changesetdoc) {
+							if(err){
+								logger.error(err);
+							}
+						}
+					);
+				}
+			}
+		}.bind(this));
+		/*
+		Tank.findByIdAndUpdate(id, 
+			{ $set: { size: 'large' }}, 
+			function (err, tank) {
+				if (err) return handleError(err);
+				res.send(tank);
+		});
+		*/
 	}.bind(this);
 
 	this.handleDocumentQueryRender = function(options){
@@ -226,24 +297,27 @@ var applicationController = function(resources){
 
 	this.handleDocumentQueryErrorResponse = function(options){
 		var err = options.err,
+			errormessage = (typeof options.err === 'string')? options.err : options.err.message,
 			redirecturl = options.redirecturl,
 			req = options.req,
 			res = options.res,
-			callback = options.callback;
+			callback = options.callback,
+			errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
 
+
+		logger.error(err);
+		logger.error(errormessage,req.url);
 		if(req.query.format === "json") {
 			res.send({
 				"result": "error",
 				"data": {
-					error: err
+					error: errormessage
 				}
 			});
 		}
 		else {
-			logger.error(err);
-			logger.error(err.message,req.url);
-			if(options.errorflash){
-				req.flash('error', options.errorflash);
+			if(options.errorflash!==false){
+				req.flash('error', errormessage);
 			}
 			if(callback){
 				callback();
@@ -274,7 +348,7 @@ var applicationController = function(resources){
 	this.removePrivateInfo = function(obj) {
 		obj.password=null;
 		obj.apikey=null;
-		console.log("removePrivateInfo obj",obj);
+		// console.log("removePrivateInfo obj",obj);
 		return obj;
 	}.bind(this);
 

@@ -41,7 +41,8 @@
     "chai": "^1.9.1",
     "connect-flash": "^0.1.1",
     "passport": "~0.2.0",
-    "bcrypt": "^0.7.8"
+    "bcrypt": "^0.7.8",
+    "multer": "~0.1.0"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

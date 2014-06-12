@@ -5,45 +5,45 @@ var path = require('path'),
 	applicationController,
 	appSettings,
 	mongoose,
-	Tag,
+	Category,
 	logger;
 
 var create = function(req, res, next) {
-	if(req.controllerData.tag){
+	if(req.controllerData.category){
 		applicationController.handleDocumentQueryRender({
 			req:req,
 			res:res,
 			responseData:{
 				result:"success",
 				data:{
-					doc:req.controllerData.tag
+					doc:req.controllerData.category
 				}
 			}
 		});
 	}
 	else{
-		var newtag = applicationController.removeEmptyObjectValues(req.body);
-		newtag.name = applicationController.makeNiceName(newtag.title);
-		newtag.author = req.user._id;
+		var newcategory = applicationController.removeEmptyObjectValues(req.body);
+		newcategory.name = applicationController.makeNiceName(newcategory.title);
+		newcategory.author = req.user._id;
 
 	    applicationController.createModel({
-		    model:Tag,
-		    newdoc:newtag,
+		    model:Category,
+		    newdoc:newcategory,
 		    res:res,
 	        req:req,
-		    successredirect:'/p-admin/tag/edit/',
+		    successredirect:'/p-admin/category/edit/',
 		    appendid:true
 		});
 	}
 };
 
-var loadTags = function(req,res,next){
+var loadCategories = function(req,res,next){
 	var params = req.params,
 		query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		// population = 'tags collections authors primaryauthor',
+		// population = 'categories collections authors primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
@@ -61,7 +61,7 @@ var loadTags = function(req,res,next){
 	}
 
 	applicationController.searchModel({
-		model:Tag,
+		model:Category,
 		query:query,
 		sort:sort,
 		limit:limit,
@@ -76,14 +76,14 @@ var loadTags = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.tags = documents;
+				req.controllerData.categories = documents;
 				next();
 			}
 		}
 	});
 };
 
-var loadTag = function(req,res,next){
+var loadCategory = function(req,res,next){
 	var params = req.params,
 		docid = params.id;
 		console.log("docid",docid);
@@ -92,7 +92,7 @@ var loadTag = function(req,res,next){
 
 	applicationController.loadModel({
 		docid:docid,
-		model:Tag,
+		model:Category,
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -102,7 +102,7 @@ var loadTag = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.tag = doc;
+				req.controllerData.category = doc;
 				next();
 			}
 		}
@@ -126,7 +126,7 @@ var searchResults = function(req,res,next){
 					pagedata: {
 						title:"Search Results"
 					},
-					tags:req.controllerData.tags,
+					categories:req.controllerData.categories,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -138,11 +138,11 @@ var controller = function(resources){
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	Tag = mongoose.model('Tag');
+	Category = mongoose.model('Category');
 
 	return{
-		loadTags:loadTags,
-		loadTag:loadTag,
+		loadCategories:loadCategories,
+		loadCategory:loadCategory,
 		create:create,
 		searchResults:searchResults
 	};

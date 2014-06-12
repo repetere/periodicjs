@@ -324,6 +324,14 @@ footer{
 @import "silkscreen.less";
 @import "letterpress.less";
 
-._ltr_l-e-w ._ltr-dtulc ._ltr-ulc li.addedTag{
-	font-size: 80%;
+._ltr_l-e-w{
+	.col-span;
+	width:100%;
+	._ltr-dtulc{
+		._ltr-ulc {
+			li.addedTag{
+				// font-size: 80%;
+			}
+		}
+	}
 }

@@ -70,6 +70,13 @@ var postSchema = new Schema({
         originaldate: Date,
         originaldata: Schema.Types.Mixed
     },
+    changes:[{
+        createdat: {
+            type: Date,
+            "default": Date.now
+        },
+        changeset: Schema.Types.Mixed
+    }],
     link: String,
     attributes: Schema.Types.Mixed,
     random: Number

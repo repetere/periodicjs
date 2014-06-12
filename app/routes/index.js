@@ -11,11 +11,13 @@ module.exports = function(periodic){
 			dburl: periodic.db.url,
 			debug: periodic.settings.debug
 		}),
+		periodicController = require('../controller/periodic')(periodic),
 		homeController = require('../controller/home')(periodic),
-		postRouter = periodic.express.Router(),
 		postController = require('../controller/post')(periodic),
-		tagRouter = periodic.express.Router(),
 		tagController = require('../controller/tag')(periodic),
+		categoryController = require('../controller/category')(periodic),
+		postRouter = periodic.express.Router(),
+		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
@@ -39,7 +41,6 @@ module.exports = function(periodic){
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
 	postRouter.get('/search',postController.loadPost,postController.show);
 	postRouter.get('/:id',postController.loadPost,postController.show);
-	postRouter.post('/new',postController.loadPost,postController.create);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
 
@@ -48,8 +49,6 @@ module.exports = function(periodic){
 	// tagRouter.get('/:ids/posts',tagController.show);
 	tagRouter.get('/search.:ext',tagController.loadTags,tagController.searchResults);
 	tagRouter.get('/search',tagController.loadTags,tagController.searchResults);
-	tagRouter.post('/new/:id',tagController.loadTag,tagController.create);
-	tagRouter.post('/new',tagController.loadTag,tagController.create);
 
 	/* collections(slideshows): get collection, get posts by collection, get posts by collection and tags */
 	// collectionRouter.get('/:id',collectionRouter.show);
@@ -60,6 +59,8 @@ module.exports = function(periodic){
 	// categoryRouter.get('/:id',categoryRouter.show);
 	// categoryRouter.get('/:id/posts',categoryRouter.show);
 	// categoryRouter.get('/:id/posts/:tags',categoryRouter.show);
+	categoryRouter.get('/search.:ext',categoryController.loadCategories,categoryController.searchResults);
+	categoryRouter.get('/search',categoryController.loadCategories,categoryController.searchResults);
 
 	/* searchs: search posts, search tags, search collections */
 	// searchRouter.get('/:searchquery',searchController.searchPosts);
@@ -69,8 +70,8 @@ module.exports = function(periodic){
 	appRouter.get('*',homeController.catch404);
 
 	periodic.app.use('/post',postRouter);
-	// periodic.app.use('/posts',searchController.searchPosts);
 	periodic.app.use('/tag',tagRouter);
+	periodic.app.use('/category',categoryRouter);
 	// periodic.app.use('/collection',collectionRouter);
 	// periodic.app.use('/search',searchRouter);
 	periodic.app.use(appRouter);

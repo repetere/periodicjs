@@ -34,6 +34,7 @@ var express = require('express'),
 	path = require('path'),
 	fs = require('fs'),
 	bodyParser = require('body-parser'),
+	multer = require('multer'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
 	session = require('express-session'),
@@ -54,7 +55,7 @@ var express = require('express'),
 	dburl,
 	mngse;
 //https://github.com/expressjs/timeout
-//https://github.com/expressjs/vhost
+//https://github.com/expressjs/vhost 
 
 var init = {
 	logErrors : function(){
@@ -103,6 +104,8 @@ var init = {
 		app.use(responseTime(5));
 		app.use(flash());
 		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},

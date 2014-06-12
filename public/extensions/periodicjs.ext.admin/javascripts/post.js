@@ -85,6 +85,11 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 				this.updateSelectOptionsHTML();
 				this.attachEventListeners();
 				this.emit("intializedLetterpress",true);
+				if(options.presetdata){
+					for(var y in options.presetdata){
+						this.createTag(options.presetdata[y][options.nameLabel],options.presetdata[y][options.valueLabel],null,true);
+					}
+				}
 			}
 		}.bind(this);
 
@@ -181,11 +186,27 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 	 * @param {string} id name for platter selector id
 	 */
 	this.setDataObject = function(obj){
-		if(typeof obj !== "array"){
+		if(obj instanceof Array ===false){
 			throw new Error("object must be an array of objects");
 		}
 		else{
 			options.sourcedata = obj;
+		}
+	};
+
+	/**
+	 * create letterpress html
+	 * @param {string} id name for platter selector id
+	 */
+	this.setPreloadDataObject = function(obj){
+		if(obj instanceof Array ===false){
+			throw new Error("object must be an array of objects");
+		}
+		else{
+			options.presetdata = obj;
+			for(var y in options.presetdata){
+				this.createTag(options.presetdata[y][options.nameLabel],options.presetdata[y][options.valueLabel],null,true);
+			}
 		}
 	};
 
@@ -200,7 +221,7 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 		options.lastddcount = options.currentddcount;
 
 
-		selectOptionHTML += '<option value="SELECT" selected=seleted disabled=disabled>Select Tag</option>';
+		selectOptionHTML += '<option value="SELECT" selected=seleted disabled=disabled>Select</option>';
 		for(var x in options.sourcedata){
 			if(options.sourcedata[x][options.valueLabel].match(searchRegEx) && options.searchquery.length >0){
 				selectOptionHTML += '<option value="'+options.sourcedata[x][options.nameLabel]+'" label="'+options.sourcedata[x][options.valueLabel]+'">'+options.sourcedata[x][options.valueLabel]+'</option>';
@@ -217,7 +238,7 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 	 * create letterpress html
 	 * @param {string} id name for platter selector id
 	 */
-	this.createTag = function(id,value,err){
+	this.createTag = function(id,value,err,keeppreviousfocus){
 		if(err){
 			throw err;
 		}
@@ -227,7 +248,9 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 				checkboxToInsert = document.createElement('input');
 			options.searchquery = '';
 			options.element.value = '';
-			classie.removeClass(options.selectContainer,"show");
+			if(keeppreviousfocus!==true){
+				classie.removeClass(options.selectContainer,"show");
+			}
 
 			liToInsert.id="lp-li_"+id;
 			liToInsert.setAttribute("title",value);
@@ -240,16 +263,25 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 			checkboxToInsert.type="checkbox";
 			checkboxToInsert.setAttribute("checked","checked");
 			checkboxToInsert.innerHTML=value;
-			if(options.ulTagContainer.innerHTML.match(id)){
+			if(keeppreviousfocus!==true && options.ulTagContainer.innerHTML.match(id)){
 				// console.log("already added");
 				this.emit("duplicateTag",id);
 			}
 			else{
-				options.ulTagContainer.appendChild(liToInsert);
-				options.lpCheckboxContainer.appendChild(checkboxToInsert);
-				classie.addClass(liToInsert,"showli");
-				options.element.focus();
-				this.updateSelectOptionsHTML();
+				try{
+					options.ulTagContainer.appendChild(liToInsert);
+					options.lpCheckboxContainer.appendChild(checkboxToInsert);
+					classie.addClass(liToInsert,"showli");
+				}
+				catch(e){
+					if(options.debug){
+						console.log("error",e);
+					}
+				}
+				if(keeppreviousfocus!==true){
+					options.element.focus();
+					this.updateSelectOptionsHTML();
+				}
 				this.emit("createdTag",id);
 			}
 		}
@@ -271,27 +303,26 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 	};
 
 	var letterpressInputKeydownEventHandler = function(e){
-		var etarget = e.target;
-			options.searchquery = etarget.value;
-		// if(options.numOfOptions>0){
-		// 	classie.addClass(options.selectContainer,"show");
-		// }
+		var etarget = e.target,
+			evt = document.createEvent("MouseEvents");
+			options.searchquery = etarget.value,
 		classie.addClass(options.selectContainer,"show");
 
 		this.updateSelectOptionsHTML();
-		if (e.keyCode === 13 ) {
+		if (e.keyCode === 13 ) { //enter key
 			if(options.numOfOptions>0){
-				var evt = document.createEvent("MouseEvents");
 				evt.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 				options.selectContainer.dispatchEvent(evt);
 			}
 			else{
-				// console.log("options.numOfOptions",options.numOfOptions,"create tag");
-				options.createTagFunc(options.searchquery+'-id',options.searchquery,function(id,val,err){
+				options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
 					this.createTag(id,val,err);
 				}.bind(this));
 			}
-			// console.log("enter press");
+		}
+		else if(e.keyCode === 38 || e.keyCode === 40){// up = 38, // right = 39,// down = 40
+			evt.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			options.selectContainer.dispatchEvent(evt);
 		}
 	}.bind(this);
 
@@ -303,20 +334,15 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 	}.bind(this);
 
 	var letterpressSelectChangeEventHandler = function(e){
-		// console.log("select drop down value change");
-
-		options.createTagFunc(options.searchquery+'-id',options.searchquery,function(id,val){
-			this.createTag(id,val);
+		options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
+			this.createTag(id,val,err);
 		}.bind(this));
-		// this.createTag( options.selectContainer.value, document.querySelector("#"+options.selectContainer.id+" option[value='"+options.selectContainer.value+"']").innerHTML);
 	}.bind(this);
 
 	var letterpressSelectSelectEventHandler = function(e){
-		// console.log("select drop down value select");
-		// this.createTag( options.selectContainer.value, document.querySelector("#"+options.selectContainer.id+" option[value='"+options.selectContainer.value+"']").innerHTML);
-		// 
-		options.createTagFunc(options.searchquery+'-id',options.searchquery,function(id,val){
-			this.createTag(id,val);
+		console.log("select drop down value select");
+		options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
+			this.createTag(id,val,err);
 		}.bind(this));
 	}.bind(this);
 
@@ -330,8 +356,6 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 			this.removeTag(etarget.getAttribute("data-id"));
 		}
 	}.bind(this);
-
-	// this.init();
 
 	function callCallBack(callback){
 		if(typeof callback ==='function'){
@@ -349,7 +373,7 @@ module.exports = letterpress;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.letterpress = letterpress;
 }
-},{"classie":3,"domhelper":5,"events":16,"superagent":7,"util":17,"util-extend":10}],3:[function(require,module,exports){
+},{"classie":3,"domhelper":5,"events":13,"superagent":8,"util":14,"util-extend":7}],3:[function(require,module,exports){
 /*
  * classie
  * http://github.amexpub.com/modules/classie
@@ -793,6 +817,41 @@ if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.domhelper = domhelper;
 }
 },{"classie":3}],7:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+module.exports = extend;
+function extend(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || typeof add !== 'object') return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+}
+
+},{}],8:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -1843,7 +1902,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":8,"reduce":9}],8:[function(require,module,exports){
+},{"emitter":9,"reduce":10}],9:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -2009,7 +2068,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -2034,87 +2093,68 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],10:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-module.exports = extend;
-function extend(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || typeof add !== 'object') return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-}
-
 },{}],11:[function(require,module,exports){
-module.exports=require(7)
-},{"emitter":12,"reduce":13}],12:[function(require,module,exports){
-module.exports=require(8)
-},{}],13:[function(require,module,exports){
-module.exports=require(9)
-},{}],14:[function(require,module,exports){
 'use strict';
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
+	createPeriodicTag = function(id,val,callback,url){
+		if((id==='NEWTAG' || id==='SELECT') && val){
+			request
+				.post(url)
+				.send({ title: val, _csrf: document.querySelector('input[name=_csrf]').value })
+				.set('Accept', 'application/json')
+				.end(function(error, res){
+					if(error || res.body.result==='error'){
+						ribbonNotification.showRibbon( res.body.data.error,4000,'error');
+					}
+					else{
+						if(typeof res.body.data.doc._id === 'string'){
+							callback(
+								res.body.data.doc._id,
+								res.body.data.doc.title,
+								error);	
+						}
+					}
+				});
+		}
+		else if(id!=='SELECT'||id!=='NEWTAG'){
+			callback(id,val);
+		}
+	},
 	tag_lp = new letterpress({
 		idSelector : '#padmin-tags',
 		sourcedata: '/tag/search.json',
 		sourcearrayname: 'tags',
-		createTagFunc:function(id,val,callback){
-			request
-				.post('/tag/new/'+makeNiceName(document.querySelector('#padmin-tags').value)+'/?format=json')
-				.send({ title: val, _csrf: document.querySelector('input[name=_csrf]').value })
-				// .set('X-API-Key', 'foobar')
-				.set('Accept', 'application/json')
-				.end(function(error, res){
-					console.log("error",error);
-					ribbonNotification.showRibbon( 'did not create tag',4000,'error');
-				});
-			//do db stuff
-			// console.log("couldn't create tag");
-			// callback(null,null,new Error("couldnt create in db"));
-			console.log("creating tag in db");
-			setTimeout(function(){
-				console.log("db done");
-				callback('idfromdb',val);
-			},1000);
+		createTagFunc:function(id,val,callback){			
+			createPeriodicTag(id,val,callback,'/tag/new/'+makeNiceName(document.querySelector('#padmin-tags').value)+'/?format=json&limit=200');
+		}
+	}),
+	cat_lp = new letterpress({
+		idSelector : '#padmin-categories',
+		sourcedata: '/category/search.json',
+		sourcearrayname: 'categories',
+		createTagFunc:function(id,val,callback){			
+			createPeriodicTag(id,val,callback,'/category/new/'+makeNiceName(document.querySelector('#padmin-tags').value)+'/?format=json&limit=200');
 		}
 	});
 
-window.addEventListener("load",function(){
+
+
+window.addEventListener("load",function(e){
 	tag_lp.init();
-},false);
+	cat_lp.init();
+	if(typeof posttags ==='object'){
+		tag_lp.setPreloadDataObject(posttags);
+	}
+	if(typeof postcategories ==='object'){
+		cat_lp.setPreloadDataObject(postcategories);
+	}
+	ajaxFormEventListers("._pea-ajax-form");
+});
 
 window.tag_lp = tag_lp;
-
-tag_lp.on("intializedLetterpress",function(data){
-	console.log("loaded letterpress tag_lp",data);
-});
-},{"letterpressjs":1,"superagent":11}],15:[function(require,module,exports){
+},{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
 
 
 //
@@ -2332,7 +2372,7 @@ if (typeof Object.getOwnPropertyDescriptor === 'function') {
   exports.getOwnPropertyDescriptor = valueObject;
 }
 
-},{}],16:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2613,7 +2653,7 @@ EventEmitter.listenerCount = function(emitter, type) {
     ret = emitter._events[type].length;
   return ret;
 };
-},{"util":17}],17:[function(require,module,exports){
+},{"util":14}],14:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3158,5 +3198,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-},{"_shims":15}]},{},[14])
+},{"_shims":12}]},{},[11])
 ;
