@@ -233,7 +233,14 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 				options.numOfOptions++;
 			}
 		}
-		selectOptionHTML += '<option value="NEWTAG">Create Tag</option>';
+		if(!options.disablenewtags){
+			selectOptionHTML += '<option value="NEWTAG">Create Tag</option>';
+		}
+		else{
+			if(options.numOfOptions===0){
+				selectOptionHTML += '<option value="NEWTAG" disabled="disabled" >No available options</option>';
+			}
+		}
 		options.selectContainer.innerHTML = selectOptionHTML;
 		options.currentddcount = options.selectContainer.length;
 		this.emit("updatedSelectOptions");
@@ -246,6 +253,11 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 	this.createTag = function(id,value,err,keeppreviousfocus){
 		if(err){
 			throw err;
+		}
+		else if(!value || !id){
+			if(options.debug){
+				throw new Error('Must have both an id and value');
+			}
 		}
 		else{
 			var searchterm = options.searchquery,
@@ -301,6 +313,7 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 
 	this.attachEventListeners = function(){
 		options.element.addEventListener("keyup", letterpressInputKeydownEventHandler,false);
+		options.selectContainer.addEventListener("blur", letterpressSelectBlurEventHandler,false);
 		options.selectContainer.addEventListener("change",letterpressSelectChangeEventHandler,false);
 		options.selectContainer.addEventListener("select",letterpressSelectChangeEventHandler,false);
 		options.selectContainer.addEventListener("keyup",letterpressSelectKeydownEventHandler,false);
@@ -332,6 +345,10 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 		}
 	}.bind(this);
 
+	var letterpressSelectBlurEventHandler = function(e){
+		classie.removeClass(options.selectContainer,"show");
+	}.bind(this);
+
 	var letterpressSelectKeydownEventHandler = function(e){
 		if (e.keyCode === 13 ) {
 			options.element.focus();
@@ -341,9 +358,14 @@ var letterpress = function(config_options,letterpress_message,show,timed,callbac
 
 	var letterpressSelectChangeEventHandler = function(e){
 		console.log("select drop down value select",options.selectContainer.value);
-		options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
-			this.createTag(id,val,err);
-		}.bind(this));
+		var taglabel = (options.selectContainer.value ==='SELECT' || options.selectContainer.value ==='NEWTAG')? options.searchquery : document.querySelector('option[value="'+options.selectContainer.value+'"]').innerHTML;
+		options.createTagFunc(
+			options.selectContainer.value,
+			taglabel,
+			function(id,val,err){
+				this.createTag(id,val,err);
+			}.bind(this)
+		);
 	}.bind(this);
 
 	var letterpressSelectSelectEventHandler = function(e){
@@ -2119,7 +2141,7 @@ var request = require('superagent'),
 						if(res.body.result==='error'){
 							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 						}
-						if(typeof res.body.data.doc._id === 'string'){
+						else if(typeof res.body.data.doc._id === 'string'){
 							callback(
 								res.body.data.doc._id,
 								res.body.data.doc.title,
@@ -2153,6 +2175,7 @@ var request = require('superagent'),
 		sourcedata: '/user/search.json',
 		sourcearrayname: 'users',
 		valueLabel: "username",
+		disablenewtags: true,
 		createTagFunc:function(id,val,callback){			
 			if(id==='NEWTAG' || id==='SELECT'){
 				ribbonNotification.showRibbon( "user does not exist",4000,'error');
