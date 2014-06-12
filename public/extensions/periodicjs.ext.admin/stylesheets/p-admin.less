@@ -214,8 +214,16 @@ footer{
     border-spacing: 0;
     border-collapse: collapse;
 	width: 100%;
+	tr{
+		border-bottom: 0.1em solid #bcbcbc;
+	}
+	tfoot {
+		tr:last-child{
+			border-bottom: none;
+		}
+	}
 	thead,tfoot{
-		background: darken(white, 10%);
+		// background: darken(white, 10%);
 	}
 	tbody tr:nth-child(even){
 		background: darken(white, 5%);
@@ -326,7 +334,11 @@ footer{
 @import "ribbon.less";
 @import "silkscreen.less";
 @import "letterpress.less";
-
+@import "wysihtml5.less";
+.wysihtml5{
+	font-size: 70%;
+	margin-bottom: 0.5em;
+}
 ._ltr_l-e-w{
 	.col-span;
 	width:100%;
