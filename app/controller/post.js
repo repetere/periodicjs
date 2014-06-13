@@ -135,7 +135,7 @@ var loadPosts = function(req,res,next){
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		population = 'tags categories authors primaryauthor',
+		population = 'tags categories authors contenttypes primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};

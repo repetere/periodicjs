@@ -7,49 +7,113 @@
 // https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/exercise.js
 // https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/application.js
 var path = require('path'),
+	async = require('async'),
+	appController = require('./application'),
+	applicationController,
+	appSettings,
 	mongoose,
-	Post,
-	logger;
+	logger,
+	User, Category, Post;
 
-var show = function(req,res,next){
-	var newPost = new Post({title:"test title",name:"test-title"});
+var customLayout = function(options){
+	var pagedata = options.pagedata,
+		viewtype = options.viewtype,
+		viewpath = options.viewpath,
+		req = options.req,
+		res = options.res,
+		next = options.next,
+		pluginname = options.pluginname,
+		themepath = appSettings.themepath,
+		themefileext = appSettings.templatefileextension,
+		viewfilepath = (options.viewtype ==='theme')?
+			path.join(themepath,'views',viewpath+'.'+themefileext) :
+			path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewpath+'.'+themefileext),
+		parallelTask = {};
 
-	newPost.save(function(err){
-		console.log("trying to create new post");
-		if(err){
-			logger.error(err);
-			res.send(err);
-			console.log(err);
+	function getModelFromName(modelname){
+		switch(modelname){
+			case 'Category':
+				return Category;
+			case 'Post':
+				return Post;
+		}
+	}
+	function getTitleNameQuerySearch(searchterm){
+		var searchRegEx = new RegExp(applicationController.stripTags(searchterm), "gi");
+
+		if(searchterm===undefined || searchterm.length<1){
+			return {};
 		}
 		else{
-			logger.debug("post id: ",req.params.id);
-			logger.debug("showing new post");
-			res.render('home/index',{randomdata:'show post'});
+			return {
+				$or: [{
+					title: searchRegEx,
+					}, {
+					'name': searchRegEx,
+				}]
+			};
 		}
-	});
-};
 
-var index = function(req,res,next){
-	console.log('index list');
-	Post.find({ title: /title/ }).exec(function(err,posts){
-		console.log("model search");
-		if(err){
-			res.send(err);
-		}
-		else{
-			res.send(posts);
-		}
+	}
+	function getAsyncCallback(functiondata){
+		var querydata = (functiondata.search.customquery)? functiondata.search.customquery : getTitleNameQuerySearch(functiondata.search.query);
+		return function(cb){
+			console.log("functiondata.search.query",functiondata.search.query);
+			applicationController.searchModel({
+				model:getModelFromName(functiondata.model),
+				query:querydata,
+				sort:functiondata.search.sort,
+				limit:functiondata.search.limit,
+				offset:functiondata.search.offset,
+				population:functiondata.search.population,
+				callback:cb
+			});
+		};
+	}
+	for(var x in pagedata){
+		parallelTask[x] = getAsyncCallback (pagedata[x]);
+	}
+	// an example using an object instead of an array
+	async.parallel(
+		parallelTask,
+		function(err, results) {
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				if(next){
+					req.controllerData.layoutdata = results;
+					next();
+				}
+				else{
+					res.render(viewfilepath,{
+						layoutdata:results,
+						pagedata: {
+								title:"custom page"
+						},
+						user:req.user
+					});
+				}
+			}
+		    // results is now equals to: {one: 1, two: 2}
 	});
 };
 
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
+	appSettings = resources.settings;
+	applicationController = new appController(resources);
 	Post = mongoose.model('Post');
+	User = mongoose.model('User');
+	Category = mongoose.model('Category');
 
 	return{
-		show:show,
-		index:index
+		customLayout:customLayout
 	};
 };
 
