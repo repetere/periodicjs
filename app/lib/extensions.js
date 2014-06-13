@@ -52,6 +52,10 @@ var extensions = function(appsettings){
 		return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'index.js' );
 	};
 
+	this.getExtensionPeriodicConfFilePath = function(extensionName){
+		return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'periodicjs.ext.json' );
+	};
+
 	this.loadExtensions = function(obj){
 		extensionsFiles.forEach(function(file){
 			require(file)(obj);
@@ -67,6 +71,10 @@ var extensions = function(appsettings){
 		extensionsConfig = readJSONFile(extensionFilePath);
 
 		extensionsConfig.extensions.forEach(function(val,index,arr){
+			// if(val.installed){
+			// 	// console.log(this.getExtensionPeriodicConfFilePath(val.name));
+			// 	val.periodicConfig = readJSONFile(this.getExtensionPeriodicConfFilePath(val.name));
+			// }
 			if(semver.lte(val.periodicCompatibility,appsettings.version)){
 				extensionsFiles.push(this.getExtensionFilePath(val.name));
 			}

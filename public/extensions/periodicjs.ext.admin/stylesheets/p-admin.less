@@ -2,6 +2,10 @@ body{
 	margin: 2em 0 0;
 	padding: 0;
 	background: #efefef;
+	// font-family: monospace, "times new roman", serif;
+	font-family: 'Lucida Grande',georgia,"times new roman", serif;
+}
+.monospace{
 	font-family: monospace, "times new roman", serif;
 }
 a{
@@ -15,6 +19,12 @@ a:hover{
 
 ._pea-container{
 	margin: 0 2em;
+	h1{
+		.monospace;
+		small{
+			font-size: 50%;
+		}
+	}
 }
 
 ._pea-document{
@@ -106,6 +116,10 @@ a:hover{
 	float: right;
 }
 
+._pea-hidden{
+	display: none;
+}
+
 header{
 	position: fixed;
 	margin: 0;
@@ -140,6 +154,7 @@ header{
 			/* line-height: 2em; */
 			font-weight: bold;
 			padding: 0 1em;
+			.monospace;
 		}
 		a._pea_menu-heading{
 			color:white;
@@ -217,6 +232,9 @@ footer{
 	tr{
 		border-bottom: 0.1em solid #bcbcbc;
 	}
+	&._pea-no-bottomborder tbody tr:last-child{
+		border-bottom: none;
+	}
 	tfoot {
 		tr:last-child{
 			border-bottom: none;
@@ -270,7 +288,7 @@ footer{
 
 ._pea-button{
 	display: inline-block;
-	min-height: 1.5em;
+	min-height: 2em;
 	line-height: 1.5em;
 	margin: 0;
 	padding: 0 0.5em;

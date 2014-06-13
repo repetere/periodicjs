@@ -279,6 +279,17 @@ var applicationController = function(resources){
 		*/
 	}.bind(this);
 
+	this.loadExtensions = function(options){
+		try{
+			var ExtentionLoader = require('../lib/extensions'),
+				extensions = new ExtentionLoader(options.periodicsettings);
+			options.callback(null,extensions.settings().extensions);
+		}
+		catch(err){
+			options.callback(err,null);
+		}
+	}.bind(this);
+
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 			req = options.req;

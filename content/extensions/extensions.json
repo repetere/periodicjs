@@ -4,13 +4,25 @@
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.2",
 			"installed":true,
-			"enabled":true
+			"enabled":true,
+			"periodicConfig":{
+				"name": "periodicjs.ext.login",
+				"periodicCompatibility":"0.0.2"
+			}
 		},{
 			"name":"periodicjs.ext.admin",
 			"version":"0.0.1",
 			"periodicCompatibility":"0.0.2",
 			"installed":true,
-			"enabled":true
+			"enabled":true,
+			"periodicConfig":{
+				"name": "periodicjs.ext.login",
+				"periodicCompatibility": "0.0.2",
+				"periodicDependencies": [{
+					"extname":"periodicjs.ext.login",
+					"version":"0.0.2"
+				}]
+			}
 		},{
 			"name":"periodicjs.ext.importfacebook",
 			"version":"0.0.1",
