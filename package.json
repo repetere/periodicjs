@@ -43,7 +43,8 @@
     "passport": "~0.2.0",
     "bcrypt": "^0.7.8",
     "multer": "~0.1.0",
-    "async": "~0.9.0"
+    "async": "~0.9.0",
+    "fs-extra": "~0.9.1"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

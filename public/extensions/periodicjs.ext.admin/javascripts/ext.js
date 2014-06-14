@@ -2212,7 +2212,7 @@ var searchTblClick = function(e){
 				else{
 					extModal.querySelector('.versions').innerHTML='';
 					repoversionlist.innerHTML='<li><a class="install-ext-link" data-repo="'+fullreponame+'" data-version="latest">latest</a></li>';
-					console.log(res.body.length,res.body)
+					// console.log(res.body.length,res.body)
 					if(res.body.length>0){
 						for(var x in res.body){
 							repoversionlist.innerHTML+='<li><a class="install-ext-link" data-repo="'+fullreponame+'" data-version="'+res.body[x].name+'">'+res.body[x].name+'</a></li>';
@@ -2237,6 +2237,9 @@ var extmodalClick = function(e){
 			})
 			.set('Accept', 'application/json')
 			.end(function(error, res){
+				if(res.error){
+					error = res.error;
+				}
 				if(error){
 					ribbonNotification.showRibbon( error.message,4000,'error');
 				}
@@ -2251,21 +2254,30 @@ var extmodalClick = function(e){
 var getConsoleOutput = function(responsebody){
 	var t = setInterval(function(){
 			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
-		},1000),
+		},4000),
 		otf,
 		cnt=0,
 		lastres='';
+	consoleOutput.innerHTML='';
 
 	var getOutputFromFile = function(repo,time){
 		request
 			.get('/p-admin/extension/install/log/'+repo+'/'+time)
 			.set('Accept', ' text/plain')
 			.end(function(error, res){
+				if(res.error){
+					error = res.error;
+				}
+
 				if(error){
-					ribbonNotification.showRibbon( error.message,4000,'error');
+					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
+					console.log("error in ajax for file log data");
+					clearTimeout(t);
 				}
 				else{
-					if(cnt>1){
+					if(cnt>5){
+						console.log("made 5req stop ajax");
+
 						clearTimeout(t);
 					}
 					// console.log(cnt);
@@ -2275,6 +2287,10 @@ var getConsoleOutput = function(responsebody){
 						otf.innerHTML=res.text;
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
+					}
+					if(res.text.match('====!!ERROR!!====')|| res.text.match('====##END##====')){
+						console.log("res text has end text stop ajax");
+						clearTimeout(t);
 					}
 					lastres=res.text;
 					cnt++;

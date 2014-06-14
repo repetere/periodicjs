@@ -9,6 +9,9 @@ var request = require('superagent'),
 				.send({ title: val, _csrf: document.querySelector('input[name=_csrf]').value })
 				.set('Accept', 'application/json')
 				.end(function(error, res){
+					if(res.error){
+						error = res.error;
+					}
 					if(error){
 						ribbonNotification.showRibbon( error.message,4000,'error');
 					}
