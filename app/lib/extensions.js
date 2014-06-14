@@ -84,4 +84,33 @@ var extensions = function(appsettings){
 	this.init(appsettings);
 };
 
+extensions.readJSONFile = function(filename,callback) {
+	fs.readFile(filename,function(err,data){
+		if(err){
+			callback(err,null);
+		}
+		else{
+			try{
+				callback(null,JSON.parse(data));
+			}
+			catch(e){
+				callback(e,null);
+			}
+		}
+	});
+	return JSON.parse(fs.readFileSync(filename));
+};
+
+extensions.getExtensionFilePath = function(extensionName){
+	return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'index.js' );
+};
+
+extensions.getExtensionPackageJsonFilePath = function(extensionName){
+	return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'package.json' );
+};
+
+extensions.getExtensionPeriodicConfFilePath = function(extensionName){
+	return path.join(path.resolve(__dirname,'../../content/extensions/node_modules/',extensionName), 'periodicjs.ext.json' );
+};
+
 module.exports = extensions;

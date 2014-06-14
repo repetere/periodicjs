@@ -4,6 +4,7 @@ var path = require('path'),
 	fs = require('fs-extra'),
 	npm = require("npm"),
 	appController = require('./application'),
+	Extensions = require('../lib/extensions'),
 	applicationController,
 	appSettings,
 	mongoose,
@@ -12,6 +13,7 @@ var path = require('path'),
 var install_logErrorOutput = function(options){
 	var logfile = options.logfile,
 		logdata = options.logdata+'\r\n ';
+	logger.error(logdata);
 	fs.appendFile(logfile,logdata+'====!!ERROR!!====',function(err){
 		if(err){
 			logger.error(err);
@@ -40,8 +42,33 @@ var install_logOutput = function(options){
 	});
 };
 
+var readJSONFile = function(filename) {
+	return JSON.parse(fs.readFileSync(filename));
+};
+
 var install_updateExtConf = function(options){
-	console.log("update conf");
+	var logfile = options.logfile,
+		extname = options.extname,
+		extpackfile = Extensions.getExtensionPackageJsonFilePath(extname),
+		extconffile = Extensions.getExtensionPeriodicConfFilePath(extname),
+		extpackfileJSON,
+		extconffileJSON;
+	console.log("update conf",extpackfile,extconffile);
+	applicationController.loadExtensions({
+		periodicsettings:appSettings,
+		callback:function(err,extensions){
+			if(err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				console.log("TODO: read json files, append conf to package, check for required files & fields, append to ext json conf, save ext conf json, send dont, if error anywhere dont append file, use async to read files");
+				console.log("extensions",extensions);
+			}
+		}
+	});
 };
 
 var install_extPublicDir = function(options){
@@ -49,15 +76,18 @@ var install_extPublicDir = function(options){
 		extname = options.extname,
         extdir= path.resolve(__dirname,'../../content/extensions/node_modules/',extname,'public'),
         extpublicdir= path.resolve(__dirname,'../../public/extensions/',extname);
-		console.log("extname",extname);
+		// console.log("extname",extname);
 	fs.readdir(extdir,function(err,files){
-		console.log("files",files);
+		// console.log("files",files);
 		if(err){
 			install_logOutput({
 				logfile : logfile,
 				logdata : 'No Public Directory to Copy',
 				callback : function(err){
-					install_updateExtConf();
+					install_updateExtConf({
+						logfile : options.logfile,
+						extname : options.extname
+					});
 				}
 			});
 		}
@@ -83,7 +113,10 @@ var install_extPublicDir = function(options){
 								logfile : logfile,
 								logdata : 'Copied public files',
 								callback : function(err){
-									install_updateExtConf();
+									install_updateExtConf({
+										logfile : options.logfile,
+										extname : options.extname
+									});
 								}
 							});
 						}

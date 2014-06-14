@@ -280,13 +280,15 @@ var applicationController = function(resources){
 	}.bind(this);
 
 	this.loadExtensions = function(options){
+		var periodicsettings = options.periodicsettings,
+			callback = options.callback;
 		try{
 			var ExtentionLoader = require('../lib/extensions'),
-				extensions = new ExtentionLoader(options.periodicsettings);
-			options.callback(null,extensions.settings().extensions);
+				extensions = new ExtentionLoader(periodicsettings);
+			callback(null,extensions.settings().extensions);
 		}
 		catch(err){
-			options.callback(err,null);
+			callback(err,null);
 		}
 	}.bind(this);
 
