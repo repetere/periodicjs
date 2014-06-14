@@ -420,7 +420,13 @@ var silkscreen = function(config_options,show,hideOverlay,callback){
 	}.bind(this);
 
 	this.setSilkscreenMessage = function(msg){
-		options.element.querySelector('._slks-msg').innerHTML=msg;
+		if(typeof msg ==='object'){
+			options.element.querySelector('._slks-msg').innerHTML='';
+			options.element.querySelector('._slks-msg').appendChild(msg);
+		}
+		else{
+			options.element.querySelector('._slks-msg').innerHTML=msg;
+		}
 	};
 
 
@@ -482,7 +488,7 @@ var silkscreen = function(config_options,show,hideOverlay,callback){
 		/** add close button to modal div html */
 		var silkscreenCloseBottom = document.createElement('button');
 		classie.addClass( silkscreenCloseBottom , "_slks-close");
-		silkscreenCloseBottom.innerHTML = 'Close me!';
+		silkscreenCloseBottom.innerHTML = 'Close';
 
 		silkscreenContentHTML.appendChild(silkscreenCloseBottom);
 		/** add conent to modal div */

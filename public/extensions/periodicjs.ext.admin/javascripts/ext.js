@@ -2127,102 +2127,161 @@ module.exports = function(arr, fn, initial){
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
-	createPeriodicTag = function(id,val,callback,url){
-		if((id==='NEWTAG' || id==='SELECT') && val){
-			request
-				.post(url)
-				.send({ title: val, _csrf: document.querySelector('input[name=_csrf]').value })
-				.set('Accept', 'application/json')
-				.end(function(error, res){
-					if(error){
-						ribbonNotification.showRibbon( error.message,4000,'error');
-					}
-					else{
-						if(res.body.result==='error'){
-							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
-						}
-						else if(typeof res.body.data.doc._id === 'string'){
-							callback(
-								res.body.data.doc._id,
-								res.body.data.doc.title,
-								error);	
-						}
-					}
-				});
-		}
-		else if(id!=='SELECT'||id!=='NEWTAG'){
-			callback(id,val);
-		}
-	},
-	wysihtml5Editor,
-	tag_lp = new letterpress({
-		idSelector : '#padmin-tags',
-		sourcedata: '/tag/search.json',
-		sourcearrayname: 'tags',
-		createTagFunc:function(id,val,callback){			
-			createPeriodicTag(id,val,callback,'/tag/new/'+makeNiceName(document.querySelector('#padmin-tags').value)+'/?format=json&limit=200');
-		}
-	}),
-	cat_lp = new letterpress({
-		idSelector : '#padmin-categories',
-		sourcedata: '/category/search.json',
-		sourcearrayname: 'categories',
-		createTagFunc:function(id,val,callback){			
-			createPeriodicTag(id,val,callback,'/category/new/'+makeNiceName(document.querySelector('#padmin-tags').value)+'/?format=json&limit=200');
-		}
-	}),
-	athr_lp = new letterpress({
-		idSelector : '#padmin-authors',
-		sourcedata: '/user/search.json',
-		sourcearrayname: 'users',
-		valueLabel: "username",
-		disablenewtags: true,
-		createTagFunc:function(id,val,callback){			
-			if(id==='NEWTAG' || id==='SELECT'){
-				ribbonNotification.showRibbon( "user does not exist",4000,'error');
-			}
-			else if(id!=='SELECT'||id!=='NEWTAG'){
-				callback(id,val);
-			}
-		}
-	}),
-	cnt_lp = new letterpress({
-		idSelector : '#padmin-contenttypes',
-		sourcedata: '/contenttype/search.json',
-		sourcearrayname: 'contenttypes',
-		createTagFunc:function(id,val,callback){			
-			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200');
-		}
-	});
+	extModal,
+	searchExtInput,
+	searchExtButton,
+	searchGithubResultsTable,
+	searchGithubResultsTableBody,
+	consoleOutput;
 
 
 
 window.addEventListener("load",function(e){
-	tag_lp.init();
-	cat_lp.init();
-	athr_lp.init();
-	cnt_lp.init();
-	if(typeof posttags ==='object'){
-		tag_lp.setPreloadDataObject(posttags);
-	}
-	if(typeof postcategories ==='object'){
-		cat_lp.setPreloadDataObject(postcategories);
-	}
-	if(typeof postauthors ==='object'){
-		athr_lp.setPreloadDataObject(postauthors);
-	}
-	if(typeof postcontenttypes ==='object'){
-		cnt_lp.setPreloadDataObject(postcontenttypes);
-	}
-	ajaxFormEventListers("._pea-ajax-form");
-	wysihtml5Editor = new wysihtml5.Editor("wysihtml5-textarea", { 
-		// id of textarea element
-		toolbar:      "wysihtml5-toolbar", // id of toolbar element
-		parserRules:  wysihtml5ParserRules // defined in parser rules set 
-	});
+	searchExtInput = document.getElementById("search-ext_input");
+	searchExtButton = document.getElementById("search-ext_button");
+	searchGithubResultsTable = document.getElementById("ext-search-results");
+	searchGithubResultsTableBody = document.getElementById("ext-search-results-tbody");
+	extModal = document.getElementById("view-ext-info-modal");
+	consoleOutput = document.getElementById("ext-console-output");
+	searchExtInput.addEventListener("keypress",searchInputKeypress,false);
+	searchExtButton.addEventListener("click",searchExtFromGithub,false);
+	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
+	extModal.addEventListener("click",extmodalClick,false);
 });
 
-window.tag_lp = tag_lp;
+var searchExtFromGithub = function(){
+	searchGithubResultsTableBody.innerHTML = '<tr><td class="_pea-text-center" colspan="3">searching github</td></tr>';
+
+	request
+		.get('https://api.github.com/search/repositories')
+		.query({q:'periodicjs.ext.'+document.getElementById("search-ext_input").value})
+		.set('Accept', 'application/json')
+		.end(function(error, res){
+			if(error){
+				ribbonNotification.showRibbon( error.message,4000,'error');
+			}
+			else if(!res.body.items){
+				ribbonNotification.showRibbon( "could not search github",4000,'error');
+			}
+			else{
+				searchGithubResultsTable.style.display="table";
+				searchGithubResultsTableBody.innerHTML = buildSearchExtResultTable(res.body.items);
+			}
+		});
+};
+
+var searchInputKeypress = function(e){
+	if ( e.which === 13 || e.keyCode === 13  ) {
+		searchExtFromGithub();
+	}
+};
+
+var buildSearchExtResultTable = function(data){
+	var returnhtml = '',repoinfo;
+	for(var x in data){
+		repoinfo=data[x];
+		returnhtml+='<tr><td>'+repoinfo.name+'</td><td>'+repoinfo.description+'</br> <small><a target="_blank" href="'+repoinfo.html_url+'">'+repoinfo.html_url+'</a></small></td><td>';
+		returnhtml+='<a href="#view/'+repoinfo.full_name+'" class="view-ext" data-gitname="'+repoinfo.full_name+'" data-exttitle="'+repoinfo.name+'" data-desc="'+repoinfo.description+'">install</a></td></tr>';
+	}
+	return returnhtml;
+};
+
+var searchTblClick = function(e){
+	var eTarget = e.target,
+		fullreponame,
+		repoversionlist;
+
+
+	if(eTarget.getAttribute("class")==='view-ext'){
+		// console.log("pop modal");
+		extModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.ext.','');
+		extModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
+		repoversionlist = extModal.querySelector('.versions');
+		repoversionlist.innerHTML='<li>loading versions...</li>';
+		fullreponame=eTarget.getAttribute("data-gitname");
+
+		silkscreenModal.showSilkscreen('Install Extension',extModal,null,14);
+
+		request
+			.get('https://api.github.com/repos/'+fullreponame+'/tags')
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					extModal.querySelector('.versions').innerHTML='';
+					repoversionlist.innerHTML='<li><a class="install-ext-link" data-repo="'+fullreponame+'" data-version="latest">latest</a></li>';
+					console.log(res.body.length,res.body)
+					if(res.body.length>0){
+						for(var x in res.body){
+							repoversionlist.innerHTML+='<li><a class="install-ext-link" data-repo="'+fullreponame+'" data-version="'+res.body[x].name+'">'+res.body[x].name+'</a></li>';
+						}
+					}
+				}
+			});
+	}
+};
+
+var extmodalClick = function(e){
+	var eTarget = e.target;
+	if(eTarget.getAttribute("class")==='install-ext-link'){
+		silkscreenModal.hideSilkscreen();
+
+		request
+			.get('/p-admin/extension/install')
+			.query({
+				name:eTarget.getAttribute("data-repo"),
+				version:eTarget.getAttribute("data-version"),
+				format:"json"
+			})
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					document.getElementById("ext-console").style.display="block";
+					getConsoleOutput(res.body);
+				}
+			});
+	}
+};
+
+var getConsoleOutput = function(responsebody){
+	var t = setInterval(function(){
+			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
+		},1000),
+		otf,
+		cnt=0,
+		lastres='';
+
+	var getOutputFromFile = function(repo,time){
+		request
+			.get('/p-admin/extension/install/log/'+repo+'/'+time)
+			.set('Accept', ' text/plain')
+			.end(function(error, res){
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					if(cnt>1){
+						clearTimeout(t);
+					}
+					// console.log(cnt);
+					// console.log(res.text);
+					if(res.text!==lastres){
+						otf = document.createElement("div");
+						otf.innerHTML=res.text;
+						consoleOutput.appendChild(otf);
+						consoleOutput.scrollTop=consoleOutput.scrollHeight;
+					}
+					lastres=res.text;
+					cnt++;
+				}
+			});
+	}	
+};
 },{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
 
 

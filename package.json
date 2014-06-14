@@ -34,7 +34,7 @@
     "compression": "^1.0.3",
     "mongoose": "^3.8.12",
     "winston": "^0.7.3",
-    "npm": "^1.4.13",
+    "npm": "~1.4.15",
     "csurf": "~1.2.0",
     "semver": "~2.3.0",
     "connect-mongo": "~0.4.1",
