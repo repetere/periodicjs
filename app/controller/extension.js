@@ -40,28 +40,54 @@ var install_logOutput = function(options){
 	});
 };
 
+var install_updateExtConf = function(options){
+	console.log("update conf");
+};
+
 var install_extPublicDir = function(options){
 	var logfile = options.logfile,
 		extname = options.extname,
-        extdir= path.resolve(__dirname,'../../content/extensions/node_modules/',extname,'public');
+        extdir= path.resolve(__dirname,'../../content/extensions/node_modules/',extname,'public'),
+        extpublicdir= path.resolve(__dirname,'../../public/extensions/',extname);
 		console.log("extname",extname);
 	fs.readdir(extdir,function(err,files){
 		console.log("files",files);
 		if(err){
 			install_logOutput({
 				logfile : logfile,
-				logdata : '====##END##====',
+				logdata : 'No Public Directory to Copy',
 				callback : function(err){
-					console.log("a-98asf09das-0f8s90 NO PUBLIC FILES TO install public files");
+					install_updateExtConf();
 				}
 			});
 		}
 		else{
-			install_logOutput({
-				logfile : logfile,
-				logdata : '====##END##====',
-				callback : function(err){
-					console.log("install public files");
+			//make destination dir
+			fs.mkdirs(extpublicdir, function(err){
+				if (err) {
+					install_logErrorOutput({
+						logfile : logfile,
+						logdata : err.message
+					});
+				}
+				else{
+					fs.copy(extdir,extpublicdir,function(err){
+						if (err) {
+							install_logErrorOutput({
+								logfile : logfile,
+								logdata : err.message
+							});
+						}
+						else{
+							install_logOutput({
+								logfile : logfile,
+								logdata : 'Copied public files',
+								callback : function(err){
+									install_updateExtConf();
+								}
+							});
+						}
+					});
 				}
 			});
 		}
