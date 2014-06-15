@@ -23,9 +23,10 @@ var fs = require('fs'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
+var extensionFilePath = path.join(path.resolve(__dirname,'../../content/extensions/'), 'extensions.json' );
+
 var extensions = function(appsettings){
-	var extensionFilePath = path.join(path.resolve(__dirname,'../../content/extensions/'), 'extensions.json' ) ,
-		extensionsConfig = {},
+	var extensionsConfig = {},
 		extensionsFiles = [];
 
 	var readJSONFile = function(filename) {
@@ -75,7 +76,7 @@ var extensions = function(appsettings){
 			// 	// console.log(this.getExtensionPeriodicConfFilePath(val.name));
 			// 	val.periodicConfig = readJSONFile(this.getExtensionPeriodicConfFilePath(val.name));
 			// }
-			if(semver.lte(val.periodicCompatibility,appsettings.version)){
+			if(semver.lte(val.periodicCompatibility,appsettings.version) && val.enabled){
 				extensionsFiles.push(this.getExtensionFilePath(val.name));
 			}
 		}.bind(this));
@@ -84,7 +85,9 @@ var extensions = function(appsettings){
 	this.init(appsettings);
 };
 
-extensions.readJSONFile = function(filename,callback) {
+extensions.getExtensionConfFilePath = extensionFilePath;
+
+extensions.readJSONFileAsync = function(filename,callback) {
 	fs.readFile(filename,function(err,data){
 		if(err){
 			callback(err,null);

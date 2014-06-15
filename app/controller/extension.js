@@ -3,6 +3,8 @@
 var path = require('path'),
 	fs = require('fs-extra'),
 	npm = require("npm"),
+	semver = require("semver"),
+	async = require("async"),
 	appController = require('./application'),
 	Extensions = require('../lib/extensions'),
 	applicationController,
@@ -42,8 +44,66 @@ var install_logOutput = function(options){
 	});
 };
 
-var readJSONFile = function(filename) {
-	return JSON.parse(fs.readFileSync(filename));
+var install_updateExtConfFile = function(options){
+	var currentExtConfSettings = {},
+		currentExtensions = options.currentExtensions,
+		logfile = options.logfile,
+		extToAdd = options.extToAdd;
+	currentExtConfSettings.extensions = [];
+		// console.log('------------','extension to add',extToAdd);
+
+	if(!extToAdd.name){
+		install_logErrorOutput({
+			logfile : logfile,
+			logdata : "extension conf doesn't have a valid name"
+		});
+	}
+	else if(!semver.valid(extToAdd.version)){
+		install_logErrorOutput({
+			logfile : logfile,
+			logdata : "extension conf doesn't have a valid semver"
+		});
+	}
+	else if(!semver.valid(extToAdd.periodicConfig.periodicCompatibility)){
+		install_logErrorOutput({
+			logfile : logfile,
+			logdata : "extension conf doesn't have a valid periodic semver"
+		});
+	}
+	else{
+		var alreadyInConf = false, extIndex;
+		for(var x in currentExtensions){
+			if(currentExtensions[x].name === extToAdd.name){
+				alreadyInConf=true;
+				extIndex=x;
+			}
+		}
+		if(alreadyInConf){
+			currentExtensions[x]=extToAdd;
+		}
+		else{
+			currentExtensions.push(extToAdd);
+		}
+		currentExtConfSettings.extensions = currentExtensions;
+
+		fs.outputJson(Extensions.getExtensionConfFilePath, currentExtConfSettings, function(err){
+			if(err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				install_logOutput({
+					logfile : logfile,
+					logdata : extToAdd.name+' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
+					callback : function(err){
+					}
+				});
+			}
+		});
+		// console.log('------------',Extensions.getExtensionConfFilePath,'------------','updated ext currentExtConfSettings',currentExtConfSettings);
+	}
 };
 
 var install_updateExtConf = function(options){
@@ -51,9 +111,9 @@ var install_updateExtConf = function(options){
 		extname = options.extname,
 		extpackfile = Extensions.getExtensionPackageJsonFilePath(extname),
 		extconffile = Extensions.getExtensionPeriodicConfFilePath(extname),
-		extpackfileJSON,
-		extconffileJSON;
-	console.log("update conf",extpackfile,extconffile);
+		extpackfileJSON = {},
+		currentExtensionsConf;
+
 	applicationController.loadExtensions({
 		periodicsettings:appSettings,
 		callback:function(err,extensions){
@@ -64,8 +124,39 @@ var install_updateExtConf = function(options){
 				});
 			}
 			else{
-				console.log("TODO: read json files, append conf to package, check for required files & fields, append to ext json conf, save ext conf json, send dont, if error anywhere dont append file, use async to read files");
-				console.log("extensions",extensions);
+				currentExtensionsConf = extensions;
+				console.log('currentExtensionsConf',currentExtensionsConf);
+				async.parallel({
+					packfile:function(callback){
+						Extensions.readJSONFileAsync(extpackfile,callback);
+					},
+					conffile:function(callback){
+						Extensions.readJSONFileAsync(extconffile,callback);
+					}
+				},function(err,results){
+					if(err){
+						install_logErrorOutput({
+							logfile : logfile,
+							logdata : err.message
+						});
+					}
+					else{
+						extpackfileJSON = {
+							"name":results.packfile.name,
+							"version":results.packfile.version,
+							"periodicCompatibility":results.conffile.periodicCompatibility,
+							"installed":true,
+							"enabled":false,
+							"periodicConfig":results.conffile
+						};
+
+						install_updateExtConfFile({
+							currentExtensions : currentExtensionsConf,
+							extToAdd : extpackfileJSON,
+							logfile : logfile
+						});
+					}
+				});
 			}
 		}
 	});

@@ -2132,6 +2132,8 @@ var request = require('superagent'),
 	searchExtButton,
 	searchGithubResultsTable,
 	searchGithubResultsTableBody,
+	installedtable,
+	installedtablebody,
 	consoleOutput;
 
 
@@ -2143,6 +2145,8 @@ window.addEventListener("load",function(e){
 	searchGithubResultsTableBody = document.getElementById("ext-search-results-tbody");
 	extModal = document.getElementById("view-ext-info-modal");
 	consoleOutput = document.getElementById("ext-console-output");
+	installedtablebody = document.getElementById("installed-ext-tablebody");
+	installedtable = document.getElementById("installed-ext-table");
 	searchExtInput.addEventListener("keypress",searchInputKeypress,false);
 	searchExtButton.addEventListener("click",searchExtFromGithub,false);
 	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
@@ -2237,7 +2241,7 @@ var extmodalClick = function(e){
 			})
 			.set('Accept', 'application/json')
 			.end(function(error, res){
-				if(res.error){
+				if(res && res.error){
 					error = res.error;
 				}
 				if(error){
@@ -2245,13 +2249,13 @@ var extmodalClick = function(e){
 				}
 				else{
 					document.getElementById("ext-console").style.display="block";
-					getConsoleOutput(res.body);
+					getConsoleOutput(res.body,eTarget.getAttribute("data-repo").split('/')[1]);
 				}
 			});
 	}
 };
 
-var getConsoleOutput = function(responsebody){
+var getConsoleOutput = function(responsebody,fullrepo){
 	var t = setInterval(function(){
 			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
 		},4000),
@@ -2271,13 +2275,12 @@ var getConsoleOutput = function(responsebody){
 
 				if(error){
 					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
-					console.log("error in ajax for file log data");
+					// console.log("error in ajax for file log data");
 					clearTimeout(t);
 				}
 				else{
-					if(cnt>5){
-						console.log("made 5req stop ajax");
-
+					if(cnt>20){
+						console.log("made 20 req stop ajax");
 						clearTimeout(t);
 					}
 					// console.log(cnt);
@@ -2288,8 +2291,18 @@ var getConsoleOutput = function(responsebody){
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
 					}
-					if(res.text.match('====!!ERROR!!====')|| res.text.match('====##END##====')){
-						console.log("res text has end text stop ajax");
+					if(res.text.match('====!!ERROR!!====') || res.text.match('====##END##====')){
+						if(res.text.match('====##END##====')){
+							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
+							if(!installedtable.innerHTML.match(fullrepo)){
+								var installedExt = document.createElement('tr');
+								installedExt.innerHTML='<td><a href="/p-admin/extensions/view/'+fullrepo+'">'+fullrepo+'</a></td>'+'<td></td>'+'<td></td>'+'<td></td>'+'<td></td>';
+								installedtablebody.appendChild(installedExt);
+							}
+							else{
+								console.log("already installed");
+							}
+						}
 						clearTimeout(t);
 					}
 					lastres=res.text;
