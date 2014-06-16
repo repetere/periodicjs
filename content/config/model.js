@@ -9,6 +9,7 @@ module.exports = function(options){
 		collectionSchema = require('../../app/model/collection.js'),
 		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
+		contenttypeSchema = require('../../app/model/contenttype.js'),
 		tagSchema = require('../../app/model/tag.js');
 
 	if(options.debug){
@@ -19,5 +20,10 @@ module.exports = function(options){
 	mongoose.model('Collection',collectionSchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);
+	mongoose.model('Contenttype',contenttypeSchema);
 	mongoose.model('Tag',tagSchema);
+
+	// mongoose.connection.on('error', function (err) {
+	//  // Do something
+	// });
 };

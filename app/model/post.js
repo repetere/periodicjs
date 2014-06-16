@@ -26,19 +26,18 @@ var postSchema = new Schema({
     name: {
         type: String, unique: true
     },
-    dek: String,
     content: String,
-    posttype: {
-        type: String,
-        "default": "text"
-    },
+    contenttypes: [{
+        type:ObjectId,
+        ref:"Contenttype"
+    }],
     tags: [{
         type:ObjectId,
         ref:"Tag"
     }],
-    collections: [{
+    categories: [{
         type:ObjectId,
-        ref:"Collection"
+        ref:"Category"
     }],
     assets: [{
         type:ObjectId,
@@ -66,8 +65,17 @@ var postSchema = new Schema({
         originaldate: Date,
         originaldata: Schema.Types.Mixed
     },
+    changes:[{
+        createdat: {
+            type: Date,
+            "default": Date.now
+        },
+        changeset: Schema.Types.Mixed
+    }],
     link: String,
-    attributes: Schema.Types.Mixed,
+    visibility: String,
+    visibilitypassword: String,
+    contenttypeattributes: Schema.Types.Mixed,
     random: Number
 });
 

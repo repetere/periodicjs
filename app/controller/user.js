@@ -70,6 +70,75 @@ var loadUser = function(req,res,next){
 	});
 };
 
+var loadUsers = function(req,res,next){
+	var params = req.params,
+		query,
+		offset = req.query.offset,
+		sort = req.query.sort,
+		limit = req.query.limit,
+		// population = 'contenttypes collections authors primaryauthor',
+		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+	if(req.query.search===undefined || req.query.search.length<1){
+		query={};
+	}
+	else{
+		query = {
+			$or: [{
+				title: searchRegEx,
+				}, {
+				'name': searchRegEx,
+			}]
+		};
+	}
+
+	applicationController.searchModel({
+		model:User,
+		query:query,
+		sort:sort,
+		limit:limit,
+		offset:offset,
+		// population:population,
+		callback:function(err,documents){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.users = documents;
+				next();
+			}
+		}
+	});
+};
+
+var searchResults = function(req,res,next){
+	applicationController.getViewTemplate({
+		res:res,
+		req:req,
+		templatetype:'search-results',
+		themepath:appSettings.themepath,
+		themefileext:appSettings.templatefileextension,
+		callback:function(templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:"Search Results"
+					},
+					users:req.controllerData.users,
+					user: applicationController.removePrivateInfo(req.user)
+				}
+			});
+	}});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -80,7 +149,9 @@ var controller = function(resources){
 	return{
 		show:show,
 		index:index,
-		loadUser:loadUser
+		loadUser:loadUser,
+		loadUsers:loadUsers,
+		searchResults:searchResults
 	};
 };
 

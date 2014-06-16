@@ -62,6 +62,22 @@ var create = function(req, res, next) {
 	});
 };
 
+var update = function(req, res, next) {
+	var updatepost = applicationController.removeEmptyObjectValues(req.body);
+	updatepost.name = applicationController.makeNiceName(updatepost.title);
+
+    applicationController.updateModel({
+	    model:Post,
+	    id:updatepost.docid,
+	    updatedoc:updatepost,
+	    saverevision:true,
+	    res:res,
+        req:req,
+	    successredirect:'/p-admin/post/edit/',
+	    appendid:true
+	});
+};
+
 var loadPost = function(req,res,next){
 	var params = req.params,
 		docid = params.id;
@@ -96,7 +112,7 @@ var loadFullPost = function(req,res,next){
 	applicationController.loadModel({
 		docid:docid,
 		model:Post,
-		population:'tags collections assets primaryasset authors primaryauthor',
+		population:'tags collections contenttypes categories assets primaryasset authors primaryauthor',
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -119,7 +135,7 @@ var loadPosts = function(req,res,next){
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		population = 'tags collections authors primaryauthor',
+		population = 'tags categories authors contenttypes primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
@@ -170,6 +186,7 @@ var controller = function(resources){
 		show:show,
 		index:index,
 		create:create,
+		update:update,
 		loadPost:loadPost,
 		loadFullPost:loadFullPost,
 		loadPosts:loadPosts

@@ -17,6 +17,7 @@
   },
   "scripts": {
     "startdev": "supervisor -w app,content/extensions,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public -- index.js",
+    "startdevtest": "supervisor -w app,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public,content/extensions/node_modules -- index.js",
     "start": "supervisor -w app,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -- index.js -e prodution -p 80",
     "test": "mocha -R spec --recursive"
   },
@@ -34,14 +35,17 @@
     "compression": "^1.0.3",
     "mongoose": "^3.8.12",
     "winston": "^0.7.3",
-    "npm": "^1.4.13",
+    "npm": "~1.4.15",
     "csurf": "~1.2.0",
     "semver": "~2.3.0",
     "connect-mongo": "~0.4.1",
     "chai": "^1.9.1",
     "connect-flash": "^0.1.1",
     "passport": "~0.2.0",
-    "bcrypt": "^0.7.8"
+    "bcrypt": "^0.7.8",
+    "multer": "~0.1.0",
+    "async": "~0.9.0",
+    "fs-extra": "~0.9.1"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

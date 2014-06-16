@@ -1,0 +1,28 @@
+<div class="control-group">
+	<input type="hidden" name="_csrf" value=<%= locals.token %> >
+	<label for="email" class="control-label">email</label>
+	<div class="controls">
+		<input type="email" name="email" value="<%= user.email %>" disabled="disabled"/>
+	</div>
+</div>
+<div class="control-group">
+	<label for="username" class="control-label">username</label>
+	<div class="controls">
+		<input type="text" name="username" placeholder="username" />
+	</div>
+</div>
+<!-- <div class="control-group">
+	<label for="password" class="control-label">password</label>
+	<div class="controls">
+		<input type="password" name="password" placeholder="password" />
+	</div>
+</div>
+<div class="control-group">
+	<label for="password2" class="control-label">password</label>
+	<div class="controls">
+		<input type="password" name="passwordconfirm" placeholder="confirm password" />
+	</div>
+</div> -->
+<div class="form-actions">
+	<button type="submit" name="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Register</button>
+</div>

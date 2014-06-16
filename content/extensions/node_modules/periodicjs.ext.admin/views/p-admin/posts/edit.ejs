@@ -1,0 +1,12 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<script type="text/javascript">
+	<%- locals.viewhelper.passObjToClient(post.tags,"posttags") %>
+	<%- locals.viewhelper.passObjToClient(post.categories,"postcategories") %>
+	<%- locals.viewhelper.passObjToClient(post.authors,"postauthors") %>
+	<%- locals.viewhelper.passObjToClient(post.contenttypes,"postcontenttypes") %>
+	</script>
+	<form class="_pea-form _pea-ajax-form noFormSubmit" id="edit-post-form" name="edit-post-form" method="post" action="/post/edit" onsubmit="return false;" enctype='multipart/form-data'>
+		<% include compose_post_form %>
+	</form>
+<% include ../../shared/footer %>

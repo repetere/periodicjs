@@ -11,17 +11,26 @@ module.exports = function(periodic){
 			dburl: periodic.db.url,
 			debug: periodic.settings.debug
 		}),
+		periodicController = require('../controller/periodic')(periodic),
 		homeController = require('../controller/home')(periodic),
-		postRouter = periodic.express.Router(),
 		postController = require('../controller/post')(periodic),
+		tagController = require('../controller/tag')(periodic),
+		categoryController = require('../controller/category')(periodic),
+		contenttypeController = require('../controller/contenttype')(periodic),
+		userController = require('../controller/user')(periodic),
+		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		searchRouter = periodic.express.Router(),
+		contenttypeRouter = periodic.express.Router(),
+		userRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
 		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
 		extensions = new ExtentionLoader(periodic.settings);
 
+	periodic.settings.extconf =extensions.settings();
+	// console.log("periodic.settings",periodic.settings);
 	extensions.loadExtensions(periodic);
 
 	if(periodic.settings.theme && fs.existsSync(themeRoute)){
@@ -29,21 +38,23 @@ module.exports = function(periodic){
 	}
 
 	appRouter.get('/',homeController.index);
-	appRouter.get('/404|notfound',homeController.error404);
+	appRouter.get('/404|/notfound',homeController.error404);
 	// periodic.app.get('/',function(req,res){
 	// 	console.log("override index");
 	// 	res.render('home/index',{randomdata:'index override'});
 	// });
 
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
+	postRouter.get('/search',postController.loadPost,postController.show);
 	postRouter.get('/:id',postController.loadPost,postController.show);
-	postRouter.post('/new',postController.loadPost,postController.create);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
 
 	/* tags: get tag, get posts by tag  */
 	// tagRouter.get('/:id',tagController.show);
 	// tagRouter.get('/:ids/posts',tagController.show);
+	tagRouter.get('/search.:ext',tagController.loadTags,tagController.searchResults);
+	tagRouter.get('/search',tagController.loadTags,tagController.searchResults);
 
 	/* collections(slideshows): get collection, get posts by collection, get posts by collection and tags */
 	// collectionRouter.get('/:id',collectionRouter.show);
@@ -54,6 +65,14 @@ module.exports = function(periodic){
 	// categoryRouter.get('/:id',categoryRouter.show);
 	// categoryRouter.get('/:id/posts',categoryRouter.show);
 	// categoryRouter.get('/:id/posts/:tags',categoryRouter.show);
+	categoryRouter.get('/search.:ext',categoryController.loadCategories,categoryController.searchResults);
+	categoryRouter.get('/search',categoryController.loadCategories,categoryController.searchResults);
+
+	contenttypeRouter.get('/search.:ext',contenttypeController.loadContenttypes,contenttypeController.searchResults);
+	contenttypeRouter.get('/search',contenttypeController.loadContenttypes,contenttypeController.searchResults);
+
+	userRouter.get('/search.:ext',userController.loadUsers,userController.searchResults);
+	userRouter.get('/search',userController.loadUsers,userController.searchResults);
 
 	/* searchs: search posts, search tags, search collections */
 	// searchRouter.get('/:searchquery',searchController.searchPosts);
@@ -62,10 +81,11 @@ module.exports = function(periodic){
 	// searchRouter.get('/collections/:searchquery',searchController.searchCollections);
 	appRouter.get('*',homeController.catch404);
 
-	periodic.app.use(appRouter);
 	periodic.app.use('/post',postRouter);
-	// periodic.app.use('/posts',searchController.searchPosts);
-	// periodic.app.use('/tag',tagRouter);
+	periodic.app.use('/tag',tagRouter);
+	periodic.app.use('/category',categoryRouter);
 	// periodic.app.use('/collection',collectionRouter);
-	// periodic.app.use('/search',searchRouter);
+	periodic.app.use('/user',userRouter);
+	periodic.app.use('/contenttype',contenttypeRouter);
+	periodic.app.use(appRouter);
 };

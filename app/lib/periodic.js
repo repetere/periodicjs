@@ -34,6 +34,7 @@ var express = require('express'),
 	path = require('path'),
 	fs = require('fs'),
 	bodyParser = require('body-parser'),
+	multer = require('multer'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
 	session = require('express-session'),
@@ -54,14 +55,14 @@ var express = require('express'),
 	dburl,
 	mngse;
 //https://github.com/expressjs/timeout
-//https://github.com/expressjs/vhost
+//https://github.com/expressjs/vhost 
 
 var init = {
 	logErrors : function(){
 		logger = new appLog(app.get('env'));
 
 		//log errors
-		app.use(function(err, req, res, next){
+		app.use(function (err, req, res, next){
 			logger.error(err.stack);
 			next(err);
 		});
@@ -69,13 +70,13 @@ var init = {
 		//send client errors
 		//catch all errors
 		app.use(function (err, req, res, next) {
-			// console.log("err.name",err.name);
+			console.log("err.name",err.name);
 			if (req.xhr) {
 				res.send(500, { error: 'Something blew up!' });
 			}
 			else {
 				res.status(500);
-				res.render('errors/500', { error: err });
+				res.render('home/error500', { error: err });
 			}
 		});
 	},
@@ -103,6 +104,8 @@ var init = {
 		app.use(responseTime(5));
 		app.use(flash());
 		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
@@ -154,6 +157,7 @@ var init = {
 		}
 	},
 	useLocals : function(){
+		app.locals = require('./staticviewhelper');
 		if(appconfig.settings().crsf){
 			app.use(function(req,res,next){
 				app.locals.token = req.csrfToken();
@@ -172,15 +176,6 @@ var init = {
 			};
 			next();
 		});
-		app.locals.title = "test title";
-		app.locals.testFunction = function(paramvar){
-			return 'adding to test func - '+paramvar;
-		};
-		app.locals.themehelper = {};
-		app.locals.themehelper.extensionPublicResourcePath = function(ext,resource){
-			var addPath = (resource)? resource+'/' : '';
-			return '/extensions/'+ext+'/'+addPath;
-		};
 	},
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};

@@ -29,6 +29,7 @@ var index = function(req,res,next){
 	}});
 };
 var error404 = function(req,res,next){
+	res.status(404);
 	applicationController.getViewTemplate({
 		res:res,
 		req:req,
@@ -52,22 +53,29 @@ var error404 = function(req,res,next){
 };
 
 var catch404 = function(req, res, next){
-	res.status(404);
+	var err = new Error("Page not found");
+	applicationController.handleDocumentQueryErrorResponse({err:err,req:req,res:res,errorflash:err.message+", "+req.url});
+  //   if (err) {
+		// res.status(404);
 
-	// respond with html page
-	if (req.accepts('html')) {
-		error404(req, res, next);
-		return;
-	}
-	else if (req.accepts('json')) {
-		// respond with json
-	    res.send({ error: 'Not found' });
-	    return;
-	}
-	else{
-		// default to plain-text. send()
-		res.type('txt').send('Not found');
-	}
+		// // respond with html page
+		// if (req.accepts('html')) {
+		// 	error404(req, res, next);
+		// 	return;
+		// }
+		// else if (req.accepts('json')) {
+		// 	// respond with json
+		//     res.send({ error: 'Not found' });
+		//     return;
+		// }
+		// else{
+		// 	// default to plain-text. send()
+		// 	res.type('txt').send('Not found');
+		// }
+  //   }
+  //   else{
+		// next(err);
+  //   }
 };
 
 var controller = function(resources){

@@ -30,7 +30,10 @@ var login = function(req,res,next) {
                     pagedata:{
                         title:'Login'
                     },
-                    user:req.user
+                    user:req.user,
+                    periodic:{
+                        version: appSettings.version
+                    }
                 }
             });
         }
@@ -54,7 +57,10 @@ var newuser = function(req, res, next) {
                 pagedata:{
                     title:'Register'
                 },
-                user:req.user
+                user:req.user,
+                periodic:{
+                    version: appSettings.version
+                }
             }
         });
     }});
@@ -88,7 +94,10 @@ var finishregistration = function(req, res, next) {
                 pagedata:{
                     title:'complete registration'
                 },
-                user:req.user
+                user:req.user,
+                periodic:{
+                    version: appSettings.version
+                }
             }
         });
     }});
