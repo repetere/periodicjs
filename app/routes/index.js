@@ -29,6 +29,8 @@ module.exports = function(periodic){
 		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
 		extensions = new ExtentionLoader(periodic.settings);
 
+	periodic.settings.extconf =extensions.settings();
+	// console.log("periodic.settings",periodic.settings);
 	extensions.loadExtensions(periodic);
 
 	if(periodic.settings.theme && fs.existsSync(themeRoute)){

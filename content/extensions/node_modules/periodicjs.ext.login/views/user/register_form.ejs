@@ -1,65 +1,24 @@
 <input type="hidden" name="_csrf" value="<%= locals.token %>" >
 
-<!-- <div class="control-group">
-
-	<input type="text" name="firstname" placeholder="first name" class="span2 offset1"/>
-	<input type="text" name="lastname" placeholder="last name" class="span2"/>
-
-	<!-- <label for="email" class="control-label">email</label>
-	<div class="controls">
-		<input type="email" name="email" placeholder="Your email address" />
-	</div>
-	->
-</div> -->
-<div class="control-group">
-	<input type="email" name="email" placeholder="Your email address" class="input-block-level" />
-
-	<!-- <label for="email" class="control-label">email</label>
-	<div class="controls">
-		<input type="email" name="email" placeholder="Your email address" />
-	</div>
-	-->
+<div class="_pea-row _pea-container-forminput">
+	<small>Email</small>
+	<input type="email" name="email" placeholder="Your email address"  class="_pea-col-span12"/>
 </div>
-<div class="control-group">
-	<input type="text" name="username" placeholder="username" class="input-block-level"/>
-	<!-- 	
-	<label for="username" class="control-label">username</label>
- 	<div class="controls">
-		<input type="text" name="username" placeholder="username" />
-	</div>
-	-->
+<div class="_pea-row _pea-container-forminput">
+	<small>Username</small>
+	<input type="text" name="username" placeholder="username"  class="_pea-col-span12" />
 </div>
-<div class="control-group">
-	<input type="password" name="password" placeholder="password" class="input-block-level"/>
-<!-- 	<label for="password" class="control-label">password</label>
-	<div class="controls">
-		<input type="password" name="password" placeholder="password" />
-	</div>
- -->
+<div class="_pea-row _pea-container-forminput">
+	<small>Password</small>
+	<input type="password" name="password" placeholder="password"  class="_pea-col-span12"/>
 </div>
-<div class="control-group">
-	<input type="password" name="passwordconfirm" placeholder="confirm password" class="input-block-level" />
-
-	<!-- <label for="password2" class="control-label">password</label>
-	<div class="controls">
-		<input type="password" name="passwordconfirm" placeholder="confirm password" />
-	</div>
-	 -->
+<div class="_pea-row _pea-container-forminput" style="margin-bottom:1.5em">
+	<small>Confirm password</small>
+	<input type="password" title="confirm your password" name="passwordconfirm" placeholder="confirm password" class="_pea-col-span12" />
 </div>
-<!-- <div class="control-group">
-	<label class="gender_label" style="display:inline" for="u_0_1">
-		<input type="radio" name="gender" class="sex_option uiInputLabelRadio" value="male" id="u_0_1">
-		Male
-	</label>
-	<label class="gender_label" style="display:inline" for="u_0_2">
-		<input type="radio" name="gender" class="sex_option uiInputLabelRadio" value="female" id="u_0_2">
-		Female
-	</label>
-</div> -->
-<div>
-	<button type="submit" name="submit" class="btn btn-success"><i class="icon-ok icon-white"></i> Register</button>
-	<a href="/auth/login" class="btn btn-info">Sign in</a>
-	<a href="/auth/facebook" class="btn btn-info">login with Facebook</a>
-<!-- 	<a href="/users" class="btn">Cancel</a>
- -->
+<div class="_pea-text-center">
+	<button type="submit" name="submit" class="_pea-button _pea-color-success"><i class="icon-ok icon-white"></i> Register</button>
+	<a href="/auth/login" class="_pea-button">Log in</a>
+	<small>or</small>
+	<a href="/auth/facebook" class="_pea-button">login with Facebook</a>
 </div>

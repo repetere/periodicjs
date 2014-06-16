@@ -1,6 +1,26 @@
-<% include ../shared/flashmessages %>
-<h1 class="text-left"><%= pagedata.title %></h1>
-<hr/>
-<form action="/user/new" method="post" autocomplete="on" id="user_form" name="user_form" class="form-inline ">
-	<% include register_form %>
-</form>
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row">
+			<div class="_pea-col-span6 _pea-col-nofloat">
+				<h1 class="text-left"><%= pagedata.title %></h1>
+				<div class="_pea-document">
+					<% if(locals.isLoggedIn()){
+						%>
+							<div class="_pea-text-center">
+								Already Logged In, <a href="/auth/logout">Log Out</a>
+							</div>
+						<%
+					} 
+					else{
+						%>
+							<form action="/user/new" method="post" autocomplete="on" id="user_form" name="user_form" class="_pea-form ">
+								<% include register_form %>
+							</form>
+						<%
+					} %>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../shared/footer %>

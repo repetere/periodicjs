@@ -238,7 +238,9 @@ var install_viaNPM = function(options){
 		reponame = options.reponame,
 		logfile = options.logfile;
 	npm.load({
-			"strict-ssl" : false, prefix:extdir
+			"strict-ssl" : false,
+			"production" : true,
+			prefix:extdir
 		},
 		function (err) {
 			if (err){

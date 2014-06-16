@@ -1,25 +1,19 @@
-<div>
-	<small>username / email </small>
-	<div>
-		<input type="text" name="username" class="input-block-level" placeholder="username or email@domain.com" />
+<div class="_pea-row _pea-container-forminput">
+	<small>Username / Email </small>
+	<input type="text" name="username" class="_pea-col-span12" placeholder="username or email@domain.com" />
+</div>
+<div class="_pea-row _pea-container-forminput" style="margin-bottom:1.0em">
+	<small>Password</small>
+	<input type="password" name="password" placeholder="password" class="_pea-col-span12"  />
+	<div class="_pea-col-span12">
+		<small >Remember me</small>
+		<input type="checkbox" name="rememberme" />	
 	</div>
 </div>
-<div>
-	<small>password</small>
-	<div>
-		<input type="password" name="password" placeholder="password" class="input-block-level"  />
-	</div>
-	<small>remember me</small>
-	<input type="checkbox" name="rememberme" />
-</div>
-<div class="text-center">
-	<p></p>
-	<p>
-		<button type="submit" name="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Login</button>
-		<a href="/auth/facebook" class="btn btn-primary">Facebook login</a>
-		or
-		<a href="/user/register" class="btn btn-success">Sign Up</a>
-	</p>
-	<!-- <a href="/" class="btn">Cancel</a> -->
+<div class="_pea-text-center">
+	<button type="submit" name="submit" class="_pea-button _pea-color-success"><i class="icon-ok icon-white"></i> Login</button>
+	<a href="/auth/facebook" class="_pea-button">Facebook login</a>
+	<small>or</small>
+	<a href="/user/register" class="_pea-button">Register</a>
 </div>
 <input type="hidden" name="_csrf" value=<%= locals.token %> >
