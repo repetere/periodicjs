@@ -12,9 +12,9 @@
 						<li><a href="/p-admin/assets">Media Assets</a></li>
 					</ul>
 				</li>
-				<li>Themes
+				<li><a href="/p-admin/extensions">Themes</a>
 					<ul class="_pea_menu-items-subnav">
-						<li>Manage Themes</li>
+						<li><a href="/p-admin/extensions">Manage Themes</a></li>
 						<li>Theme Editor</li>
 					</ul>
 				</li>
@@ -28,17 +28,17 @@
 		<nav id="_pea-user-settings" class="_pea-pull-right">
 			<ul class="_pea_menu-items">
 				<li>
-					Settings
+					<a href="/p-admin/settings">Settings</a>
 					<ul class="_pea_menu-items-subnav _pea-right">
-						<li>Periodic Settings</li>
-						<li>Manage Users</li>
+						<li><a href="/p-admin/settings">Periodic Settings</a></li>
+						<li><a href="/p-admin/users/edit">Manage Users</a></li>
 					</ul>
 				</li>
 				<li>
 					<%= user.username %>
 					<ul class="_pea_menu-items-subnav _pea-right">
-						<li>Edit Profile</li>
-						<li>Logout</li>
+						<li><a href="/user/<%= user.username %>/settings">Edit Profile</a></li>
+						<li><a href="/auth/logout">Logout</a></li>
 					</ul>
 				</li>
 			</ul>

@@ -216,20 +216,6 @@ var install_extPublicDir = function(options){
 			});
 		}
 	});
-
-    /*
-    to install extensions: -https://api.github.com/repos/typesettin/periodicjs.ext.example/tags
-
-
-download from github or upload zip: ex using https://github.com/jprichardson/node-github-download
-run npm install in that directory to get - https://www.npmjs.org/package/npm
-if public directory copy into app public dir
-call periodic install extension (check for dependencies and version), if good, update extensions.json, with updated and installed date
--put content log dir, with ext name-username
-     */
-    /*
-    
-     */
 };
 
 var install_viaNPM = function(options){
@@ -338,12 +324,6 @@ var install = function(req, res, next){
 	});
 };
 
-	// res.send({url:repourl,time:timestamp});
-
-    //https://api.github.com/repos/typesettin/periodicjs.ext.example/tags
-    //https://api.github.com/search/repositories?q=periodicjs.ext.example
-    //https://github.com/User/repo/archive/master.tar.gz
-    //https://api.github.com/repos/typesettin/periodicjs.ext.example/tarball/0.0.2
 var install_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
 		logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
@@ -362,6 +342,16 @@ var install_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var disable = function(req,res,next){
+	var id =req.params.id;
+	console.log("id",id);
+};
+
+var enable = function(req,res,next){
+	var id =req.params.id;
+	console.log("id",id);
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -370,7 +360,9 @@ var controller = function(resources){
 
 	return{
 		install:install,
-		install_getOutputLog:install_getOutputLog
+		install_getOutputLog:install_getOutputLog,
+		disable:disable,
+		enable:enable
 	};
 };
 
