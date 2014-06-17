@@ -342,14 +342,133 @@ var install_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var getCurrentExt = function(options){
+	var extname = options.extname,
+		currentExtensions = appSettings.extconf.extensions,
+		z=false,
+		selectedExt;
+
+	for (var x in currentExtensions){
+		if(currentExtensions[x].name===extname){
+			z=x;
+		}
+	}
+
+	if(z!==false){
+		selectedExt = currentExtensions[z];
+	}
+
+	return {selectedExt:selectedExt,numX:z};
+};
+
 var disable = function(req,res,next){
-	var id =req.params.id;
-	console.log("id",id);
+	var extname = req.params.id,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX;
+
+	appSettings.extconf.extensions[numX].enabled = false;
+	fs.outputJson(
+		Extensions.getExtensionConfFilePath,
+		appSettings.extconf,
+		function(err){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				applicationController.handleDocumentQueryRender({
+					req:req,
+					res:res,
+					responseData:{
+						result:"success",
+						data:{
+							ext:extname,
+							msg:'extension disabled'
+						}
+					}
+				});
+			}
+		}
+	);
 };
 
 var enable = function(req,res,next){
-	var id =req.params.id;
-	console.log("id",id);
+	var extname = req.params.id,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX,
+		selectedExtDeps = selectedExt.periodicConfig.periodicDependencies,
+		numSelectedExtDeps = selectedExtDeps.length,
+		confirmedDeps = [];
+
+	selectedExt.enabled = true;
+
+	if(!semver.lte(
+		selectedExt.periodicCompatibility,appSettings.version)
+		){
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('This extension requires periodic version: '+selectedExt.periodicCompatibility+' not: '+appSettings.version),
+			res:res,
+			req:req
+		});
+	}
+	else{
+		// console.log("selectedExtDeps",selectedExtDeps);
+		for(var x in selectedExtDeps){
+			var checkDep = selectedExtDeps[x];
+			console.log("checking x: "+x,checkDep);
+
+			for(var y in appSettings.extconf.extensions){
+				var checkExt = appSettings.extconf.extensions[y];
+				if( checkDep.extname === checkExt.name && checkExt.enabled ){
+					confirmedDeps.push(checkExt.name);
+				}
+			}
+		}
+
+		if(numSelectedExtDeps === confirmedDeps.length){
+			// console.log("confirmedDeps",confirmedDeps);
+			appSettings.extconf.extensions[numX].enabled = true;
+
+			fs.outputJson(
+				Extensions.getExtensionConfFilePath,
+				appSettings.extconf,
+				function(err){
+					if(err){
+						applicationController.handleDocumentQueryErrorResponse({
+							err:err,
+							res:res,
+							req:req
+						});
+					}
+					else{
+						applicationController.handleDocumentQueryRender({
+							req:req,
+							res:res,
+							responseData:{
+								result:"success",
+								data:{
+									ext:extname,
+									msg:'extension enabled'
+								}
+							}
+						});
+					}
+				}
+			);
+		}
+		else{
+			applicationController.handleDocumentQueryErrorResponse({
+				err:new Error('Missing '+(numSelectedExtDeps-confirmedDeps.length)+' enabled extensions.'),
+				res:res,
+				req:req
+			});
+		}
+	}
 };
 
 var controller = function(resources){
