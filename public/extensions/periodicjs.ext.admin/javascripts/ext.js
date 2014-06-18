@@ -2134,9 +2134,8 @@ var request = require('superagent'),
 	searchGithubResultsTableBody,
 	installedtable,
 	installedtablebody,
+	hideConsoleOutput,
 	consoleOutput;
-
-
 
 window.addEventListener("load",function(e){
 	searchExtInput = document.getElementById("search-ext_input");
@@ -2147,12 +2146,19 @@ window.addEventListener("load",function(e){
 	consoleOutput = document.getElementById("ext-console-output");
 	installedtablebody = document.getElementById("installed-ext-tablebody");
 	installedtable = document.getElementById("installed-ext-table");
+	hideConsoleOutput = document.getElementById("hide-ext-console");
 	searchExtInput.addEventListener("keypress",searchInputKeypress,false);
 	searchExtButton.addEventListener("click",searchExtFromGithub,false);
 	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
 	extModal.addEventListener("click",extmodalClick,false);
 	installedtable.addEventListener("click",installedTableClick,false);
+	hideConsoleOutput.addEventListener("click",hideConsoleOutputClick,false);
 });
+
+var hideConsoleOutputClick = function(e){
+	document.getElementById("ext-console").style.display="none";
+};
+
 var installedTableClick = function(e){
 	var eTarget = e.target;
 
@@ -2185,6 +2191,28 @@ var installedTableClick = function(e){
 					ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 				}
 			});
+	}
+	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("delete-ext-button")){
+		request
+			.post(eTarget.getAttribute("data-href"))
+			.query({
+				format:"json",
+				_csrf:eTarget.getAttribute("data-token")
+			})
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(res && res.error){
+					error = res.error;
+				}
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					document.getElementById("ext-console").style.display="block";
+					getConsoleOutput(res.body,eTarget.getAttribute("data-extname"),res.body.data.extname,'remove');
+				}
+			});
+
 	}
 };
 
@@ -2230,9 +2258,10 @@ var searchTblClick = function(e){
 		fullreponame,
 		repoversionlist;
 
+		console.log("search table click");
 
-	if(eTarget.getAttribute("class")==='view-ext'){
-		// console.log("pop modal");
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-ext')){
+		console.log("pop modal");
 		extModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.ext.','');
 		extModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
 		repoversionlist = extModal.querySelector('.versions');
@@ -2290,18 +2319,21 @@ var extmodalClick = function(e){
 	}
 };
 
-var getConsoleOutput = function(responsebody,fullrepo){
+var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 	var t = setInterval(function(){
 			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
 		},4000),
 		otf,
 		cnt=0,
-		lastres='';
+		lastres='',
+		repo = responsebody.data.repo,
+		time = responsebody.data.time,
+		getRequest = (operation === 'remove') ? '/p-admin/extension/remove/log/'+repo+'/'+time : '/p-admin/extension/install/log/'+repo+'/'+time;
 	consoleOutput.innerHTML='';
 
 	var getOutputFromFile = function(repo,time){
 		request
-			.get('/p-admin/extension/install/log/'+repo+'/'+time)
+			.get(getRequest)
 			.set('Accept', ' text/plain')
 			.end(function(error, res){
 				if(res.error){
@@ -2338,6 +2370,13 @@ var getConsoleOutput = function(responsebody,fullrepo){
 								console.log("already installed");
 							}
 						}
+						clearTimeout(t);
+					}
+					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
+
+						ribbonNotification.showRibbon( fullrepo+' removed' ,4000,'warn');
+						var removeExtElement = document.getElementById('tr-ext-'+extname);
+						removeExtElement.parentNode.removeChild(removeExtElement);
 						clearTimeout(t);
 					}
 					lastres=res.text;

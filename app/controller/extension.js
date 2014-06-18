@@ -12,6 +12,26 @@ var path = require('path'),
 	mongoose,
 	logger;
 
+
+var getCurrentExt = function(options){
+	var extname = options.extname,
+		currentExtensions = appSettings.extconf.extensions,
+		z=false,
+		selectedExt;
+
+	for (var x in currentExtensions){
+		if(currentExtensions[x].name===extname){
+			z=x;
+		}
+	}
+
+	if(z!==false){
+		selectedExt = currentExtensions[z];
+	}
+
+	return {selectedExt:selectedExt,numX:z};
+};
+
 var install_logErrorOutput = function(options){
 	var logfile = options.logfile,
 		logdata = options.logdata+'\r\n ';
@@ -324,6 +344,156 @@ var install = function(req, res, next){
 	});
 };
 
+var install_removeExtFromConf = function(options){
+	var extname = options.extname,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX,
+		logfile = options.logfile;
+
+	appSettings.extconf.extensions.splice(numX, 1);
+	fs.outputJson(
+		Extensions.getExtensionConfFilePath,
+		appSettings.extconf,
+		function(err){
+			if(err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				install_logOutput({
+					logfile : logfile,
+					logdata : extname+' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
+					callback : function(err){
+					}
+				});
+			}
+		}
+	);
+};
+
+var uninstall_viaNPM = function(options){
+	var extdir = options.extdir,
+		repourl = options.repourl,
+		extname = options.extname,
+		logfile = options.logfile;
+	npm.load({
+			"strict-ssl" : false,
+			"production" : true,
+			prefix:extdir
+		},
+		function (err) {
+			if (err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				npm.commands.uninstall([extname], function (err, data) {
+					if (err) {
+						install_logErrorOutput({
+							logfile : logfile,
+							logdata : err.message
+						});
+					}
+					else{
+						install_logOutput({
+							logfile : logfile,
+							logdata : data,
+							callback : function(err){
+								if (!err) {
+									install_removeExtFromConf({
+										logfile : logfile,
+										extname: extname
+									});
+								}
+							}
+						});
+					}
+					// command succeeded, and data might have some info
+				});
+				npm.on("log", function (message) {
+					install_logOutput({
+						logfile : logfile,
+						logdata : message,
+						callback : function(err){
+						}
+					});
+				});
+			}
+	});
+};
+
+var remove = function(req, res, next){
+    var extname = req.params.id,
+        timestamp = (new Date()).getTime(),
+        logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,'remove-ext.'+req.user._id+'.'+ applicationController.makeNiceName(extname) +'.'+timestamp+'.log'),
+		myData = {
+			result:"start",
+			data:{
+				message:"beginning extension removal: "+extname,
+				time:timestamp
+			}
+		},
+		extdir = path.join(process.cwd(),'content/extensions/node_modules');
+	//JSON.stringify(myData, null, 4)
+	//JSON.stringify(myData, null, 4)
+	install_logOutput({
+			logfile : logfile,
+			logdata : myData.data.message,
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								repo:applicationController.makeNiceName(extname),
+								extname:extname,
+								time:timestamp
+							}
+						}
+					});
+					uninstall_viaNPM({
+						extdir : extdir,
+						logfile : logfile,
+						extname : extname
+					});
+				}
+		}
+	});
+};
+
+var remove_getOutputLog = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,'remove-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+    res.writeHead(200, {
+        'Content-Type': ' text/plain',
+        'Content-Length': stat.size
+    });
+
+    // We replaced all the event handlers with a simple call to readStream.pipe()
+    // http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
+    // http://visionmedia.github.io/superagent/#request-timeouts
+    // http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
+    readStream.pipe(res);
+};
+
 var install_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
 		logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
@@ -340,25 +510,6 @@ var install_getOutputLog = function(req,res,next){
     // http://visionmedia.github.io/superagent/#request-timeouts
     // http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
     readStream.pipe(res);
-};
-
-var getCurrentExt = function(options){
-	var extname = options.extname,
-		currentExtensions = appSettings.extconf.extensions,
-		z=false,
-		selectedExt;
-
-	for (var x in currentExtensions){
-		if(currentExtensions[x].name===extname){
-			z=x;
-		}
-	}
-
-	if(z!==false){
-		selectedExt = currentExtensions[z];
-	}
-
-	return {selectedExt:selectedExt,numX:z};
 };
 
 var disable = function(req,res,next){
@@ -420,15 +571,19 @@ var enable = function(req,res,next){
 		// console.log("selectedExtDeps",selectedExtDeps);
 		for(var x in selectedExtDeps){
 			var checkDep = selectedExtDeps[x];
-			console.log("checking x: "+x,checkDep);
+			// console.log("checking x: "+x,checkDep);
 
 			for(var y in appSettings.extconf.extensions){
 				var checkExt = appSettings.extconf.extensions[y];
+				// console.log("checking y: "+y,checkExt);
+
 				if( checkDep.extname === checkExt.name && checkExt.enabled ){
 					confirmedDeps.push(checkExt.name);
 				}
 			}
 		}
+		// console.log("confirmedDeps",confirmedDeps);
+		// console.log("numSelectedExtDeps",numSelectedExtDeps);
 
 		if(numSelectedExtDeps === confirmedDeps.length){
 			// console.log("confirmedDeps",confirmedDeps);
@@ -480,6 +635,8 @@ var controller = function(resources){
 	return{
 		install:install,
 		install_getOutputLog:install_getOutputLog,
+		remove_getOutputLog:remove_getOutputLog,
+		remove:remove,
 		disable:disable,
 		enable:enable
 	};

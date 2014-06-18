@@ -147,7 +147,7 @@ var extensions_index = function(req, res, next) {
     themepath:appSettings.themepath,
     themefileext:appSettings.templatefileextension,
     callback:function(templatepath){
-        console.log("req.controllerData.extensions",req.controllerData.extensions);
+        // console.log("req.controllerData.extensions",req.controllerData.extensions);
         applicationController.handleDocumentQueryRender({
             res:res,
             req:req,
