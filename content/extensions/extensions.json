@@ -33,7 +33,7 @@
       "version": "0.0.1",
       "periodicCompatibility": "0.0.2",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.sample",
         "periodicCompatibility": "0.0.2",
@@ -49,41 +49,16 @@
         ],
         "periodicjs.ext.admin": {
           "menu": {
-            "Content": [
-              {
-                "html": "<a href=\"/p-admin/example\">example settings</a>"
-              },
-              {
-                "html": "<a href=\"/p-admin/example/link2\">example conf</a>"
-              }
-            ],
-            "Extensions": [
-              {
-                "html": "<a href=\"/p-admin/example/ext\">example ext settings</a>"
-              },
-              {
-                "html": "<a href=\"/p-admin/example/ext/link2\">example ext conf</a>"
-              }
-            ]
+            "Content": {
+              "example-settings": "<a href=\"/p-admin/example\">example settings</a>",
+              "example-conf": "<a href=\"/p-admin/example/link2\">example conf</a>"
+            },
+            "Extensions": {
+              "ext-ex-set": "<a href=\"/p-admin/example/ext\">example ext settings</a>",
+              "ext-ex-conf": "<a href=\"/p-admin/example/ext/link2\">example ext conf</a>"
+            }
           }
         }
-      }
-    },
-    {
-      "name": "periodicjs.ext.example",
-      "version": "0.0.1",
-      "periodicCompatibility": "0.0.2",
-      "installed": true,
-      "enabled": false,
-      "periodicConfig": {
-        "name": "periodicjs.ext.example",
-        "periodicCompatibility": "0.0.2",
-        "periodicDependencies": [
-          {
-            "extname": "periodicjs.ext.sample2",
-            "version": "0.0.2"
-          }
-        ]
       }
     }
   ]

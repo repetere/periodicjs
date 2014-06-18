@@ -2369,6 +2369,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 							else{
 								console.log("already installed");
 							}
+							cleanupLogFile(repo,time,'install');
 						}
 						clearTimeout(t);
 					}
@@ -2377,13 +2378,33 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 						ribbonNotification.showRibbon( fullrepo+' removed' ,4000,'warn');
 						var removeExtElement = document.getElementById('tr-ext-'+extname);
 						removeExtElement.parentNode.removeChild(removeExtElement);
+						cleanupLogFile(repo,time,'remove');
 						clearTimeout(t);
 					}
 					lastres=res.text;
 					cnt++;
 				}
 			});
-	}	
+	}
+
+	var cleanupLogFile = function(repo,time,mode){
+		request
+			.get('/p-admin/extension/cleanup/log/'+repo+'/'+time)
+			.query({
+				format:"json",
+				mode:mode
+			})
+			.set('Accept', ' application/json')
+			.end(function(error,res){
+				if(res.error){
+					error = res.error;
+				}
+
+				if(error){
+					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
+				}
+			});
+	}
 };
 },{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
 

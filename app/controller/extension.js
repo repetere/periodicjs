@@ -412,6 +412,15 @@ var uninstall_viaNPM = function(options){
 								}
 							}
 						});
+						fs.remove(path.resolve(__dirname,'../../public/extensions/',extname), function(err){
+							if (err){
+								logger.error(err);
+							}
+							else{
+								logger.info("removed extension public dir files");
+							}
+						});
+
 					}
 					// command succeeded, and data might have some info
 				});
@@ -424,6 +433,33 @@ var uninstall_viaNPM = function(options){
 					});
 				});
 			}
+	});
+};
+
+var cleanup_log = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,req.query.mode+'-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log');
+
+	fs.remove(logfile, function(err){
+		if (err){
+			applicationController.handleDocumentQueryErrorResponse({
+				err:err,
+				res:res,
+				req:req
+			});
+		}
+		else{
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				responseData:{
+					result:"success",
+					data:{
+						msg:"removed log file"
+					}
+				}
+			});
+		}
 	});
 };
 
@@ -636,6 +672,7 @@ var controller = function(resources){
 		install:install,
 		install_getOutputLog:install_getOutputLog,
 		remove_getOutputLog:remove_getOutputLog,
+		cleanup_log:cleanup_log,
 		remove:remove,
 		disable:disable,
 		enable:enable
