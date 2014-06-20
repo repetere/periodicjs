@@ -1,18 +1,18 @@
 {
-	"name": "Periodical",
-	"application":{
-		"port": "8080",
-		"environment": "development"
-	},
-	"sessions":{
-		"enabled":true,
-		"type":"mongo"
-	},
-	"theme":"periodicjs.theme.minimal",
-	"userauth":{
-		"enabled":false,
-		"rememberme":false,
-		"passport":false
-	}, 
-	"debug": true
+  "name": "Periodical",
+  "application": {
+    "port": "8080",
+    "environment": "development"
+  },
+  "sessions": {
+    "enabled": true,
+    "type": "mongo"
+  },
+  "theme": "periodicjs.theme.philosophiae",
+  "userauth": {
+    "enabled": false,
+    "rememberme": false,
+    "passport": false
+  },
+  "debug": true
 }

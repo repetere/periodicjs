@@ -54,6 +54,8 @@ var error404 = function(req,res,next){
 
 var catch404 = function(req, res, next){
 	var err = new Error("Page not found");
+	// next(err);
+
 	applicationController.handleDocumentQueryErrorResponse({err:err,req:req,res:res,errorflash:err.message+", "+req.url});
   //   if (err) {
 		// res.status(404);

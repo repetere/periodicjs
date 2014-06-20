@@ -343,10 +343,36 @@ var applicationController = function(resources){
 				res.redirect(redirecturl);
 			}
 			else{
-				res.redirect('/404');
+				// res.render('home/error404',{
+				// 	url: req.url
+				// });
+
+				var self = this;
+
+				res.status(404);
+				self.getViewTemplate({
+					res:res,
+					req:req,
+					templatetype:'home-404',
+					themepath:resources.settings.themepath,
+					themefileext:resources.settings.templatefileextension,
+					callback:function(templatepath){
+						self.handleDocumentQueryRender({
+							res:res,
+							req:req,
+							renderView:templatepath,
+							responseData:{
+								pagedata: {
+									title:"Not Found"
+								},
+								user:req.user,
+								url:req.url
+							}
+						});
+				}});
 			}
 		}
-	};
+	}.bind(this);
 
 	this.removeEmptyObjectValues = function(obj) {
 		for (var property in obj) {
