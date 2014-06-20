@@ -1,13 +1,14 @@
 <% include ../../shared/header %>
 <% include ../../shared/nav %>
 	<div class="_pea-container">
-		<div class="_pea-row">
+		<div class="_pea-row _pea-form">
 			<div class="_pea-col-span6">
 				<a href="/p-admin/post/new" class="_pea-button _pea-color-info">New Post</a>
 			</div>
 			<div class="_pea-col-span6 _pea-text-right">
 				<form class="_pea-form" method="get">
-					<input type="text" placeholder="search" name="search"/>
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
 				</form>
 			</div>
 		</div>

@@ -12,6 +12,26 @@ var path = require('path'),
 	mongoose,
 	logger;
 
+
+var getCurrentExt = function(options){
+	var extname = options.extname,
+		currentExtensions = appSettings.extconf.extensions,
+		z=false,
+		selectedExt;
+
+	for (var x in currentExtensions){
+		if(currentExtensions[x].name===extname){
+			z=x;
+		}
+	}
+
+	if(z!==false){
+		selectedExt = currentExtensions[z];
+	}
+
+	return {selectedExt:selectedExt,numX:z};
+};
+
 var install_logErrorOutput = function(options){
 	var logfile = options.logfile,
 		logdata = options.logdata+'\r\n ';
@@ -216,20 +236,6 @@ var install_extPublicDir = function(options){
 			});
 		}
 	});
-
-    /*
-    to install extensions: -https://api.github.com/repos/typesettin/periodicjs.ext.example/tags
-
-
-download from github or upload zip: ex using https://github.com/jprichardson/node-github-download
-run npm install in that directory to get - https://www.npmjs.org/package/npm
-if public directory copy into app public dir
-call periodic install extension (check for dependencies and version), if good, update extensions.json, with updated and installed date
--put content log dir, with ext name-username
-     */
-    /*
-    
-     */
 };
 
 var install_viaNPM = function(options){
@@ -338,12 +344,192 @@ var install = function(req, res, next){
 	});
 };
 
-	// res.send({url:repourl,time:timestamp});
+var install_removeExtFromConf = function(options){
+	var extname = options.extname,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX,
+		logfile = options.logfile;
 
-    //https://api.github.com/repos/typesettin/periodicjs.ext.example/tags
-    //https://api.github.com/search/repositories?q=periodicjs.ext.example
-    //https://github.com/User/repo/archive/master.tar.gz
-    //https://api.github.com/repos/typesettin/periodicjs.ext.example/tarball/0.0.2
+	appSettings.extconf.extensions.splice(numX, 1);
+	fs.outputJson(
+		Extensions.getExtensionConfFilePath,
+		appSettings.extconf,
+		function(err){
+			if(err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				install_logOutput({
+					logfile : logfile,
+					logdata : extname+' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
+					callback : function(err){
+					}
+				});
+			}
+		}
+	);
+};
+
+var uninstall_viaNPM = function(options){
+	var extdir = options.extdir,
+		repourl = options.repourl,
+		extname = options.extname,
+		logfile = options.logfile;
+	npm.load({
+			"strict-ssl" : false,
+			"production" : true,
+			prefix:extdir
+		},
+		function (err) {
+			if (err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				npm.commands.uninstall([extname], function (err, data) {
+					if (err) {
+						install_logErrorOutput({
+							logfile : logfile,
+							logdata : err.message
+						});
+					}
+					else{
+						install_logOutput({
+							logfile : logfile,
+							logdata : data,
+							callback : function(err){
+								if (!err) {
+									install_removeExtFromConf({
+										logfile : logfile,
+										extname: extname
+									});
+								}
+							}
+						});
+						fs.remove(path.resolve(__dirname,'../../public/extensions/',extname), function(err){
+							if (err){
+								logger.error(err);
+							}
+							else{
+								logger.info("removed extension public dir files");
+							}
+						});
+
+					}
+					// command succeeded, and data might have some info
+				});
+				npm.on("log", function (message) {
+					install_logOutput({
+						logfile : logfile,
+						logdata : message,
+						callback : function(err){
+						}
+					});
+				});
+			}
+	});
+};
+
+var cleanup_log = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,req.query.mode+'-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log');
+
+	fs.remove(logfile, function(err){
+		if (err){
+			applicationController.handleDocumentQueryErrorResponse({
+				err:err,
+				res:res,
+				req:req
+			});
+		}
+		else{
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				responseData:{
+					result:"success",
+					data:{
+						msg:"removed log file"
+					}
+				}
+			});
+		}
+	});
+};
+
+var remove = function(req, res, next){
+    var extname = req.params.id,
+        timestamp = (new Date()).getTime(),
+        logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,'remove-ext.'+req.user._id+'.'+ applicationController.makeNiceName(extname) +'.'+timestamp+'.log'),
+		myData = {
+			result:"start",
+			data:{
+				message:"beginning extension removal: "+extname,
+				time:timestamp
+			}
+		},
+		extdir = path.join(process.cwd(),'content/extensions/node_modules');
+	//JSON.stringify(myData, null, 4)
+	//JSON.stringify(myData, null, 4)
+	install_logOutput({
+			logfile : logfile,
+			logdata : myData.data.message,
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								repo:applicationController.makeNiceName(extname),
+								extname:extname,
+								time:timestamp
+							}
+						}
+					});
+					uninstall_viaNPM({
+						extdir : extdir,
+						logfile : logfile,
+						extname : extname
+					});
+				}
+		}
+	});
+};
+
+var remove_getOutputLog = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,'remove-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+    res.writeHead(200, {
+        'Content-Type': ' text/plain',
+        'Content-Length': stat.size
+    });
+
+    // We replaced all the event handlers with a simple call to readStream.pipe()
+    // http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
+    // http://visionmedia.github.io/superagent/#request-timeouts
+    // http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
+    readStream.pipe(res);
+};
+
 var install_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
 		logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
@@ -362,6 +548,125 @@ var install_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var disable = function(req,res,next){
+	var extname = req.params.id,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX;
+
+	appSettings.extconf.extensions[numX].enabled = false;
+	fs.outputJson(
+		Extensions.getExtensionConfFilePath,
+		appSettings.extconf,
+		function(err){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req,
+					redirecturl:'/p-admin/extensions'
+				});
+			}
+			else{
+				applicationController.handleDocumentQueryRender({
+					req:req,
+					res:res,
+					redirecturl:'/p-admin/extensions',
+					responseData:{
+						result:"success",
+						data:{
+							ext:extname,
+							msg:'extension disabled'
+						}
+					}
+				});
+			}
+		}
+	);
+};
+
+var enable = function(req,res,next){
+	var extname = req.params.id,
+		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExt = selectedExtObj.selectedExt,
+		numX = selectedExtObj.numX,
+		selectedExtDeps = selectedExt.periodicConfig.periodicDependencies,
+		numSelectedExtDeps = selectedExtDeps.length,
+		confirmedDeps = [];
+
+	selectedExt.enabled = true;
+
+	if(!semver.lte(
+		selectedExt.periodicCompatibility,appSettings.version)
+		){
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('This extension requires periodic version: '+selectedExt.periodicCompatibility+' not: '+appSettings.version),
+			res:res,
+			req:req
+		});
+	}
+	else{
+		// console.log("selectedExtDeps",selectedExtDeps);
+		for(var x in selectedExtDeps){
+			var checkDep = selectedExtDeps[x];
+			// console.log("checking x: "+x,checkDep);
+
+			for(var y in appSettings.extconf.extensions){
+				var checkExt = appSettings.extconf.extensions[y];
+				// console.log("checking y: "+y,checkExt);
+
+				if( checkDep.extname === checkExt.name && checkExt.enabled ){
+					confirmedDeps.push(checkExt.name);
+				}
+			}
+		}
+		// console.log("confirmedDeps",confirmedDeps);
+		// console.log("numSelectedExtDeps",numSelectedExtDeps);
+
+		if(numSelectedExtDeps === confirmedDeps.length){
+			// console.log("confirmedDeps",confirmedDeps);
+			appSettings.extconf.extensions[numX].enabled = true;
+
+			fs.outputJson(
+				Extensions.getExtensionConfFilePath,
+				appSettings.extconf,
+				function(err){
+					if(err){
+						applicationController.handleDocumentQueryErrorResponse({
+							err:err,
+							res:res,
+							req:req,
+							redirecturl:'/p-admin/extensions'
+						});
+					}
+					else{
+						applicationController.handleDocumentQueryRender({
+							req:req,
+							res:res,
+							redirecturl:'/p-admin/extensions',
+							responseData:{
+								result:"success",
+								data:{
+									ext:extname,
+									msg:'extension enabled'
+								}
+							}
+						});
+					}
+				}
+			);
+		}
+		else{
+			applicationController.handleDocumentQueryErrorResponse({
+				err:new Error('Missing '+(numSelectedExtDeps-confirmedDeps.length)+' enabled extensions.'),
+				res:res,
+				req:req,
+				redirecturl:'/p-admin/extensions'
+			});
+		}
+	}
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -370,7 +675,12 @@ var controller = function(resources){
 
 	return{
 		install:install,
-		install_getOutputLog:install_getOutputLog
+		install_getOutputLog:install_getOutputLog,
+		remove_getOutputLog:remove_getOutputLog,
+		cleanup_log:cleanup_log,
+		remove:remove,
+		disable:disable,
+		enable:enable
 	};
 };
 

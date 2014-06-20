@@ -22,6 +22,9 @@
     "silkscreenjs": "~0.1.0",
     "letterpressjs": "0.0.3",
     "superagent": "~0.18.0",
-    "multer": "~0.1.0"
+    "multer": "~0.1.0",
+    "util-extend": "~1.0.1",
+    "codemirror": "~4.2.0",
+    "async": "~0.9.0"
   }
 }

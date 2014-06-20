@@ -10,17 +10,37 @@
 						<li><a href="/p-admin/tags">Tags</a></li>
 						<li><a href="/p-admin/collections">Collections</a></li>
 						<li><a href="/p-admin/assets">Media Assets</a></li>
+						<% 
+							if(pagedata.extensions.menu && pagedata.extensions.menu.Content){
+								for (var x in pagedata.extensions.menu.Content){%>
+									<li><%- pagedata.extensions.menu.Content[x] %></li>
+								<%}
+							}
+						%>
 					</ul>
 				</li>
-				<li>Themes
+				<li><a href="/p-admin/extensions">Themes</a>
 					<ul class="_pea_menu-items-subnav">
-						<li>Manage Themes</li>
-						<li>Theme Editor</li>
+						<li><a href="/p-admin/extensions">Manage Themes</a></li>
+						<% 
+							if(pagedata.extensions.menu && pagedata.extensions.menu.Themes){
+								for (var x in pagedata.extensions.menu.Themes){%>
+									<li><%- pagedata.extensions.menu.Themes[x] %></li>
+								<%}
+							}
+						%>
 					</ul>
 				</li>
 				<li>Extensions
 					<ul class="_pea_menu-items-subnav">
 						<li><a href="/p-admin/extensions">Manage Extensions</a></li>
+						<% 
+							if(pagedata.extensions.menu && pagedata.extensions.menu.Extensions){
+								for (var x in pagedata.extensions.menu.Extensions){%>
+									<li><%- pagedata.extensions.menu.Extensions[x] %></li>
+								<%}
+							}
+						%>
 					</ul>
 				</li>
 			</ul>
@@ -28,17 +48,29 @@
 		<nav id="_pea-user-settings" class="_pea-pull-right">
 			<ul class="_pea_menu-items">
 				<li>
-					Settings
+					<a href="/p-admin/settings">Settings</a>
 					<ul class="_pea_menu-items-subnav _pea-right">
-						<li>Periodic Settings</li>
-						<li>Manage Users</li>
+						<li><a href="/p-admin/settings">Periodic Settings</a></li>
+						<li><a href="/p-admin/users/edit">Manage Users</a></li><% 
+							if(pagedata.extensions.menu && pagedata.extensions.menu.Settings){
+								for (var x in pagedata.extensions.menu.Settings){%>
+									<li><%- pagedata.extensions.menu.Settings[x] %></li>
+								<%}
+							}
+						%>
 					</ul>
 				</li>
 				<li>
 					<%= user.username %>
 					<ul class="_pea_menu-items-subnav _pea-right">
-						<li>Edit Profile</li>
-						<li>Logout</li>
+						<li><a href="/user/<%= user.username %>/settings">Edit Profile</a></li>
+						<li><a href="/auth/logout">Logout</a></li><% 
+							if(pagedata.extensions.menu && pagedata.extensions.menu.User){
+								for (var x in pagedata.extensions.menu.User){%>
+									<li><%- pagedata.extensions.menu.User[x] %></li>
+								<%}
+							}
+						%>
 					</ul>
 				</li>
 			</ul>

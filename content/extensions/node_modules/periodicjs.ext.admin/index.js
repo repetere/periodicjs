@@ -29,7 +29,12 @@ module.exports = function(periodic){
 	 */
 	extensionRouter.get('/install',authController.ensureAuthenticated,extController.install);
 	extensionRouter.get('/install/log/:extension/:date',authController.ensureAuthenticated,extController.install_getOutputLog);
-	// http://local.getperiodic.com:8080/p-admin/extension/install
+	extensionRouter.get('/remove/log/:extension/:date',authController.ensureAuthenticated,extController.remove_getOutputLog);
+	extensionRouter.get('/cleanup/log/:extension/:date',authController.ensureAuthenticated,extController.cleanup_log);
+	extensionRouter.get('/:id/disable',authController.ensureAuthenticated,extController.disable);
+	extensionRouter.get('/:id/enable',authController.ensureAuthenticated,extController.enable);
+	extensionRouter.post('/:id/delete',authController.ensureAuthenticated,extController.remove);
+	extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
 	
 
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
