@@ -563,13 +563,15 @@ var disable = function(req,res,next){
 				applicationController.handleDocumentQueryErrorResponse({
 					err:err,
 					res:res,
-					req:req
+					req:req,
+					redirecturl:'/p-admin/extensions'
 				});
 			}
 			else{
 				applicationController.handleDocumentQueryRender({
 					req:req,
 					res:res,
+					redirecturl:'/p-admin/extensions',
 					responseData:{
 						result:"success",
 						data:{
@@ -633,13 +635,15 @@ var enable = function(req,res,next){
 						applicationController.handleDocumentQueryErrorResponse({
 							err:err,
 							res:res,
-							req:req
+							req:req,
+							redirecturl:'/p-admin/extensions'
 						});
 					}
 					else{
 						applicationController.handleDocumentQueryRender({
 							req:req,
 							res:res,
+							redirecturl:'/p-admin/extensions',
 							responseData:{
 								result:"success",
 								data:{
@@ -656,7 +660,8 @@ var enable = function(req,res,next){
 			applicationController.handleDocumentQueryErrorResponse({
 				err:new Error('Missing '+(numSelectedExtDeps-confirmedDeps.length)+' enabled extensions.'),
 				res:res,
-				req:req
+				req:req,
+				redirecturl:'/p-admin/extensions'
 			});
 		}
 	}

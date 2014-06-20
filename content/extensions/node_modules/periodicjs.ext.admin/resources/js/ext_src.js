@@ -238,7 +238,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
 							if(!installedtable.innerHTML.match(fullrepo)){
 								var installedExt = document.createElement('tr');
-								installedExt.innerHTML='<td><a href="/p-admin/extensions/view/'+fullrepo+'">'+fullrepo+'</a></td>'+'<td></td>'+'<td></td>';
+								installedExt.innerHTML='<td><a href="/p-admin/extensions/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'+'<td></td>'+'<td></td>';
 								installedtablebody.appendChild(installedExt);
 							}
 							else{

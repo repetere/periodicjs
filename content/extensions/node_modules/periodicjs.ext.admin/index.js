@@ -34,7 +34,7 @@ module.exports = function(periodic){
 	extensionRouter.get('/:id/disable',authController.ensureAuthenticated,extController.disable);
 	extensionRouter.get('/:id/enable',authController.ensureAuthenticated,extController.enable);
 	extensionRouter.post('/:id/delete',authController.ensureAuthenticated,extController.remove);
-	// http://local.getperiodic.com:8080/p-admin/extension/install
+	extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
 	
 
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);

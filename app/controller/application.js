@@ -303,6 +303,9 @@ var applicationController = function(resources){
 		else if(req.query.callback) {
 			res.jsonp(options.responseData);
 		}
+		else if(options.redirecturl) {
+			res.redirect(options.redirecturl);
+		}
 		else{
 			res.render(options.renderView,options.responseData);
 		}
