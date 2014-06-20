@@ -124,7 +124,9 @@ var install_logOutput = function(options){
 	fs.appendFile(logfile,logdata,function(err){
 		if(err){
 			logger.error(err);
-			callback(err);
+			if(callback){
+				callback(err);
+			}
 			//try and write message to end console
 			install_logErrorOutput({
 				logfile : logfile,
@@ -132,7 +134,9 @@ var install_logOutput = function(options){
 			});
 		}
 		else{
-			callback(null);
+			if(callback){
+				callback(null);
+			}
 		}
 	});
 };
@@ -369,7 +373,7 @@ var remove = function(req, res, next){
 
 var remove_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
-		logfile=path.join(logdir,'remove-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.extension)+'.'+req.params.date+'.log'),
+		logfile=path.join(logdir,'remove-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.theme)+'.'+req.params.date+'.log'),
 		stat = fs.statSync(logfile),
 		readStream = fs.createReadStream(logfile);
 
@@ -385,6 +389,216 @@ var remove_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var install_getOutputLog = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
+		logfile=path.join(logdir,'install-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.theme)+'.'+req.params.date+'.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+    res.writeHead(200, {
+        'Content-Type': ' text/plain',
+        'Content-Length': stat.size
+    });
+
+    // We replaced all the event handlers with a simple call to readStream.pipe()
+    // http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
+    // http://visionmedia.github.io/superagent/#request-timeouts
+    // http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
+    readStream.pipe(res);
+};
+
+var cleanup_log = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
+		logfile=path.join(logdir,req.query.mode+'-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.theme)+'.'+req.params.date+'.log');
+
+	fs.remove(logfile, function(err){
+		if (err){
+			applicationController.handleDocumentQueryErrorResponse({
+				err:err,
+				res:res,
+				req:req
+			});
+		}
+		else{
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				responseData:{
+					result:"success",
+					data:{
+						msg:"removed log file"
+					}
+				}
+			});
+		}
+	});
+};
+
+var install_themePublicDir = function(options){
+	var logfile = options.logfile,
+		themename = options.themename,
+        themedir= path.resolve(__dirname,'../../content/themes/',themename,'public'),
+        themepublicdir= path.resolve(__dirname,'../../public/themes/',themename);
+		// console.log("extname",extname);
+	fs.readdir(themedir,function(err,files){
+		// console.log("files",files);
+		if(err){
+			install_logOutput({
+				logfile : logfile,
+				logdata : 'No Public Directory to Copy',
+				callback : function(err){
+					install_logOutput({
+						logfile : logfile,
+						logdata : themename+' installed, application restarting \r\n  ====##END##====',
+						callback : function(err){
+						}
+					});
+				}
+			});
+		}
+		else{
+			//make destination dir
+			fs.mkdirs(themepublicdir, function(err){
+				if (err) {
+					install_logErrorOutput({
+						logfile : logfile,
+						logdata : err.message
+					});
+				}
+				else{
+					fs.copy(themedir,themepublicdir,function(err){
+						if (err) {
+							install_logErrorOutput({
+								logfile : logfile,
+								logdata : err.message
+							});
+						}
+						else{
+							install_logOutput({
+								logfile : logfile,
+								logdata : 'Copied public files',
+								callback : function(err){
+									install_logOutput({
+										logfile : logfile,
+										logdata : themename+' installed, application restarting \r\n  ====##END##====',
+										callback : function(err){
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+};
+
+var install_viaDownload = function(options){
+	var themedir = options.themedir,
+		repourl = options.repourl,
+		reponame = options.reponame,
+		logfile = options.logfile,
+		downloadtothemedir = path.join(themedir,reponame.split('/')[1]),
+		download = require('download'),
+		dlsteam;
+	console.log("reponame",reponame);
+	console.log("downloadtothemedir",downloadtothemedir);
+	fs.ensureDir(downloadtothemedir, function(err) {
+		if(err){
+			install_logErrorOutput({
+				logfile : logfile,
+				logdata : err.message
+			});
+		}
+		else{
+			dlsteam = download(repourl,downloadtothemedir, { extract: true, strip:1 });
+			dlsteam.on("response",function(res){
+				install_logOutput({
+					logfile : logfile,
+					logdata : reponame+' starting download'
+				});
+			});
+			dlsteam.on("data",function(){
+				install_logOutput({
+					logfile : logfile,
+					logdata : 'downloading data'
+				});
+				logger.info('downloading data');
+			});
+			dlsteam.on("error",function(err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			});
+			dlsteam.on("close",function(err){
+				install_logOutput({
+					logfile : logfile,
+					logdata : reponame+' downloaded'
+				});
+				install_themePublicDir({
+					logfile : logfile,
+					themename: reponame.split('/')[1]
+				});
+			});
+		}
+	});
+};
+
+var install = function(req, res, next){
+    var repoversion = req.query.version,
+        reponame = req.query.name,
+        repourl = (repoversion==='latest' || !repoversion) ?
+            'https://github.com/'+reponame+'/archive/master.tar.gz' :
+            'https://github.com/'+reponame+'/tarball/'+repoversion,
+        timestamp = (new Date()).getTime(),
+        logdir= path.resolve(__dirname,'../../content/themes/log/'),
+		logfile=path.join(logdir,'install-theme.'+req.user._id+'.'+ applicationController.makeNiceName(reponame) +'.'+timestamp+'.log'),
+		myData = {
+			result:"start",
+			data:{
+				message:"beginning theme install: "+reponame,
+				time:timestamp
+			}
+		},
+		themedir = path.join(process.cwd(),'content/themes');
+	//JSON.stringify(myData, null, 4)
+	install_logOutput({
+			logfile : logfile,
+			logdata : myData.data.message,
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								url:repourl,
+								repo:applicationController.makeNiceName(reponame),
+								time:timestamp
+							}
+						}
+					});
+					install_viaDownload({
+						themedir : themedir,
+						repourl : repourl,
+						logfile : logfile,
+						reponame : reponame
+					});
+				}
+		}
+	});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -398,7 +612,10 @@ var controller = function(resources){
 		customLayout:customLayout,
 		enable:enable,
 		remove:remove,
-		remove_getOutputLog:remove_getOutputLog
+		remove_getOutputLog:remove_getOutputLog,
+		cleanup_log:cleanup_log,
+		install:install,
+		install_getOutputLog:install_getOutputLog
 	};
 };
 

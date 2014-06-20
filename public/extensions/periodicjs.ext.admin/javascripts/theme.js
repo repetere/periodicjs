@@ -2163,6 +2163,7 @@ var installedTableClick = function(e){
 	var eTarget = e.target;
 
 	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("enable-theme-button")){
+		// ribbonNotification.showRibbon( 'switching',4000,'default');
 		request
 			.get(eTarget.getAttribute("data-href"))
 			.query({format:"json"})
@@ -2199,6 +2200,7 @@ var installedTableClick = function(e){
 			});
 	}
 	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("delete-theme-button")){
+		// ribbonNotification.showRibbon( 'deleting',1000,'default');
 		request
 			.post(eTarget.getAttribute("data-href"))
 			.query({
@@ -2218,7 +2220,7 @@ var installedTableClick = function(e){
 				}
 				else{
 					document.getElementById("theme-console").style.display="block";
-					getConsoleOutput(res.body,eTarget.getAttribute("data-extname"),res.body.data.extname,'remove');
+					getConsoleOutput(res.body,eTarget.getAttribute("data-themename"),res.body.data.themename,'remove');
 				}
 			});
 
@@ -2230,7 +2232,7 @@ var searchThemeFromGithub = function(){
 
 	request
 		.get('https://api.github.com/search/repositories')
-		.query({q:'periodicjs.ext.'+document.getElementById("search-ext_input").value})
+		.query({q:'periodicjs.theme.'+document.getElementById("search-theme_input").value})
 		.set('Accept', 'application/json')
 		.end(function(error, res){
 			if(error){
@@ -2257,7 +2259,7 @@ var buildSearchThemeResultTable = function(data){
 	for(var x in data){
 		repoinfo=data[x];
 		returnhtml+='<tr><td>'+repoinfo.name+'</td><td>'+repoinfo.description+'</br> <small><a target="_blank" href="'+repoinfo.html_url+'">'+repoinfo.html_url+'</a></small></td><td class="_pea-text-right">';
-		returnhtml+='<a href="#view/'+repoinfo.full_name+'" class="view-ext _pea-button" data-gitname="'+repoinfo.full_name+'" data-exttitle="'+repoinfo.name+'" data-desc="'+repoinfo.description+'">install</a></td></tr>';
+		returnhtml+='<a href="#view/'+repoinfo.full_name+'" class="view-theme _pea-button" data-gitname="'+repoinfo.full_name+'" data-exttitle="'+repoinfo.name+'" data-desc="'+repoinfo.description+'">install</a></td></tr>';
 	}
 	return returnhtml;
 };
@@ -2269,15 +2271,15 @@ var searchTblClick = function(e){
 
 		console.log("search table click");
 
-	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-ext')){
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-theme')){
 		console.log("pop modal");
-		extModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.ext.','');
-		extModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
-		repoversionlist = extModal.querySelector('.versions');
+		themeModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.theme.','');
+		themeModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
+		repoversionlist = themeModal.querySelector('.versions');
 		repoversionlist.innerHTML='<li>loading versions...</li>';
 		fullreponame=eTarget.getAttribute("data-gitname");
 
-		silkscreenModal.showSilkscreen('Install Themeension',extModal,null,14);
+		silkscreenModal.showSilkscreen('Install Theme',themeModal,null,14);
 
 		request
 			.get('https://api.github.com/repos/'+fullreponame+'/tags')
@@ -2287,7 +2289,7 @@ var searchTblClick = function(e){
 					ribbonNotification.showRibbon( error.message,4000,'error');
 				}
 				else{
-					extModal.querySelector('.versions').innerHTML='';
+					themeModal.querySelector('.versions').innerHTML='';
 					repoversionlist.innerHTML='<li><a class="install-theme-link" data-repo="'+fullreponame+'" data-version="latest">latest</a></li>';
 					// console.log(res.body.length,res.body)
 					if(res.body.length>0){
@@ -2362,7 +2364,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 					// console.log(cnt);
 					// console.log(res.text);
 					if(res.text!==lastres){
-						otf = document.createElement("div");
+						otf = document.createElement("pre");
 						otf.innerHTML=res.text;
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
@@ -2372,7 +2374,10 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
 							if(!installedtable.innerHTML.match(fullrepo)){
 								var installedTheme = document.createElement('tr');
-								installedTheme.innerHTML='<td><a href="/p-admin/themes/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'+'<td></td>'+'<td></td>';
+								installedTheme.innerHTML='<td><a href="/p-admin/themes/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'
+									+'<td></td>'
+									+'<td class="_pea-text-right"><a data-themename="'+fullrepo+'" data-href="/p-admin/theme/'+fullrepo+'/enable" class="_pea-button switch-theme-button enable-theme-button">switch</a>'
+									+'</td>';
 								installedtablebody.appendChild(installedTheme);
 							}
 							else{

@@ -324,6 +324,7 @@ var applicationController = function(resources){
 		logger.error(err);
 		logger.error(errormessage,req.url);
 		if(req.query.format === "json") {
+			res.status(404);
 			res.send({
 				"result": "error",
 				"data": {
