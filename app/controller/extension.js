@@ -596,74 +596,83 @@ var enable = function(req,res,next){
 
 	selectedExt.enabled = true;
 
-	if(!semver.lte(
-		selectedExt.periodicCompatibility,appSettings.version)
-		){
+	try{
+		if(!semver.lte(
+			selectedExt.periodicCompatibility,appSettings.version)
+			){
+			applicationController.handleDocumentQueryErrorResponse({
+				err:new Error('This extension requires periodic version: '+selectedExt.periodicCompatibility+' not: '+appSettings.version),
+				res:res,
+				req:req
+			});
+		}
+		else{
+			// console.log("selectedExtDeps",selectedExtDeps);
+			for(var x in selectedExtDeps){
+				var checkDep = selectedExtDeps[x];
+				// console.log("checking x: "+x,checkDep);
+
+				for(var y in appSettings.extconf.extensions){
+					var checkExt = appSettings.extconf.extensions[y];
+					// console.log("checking y: "+y,checkExt);
+
+					if( checkDep.extname === checkExt.name && checkExt.enabled ){
+						confirmedDeps.push(checkExt.name);
+					}
+				}
+			}
+			// console.log("confirmedDeps",confirmedDeps);
+			// console.log("numSelectedExtDeps",numSelectedExtDeps);
+
+			if(numSelectedExtDeps === confirmedDeps.length){
+				// console.log("confirmedDeps",confirmedDeps);
+				appSettings.extconf.extensions[numX].enabled = true;
+
+				fs.outputJson(
+					Extensions.getExtensionConfFilePath,
+					appSettings.extconf,
+					function(err){
+						if(err){
+							applicationController.handleDocumentQueryErrorResponse({
+								err:err,
+								res:res,
+								req:req,
+								redirecturl:'/p-admin/extensions'
+							});
+						}
+						else{
+							applicationController.handleDocumentQueryRender({
+								req:req,
+								res:res,
+								redirecturl:'/p-admin/extensions',
+								responseData:{
+									result:"success",
+									data:{
+										ext:extname,
+										msg:'extension enabled'
+									}
+								}
+							});
+						}
+					}
+				);
+			}
+			else{
+				applicationController.handleDocumentQueryErrorResponse({
+					err:new Error('Missing '+(numSelectedExtDeps-confirmedDeps.length)+' enabled extensions.'),
+					res:res,
+					req:req,
+					redirecturl:'/p-admin/extensions'
+				});
+			}
+		}
+	}
+	catch(e){
 		applicationController.handleDocumentQueryErrorResponse({
-			err:new Error('This extension requires periodic version: '+selectedExt.periodicCompatibility+' not: '+appSettings.version),
+			err:e,
 			res:res,
 			req:req
 		});
-	}
-	else{
-		// console.log("selectedExtDeps",selectedExtDeps);
-		for(var x in selectedExtDeps){
-			var checkDep = selectedExtDeps[x];
-			// console.log("checking x: "+x,checkDep);
-
-			for(var y in appSettings.extconf.extensions){
-				var checkExt = appSettings.extconf.extensions[y];
-				// console.log("checking y: "+y,checkExt);
-
-				if( checkDep.extname === checkExt.name && checkExt.enabled ){
-					confirmedDeps.push(checkExt.name);
-				}
-			}
-		}
-		// console.log("confirmedDeps",confirmedDeps);
-		// console.log("numSelectedExtDeps",numSelectedExtDeps);
-
-		if(numSelectedExtDeps === confirmedDeps.length){
-			// console.log("confirmedDeps",confirmedDeps);
-			appSettings.extconf.extensions[numX].enabled = true;
-
-			fs.outputJson(
-				Extensions.getExtensionConfFilePath,
-				appSettings.extconf,
-				function(err){
-					if(err){
-						applicationController.handleDocumentQueryErrorResponse({
-							err:err,
-							res:res,
-							req:req,
-							redirecturl:'/p-admin/extensions'
-						});
-					}
-					else{
-						applicationController.handleDocumentQueryRender({
-							req:req,
-							res:res,
-							redirecturl:'/p-admin/extensions',
-							responseData:{
-								result:"success",
-								data:{
-									ext:extname,
-									msg:'extension enabled'
-								}
-							}
-						});
-					}
-				}
-			);
-		}
-		else{
-			applicationController.handleDocumentQueryErrorResponse({
-				err:new Error('Missing '+(numSelectedExtDeps-confirmedDeps.length)+' enabled extensions.'),
-				res:res,
-				req:req,
-				redirecturl:'/p-admin/extensions'
-			});
-		}
 	}
 };
 

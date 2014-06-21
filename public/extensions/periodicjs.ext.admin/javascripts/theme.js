@@ -6,12 +6,12 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 
-module.exports = require('./lib/ribbon');
+module.exports = require('./lib/letterpress');
 
-},{"./lib/ribbon":2}],2:[function(require,module,exports){
+},{"./lib/letterpress":2}],2:[function(require,module,exports){
 /*
- * ribbon
- * http://github.com/typesettin/ribbon
+ * letterpress
+ * http://github.com/typesettin/letterpress
  *
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
@@ -21,37 +21,47 @@ module.exports = require('./lib/ribbon');
 var classie = require('classie'),
 	extend = require('util-extend'),
 	events = require('events'),
+	domhelper = require('domhelper'),
+	request = require('superagent'),
 	util = require('util');
 
 /**
- * A module that represents a ribbon.
- * @{@link https://github.com/typesettin/ribbon}
+ * A module that represents a letterpress.
+ * @{@link https://github.com/typesettin/letterpress}
  * @author Yaw Joseph Etse
  * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
  * @license MIT
- * @module ribbon
+ * @module letterpress
  * @requires module:classie
  * @requires module:util-extent
  * @requires module:util
  * @requires module:events
  * @todo to do later
  */
-var ribbon = function(config_options,ribbon_message,show,timed,callback){
+var letterpress = function(config_options,letterpress_message,show,timed,callback){
 	/** module default configuration */
 	var options,
 		defaults = {
-			idSelector : '#_mms_ribbon-element',
-			message : false,
+			idSelector : '#_ltr_letterpress-element',
+			inputNameValue : null,
+			sourcedata : {},
 			element : null,
-			type : "default",
-			parentElement : null,
-			style : 'cards'
+			elementContainer : null,
+			sourcetype : "object",
+			sourcearrayname : "tags",
+			nameLabel: "_id",
+			searchquery: "",
+			valueLabel: "title",
+			createTagFunc:function(id,val,callback){
+				callback(id,val);
+			}
 		},
 		container;
 
-	defaults.message = (ribbon_message) ? ribbon_message : "empty ribbon";
 	//extend default options
 	options = extend( defaults,config_options );
+	options.lastddcount = 1;
+	options.currentddcount = 1;
 
 
 	/** Returns the configuration object 
@@ -61,37 +71,65 @@ var ribbon = function(config_options,ribbon_message,show,timed,callback){
 		return options;
 	};
 
-	/** 
-	 * The element to clone in child window
-	 * @param {object} element - html element to clone
-	 */
-	this.setRibbonContentElement = function(element){
-		options.element = element;
-	};
-
 	/**
 	 * intialize a new platter
 	 */
-	this.init = function(ribbon_message,show,timed,callback){
-		if(document.querySelector(options.idSelector)){
-			options.element = document.querySelector(options.idSelector);
-			if (options.parentElement){
-				options.parentElement = options.parentElement;
-			}
-			else if(document.querySelector('._ribbon_parent-element')){
-				options.parentElement = document.querySelector('._ribbon_parent-element');
+	this.init = function(callback){
+
+		var createLetterPress = function(){
+			this.createContainer();
+			if(options.sourcedata instanceof Array ===false){
+				throw new Error("object must be an array of objects");
 			}
 			else{
-				options.parentElement = options.element.parentNode;
+				this.updateSelectOptionsHTML();
+				this.attachEventListeners();
+				this.emit("intializedLetterpress",true);
+				if(options.presetdata){
+					for(var y in options.presetdata){
+						this.createTag(options.presetdata[y][options.nameLabel],options.presetdata[y][options.valueLabel],null,true);
+					}
+				}
 			}
+		}.bind(this);
 
-			classie.addClass(options.parentElement,'_ribbon_parent-element');
-			options.element.addEventListener('click',ribbonClickEventHandler,false);
-			this.createContainer();
-			this.createRibbon(options.idSelector);
-			this.emit("intializedRibbon",true);
-			if(show){
-				this.showRibbon(ribbon_message,timed,options.type,callback);
+		if(document.querySelector(options.idSelector)){
+			options.element = document.querySelector(options.idSelector);
+			if(!options.element.name){
+				throw new Error("form element must have a name value");
+			}
+			else{
+				options.inputNameValue = options.element.name;
+				if(options.sourcedata instanceof Array ===false){
+					request
+						.get(options.sourcedata)
+						.end(function(err,res){
+							if(err){
+								console.log(err);
+							}
+							else{
+								if(options.sourcejsonp){
+									window[options.sourcecallback] = function(data){
+										// console.log(data);
+										options.sourcedata = data[options.sourcearrayname];
+										// console.log(this.config().sourcedata);
+										createLetterPress();
+									}.bind(this);
+									var scriptTag = document.createElement("script");
+
+									scriptTag.innerHTML = res.text;
+									document.body.appendChild(scriptTag);
+								}
+								else{
+									options.sourcedata = res.body[options.sourcearrayname];
+									createLetterPress();
+								}
+							}
+						}.bind(this));
+				}
+				else{
+					createLetterPress();
+				}
 			}
 		}
 		else{
@@ -99,97 +137,254 @@ var ribbon = function(config_options,ribbon_message,show,timed,callback){
 		}
 	}.bind(this);
 
-	this.setRibbonMessage = function(msg,hideDismiss){
-		var hideDismissText = (hideDismiss) ? '':' <span class="_rb_small _rb-hide-ribbon">(dismiss)</span>';
-		options.message = msg;
-		options.element.innerHTML = options.message + hideDismissText;
-	};
-
 	/**
-	 * create ribbon html container
+	 * create letterpress html container
 	 */
 	this.createContainer = function(){
-		if(document.getElementById("_mms_ribbon-element-wrapper")){
-			this.emit("ribbonContainerCreated",false);
+		var letterpressContainer = document.createElement('div'),
+			ultagdivContainer = document.createElement('div'),
+			lpCheckboxContainer = document.createElement('div'), //http://www.w3schools.com/jsref/dom_obj_checkbox.asp
+			ulTagContainer = document.createElement('ul'),
+			inputLiContainer = document.createElement('li'),
+			selectContainer = document.createElement('select');//http://www.w3schools.com/tags/tag_optgroup.asp
+
+		/** set up input wrapper */
+		letterpressContainer.setAttribute("class","_ltr_l-e-w");
+		letterpressContainer.setAttribute("id",options.inputNameValue+"-dc");
+		options.elementContainer = letterpressContainer;
+
+		domhelper.elementWrap(options.element,options.elementContainer);
+
+		/** set up input ul and taginput wrapper */
+		ultagdivContainer.setAttribute("id",options.inputNameValue+"-dtulc");
+		ultagdivContainer.setAttribute("class","_ltr-dtulc");
+		options.elementContainer.appendChild(ultagdivContainer);
+		/** set up select/optgrp wrapper */
+		selectContainer.setAttribute("id",options.inputNameValue+"-sc");
+		// selectContainer.setAttribute("name",options.inputNameValue+"-sc");
+		selectContainer.setAttribute("class","_ltr-sc");
+		options.elementContainer.appendChild(selectContainer);
+		options.selectContainer = selectContainer;
+		/** set up ul and li wrapper */
+		ulTagContainer.setAttribute("id",options.inputNameValue+"-ulc");
+
+		inputLiContainer.appendChild(options.element);
+		inputLiContainer.setAttribute("class","_ltr-taglistyle showli _ltr-li-wrapper");
+		ulTagContainer.appendChild(inputLiContainer);
+
+		ulTagContainer.setAttribute("class","_ltr-ulc");
+		ultagdivContainer.appendChild(ulTagContainer);
+		options.ulTagContainer = ulTagContainer;
+		options.element.name=options.inputNameValue+"-i";
+
+		/** set up checkbox wrapper */
+		lpCheckboxContainer.setAttribute("id",options.inputNameValue+"-cbc");
+		lpCheckboxContainer.setAttribute("class","_ltr-cbc");
+		options.elementContainer.appendChild(lpCheckboxContainer);
+		options.lpCheckboxContainer = lpCheckboxContainer;
+
+		this.emit("letterpressContainerCreated",letterpressContainer);
+	};
+
+	/**
+	 * create letterpress html
+	 * @param {string} id name for platter selector id
+	 */
+	this.setDataObject = function(obj){
+		if(obj instanceof Array ===false){
+			throw new Error("object must be an array of objects");
 		}
 		else{
-			var ribbonContainer = document.createElement('div');
-			ribbonContainer.setAttribute("id","_mms_ribbon-element-wrapper");
-			classie.addClass(ribbonContainer,'_mms_ribbon-element-wrapper');
-			options.parentElement.appendChild(ribbonContainer);
-			this.emit("ribbonContainerCreated",ribbonContainer);
+			options.sourcedata = obj;
 		}
 	};
 
 	/**
-	 * create ribbon html
+	 * create letterpress html
 	 * @param {string} id name for platter selector id
 	 */
-	this.createRibbon = function(id){
-		var ribbonHTML = (document.querySelector(id)) ? document.querySelector(id) : document.createElement('div');
-		/** create platter tab html */
-		classie.addClass(ribbonHTML,'_mms_ribbon-element');
-		classie.addClass(ribbonHTML,'future');
-		classie.addClass(ribbonHTML,options.style);
-		ribbonHTML.innerHTML =options.message;
-		/** add platter tab to tab bar */
-		document.querySelector('#_mms_ribbon-element-wrapper').appendChild(ribbonHTML);
-		this.emit("ribbonCreated",ribbonHTML);
-	};
-
-	/** hides platter in bar */
-	this.hideRibbon = function(){
-		classie.addClass(options.element,'past');
-
-		var t = setTimeout(function(){
-			classie.removeClass(options.element,'_mms_ribbon-type-'+options.type);
-			classie.removeClass(options.parentElement,'_mss-ribbon-active');
-			classie.removeClass(options.element,'past');
-			classie.addClass(options.element,'future');
-			clearTimeout(t);
-			this.emit("ribbonClosed",true);
-		}.bind(this),900);
-	};
-
-	/** show platter in bar */
-	this.showRibbon = function(msg,timed,type,hideDismiss,callback){
-		// console.log("msg",msg,"timed",timed,"type",type,"callback",callback);
-		if(hideDismiss === true && timed < 500 || timed > 20000){
-			timed = 5000;
+	this.setPreloadDataObject = function(obj){
+		if(obj instanceof Array ===false){
+			throw new Error("object must be an array of objects");
 		}
-		if(msg){
-			options.type = (type) ? type : options.type;
-			classie.addClass(options.element,'_mms_ribbon-type-'+options.type);
+		else{
+			options.presetdata = obj;
+			for(var y in options.presetdata){
+				this.createTag(options.presetdata[y][options.nameLabel],options.presetdata[y][options.valueLabel],null,true);
+			}
+		}
+	};
 
-			this.setRibbonMessage(msg,hideDismiss);
+	/**
+	 * creates select dropdown with tags from source data
+	 * @param {string} id name for platter selector id
+	 */
+	this.updateSelectOptionsHTML = function(){
+		var selectOptionHTML ='',
+			searchRegEx = new RegExp('^'+options.searchquery, "i");
+		options.numOfOptions = 0;
+		options.lastddcount = options.currentddcount;
 
-			classie.addClass(options.parentElement,'_mss-ribbon-active');
-			var y = setTimeout(function(){
-				classie.removeClass(options.element,'future');
-				if(timed){
-					var t = setTimeout(function(){
-						clearTimeout(t);
-						this.hideRibbon();
-						callCallBack(callback);
-						this.emit("ribbonOpened",true);
-					}.bind(this),timed);
+
+		selectOptionHTML += '<option value="SELECT" selected=seleted disabled=disabled>Select</option>';
+		for(var x in options.sourcedata){
+			if(options.sourcedata[x][options.valueLabel].match(searchRegEx) && options.searchquery.length >0){
+				selectOptionHTML += '<option value="'+options.sourcedata[x][options.nameLabel]+'" label="'+options.sourcedata[x][options.valueLabel]+'">'+options.sourcedata[x][options.valueLabel]+'</option>';
+				options.numOfOptions++;
+			}
+		}
+		if(!options.disablenewtags){
+			selectOptionHTML += '<option value="NEWTAG">Create Tag</option>';
+		}
+		else{
+			if(options.numOfOptions===0){
+				selectOptionHTML += '<option value="NEWTAG" disabled="disabled" >No available options</option>';
+			}
+		}
+		options.selectContainer.innerHTML = selectOptionHTML;
+		options.currentddcount = options.selectContainer.length;
+		this.emit("updatedSelectOptions");
+	};
+
+	/**
+	 * create letterpress html
+	 * @param {string} id name for platter selector id
+	 */
+	this.createTag = function(id,value,err,keeppreviousfocus){
+		if(err){
+			throw err;
+		}
+		else if(!value || !id){
+			if(options.debug){
+				throw new Error('Must have both an id and value');
+			}
+		}
+		else{
+			var searchterm = options.searchquery,
+				liToInsert = document.createElement('li'),
+				checkboxToInsert = document.createElement('input');
+			options.searchquery = '';
+			options.element.value = '';
+			if(keeppreviousfocus!==true){
+				classie.removeClass(options.selectContainer,"show");
+			}
+
+			liToInsert.id="lp-li_"+id;
+			liToInsert.setAttribute("title",value);
+			liToInsert.innerHTML='<span class="lp-s-removeTag" data-id="'+id+'" title="click # to remove">#</span> '+value;
+			classie.addClass(liToInsert,"addedTag");
+
+			checkboxToInsert.id="lp-cbx_"+id;
+			checkboxToInsert.name=options.inputNameValue;
+			checkboxToInsert.value=id;
+			checkboxToInsert.type="checkbox";
+			checkboxToInsert.setAttribute("checked","checked");
+			checkboxToInsert.innerHTML=value;
+			if(keeppreviousfocus!==true && options.ulTagContainer.innerHTML.match(id)){
+				// console.log("already added");
+				this.emit("duplicateTag",id);
+			}
+			else{
+				try{
+					// options.element.parentNode.insertBefore(liToInsert,options.element);
+					options.ulTagContainer.appendChild(liToInsert);
+					options.lpCheckboxContainer.appendChild(checkboxToInsert);
+					classie.addClass(liToInsert,"showli");
 				}
-				else{
-					this.emit("ribbonOpened",true);
-					callCallBack(callback);
+				catch(e){
+					if(options.debug){
+						console.log("error",e);
+					}
 				}
-			}.bind(this),100);
+				if(keeppreviousfocus!==true){
+					options.element.focus();
+					this.updateSelectOptionsHTML();
+				}
+				this.emit("createdTag",id);
+			}
 		}
 	}.bind(this);
 
-	var ribbonClickEventHandler = function(e){
+	this.removeTag = function(id){
+		domhelper.removeElement(document.getElementById('lp-cbx_'+id));
+		domhelper.removeElement(document.getElementById('lp-li_'+id));
+		this.emit("removedTag",id);
+	}.bind(this);
+
+	this.attachEventListeners = function(){
+		options.element.addEventListener("keyup", letterpressInputKeydownEventHandler,false);
+		options.selectContainer.addEventListener("blur", letterpressSelectBlurEventHandler,false);
+		options.selectContainer.addEventListener("change",letterpressSelectChangeEventHandler,false);
+		options.selectContainer.addEventListener("select",letterpressSelectChangeEventHandler,false);
+		options.selectContainer.addEventListener("keyup",letterpressSelectKeydownEventHandler,false);
+		options.selectContainer.addEventListener("click",letterpressClickSelect,false);
+		options.ulTagContainer.addEventListener("click",letterpressClickUL,false);
+	};
+
+	var letterpressInputKeydownEventHandler = function(e){
+		var etarget = e.target,
+			evt = document.createEvent("MouseEvents");
+			options.searchquery = etarget.value,
+		classie.addClass(options.selectContainer,"show");
+
+		this.updateSelectOptionsHTML();
+		if (e.keyCode === 13 ) { //enter key
+			if(options.numOfOptions>0){
+				evt.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				options.selectContainer.dispatchEvent(evt);
+			}
+			else{
+				options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
+					this.createTag(id,val,err);
+				}.bind(this));
+			}
+		}
+		else if(e.keyCode === 38 || e.keyCode === 40){// up = 38, // right = 39,// down = 40
+			evt.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+			options.selectContainer.dispatchEvent(evt);
+		}
+	}.bind(this);
+
+	var letterpressSelectBlurEventHandler = function(e){
+		classie.removeClass(options.selectContainer,"show");
+	}.bind(this);
+
+	var letterpressSelectKeydownEventHandler = function(e){
+		if (e.keyCode === 13 ) {
+			options.element.focus();
+			// console.log("enter press on select drop down");
+		}
+	}.bind(this);
+
+	var letterpressSelectChangeEventHandler = function(e){
+		// console.log("select drop down value select",options.selectContainer.value);
+		var taglabel = (options.selectContainer.value ==='SELECT' || options.selectContainer.value ==='NEWTAG')? options.searchquery : document.querySelector('option[value="'+options.selectContainer.value+'"]').innerHTML;
+		options.createTagFunc(
+			options.selectContainer.value,
+			taglabel,
+			function(id,val,err){
+				this.createTag(id,val,err);
+			}.bind(this)
+		);
+	}.bind(this);
+
+	var letterpressSelectSelectEventHandler = function(e){
+		// console.log("select drop down value select", options.selectContainer.value);
+		options.createTagFunc(options.selectContainer.value,options.searchquery,function(id,val,err){
+			this.createTag(id,val,err);
+		}.bind(this));
+	}.bind(this);
+
+	var letterpressClickSelect = function(e){
+		// console.log("select clicked");
+	};
+
+	var letterpressClickUL = function(e){
 		var etarget = e.target;
-		if(classie.hasClass(etarget,'_rb-hide-ribbon')){
-			this.hideRibbon();
+		if(classie.hasClass(etarget,"lp-s-removeTag")){
+			this.removeTag(etarget.getAttribute("data-id"));
 		}
 	}.bind(this);
-
-	this.init(ribbon_message,show,timed,callback);
 
 	function callCallBack(callback){
 		if(typeof callback ==='function'){
@@ -198,16 +393,16 @@ var ribbon = function(config_options,ribbon_message,show,timed,callback){
 	}
 };
 
-util.inherits(ribbon,events.EventEmitter);
+util.inherits(letterpress,events.EventEmitter);
 
-module.exports = ribbon;
+module.exports = letterpress;
 
 // If there is a window object, that at least has a document property,
 // define linotype
 if ( typeof window === "object" && typeof window.document === "object" ) {
-	window.ribbon = ribbon;
+	window.letterpress = letterpress;
 }
-},{"classie":3,"events":17,"util":18,"util-extend":5}],3:[function(require,module,exports){
+},{"classie":3,"domhelper":5,"events":13,"superagent":8,"util":14,"util-extend":7}],3:[function(require,module,exports){
 /*
  * classie
  * http://github.amexpub.com/modules/classie
@@ -301,6 +496,356 @@ module.exports = require('./lib/classie');
     window.classie = classie;
   }
 },{}],5:[function(require,module,exports){
+/*
+ * domhelper
+ * http://github.com/yawetse/domhelper
+ *
+ * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
+ */
+
+module.exports = require('./lib/domhelper');
+
+},{"./lib/domhelper":6}],6:[function(require,module,exports){
+/*
+ * linotype
+ * https://github.com/typesettin/linotype
+ * @author yaw joseph etse
+ * Copyright (c) 2014 Typesettin. All rights reserved.
+ */
+
+'use strict';
+
+var classie = require('classie');
+// 	extend = require('util-extend'),
+// 	events = require('events'),
+// 	util = require('util');
+
+/**
+ * A module that adds simple dom utility functionality.
+ * @author yaw joseph etse
+ * @constructor
+ */
+
+var domhelper = {
+
+	/**
+	 * returns the highest zindex
+	 * @param {string} selector - query selector
+	 * @return {number} highest z-index
+	 * @public
+	 */
+	getHighIndex: function(selector){
+		if (!selector) {
+			selector = "*";
+		}
+
+		var elements = document.querySelectorAll(selector),
+			i = 0,
+			e, s,
+			max = elements.length,
+			found = [];
+
+		for (; i < max; i += 1) {
+			e = elements[i].style.zIndex;
+			s = elements[i].style.position;
+			if (e && s !== "static") {
+				found.push(parseInt(e, 10));
+			}
+		}
+
+		return found.length ? Math.max.apply(null, found) : 0;
+	},
+
+	/**
+	 * toggles class across nodelist/elementcollection
+	 * @param {object} elementCollection - html dom element
+	 * @param {object} element - html dom element
+	 * @param {string} name of class!
+	 * @public
+	 */
+	removeAllClassAndToggle: function(element,elementCollection,toggleClass){
+		//updating the active class
+		for(var h =0; h <elementCollection.length; h++){
+			classie.removeClass(elementCollection[h],toggleClass);
+		}
+		classie.addClass(element,toggleClass);
+	},
+	/**
+	 * removes element from dom
+	 * @param {object} elementCollection - html dom element
+	 * @public
+	 */
+	removeElement: function(element){
+		//updating the active class
+		element.parentNode.removeChild(element);
+	},
+	/**
+	 * converts idnex of node in nodelist
+	 * @param {object} nodelist - html dom element
+	 * @param {object} element - html dom element
+	 * @return {number} index of element in nodelist
+	 * @method
+	 */
+	nodeIndexOfNodeList: function(nodelist,element){
+		return domhelper.nodelistToArray(nodelist,true).indexOf(element.outerHTML);
+    },
+
+	/**
+	 * converts nodelists to arrays
+	 * @param {node} nl - html dom element
+	 * @return { array} array of html nodes
+	 * @method
+	 */
+	nodelistToArray: function(nl,useStrings){
+		var arr = [];
+		for (var i = 0, ref = arr.length = nl.length; i < ref; i++) {
+			arr[i] = (useStrings) ? nl[i].outerHTML : nl[i];
+		}
+		return arr;
+    },
+
+	/**
+	 * Returns cloaset DOM element.
+	 * @param {node} element - html dom element
+	 * @return {node} - closet node element
+	 * @method
+	 */
+    closetElement: function(element){
+		if(typeof element.length === 'number'){
+			return undefined;
+		}
+		var matches = domhelper.nodelistToArray(document.querySelectorAll(element.nodeName+'.'+element.className.trim().split(" ").join("."))),
+			cleanMatches = [];
+		// console.log("matches",matches.length,matches);
+
+		for (var x =0; x < matches.length; x++){
+			// console.log('x',x,'element',element,'matches[x]',matches[x],'isEqualNode',matches[x].isEqualNode(element),'compareDocumentPosition',element.compareDocumentPosition(matches[x]));
+			if(element.compareDocumentPosition(matches[x])<4 && !matches[x].isEqualNode(element)){
+				cleanMatches.push(matches[x]);
+			}
+		}
+
+		function compareNumbers(a, b) {
+			return a.compareDocumentPosition( b ) - b.compareDocumentPosition( a );
+		}
+		// console.log("matches cleaned",cleanMatches.length,cleanMatches);
+		// console.log("matches sorted",cleanMatches.sort(compareNumbers));
+		return cleanMatches[0];
+	},
+
+	/**
+	 * Hides DOM elements.
+	 * @method
+	 * @param {node} element - html dom element
+	 */
+	elementHideCss: function(element){
+		element.style.display="none";
+	},
+
+	/**
+	 * Shows DOM elements.
+	 * @method
+	 * @param {node} element - html dom element
+	 */
+	elementShowCss: function(element){
+		element.setAttribute('style',element.getAttribute('style').replace("display: none;"));
+	},
+
+	/**
+	 * Wraps inner elements
+	 * @method
+	 * @param {node} element - html dom element
+	 * @param {node} innerElement - element to wrap html dom element
+	 */
+	elementContentWrapInner: function(element,innerElement){
+		var wrapper = element,
+			w = innerElement,
+			len = element.childElementCount,
+			wrapper_clone = wrapper.cloneNode(true);
+
+		wrapper.innerHTML='';
+		wrapper.appendChild(w);
+		var newFirstChild = wrapper.firstChild;
+
+		newFirstChild.innerHTML=wrapper_clone.innerHTML;
+	},
+
+	/**
+	 * Wraps element with wrapper
+	 * @method
+	 * @param {node} element - html dom element
+	 * @param {node} wrapperElement - element to wrap html dom element
+	 */
+	elementWrap: function(element,wrapperElement){
+		var elementParent =element.parentNode,
+			element_clone = element.cloneNode(true);
+
+		elementParent.replaceChild(wrapperElement,element);
+		wrapperElement.appendChild(element);
+	},
+
+
+	/**
+	 * get scroll position of element
+	 * @method
+	 * @param {node} element - html dom element
+	 * @return {number} position of scroll
+	 */
+	getScrollTop: function(element){
+		// console.log(typeof element);
+		if(element === window && typeof window.pageYOffset!== 'undefined'){
+			//most browsers except IE before #9
+			return window.pageYOffset;
+		}
+		else if(typeof element ==="object"){
+			return element.scrollTop;
+		}
+		else {
+			var B= document.body; //IE 'quirks'
+			var D= document.documentElement; //IE with doctype
+			D= (D.clientHeight)? D: B;
+			return D.scrollTop;
+		}
+	},
+
+	/**
+	 * get scroll position of element
+	 * @method
+	 * @param {node} element - html dom element
+	 * @return {object} position element
+	 */
+	getPosition: function(element) {
+		var xPosition = 0;
+		var yPosition = 0;
+
+		while(element) {
+			xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+			yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+			element = element.offsetParent;
+		}
+		return { x: xPosition, y: yPosition, left: xPosition, top: yPosition };
+	},
+
+	/**
+	 * get element selector
+	 * @method
+	 * @param {node} element - html dom element
+	 * @return {string} query selector string
+	 */
+	getElementSelector: function(element){
+		var tagSelector = (element.tagName) ? element.tagName:'',
+			idSelector = (element.id) ? '#'+element.id+'':'',
+			classSelector='';
+		if(element.classList){
+			for(var x=0; x < element.classList.length; x++){
+				classSelector+='.'+element.classList[x]+"";
+			}
+		}
+		return tagSelector+idSelector+classSelector;
+	},
+
+	/**
+	 * get parent element
+	 * @method
+	 * @param {node} element - html dom element
+	 * @param {string} selector - selector
+	 * @param {string} selectorType - selector type (id or class)
+	 */
+	getParentElement: function(element,selector,selectorType){
+		if(element.tagName==='BODY' || element.tagName==='HTML' || selector==='body' || selector==='html' || selector===undefined){
+			// console.log('body selected');
+			return undefined;
+		}
+		else if( (selectorType==='id' && element.parentNode.id === selector) || element.parentNode.className.match(new RegExp(selector,'g'))){
+			// console.log("parent node");
+			return element.parentNode;
+
+			//new RegExp(pattern,modifiers)
+		}
+		else  {
+			// console.log("look up higher");
+			return domhelper.getParentElement(element.parentNode,selector,selectorType);
+		}
+	},
+
+	getPreviousElements: function(element,returnArray){
+		if(element.previousElementSibling){
+			returnArray.push(element.previousElementSibling);
+			return domhelper.getPreviousElements(element.previousElementSibling,returnArray);
+		}
+		else{
+			return returnArray;
+		}
+	},
+
+
+	getNextElements: function(element,returnArray){
+		if(element.nextElementSibling){
+			returnArray.push(element.nextElementSibling);
+			return domhelper.getNextElements(element.nextElementSibling,returnArray);
+		}
+		else{
+			return returnArray;
+		}
+	},
+
+	insertAllBefore: function(element,elementsToInsert){
+		var parentElement = element.parentNode;
+		// console.log("parentElement",parentElement,"element",element,"elementsToInsert",elementsToInsert);
+		if(elementsToInsert.length){
+			for(var x =0; x<elementsToInsert.length; x++){
+				// console.log(x,"elementsToInsert[x]",elementsToInsert[x])
+				parentElement.insertBefore(elementsToInsert[x],element);
+			}
+		}
+		else{
+			parentElement.insertBefore(elementsToInsert,element);
+		}
+	},
+
+	insertAllAfter: function(element,elementsToInsert){
+		var parentElement = element.parentNode;
+		var nextSibling = element.nextSibling;
+		// console.log("parentElement",parentElement,"element",element,"elementsToInsert",elementsToInsert);
+		if(elementsToInsert.length){
+			for(var x =0; x<elementsToInsert.length; x++){
+				// console.log(x,"elementsToInsert[x]",elementsToInsert[x])
+				// elementsToInsert[x].style.background="green";
+				parentElement.insertBefore(elementsToInsert[x],nextSibling);
+			}
+		}
+		else{
+			parentElement.insertBefore(elementsToInsert,nextSibling);
+		}
+	},
+
+	unwrapElement: function(element){
+		var parentNodeElem = element.parentNode;
+		if(parentNodeElem.nodeName !== "BODY"){
+			var parentParentNodeElem = parentNodeElem.parentNode;
+			parentParentNodeElem.innerHTML='';
+			parentParentNodeElem.appendChild(element);
+		}
+	},
+	onWindowLoaded: function(callback){
+		var readyStateCheckInterval = setInterval(function() {
+		    if (document.readyState === "complete") {
+		        callback();
+		        clearInterval(readyStateCheckInterval);
+		    }
+		}, 10);
+	}
+
+};
+
+module.exports = domhelper;
+
+// If there is a window object, that at least has a document property,
+// define linotype
+if ( typeof window === "object" && typeof window.document === "object" ) {
+	window.domhelper = domhelper;
+}
+},{"classie":3}],7:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -335,237 +880,7 @@ function extend(origin, add) {
   return origin;
 }
 
-},{}],6:[function(require,module,exports){
-/*
- * manuscript
- * http://github.com/typesettin/silkscreen
- *
- * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
- */
-
-module.exports = require('./lib/silkscreen');
-
-},{"./lib/silkscreen":7}],7:[function(require,module,exports){
-/*
- * silkscreen
- * http://github.com/typesettin/silkscreen
- *
- * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
- */
-
-'use strict';
-
-var classie = require('classie'),
-	extend = require('util-extend'),
-	events = require('events'),
-	util = require('util');
-
-/**
- * A module that represents a silkscreen.
- * @{@link https://github.com/typesettin/silkscreen}
- * @author Yaw Joseph Etse
- * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
- * @license MIT
- * @module silkscreen
- * @requires module:classie
- * @requires module:util-extent
- * @requires module:util
- * @requires module:events
- * @todo to do later
- */
-var silkscreen = function(config_options,show,hideOverlay,callback){
-	/** module default configuration */
-	console.log("silkscreen");
-	var options,
-		defaults = {
-			idSelector : '_slks_modal',
-			title : '',
-			message : 'silkscreen',
-			element : null,
-			type : "",
-			effect : 14
-		},
-		container;
-
-	//extend default options
-	options = extend( defaults,config_options );
-
-
-	/** Returns the configuration object 
-	 * @return {object} the module configuration
-	 */
-	this.config = function(){
-		return options;
-	};
-
-	/** 
-	 * The element to clone in child window
-	 * @param {object} element - html element to clone
-	 */
-	this.setSilkscreenContentElement = function(element){
-		options.element = element;
-	};
-
-	/**
-	 * intialize a new platter
-	 */
-	this.init = function(show,hideOverlay,callback){
-		console.log("show",show);
-		this.createOverlay();
-		this.createSilkscreen(options.idSelector);
-		options.element.addEventListener('click',silkscreenClickEventHandler,false);
-		if(show){
-			this.showSilkscreen(options.title,options.message,options.effect,options.type,hideOverlay,callback);
-		}
-	}.bind(this);
-
-	this.setSilkscreenMessage = function(msg){
-		if(typeof msg ==='object'){
-			options.element.querySelector('._slks-msg').innerHTML='';
-			options.element.querySelector('._slks-msg').appendChild(msg);
-		}
-		else{
-			options.element.querySelector('._slks-msg').innerHTML=msg;
-		}
-	};
-
-
-	this.setSilkscreenTitle = function(title){
-		options.element.querySelector('h3').innerHTML=title;
-	};
-
-	/**
-	 * create silkscreen html overlay
-	 */
-	this.createOverlay = function(){
-		if(document.getElementById("_slks-container")){
-			this.emit("silkscreenContainerCreated",false);
-		}
-		else{
-			var silkscreenModalContainer = document.createElement('div');
-			silkscreenModalContainer.setAttribute("id","_slks-container");
-			document.body.appendChild(silkscreenModalContainer);
-			this.emit("silkscreenModalContainerCreated",silkscreenModalContainer);
-		}
-
-		if(document.getElementById("_slks-overlay")){
-			this.emit("silkscreenOverlayCreated",false);
-		}
-		else{
-			var silkscreenContainer = document.createElement('div');
-			silkscreenContainer.setAttribute("id","_slks-overlay");
-			document.body.appendChild(silkscreenContainer);
-			this.emit("silkscreenOverlayCreated",silkscreenContainer);
-		}
-	};
-	/**
-	 * create silkscreen html
-	 * @param {string} id name for platter selector id
-	 */
-	this.createSilkscreen = function(id){
-		var silkscreenHTML = (document.getElementById(id)) ? document.getElementById(id) : document.createElement('div');
-		/** create platter tab html */
-		classie.addClass(silkscreenHTML,'_slks-modal');
-		classie.addClass(silkscreenHTML,'_slks');
-		classie.addClass(silkscreenHTML,'_slks-effect-'+options.effect);
-		silkscreenHTML.id = id;
-
-		var silkscreenContent = document.createElement('div');
-		classie.addClass( silkscreenContent , "_slks-content");
-
-		silkscreenContent.innerHTML ='<h3>'+options.title+"</h3>";
-
-		var silkscreenContentHTML = document.createElement('div');
-		if(options.message){
-			silkscreenContentHTML.innerHTML ='<div class="_slks-msg">'+options.message+'</div>';
-		}
-		else{
-			silkscreenContentHTML.innerHTML ='<div class="_slks-msg">'+silkscreenHTML.innerHTML+'</div>';
-		}
-		// empty div
-		silkscreenHTML.innerHTML='';
-
-		/** add close button to modal div html */
-		var silkscreenCloseBottom = document.createElement('button');
-		classie.addClass( silkscreenCloseBottom , "_slks-close");
-		silkscreenCloseBottom.innerHTML = 'Close';
-
-		silkscreenContentHTML.appendChild(silkscreenCloseBottom);
-		/** add conent to modal div */
-		silkscreenContent.appendChild(silkscreenContentHTML);
-		/** add modal to modal container */
-		silkscreenHTML.appendChild(silkscreenContent);
-		document.querySelector('#_slks-container').appendChild(silkscreenHTML);
-		options.element = document.getElementById(options.idSelector);
-		this.emit("silkscreenCreated",true);
-	};
-	/** hides platter in bar */
-	this.hideSilkscreen = function(){
-		classie.removeClass(options.element.querySelector('._slks-content'),'_slks-type-'+options.type);
-		classie.removeClass(options.element,'_slks-effect-'+options.effect);
-		classie.removeClass(options.element,'_slks-show');
-		classie.removeClass(document.getElementById("_slks-overlay"),'_slks-type-'+options.type);
-		classie.removeClass(document.getElementById("_slks-overlay"),'_slks-show-overlay');
-		this.emit("silkscreenClosed",true);
-	};
-
-	/** show platter in bar */
-	this.showSilkscreen = function(title,message,effect,type,hideOverlay,callback){
-		// console.log("msg",msg,"timed",timed,"type",type,"callback",callback);
-		if(title){
-			this.setSilkscreenTitle(title);
-		}
-		if(message){
-			this.setSilkscreenMessage(message);
-		}
-		options.effect = effect;
-		classie.addClass(options.element,'_slks-effect-'+effect);
-
-		options.type = type;
-		classie.addClass(options.element.querySelector('._slks-content'),'_slks-type-'+type);
-		classie.addClass(document.getElementById("_slks-overlay"),'_slks-type-'+type);
-		var t = setTimeout(function(){
-			classie.addClass(options.element,'_slks-show');
-			clearTimeout(t);
-		},100);
-		if(!hideOverlay){
-			classie.addClass(document.getElementById("_slks-overlay"),'_slks-show-overlay');
-		}
-		callCallBack(callback);
-		this.emit("silkscreenOpened",true);
-	}.bind(this);
-
-	var silkscreenClickEventHandler = function(e){
-		var etarget = e.target;
-		if(classie.hasClass(etarget,'_slks-close')){
-			this.hideSilkscreen();
-		}
-	}.bind(this);
-
-	this.init(show,hideOverlay,callback);
-	function callCallBack(callback){
-		if(typeof callback ==='function'){
-			callback();
-		}
-	}
-};
-
-util.inherits(silkscreen,events.EventEmitter);
-
-module.exports = silkscreen;
-
-// If there is a window object, that at least has a document property,
-// define linotype
-if ( typeof window === "object" && typeof window.document === "object" ) {
-	window.silkscreen = silkscreen;
-}
-},{"classie":8,"events":17,"util":18,"util-extend":10}],8:[function(require,module,exports){
-module.exports=require(3)
-},{"./lib/classie":9}],9:[function(require,module,exports){
-module.exports=require(4)
-},{}],10:[function(require,module,exports){
-module.exports=require(5)
-},{}],11:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -1616,7 +1931,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":12,"reduce":13}],12:[function(require,module,exports){
+},{"emitter":9,"reduce":10}],9:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -1782,7 +2097,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -1807,237 +2122,305 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
-var formToObject = function( formRef ){
+var request = require('superagent'),
+	letterpress = require('letterpressjs'),
+	themeModal,
+	searchThemeInput,
+	searchThemeButton,
+	searchGithubResultsTable,
+	searchGithubResultsTableBody,
+	installedtable,
+	installedtablebody,
+	hideConsoleOutput,
+	consoleOutput;
 
-	if( !formRef ){ return false; }
+window.addEventListener("load",function(e){
+	searchThemeInput = document.getElementById("search-theme_input");
+	searchThemeButton = document.getElementById("search-theme_button");
+	searchGithubResultsTable = document.getElementById("theme-search-results");
+	searchGithubResultsTableBody = document.getElementById("theme-search-results-tbody");
+	themeModal = document.getElementById("view-theme-info-modal");
+	consoleOutput = document.getElementById("theme-console-output");
+	installedtablebody = document.getElementById("installed-theme-tablebody");
+	installedtable = document.getElementById("installed-theme-table");
+	hideConsoleOutput = document.getElementById("hide-theme-console");
+	searchThemeInput.addEventListener("keypress",searchInputKeypress,false);
+	searchThemeButton.addEventListener("click",searchThemeFromGithub,false);
+	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
+	themeModal.addEventListener("click",thememodalClick,false);
+	installedtable.addEventListener("click",installedTableClick,false);
+	hideConsoleOutput.addEventListener("click",hideConsoleOutputClick,false);
+});
 
-	this.formRef       = formRef;
-	this.keyRegex      = /[^\[\]]+/g;
-	this.$form         = null;
-	this.$formElements = [];
-	this.formObj       = {};
-
-	if( !this.setForm() ){ return false; }
-	if( !this.setFormElements() ){ return false; }
-
-	return this.setFormObj();
-
+var hideConsoleOutputClick = function(e){
+	document.getElementById("theme-console").style.display="none";
 };
 
-// Set the main form object we are working on.
-formToObject.prototype.setForm = function(){
+var installedTableClick = function(e){
+	var eTarget = e.target;
 
-	switch( typeof this.formRef ){
-
-		case 'string':
-			this.$form = document.getElementById( this.formRef );
-		break;
-
-		case 'object':
-			if( this.isDomNode(this.formRef) ){
-				this.$form = this.formRef;
-			}
-		break;
-
-	}
-
-	return this.$form;
-
-};
-
-// Set the elements we need to parse.
-formToObject.prototype.setFormElements = function(){
-	this.$formElements = this.$form.querySelectorAll('input, textarea, select');
-	return this.$formElements.length;
-};
-
-// Check to see if the object is a HTML node.
-formToObject.prototype.isDomNode = function( node ){
-	return typeof node === "object" && "nodeType" in node && node.nodeType === 1;
-};
-
-// Iteration through arrays and objects. Compatible with IE.
-formToObject.prototype.forEach = function( arr, callback ){
-
-	if([].forEach){
-		return [].forEach.call(arr, callback);
-	}
-
-	var i;
-	for(i in arr){
-		// Object.prototype.hasOwnProperty instead of arr.hasOwnProperty for IE8 compatibility.
-		if( Object.prototype.hasOwnProperty.call(arr,i) ){
-			callback.call(arr, arr[i]);
-		}
-	}
-
-	return;
-
-}
-
-// Recursive method that adds keys and values of the corresponding fields.
-formToObject.prototype.addChild = function( result, domNode, keys, value ){
-
-	// #1 - Single dimensional array.
-	if(keys.length === 1){
-
-		// We're only interested in the radio that is checked.
-		if( domNode.nodeName === 'INPUT' && domNode.type === 'radio' ) {
-			if( domNode.checked ){
-				return result[keys] = value;
-			} else {
-				return;
-			}
-		}
-
-		// Checkboxes are a special case. We have to grab each checked values
-		// and put them into an array.
-		if( domNode.nodeName === 'INPUT' && domNode.type === 'checkbox' ) {
-
-			if( domNode.checked ){
-
-				if( !result[keys] ){
-					result[keys] = [];
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("enable-theme-button")){
+		// ribbonNotification.showRibbon( 'switching',4000,'default');
+		request
+			.get(eTarget.getAttribute("data-href"))
+			.query({format:"json"})
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
 				}
-				return result[keys].push( value );
-
-			} else {
-				return;
-			}
-
-		}
-
-		// Multiple select is a special case.
-		// We have to grab each selected option and put them into an array.
-		if( domNode.nodeName === 'SELECT' && domNode.type === 'select-multiple' ) {
-
-			result[keys] = [];
-			var DOMchilds = domNode.querySelectorAll('option[selected]');
-			if( DOMchilds ){
-				this.forEach(DOMchilds, function(child){
-					result[keys].push( child.value );
-				});
-			}
-			return;
-
-		}
-
-		// Fallback. The default one to one assign.
-		result[keys] = value;
+				else if(res.body.result === "success"){
+					if(res.body.data.msg==="theme disabled"){
+						ribbonNotification.showRibbon( res.body.data.msg,4000,'warn');
+						eTarget.innerHTML='enable';
+						eTarget.setAttribute("data-href","/p-admin/theme/"+res.body.data.ext+"/enable");
+						eTarget.setAttribute("class","_pea-button  enable-theme-button");
+						//<a data-href="/p-admin/theme/<%= theme.name %>/enable" class="_pea-button enable-theme-button">enable</a>		
+					}
+					else{
+						ribbonNotification.showRibbon( res.body.data.msg,4000,'success');
+						var themeButtons = document.querySelectorAll('.switch-theme-button');
+						for(var x in themeButtons){
+							if(typeof themeButtons[x] ==='object'){
+								themeButtons[x].setAttribute('class','_pea-button switch-theme-button enable-theme-button');
+								themeButtons[x].innerHTML="switch";	
+							}
+						}
+						eTarget.innerHTML='active';
+						eTarget.setAttribute("class","_pea-button switch-theme-button _pea-color-info");
+						//<a data-href="/p-admin/theme/<%= theme.name %>/disable" class="_pea-button _pea-color-warn enable-theme-button">disable</a>				
+					}
+				}
+				else{
+					ribbonNotification.showRibbon( res.body.data.error,4000,'error');
+				}
+			});
+	}
+	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("delete-theme-button")){
+		// ribbonNotification.showRibbon( 'deleting',1000,'default');
+		request
+			.post(eTarget.getAttribute("data-href"))
+			.query({
+				format:"json",
+				_csrf:eTarget.getAttribute("data-token")
+			})
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(res && res.error){
+					error = res.error;
+				}
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else if(res.body.result==='error'){
+					ribbonNotification.showRibbon( res.body.data.error,4000,'error');
+				}
+				else{
+					document.getElementById("theme-console").style.display="block";
+					getConsoleOutput(res.body,eTarget.getAttribute("data-themename"),res.body.data.themename,'remove');
+				}
+			});
 
 	}
-
-	// #2 - Multi dimensional array.
-	if(keys.length > 1) {
-
-		if(!result[keys[0]]){
-			result[keys[0]] = {};
-		}
-
-		return this.addChild(result[keys[0]], domNode, keys.splice(1, keys.length), value);
-
-	}
-
-	return result;
-
 };
 
-formToObject.prototype.setFormObj = function(){
+var searchThemeFromGithub = function(){
+	searchGithubResultsTableBody.innerHTML = '<tr><td class="_pea-text-center" colspan="3">searching github</td></tr>';
 
-	var test, i = 0;
+	request
+		.get('https://api.github.com/search/repositories')
+		.query({q:'periodicjs.theme.'+document.getElementById("search-theme_input").value})
+		.set('Accept', 'application/json')
+		.end(function(error, res){
+			if(error){
+				ribbonNotification.showRibbon( error.message,4000,'error');
+			}
+			else if(!res.body.items){
+				ribbonNotification.showRibbon( "could not search github",4000,'error');
+			}
+			else{
+				searchGithubResultsTable.style.display="table";
+				searchGithubResultsTableBody.innerHTML = buildSearchThemeResultTable(res.body.items);
+			}
+		});
+};
 
-	for(i = 0; i < this.$formElements.length; i++){
-		// Ignore the element if the 'name' attribute is empty.
-		// Ignore the 'disabled' elements.
-		if( this.$formElements[i].name && !this.$formElements[i].disabled ) {
-			test = this.$formElements[i].name.match( this.keyRegex );
-			this.addChild( this.formObj, this.$formElements[i], test, this.$formElements[i].value );
-		}
-	}
-
-	return this.formObj;
-
-}
-
-module.exports =formToObject;
-},{}],15:[function(require,module,exports){
-'use strict';
-
-var formobj = require('./formtoobject'),
-	request = require('superagent'),
-	ribbon = require('ribbonjs'),
-	silkscreen = require('silkscreenjs');
-
-window.addEventListener("load",function(){
-	window.silkscreenModal = new silkscreen(),
-	window.ribbonNotification = new ribbon({type:"info",idSelector:"#_pea_ribbon-element"});
-	preventEnterSubmitListeners();
-},false);
-
-var preventSubmitOnEnter = function(e){
-	// console.log("key press");
+var searchInputKeypress = function(e){
 	if ( e.which === 13 || e.keyCode === 13  ) {
-		// console.log(e);
-		// console.log("prevent submit");
-		e.preventDefault();
-		return false;
+		searchThemeFromGithub();
 	}
 };
 
-var preventEnterSubmitListeners = function(){
-	var noSubmitElements = document.querySelectorAll('.noFormSubmit');
-	for(var x in noSubmitElements){
-		if(typeof noSubmitElements[x] ==='object'){
-			noSubmitElements[x].addEventListener("keypress",preventSubmitOnEnter,false);
-			noSubmitElements[x].addEventListener("keydown",preventSubmitOnEnter,false);
-		}
+var buildSearchThemeResultTable = function(data){
+	var returnhtml = '',repoinfo;
+	for(var x in data){
+		repoinfo=data[x];
+		returnhtml+='<tr><td>'+repoinfo.name+'</td><td>'+repoinfo.description+'</br> <small><a target="_blank" href="'+repoinfo.html_url+'">'+repoinfo.html_url+'</a></small></td><td class="_pea-text-right">';
+		returnhtml+='<a href="#view/'+repoinfo.full_name+'" class="view-theme _pea-button" data-gitname="'+repoinfo.full_name+'" data-exttitle="'+repoinfo.name+'" data-desc="'+repoinfo.description+'">install</a></td></tr>';
 	}
-	document.addEventListener("keypress",preventSubmitOnEnter,false);
+	return returnhtml;
 };
 
-window.makeNiceName = function(username) {
-	if (username) {
-		return username.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-	}
-	else {
-		return false;
-	}
-};
+var searchTblClick = function(e){
+	var eTarget = e.target,
+		fullreponame,
+		repoversionlist;
 
-//"._pea-ajax-form" http://www.sitepoint.com/easier-ajax-html5-formdata-interface/
-window.ajaxFormEventListers = function(selector){
-	var ajaxforms = document.querySelectorAll(selector);
-	for(var x in ajaxforms){
-		if(typeof ajaxforms[x] ==='object'){
-			// console.log(new FormData(ajaxforms[x]));
-			ajaxforms[x].addEventListener("submit",function(e){
-				var f = e.target,
-				formData = new formobj(f);
+		console.log("search table click");
 
-				request
-					.post(f.action)
-					.set('x-csrf-token',document.querySelector('input[name=_csrf]').value)
-					.set('Accept', 'application/json')
-					.query({ format: 'json' })
-					.send(formData)
-					.end(function(error, res){
-						if(error || res.body.result==='error'){
-							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-theme')){
+		// console.log("pop modal");
+		themeModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.theme.','');
+		themeModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
+		repoversionlist = themeModal.querySelector('.versions');
+		repoversionlist.innerHTML='<li>loading versions...</li>';
+		fullreponame=eTarget.getAttribute("data-gitname");
+
+		silkscreenModal.showSilkscreen('Install Theme',themeModal,null,14);
+
+		request
+			.get('https://api.github.com/repos/'+fullreponame+'/tags')
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					themeModal.querySelector('.versions').innerHTML='';
+					repoversionlist.innerHTML='<li><a class="install-theme-link" data-repo="'+fullreponame+'" data-version="latest">latest</a></li>';
+					// console.log(res.body.length,res.body)
+					if(res.body.length>0){
+						for(var x in res.body){
+							repoversionlist.innerHTML+='<li><a class="install-theme-link" data-repo="'+fullreponame+'" data-version="'+res.body[x].name+'">'+res.body[x].name+'</a></li>';
 						}
-						else{
-							ribbonNotification.showRibbon("saved",4000,'success');
-						}
-					});
-
-				e.preventDefault();
-			},false);
-		}
+					}
+				}
+			});
 	}
 };
-},{"./formtoobject":14,"ribbonjs":1,"silkscreenjs":6,"superagent":11}],16:[function(require,module,exports){
+
+var thememodalClick = function(e){
+	var eTarget = e.target;
+	if(eTarget.getAttribute("class")==='install-theme-link'){
+		silkscreenModal.hideSilkscreen();
+
+		request
+			.get('/p-admin/theme/install')
+			.query({
+				name:eTarget.getAttribute("data-repo"),
+				version:eTarget.getAttribute("data-version"),
+				format:"json"
+			})
+			.set('Accept', 'application/json')
+			.end(function(error, res){
+				if(res && res.error){
+					error = res.error;
+				}
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					document.getElementById("theme-console").style.display="block";
+					getConsoleOutput(res.body,eTarget.getAttribute("data-repo").split('/')[1]);
+				}
+			});
+	}
+};
+
+var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
+	var t = setInterval(function(){
+			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
+		},4000),
+		otf,
+		cnt=0,
+		lastres='',
+		repo = responsebody.data.repo,
+		time = responsebody.data.time,
+		getRequest = (operation === 'remove') ? '/p-admin/theme/remove/log/'+repo+'/'+time : '/p-admin/theme/install/log/'+repo+'/'+time;
+	consoleOutput.innerHTML='';
+
+	var getOutputFromFile = function(repo,time){
+		request
+			.get(getRequest)
+			.set('Accept', ' text/plain')
+			.end(function(error, res){
+				if(res.error){
+					error = res.error;
+				}
+
+				if(error){
+					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
+					// console.log("error in ajax for file log data");
+					clearTimeout(t);
+				}
+				else{
+					if(cnt>20){
+						console.log("made 20 req stop ajax");
+						clearTimeout(t);
+					}
+					// console.log(cnt);
+					// console.log(res.text);
+					if(res.text!==lastres){
+						otf = document.createElement("pre");
+						otf.innerHTML=res.text;
+						consoleOutput.appendChild(otf);
+						consoleOutput.scrollTop=consoleOutput.scrollHeight;
+					}
+					if(res.text.match('====!!ERROR!!====') || res.text.match('====##END##====')){
+						if(res.text.match('====##END##====')){
+							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
+							if(!installedtable.innerHTML.match(fullrepo)){
+								var installedTheme = document.createElement('tr');
+								installedTheme.innerHTML='<td><a href="/p-admin/themes/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'
+									+'<td></td>'
+									+'<td class="_pea-text-right"><a data-themename="'+fullrepo+'" data-href="/p-admin/theme/'+fullrepo+'/enable" class="_pea-button switch-theme-button enable-theme-button">switch</a>'
+									+'</td>';
+								installedtablebody.appendChild(installedTheme);
+							}
+							else{
+								console.log("already installed");
+							}
+							cleanupLogFile(repo,time,'install');
+						}
+						clearTimeout(t);
+					}
+					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
+
+						ribbonNotification.showRibbon( fullrepo+' removed' ,4000,'warn');
+						var removeThemeElement = document.getElementById('tr-theme-'+extname);
+						removeThemeElement.parentNode.removeChild(removeThemeElement);
+						cleanupLogFile(repo,time,'remove');
+						clearTimeout(t);
+					}
+					lastres=res.text;
+					cnt++;
+				}
+			});
+	}
+
+	var cleanupLogFile = function(repo,time,mode){
+		request
+			.get('/p-admin/theme/cleanup/log/'+repo+'/'+time)
+			.query({
+				format:"json",
+				mode:mode
+			})
+			.set('Accept', ' application/json')
+			.end(function(error,res){
+				if(res.error){
+					error = res.error;
+				}
+
+				if(error){
+					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
+				}
+			});
+	}
+};
+},{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
 
 
 //
@@ -2255,7 +2638,7 @@ if (typeof Object.getOwnPropertyDescriptor === 'function') {
   exports.getOwnPropertyDescriptor = valueObject;
 }
 
-},{}],17:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2536,7 +2919,7 @@ EventEmitter.listenerCount = function(emitter, type) {
     ret = emitter._events[type].length;
   return ret;
 };
-},{"util":18}],18:[function(require,module,exports){
+},{"util":14}],14:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3081,5 +3464,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-},{"_shims":16}]},{},[15])
+},{"_shims":12}]},{},[11])
 ;

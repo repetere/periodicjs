@@ -4,6 +4,7 @@ var path = require('path'),
 	appController = require(path.join(process.cwd(),'app/controller/application')),
     extend = require('util-extend'),
     async = require('async'),
+    fs = require('fs-extra'),
 	applicationController,
 	appSettings,
 	mongoose,
@@ -208,7 +209,6 @@ var extensions_index = function(req, res, next) {
 var extension_show = function(req, res, next){
     var extname = req.params.id,
         Extensions = require(path.join(process.cwd(),'app/lib/extensions')),
-        fs = require('fs-extra'),
         extPackageConf = Extensions.getExtensionPackageJsonFilePath(extname),
         extPeriodicConf = Extensions.getExtensionPeriodicConfFilePath(extname);
 
@@ -263,6 +263,64 @@ var extension_show = function(req, res, next){
     });
 };
 
+var loadThemes = function(req, res, next){
+    var themedir = path.resolve(__dirname,'../../../../../content/themes/'),
+    returnFiles =[];
+
+    req.controllerData = (req.controllerData)?req.controllerData:{};
+
+    fs.readdir(themedir,function(err,files){
+        for(var x =0; x< files.length; x++){
+            if(files[x].match('periodicjs.theme')){
+                returnFiles.push(files[x]);
+            }
+        }
+        if(err){
+            applicationController.handleDocumentQueryErrorResponse({
+                err:err,
+                res:res,
+                req:req
+            });
+        }
+        else{
+            req.controllerData.themes = returnFiles;
+            next();
+        }
+    });
+};
+
+var themes_index = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/themes/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        // console.log("req.controllerData.extensions",req.controllerData.extensions);
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'post admin',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/theme.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                posts: false,
+                themes: req.controllerData.themes,
+                activetheme: appSettings.theme,
+                user:req.user
+            }
+        });
+    }});
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -278,6 +336,8 @@ var controller = function(resources){
         loadExtensions:loadExtensions,
         loadExtension:loadExtension,
         extension_show:extension_show,
+        themes_index:themes_index,
+        loadThemes:loadThemes
 	};
 };
 

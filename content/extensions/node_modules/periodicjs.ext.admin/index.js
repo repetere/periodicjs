@@ -8,6 +8,8 @@ module.exports = function(periodic){
 		contenttypeRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		extensionRouter = periodic.express.Router(),
+		themeRouter = periodic.express.Router(),
+		themeController = require('../../../../app/controller/theme')(periodic),
 		extController = require('../../../../app/controller/extension')(periodic),
 		postController = require('../../../../app/controller/post')(periodic),
 		tagController = require('../../../../app/controller/tag')(periodic),
@@ -24,6 +26,7 @@ module.exports = function(periodic){
 	adminRouter.get('/post/new',authController.ensureAuthenticated,adminController.post_new);
 	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
 	adminRouter.get('/extensions',authController.ensureAuthenticated,adminController.loadExtensions,adminController.extensions_index);
+	adminRouter.get('/themes',authController.ensureAuthenticated,adminController.loadThemes,adminController.themes_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -35,6 +38,15 @@ module.exports = function(periodic){
 	extensionRouter.get('/:id/enable',authController.ensureAuthenticated,extController.enable);
 	extensionRouter.post('/:id/delete',authController.ensureAuthenticated,extController.remove);
 	extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
+
+	themeRouter.get('/install',authController.ensureAuthenticated,themeController.install);
+	themeRouter.get('/install/log/:theme/:date',authController.ensureAuthenticated,themeController.install_getOutputLog);
+	themeRouter.get('/remove/log/:theme/:date',authController.ensureAuthenticated,themeController.remove_getOutputLog);
+	themeRouter.get('/cleanup/log/:theme/:date',authController.ensureAuthenticated,themeController.cleanup_log);
+	// extensionRouter.get('/:id/disable',authController.ensureAuthenticated,extController.disable);
+	themeRouter.get('/:id/enable',authController.ensureAuthenticated,themeController.enable);
+	themeRouter.post('/:id/delete',authController.ensureAuthenticated,themeController.remove);
+	// extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
 	
 
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
@@ -50,6 +62,7 @@ module.exports = function(periodic){
 	contenttypeRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 
 	adminRouter.use('/extension',extensionRouter);
+	adminRouter.use('/theme',themeRouter);
 	periodic.app.use('/p-admin',adminRouter);
 	periodic.app.use('/post',postRouter);
 	periodic.app.use('/tag',tagRouter);
