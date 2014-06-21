@@ -502,8 +502,8 @@ var install_viaDownload = function(options){
 		downloadtothemedir = path.join(themedir,reponame.split('/')[1]),
 		download = require('download'),
 		dlsteam;
-	console.log("reponame",reponame);
-	console.log("downloadtothemedir",downloadtothemedir);
+	// console.log("reponame",reponame);
+	// console.log("downloadtothemedir",downloadtothemedir);
 	fs.ensureDir(downloadtothemedir, function(err) {
 		if(err){
 			install_logErrorOutput({
