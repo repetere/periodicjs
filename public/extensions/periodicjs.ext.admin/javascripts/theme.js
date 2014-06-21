@@ -2272,7 +2272,7 @@ var searchTblClick = function(e){
 		console.log("search table click");
 
 	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-theme')){
-		console.log("pop modal");
+		// console.log("pop modal");
 		themeModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.theme.','');
 		themeModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
 		repoversionlist = themeModal.querySelector('.versions');
