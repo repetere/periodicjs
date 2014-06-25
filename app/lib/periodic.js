@@ -41,7 +41,6 @@ var express = require('express'),
 	session = require('express-session'),
 	responseTime = require('response-time'),
 	compress = require('compression'),
-	connectDomain = require('connect-domain'),
 	flash = require('connect-flash'),
 	csrf = require('csurf'),
 	ejs = require('ejs'),
@@ -62,6 +61,9 @@ var express = require('express'),
 var init = {
 	useLogger : function(){
 		logger = new appLog(app.get('env'));
+		process.on('uncaughtException',function(err){
+			logger.error(err.message);
+		});
 	},
 	loadConfiguration : function(){
 		appconfig = new config();
@@ -90,7 +92,6 @@ var init = {
 		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(methodOverride());
-		// app.use(connectDomain());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
@@ -125,7 +126,9 @@ var init = {
 				express_session_config = {
 					secret:'hjoiuu87go9hui',
 					maxAge: new Date(Date.now() + 3600000),
-					store: new MongoStore({url:database[app.get('env')].url})
+					store: new MongoStore({url:database[app.get('env')].url},function(err){
+						console.log("error in mongostore:",err);
+					})
 				};
 			}
 			else{
@@ -173,6 +176,7 @@ var init = {
 	catchErrors : function(){
 		//log errors
 		app.use(function (err, req, res, next){
+			logger.error(err.message);
 			logger.error(err);
 			next(err);
 		});
@@ -180,17 +184,15 @@ var init = {
 		//send client errors
 		//catch all errors
 		app.use(function (err,req, res, next) {
-			console.log("see all errors");
-			console.log("err.name",err.name);
 			if (req.xhr) {
 				res.send(500, { error: 'Something blew up!' });
 			}
 			else {
 				res.status(500);
-				console.log(err);
 				res.render('home/error500', { message: err.message,error: err });
 			}
 		});
+
 	},
 };
 
