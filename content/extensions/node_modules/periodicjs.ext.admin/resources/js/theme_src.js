@@ -249,7 +249,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
 							if(!installedtable.innerHTML.match(fullrepo)){
 								var installedTheme = document.createElement('tr');
-								installedTheme.innerHTML='<td><a href="/p-admin/themes/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'
+								installedTheme.innerHTML='<td><a href="/p-admin/theme/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'
 									+'<td></td>'
 									+'<td class="_pea-text-right"><a data-themename="'+fullrepo+'" data-href="/p-admin/theme/'+fullrepo+'/enable" class="_pea-button switch-theme-button enable-theme-button">switch</a>'
 									+'</td>';

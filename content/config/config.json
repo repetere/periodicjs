@@ -6,7 +6,7 @@
   },
   "sessions": {
     "enabled": true,
-    "type": "default"
+    "type": "mongo"
   },
   "theme": "periodicjs.theme.minimal",
   "userauth": {

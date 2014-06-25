@@ -177,7 +177,7 @@ var init = {
 		//log errors
 		app.use(function (err, req, res, next){
 			logger.error(err.message);
-			logger.error(err);
+			logger.error(err.stack);
 			next(err);
 		});
 
