@@ -32,8 +32,8 @@
       "name": "periodicjs.ext.sample",
       "version": "0.0.1",
       "periodicCompatibility": "0.0.2",
-      "installed": true,
-      "enabled": true,
+      "installed": false,
+      "enabled": false,
       "periodicConfig": {
         "name": "periodicjs.ext.sample",
         "periodicCompatibility": "0.0.2",
@@ -65,7 +65,7 @@
       "name": "periodicjs.ext.example",
       "version": "0.0.1",
       "periodicCompatibility": "0.0.2",
-      "installed": true,
+      "installed": false,
       "enabled": false,
       "periodicConfig": {
         "name": "periodicjs.ext.example",

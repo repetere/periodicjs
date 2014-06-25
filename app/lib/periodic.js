@@ -90,7 +90,7 @@ var init = {
 		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(methodOverride());
-		app.use(connectDomain());
+		// app.use(connectDomain());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
@@ -173,7 +173,7 @@ var init = {
 	catchErrors : function(){
 		//log errors
 		app.use(function (err, req, res, next){
-			logger.error(err.stack);
+			logger.error(err);
 			next(err);
 		});
 
@@ -181,7 +181,7 @@ var init = {
 		//catch all errors
 		app.use(function (err,req, res, next) {
 			console.log("see all errors");
-			// console.log("err.name",err.name);
+			console.log("err.name",err.name);
 			if (req.xhr) {
 				res.send(500, { error: 'Something blew up!' });
 			}
