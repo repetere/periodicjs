@@ -247,7 +247,7 @@ var extension_show = function(req, res, next){
                         responseData:{
                             pagedata:{
                                 title:'post admin',
-                                headerjs: ["/extensions/periodicjs.ext.admin/javascripts/extshow.js"],
+                                // headerjs: ["/extensions/periodicjs.ext.admin/javascripts/extshow.js"],
                                 extensions:getAdminMenu()
                             },
                             periodic:{
@@ -320,7 +320,77 @@ var themes_index = function(req, res, next) {
         });
     }});
 };
+var theme_show = function(req, res, next){
+    var themename = req.params.id,
+        Themes = require(path.join(process.cwd(),'app/lib/themes')),
+        themeRouteConf = Themes.getThemeRouteFilePath(themename),
+        themePackageConf = Themes.getThemePeriodicConfFilePath(themename);
 
+    // an example using an object instead of an array
+    async.parallel({
+        packagefile: function(callback){
+            fs.readJson(themePackageConf, callback);
+        },
+        routefile: function(callback){
+            fs.readFile(themeRouteConf,'utf8', callback);
+        }
+    },
+    function(err, results) {
+        if(err){
+            console.log("async callback err",themename,err);
+            applicationController.handleDocumentQueryErrorResponse({
+                err:err,
+                res:res,
+                req:req
+            });
+        }
+        else{
+            applicationController.getPluginViewTemplate({
+                res:res,
+                req:req,
+                viewname:'p-admin/themes/show',
+                pluginname:'periodicjs.ext.admin',
+                themepath:appSettings.themepath,
+                themefileext:appSettings.templatefileextension,
+                callback:function(templatepath){
+                    // console.log("req.controllerData.extensions",req.controllerData.extensions);
+                    applicationController.handleDocumentQueryRender({
+                        res:res,
+                        req:req,
+                        renderView:templatepath,
+                        responseData:{
+                            pagedata:{
+                                title:'post admin',
+                                // headerjs: ["/extensions/periodicjs.ext.admin/javascripts/theme.js"],
+                                extensions:getAdminMenu()
+                            },
+                            periodic:{
+                                version: appSettings.version
+                            },
+                            themedata:results,
+                            theme: req.controllerData.theme,
+                            user:req.user
+                        }
+                    });
+                }});
+        }
+    });
+};
+var loadTheme = function(req, res, next){
+    var selectedTheme = req.params.id;
+
+    req.controllerData = req.controllerData || {};
+    req.controllerData.theme = {
+        name:selectedTheme,
+        activetheme:appSettings.theme
+    };
+    if(selectedTheme){
+        next();
+    }
+    else{
+        next(new Error("no theme selected"));
+    }
+};
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -337,7 +407,9 @@ var controller = function(resources){
         loadExtension:loadExtension,
         extension_show:extension_show,
         themes_index:themes_index,
-        loadThemes:loadThemes
+        loadThemes:loadThemes,
+        loadTheme:loadTheme,
+        theme_show:theme_show
 	};
 };
 

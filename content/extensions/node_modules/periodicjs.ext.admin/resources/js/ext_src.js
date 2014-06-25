@@ -228,7 +228,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 					// console.log(cnt);
 					// console.log(res.text);
 					if(res.text!==lastres){
-						otf = document.createElement("div");
+						otf = document.createElement("pre");
 						otf.innerHTML=res.text;
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
@@ -238,7 +238,7 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 							ribbonNotification.showRibbon( fullrepo+' installed' ,8000,'success');
 							if(!installedtable.innerHTML.match(fullrepo)){
 								var installedExt = document.createElement('tr');
-								installedExt.innerHTML='<td><a href="/p-admin/extensions/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'+'<td></td>'+'<td></td>';
+								installedExt.innerHTML='<td><a href="/p-admin/extension/view/'+fullrepo+'">'+fullrepo+'</a><div><small>Refresh page for updated UI</small</div></td>'+'<td></td>'+'<td></td>';
 								installedtablebody.appendChild(installedExt);
 							}
 							else{

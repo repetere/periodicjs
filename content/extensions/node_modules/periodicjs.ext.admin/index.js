@@ -22,11 +22,9 @@ module.exports = function(periodic){
 	 * admin routes
 	 */
 	adminRouter.get('/',authController.ensureAuthenticated,adminController.index);
-	adminRouter.get('/posts',authController.ensureAuthenticated,postController.loadPosts,adminController.posts_index);
-	adminRouter.get('/post/new',authController.ensureAuthenticated,adminController.post_new);
-	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
 	adminRouter.get('/extensions',authController.ensureAuthenticated,adminController.loadExtensions,adminController.extensions_index);
 	adminRouter.get('/themes',authController.ensureAuthenticated,adminController.loadThemes,adminController.themes_index);
+	adminRouter.get('/posts',authController.ensureAuthenticated,postController.loadPosts,adminController.posts_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -38,17 +36,21 @@ module.exports = function(periodic){
 	extensionRouter.get('/:id/enable',authController.ensureAuthenticated,extController.enable);
 	extensionRouter.post('/:id/delete',authController.ensureAuthenticated,extController.remove);
 	extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
-
+	/**
+	 * admin/theme manager routes
+	 */
 	themeRouter.get('/install',authController.ensureAuthenticated,themeController.install);
 	themeRouter.get('/install/log/:theme/:date',authController.ensureAuthenticated,themeController.install_getOutputLog);
 	themeRouter.get('/remove/log/:theme/:date',authController.ensureAuthenticated,themeController.remove_getOutputLog);
 	themeRouter.get('/cleanup/log/:theme/:date',authController.ensureAuthenticated,themeController.cleanup_log);
-	// extensionRouter.get('/:id/disable',authController.ensureAuthenticated,extController.disable);
 	themeRouter.get('/:id/enable',authController.ensureAuthenticated,themeController.enable);
 	themeRouter.post('/:id/delete',authController.ensureAuthenticated,themeController.remove);
-	// extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
-	
-
+	themeRouter.get('/:id',authController.ensureAuthenticated,adminController.loadTheme,adminController.theme_show);
+	/**
+	 * admin/post manager routes
+	 */
+	adminRouter.get('/post/new',authController.ensureAuthenticated,adminController.post_new);
+	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
 	postRouter.post('/edit',authController.ensureAuthenticated,postController.update);
 
