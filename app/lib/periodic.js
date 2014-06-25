@@ -35,11 +35,13 @@ var express = require('express'),
 	fs = require('fs'),
 	bodyParser = require('body-parser'),
 	multer = require('multer'),
+	methodOverride = require('method-override'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
 	session = require('express-session'),
 	responseTime = require('response-time'),
 	compress = require('compression'),
+	connectDomain = require('connect-domain'),
 	flash = require('connect-flash'),
 	csrf = require('csurf'),
 	ejs = require('ejs'),
@@ -58,27 +60,8 @@ var express = require('express'),
 //https://github.com/expressjs/vhost 
 
 var init = {
-	logErrors : function(){
+	useLogger : function(){
 		logger = new appLog(app.get('env'));
-
-		//log errors
-		app.use(function (err, req, res, next){
-			logger.error(err.stack);
-			next(err);
-		});
-
-		//send client errors
-		//catch all errors
-		app.use(function (err, req, res, next) {
-			console.log("err.name",err.name);
-			if (req.xhr) {
-				res.send(500, { error: 'Something blew up!' });
-			}
-			else {
-				res.status(500);
-				res.render('home/error500', { error: err });
-			}
-		});
 	},
 	loadConfiguration : function(){
 		appconfig = new config();
@@ -106,6 +89,8 @@ var init = {
 		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
+		app.use(methodOverride());
+		app.use(connectDomain());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
 	},
@@ -184,12 +169,34 @@ var init = {
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));
 		logger.info('Running in environment: '+app.get('env'));
-	}
+	},
+	catchErrors : function(){
+		//log errors
+		app.use(function (err, req, res, next){
+			logger.error(err.stack);
+			next(err);
+		});
+
+		//send client errors
+		//catch all errors
+		app.use(function (err,req, res, next) {
+			console.log("see all errors");
+			// console.log("err.name",err.name);
+			if (req.xhr) {
+				res.send(500, { error: 'Something blew up!' });
+			}
+			else {
+				res.status(500);
+				console.log(err);
+				res.render('home/error500', { message: err.message,error: err });
+			}
+		});
+	},
 };
 
 console.time('Server Starting');
 init.loadConfiguration();
-init.logErrors();
+init.useLogger();
 init.viewSettings();
 init.expressSettings();
 init.staticCaching();
@@ -199,8 +206,8 @@ init.useSessions();
 init.useLocals();
 init.applicationRouting();
 init.serverStatus();
+init.catchErrors();
 console.timeEnd('Server Starting');
-
 
 module.exports.app = app;
 module.exports.port = app.get('port');
