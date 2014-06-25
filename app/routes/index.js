@@ -9,7 +9,8 @@ module.exports = function(periodic){
 	var models = require('../../content/config/model')({
 			mongoose : periodic.db.mongoose,
 			dburl: periodic.db.url,
-			debug: periodic.settings.debug
+			debug: periodic.settings.debug,
+			periodic:periodic
 		}),
 		periodicController = require('../controller/periodic')(periodic),
 		homeController = require('../controller/home')(periodic),
@@ -30,7 +31,6 @@ module.exports = function(periodic){
 		extensions = new ExtentionLoader(periodic.settings);
 
 	periodic.settings.extconf =extensions.settings();
-	// console.log("periodic.settings",periodic.settings);
 	extensions.loadExtensions(periodic);
 
 	if(periodic.settings.theme && fs.existsSync(themeRoute)){
@@ -39,11 +39,6 @@ module.exports = function(periodic){
 
 	appRouter.get('/',homeController.index);
 	appRouter.get('/404|/notfound',homeController.error404);
-	// periodic.app.get('/',function(req,res){
-	// 	console.log("override index");
-	// 	res.render('home/index',{randomdata:'index override'});
-	// });
-
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
 	postRouter.get('/search',postController.loadPost,postController.show);
 	postRouter.get('/:id',postController.loadPost,postController.show);
