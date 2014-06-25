@@ -29,10 +29,27 @@
       }
     },
     {
+      "name": "periodicjs.ext.example",
+      "version": "0.0.1",
+      "periodicCompatibility": "0.0.2",
+      "installed": true,
+      "enabled": false,
+      "periodicConfig": {
+        "name": "periodicjs.ext.example",
+        "periodicCompatibility": "0.0.2",
+        "periodicDependencies": [
+          {
+            "extname": "periodicjs.ext.sample2",
+            "version": "0.0.2"
+          }
+        ]
+      }
+    },
+    {
       "name": "periodicjs.ext.sample",
       "version": "0.0.1",
       "periodicCompatibility": "0.0.2",
-      "installed": false,
+      "installed": true,
       "enabled": false,
       "periodicConfig": {
         "name": "periodicjs.ext.sample",
@@ -59,23 +76,6 @@
             }
           }
         }
-      }
-    },
-    {
-      "name": "periodicjs.ext.example",
-      "version": "0.0.1",
-      "periodicCompatibility": "0.0.2",
-      "installed": false,
-      "enabled": false,
-      "periodicConfig": {
-        "name": "periodicjs.ext.example",
-        "periodicCompatibility": "0.0.2",
-        "periodicDependencies": [
-          {
-            "extname": "periodicjs.ext.sample2",
-            "version": "0.0.2"
-          }
-        ]
       }
     }
   ]
