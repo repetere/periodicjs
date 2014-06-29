@@ -2,11 +2,16 @@
 <html>
 	<head>
 		<title> Error 500</title>
+		<style>
+			pre{
+				/*word-break: break-word;*/
+			}
+		</style>
 	</head>
 	<body>
-		<div><%- JSON.stringify(message) %></div>
-		<div><%- JSON.stringify(error) %></div>
-		<div><%- error.stack %></div>
+		<!-- <pre><%- JSON.stringify(error) %></pre>
+		<pre><%- message %></pre> -->
+		<pre><%- error.stack %></pre>
 		<div>:(</div>
 	</body>
 </html>

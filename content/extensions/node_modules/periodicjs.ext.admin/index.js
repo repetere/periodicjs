@@ -6,6 +6,7 @@ module.exports = function(periodic){
 		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		contenttypeRouter = periodic.express.Router(),
+		contenttypeAdminRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		extensionRouter = periodic.express.Router(),
 		themeRouter = periodic.express.Router(),
@@ -25,6 +26,7 @@ module.exports = function(periodic){
 	adminRouter.get('/extensions',authController.ensureAuthenticated,adminController.loadExtensions,adminController.extensions_index);
 	adminRouter.get('/themes',authController.ensureAuthenticated,adminController.loadThemes,adminController.themes_index);
 	adminRouter.get('/posts',authController.ensureAuthenticated,postController.loadPosts,adminController.posts_index);
+	adminRouter.get('/contenttypes',authController.ensureAuthenticated,contenttypeController.loadContenttypes,adminController.contenttypes_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -62,9 +64,12 @@ module.exports = function(periodic){
 
 	contenttypeRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 	contenttypeRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
+	contenttypeRouter.post('/append/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.append);
+	contenttypeAdminRouter.get('/:id',contenttypeController.loadContenttype,adminController.contenttype_show);
 
 	adminRouter.use('/extension',extensionRouter);
 	adminRouter.use('/theme',themeRouter);
+	adminRouter.use('/contenttype',contenttypeAdminRouter);
 	periodic.app.use('/p-admin',adminRouter);
 	periodic.app.use('/post',postRouter);
 	periodic.app.use('/tag',tagRouter);

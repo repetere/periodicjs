@@ -134,6 +134,63 @@ var post_edit = function(req, res, next) {
     }});
 };
 
+var contenttypes_index = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/contenttypes/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'post admin',
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                contenttypes: req.controllerData.contenttypes,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var contenttype_show = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/contenttypes/show',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'Edit Content Types',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/contenttype.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                contenttype: req.controllerData.contenttype,
+                user:req.user
+            }
+        });
+    }});
+};
+
 var loadExtension = function(req, res, next){
     var extname = req.params.id,
         currentExtensions = appSettings.extconf.extensions,
@@ -391,6 +448,7 @@ var loadTheme = function(req, res, next){
         next(new Error("no theme selected"));
     }
 };
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -409,7 +467,9 @@ var controller = function(resources){
         themes_index:themes_index,
         loadThemes:loadThemes,
         loadTheme:loadTheme,
-        theme_show:theme_show
+        theme_show:theme_show,
+        contenttypes_index:contenttypes_index,
+        contenttype_show:contenttype_show
 	};
 };
 

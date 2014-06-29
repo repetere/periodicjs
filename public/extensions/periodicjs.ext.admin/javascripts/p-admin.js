@@ -207,7 +207,7 @@ module.exports = ribbon;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.ribbon = ribbon;
 }
-},{"classie":3,"events":17,"util":18,"util-extend":5}],3:[function(require,module,exports){
+},{"classie":3,"events":16,"util":17,"util-extend":12}],3:[function(require,module,exports){
 /*
  * classie
  * http://github.amexpub.com/modules/classie
@@ -301,41 +301,6 @@ module.exports = require('./lib/classie');
     window.classie = classie;
   }
 },{}],5:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-module.exports = extend;
-function extend(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || typeof add !== 'object') return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-}
-
-},{}],6:[function(require,module,exports){
 /*
  * manuscript
  * http://github.com/typesettin/silkscreen
@@ -345,7 +310,7 @@ function extend(origin, add) {
 
 module.exports = require('./lib/silkscreen');
 
-},{"./lib/silkscreen":7}],7:[function(require,module,exports){
+},{"./lib/silkscreen":6}],6:[function(require,module,exports){
 /*
  * silkscreen
  * http://github.com/typesettin/silkscreen
@@ -559,13 +524,11 @@ module.exports = silkscreen;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.silkscreen = silkscreen;
 }
-},{"classie":8,"events":17,"util":18,"util-extend":10}],8:[function(require,module,exports){
+},{"classie":7,"events":16,"util":17,"util-extend":12}],7:[function(require,module,exports){
 module.exports=require(3)
-},{"./lib/classie":9}],9:[function(require,module,exports){
+},{"./lib/classie":8}],8:[function(require,module,exports){
 module.exports=require(4)
-},{}],10:[function(require,module,exports){
-module.exports=require(5)
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -1616,7 +1579,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":12,"reduce":13}],12:[function(require,module,exports){
+},{"emitter":10,"reduce":11}],10:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -1782,7 +1745,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -1807,7 +1770,42 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+module.exports = extend;
+function extend(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || typeof add !== 'object') return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+}
+
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var formToObject = function( formRef ){
@@ -1963,7 +1961,7 @@ formToObject.prototype.setFormObj = function(){
 }
 
 module.exports =formToObject;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var formobj = require('./formtoobject'),
@@ -2024,7 +2022,14 @@ window.ajaxFormEventListers = function(selector){
 					.query({ format: 'json' })
 					.send(formData)
 					.end(function(error, res){
-						if(error || res.body.result==='error'){
+						console.log(error,res);
+						if(res.clientError){
+							ribbonNotification.showRibbon( res.status+": "+res.text,4000,'error');
+						}
+						else if(res.error || error || res.body.result==='error'){
+							if(res.error){
+								error = res.error;
+							}
 							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 						}
 						else{
@@ -2037,7 +2042,7 @@ window.ajaxFormEventListers = function(selector){
 		}
 	}
 };
-},{"./formtoobject":14,"ribbonjs":1,"silkscreenjs":6,"superagent":11}],16:[function(require,module,exports){
+},{"./formtoobject":13,"ribbonjs":1,"silkscreenjs":5,"superagent":9}],15:[function(require,module,exports){
 
 
 //
@@ -2255,7 +2260,7 @@ if (typeof Object.getOwnPropertyDescriptor === 'function') {
   exports.getOwnPropertyDescriptor = valueObject;
 }
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2536,7 +2541,7 @@ EventEmitter.listenerCount = function(emitter, type) {
     ret = emitter._events[type].length;
   return ret;
 };
-},{"util":18}],18:[function(require,module,exports){
+},{"util":17}],17:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3081,5 +3086,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-},{"_shims":16}]},{},[15])
+},{"_shims":15}]},{},[14])
 ;

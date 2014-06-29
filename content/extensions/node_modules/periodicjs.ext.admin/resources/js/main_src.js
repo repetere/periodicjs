@@ -58,10 +58,14 @@ window.ajaxFormEventListers = function(selector){
 					.query({ format: 'json' })
 					.send(formData)
 					.end(function(error, res){
-						if(res.error){
-							error = res.error;
+						console.log(error,res);
+						if(res.clientError){
+							ribbonNotification.showRibbon( res.status+": "+res.text,4000,'error');
 						}
-						if(error || res.body.result==='error'){
+						else if(res.error || error || res.body.result==='error'){
+							if(res.error){
+								error = res.error;
+							}
 							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 						}
 						else{
