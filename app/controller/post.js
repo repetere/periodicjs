@@ -71,6 +71,7 @@ var update = function(req, res, next) {
 	    id:updatepost.docid,
 	    updatedoc:updatepost,
 	    saverevision:true,
+	    population:'contenttypes',
 	    res:res,
         req:req,
 	    successredirect:'/p-admin/post/edit/',

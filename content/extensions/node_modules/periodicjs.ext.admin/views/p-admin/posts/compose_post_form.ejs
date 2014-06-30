@@ -2,7 +2,7 @@
 <div class="_pea-container">
 	<div class="_pea-row">
 		<div class="_pea-col-span8">
-			<h2><% if(post){%>Edit<%}else{%>New<%} %> Post</h2>
+			<h2><% if(post){%>Edit<%}else{%>New<%} %> Document</h2>
 			<%if(post){%>
 				<input type="hidden" name="docid" value="<%= post._id %>">
 			<%}%>
@@ -67,7 +67,7 @@
 				new post
 			</div> -->
 			<h2>Content Type Attributes</h2>
-			<div class="_pea-document">
+			<div class="_pea-document" id="doc-ct-attr">
 				<% if(post && post.contenttypes){
 					post.contenttypes.forEach(function(ct){
 						%>
@@ -85,7 +85,7 @@
 										<label class="_pea-label _pea-col-span3">
 											<%= attr.title %>
 										</label>
-										<input class="_pea-col-span9 noFormSubmit" type="text" placeholder="<%= attr.title %>" value="<%- defaultVal %>" name="contenttypeattributes.<%= ct.title %>.<%= attr.name %>">
+										<input class="_pea-col-span9 noFormSubmit" type="text" placeholder="<%= attr.title %>" value="<%- defaultVal %>" name="contenttypeattributes.<%= ct.name %>.<%= attr.name %>">
 									</div>
 								<%});
 							} %>

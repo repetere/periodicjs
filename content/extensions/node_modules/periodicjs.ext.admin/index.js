@@ -5,9 +5,11 @@ module.exports = function(periodic){
 	var adminRouter = periodic.express.Router(),
 		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
+		tagAdminRouter = periodic.express.Router(),
 		contenttypeRouter = periodic.express.Router(),
 		contenttypeAdminRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
+		categoryAdminRouter = periodic.express.Router(),
 		extensionRouter = periodic.express.Router(),
 		themeRouter = periodic.express.Router(),
 		themeController = require('../../../../app/controller/theme')(periodic),
@@ -27,6 +29,8 @@ module.exports = function(periodic){
 	adminRouter.get('/themes',authController.ensureAuthenticated,adminController.loadThemes,adminController.themes_index);
 	adminRouter.get('/posts',authController.ensureAuthenticated,postController.loadPosts,adminController.posts_index);
 	adminRouter.get('/contenttypes',authController.ensureAuthenticated,contenttypeController.loadContenttypes,adminController.contenttypes_index);
+	adminRouter.get('/tags',authController.ensureAuthenticated,tagController.loadTags,adminController.tags_index);
+	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -55,22 +59,35 @@ module.exports = function(periodic){
 	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
 	postRouter.post('/edit',authController.ensureAuthenticated,postController.update);
-
+	/**
+	 * admin/tag manager routes
+	 */
 	tagRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),tagController.loadTag,tagController.create);
 	tagRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),tagController.loadTag,tagController.create);
-
+	tagAdminRouter.get('/:id',authController.ensureAuthenticated,tagController.loadTag,adminController.tag_show);
+	/**
+	 * admin/category manager routes
+	 */
 	categoryRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),categoryController.loadCategory,categoryController.create);
 	categoryRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),categoryController.loadCategory,categoryController.create);
-
+	categoryAdminRouter.get('/:id',authController.ensureAuthenticated,categoryController.loadCategory,adminController.category_show);
+	/**
+	 * admin/categorytype manager routes
+	 */
 	contenttypeRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 	contenttypeRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 	contenttypeRouter.post('/append/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.append);
 	contenttypeRouter.post('/removeitem/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.removeitem);
 	contenttypeAdminRouter.get('/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,adminController.contenttype_show);
+	/**
+	 * admin/collections manager routes
+	 */
 
 	adminRouter.use('/extension',extensionRouter);
 	adminRouter.use('/theme',themeRouter);
 	adminRouter.use('/contenttype',contenttypeAdminRouter);
+	adminRouter.use('/tag',tagAdminRouter);
+	adminRouter.use('/category',categoryAdminRouter);
 	periodic.app.use('/p-admin',adminRouter);
 	periodic.app.use('/post',postRouter);
 	periodic.app.use('/tag',tagRouter);
