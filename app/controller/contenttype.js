@@ -55,6 +55,26 @@ var append = function(req, res, next) {
 	});
 };
 
+var removeitem = function(req, res, next) {
+	var removeAttribute = applicationController.removeEmptyObjectValues(req.body),
+		objectToModify ={"attributes":removeAttribute};
+
+	delete removeAttribute._csrf;
+	console.log(removeAttribute);
+
+	applicationController.updateModel({
+		model:Contenttype,
+		id:req.controllerData.contenttype._id,
+		updatedoc:objectToModify,
+		saverevision:true,
+		res:res,
+		req:req,
+		removeFromArray : true,
+		successredirect:'/p-admin/contenttype/',
+		appendid:true
+	});
+};
+
 var loadContenttypes = function(req,res,next){
 	var params = req.params,
 		query,
@@ -127,7 +147,6 @@ var loadContenttype = function(req,res,next){
 	});
 };
 
-
 var searchResults = function(req,res,next){
 	applicationController.getViewTemplate({
 		res:res,
@@ -163,6 +182,7 @@ var controller = function(resources){
 		loadContenttype:loadContenttype,
 		create:create,
 		append:append,
+		removeitem:removeitem,
 		searchResults:searchResults
 	};
 };

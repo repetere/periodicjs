@@ -228,7 +228,20 @@ var applicationController = function(resources){
 			failredirect = options.failredirect,
 			appendid = options.appendid,
 			responseData={},
-			updateOperation = (options.appendArray)? {$push:updatedoc} : {$set:updatedoc} ;
+			updateOperation;
+
+			if(options.removeFromArray){
+				console.log("removing array in doc");
+				updateOperation = {$pull:updatedoc} ;
+			}
+			else if(options.appendArray){
+				console.log("appending array in doc");
+				updateOperation = {$push:updatedoc} ;
+			}
+			else{
+				console.log("updating entire doc");
+				updateOperation = {$set:updatedoc} ;
+			}
 
 		model.findByIdAndUpdate(id,updateOperation,function(err,saveddoc){
 			if(err){

@@ -1848,7 +1848,7 @@ formToObject.prototype.setForm = function(){
 
 // Set the elements we need to parse.
 formToObject.prototype.setFormElements = function(){
-	this.$formElements = this.$form.querySelectorAll('input, textarea, select');
+	this.$formElements = this.$form.querySelectorAll('input, button, textarea, select');
 	return this.$formElements.length;
 };
 
@@ -2012,9 +2012,15 @@ window.ajaxFormEventListers = function(selector){
 		if(typeof ajaxforms[x] ==='object'){
 			// console.log(new FormData(ajaxforms[x]));
 			ajaxforms[x].addEventListener("submit",function(e){
-				var f = e.target,
-				formData = new formobj(f);
-
+				var f = e.target;
+				if(f.getAttribute("data-beforesubmitfunction")){
+					var beforesubmitFunctionString = f.getAttribute("data-beforesubmitfunction"),
+					beforefn = window[beforesubmitFunctionString];
+					// is object a function?
+					if (typeof beforefn === "function"){beforefn(e)};
+				}
+				var formData = new formobj(f);
+				
 				request
 					.post(f.action)
 					.set('x-csrf-token',document.querySelector('input[name=_csrf]').value)
@@ -2022,7 +2028,7 @@ window.ajaxFormEventListers = function(selector){
 					.query({ format: 'json' })
 					.send(formData)
 					.end(function(error, res){
-						console.log(error,res);
+						// console.log(error,res);
 						if(res.clientError){
 							ribbonNotification.showRibbon( res.status+": "+res.text,4000,'error');
 						}
@@ -2034,8 +2040,15 @@ window.ajaxFormEventListers = function(selector){
 						}
 						else{
 							ribbonNotification.showRibbon("saved",4000,'success');
+							if(f.getAttribute("data-successfunction")){
+								var successFunctionString = f.getAttribute("data-successfunction"),
+								successfn = window[successFunctionString];
+								// is object a function?
+								if (typeof successfn === "function"){successfn(res.body.data)};
+							}
 						}
 					});
+
 
 				e.preventDefault();
 			},false);

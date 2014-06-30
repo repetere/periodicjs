@@ -120,7 +120,7 @@ var post_edit = function(req, res, next) {
             renderView:templatepath,
             responseData:{
                 pagedata:{
-                    title:'Edit Post',
+                    title:req.controllerData.post.title+' - Edit Post',
                     headerjs: ["/extensions/periodicjs.ext.admin/javascripts/post.js"],
                     extensions:getAdminMenu()
                 },
@@ -177,7 +177,7 @@ var contenttype_show = function(req, res, next) {
             renderView:templatepath,
             responseData:{
                 pagedata:{
-                    title:'Edit Content Types',
+                    title:req.controllerData.contenttype.title+' - Edit Content Types',
                     headerjs: ["/extensions/periodicjs.ext.admin/javascripts/contenttype.js"],
                     extensions:getAdminMenu()
                 },
@@ -248,7 +248,7 @@ var extensions_index = function(req, res, next) {
             renderView:templatepath,
             responseData:{
                 pagedata:{
-                    title:'post admin',
+                    title:'Extensions',
                     headerjs: ["/extensions/periodicjs.ext.admin/javascripts/ext.js"],
                     extensions:getAdminMenu()
                 },
@@ -303,7 +303,7 @@ var extension_show = function(req, res, next){
                         renderView:templatepath,
                         responseData:{
                             pagedata:{
-                                title:'post admin',
+                                title:req.controllerData.extension.name+' - Extension',
                                 // headerjs: ["/extensions/periodicjs.ext.admin/javascripts/extshow.js"],
                                 extensions:getAdminMenu()
                             },
@@ -362,7 +362,7 @@ var themes_index = function(req, res, next) {
             renderView:templatepath,
             responseData:{
                 pagedata:{
-                    title:'post admin',
+                    title:'Themes',
                     headerjs: ["/extensions/periodicjs.ext.admin/javascripts/theme.js"],
                     extensions:getAdminMenu()
                 },
@@ -417,7 +417,7 @@ var theme_show = function(req, res, next){
                         renderView:templatepath,
                         responseData:{
                             pagedata:{
-                                title:'post admin',
+                                title:req.controllerData.theme.name+' - Theme',
                                 // headerjs: ["/extensions/periodicjs.ext.admin/javascripts/theme.js"],
                                 extensions:getAdminMenu()
                             },

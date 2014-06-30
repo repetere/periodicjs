@@ -65,7 +65,8 @@ module.exports = function(periodic){
 	contenttypeRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 	contenttypeRouter.post('/new',multer({ dest: process.cwd() + '/public/uploads/files'}),contenttypeController.loadContenttype,contenttypeController.create);
 	contenttypeRouter.post('/append/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.append);
-	contenttypeAdminRouter.get('/:id',contenttypeController.loadContenttype,adminController.contenttype_show);
+	contenttypeRouter.post('/removeitem/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.removeitem);
+	contenttypeAdminRouter.get('/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,adminController.contenttype_show);
 
 	adminRouter.use('/extension',extensionRouter);
 	adminRouter.use('/theme',themeRouter);
