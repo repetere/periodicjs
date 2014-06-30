@@ -2,7 +2,7 @@
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
-	createPeriodicTag = function(id,val,callback,url){
+	createPeriodicTag = function(id,val,callback,url,type){
 		if((id==='NEWTAG' || id==='SELECT') && val){
 			request
 				.post(url)
@@ -24,12 +24,14 @@ var request = require('superagent'),
 								res.body.data.doc._id,
 								res.body.data.doc.title,
 								error);	
+								console.log("type",type);
 						}
 					}
 				});
 		}
 		else if(id!=='SELECT'||id!=='NEWTAG'){
 			callback(id,val);
+			console.log("type",type);
 		}
 	},
 	wysihtml5Editor,
@@ -69,11 +71,9 @@ var request = require('superagent'),
 		sourcedata: '/contenttype/search.json',
 		sourcearrayname: 'contenttypes',
 		createTagFunc:function(id,val,callback){			
-			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200');
+			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200',"contenttype");
 		}
 	});
-
-
 
 window.addEventListener("load",function(e){
 	tag_lp.init();
@@ -100,4 +100,4 @@ window.addEventListener("load",function(e){
 	});
 });
 
-window.tag_lp = tag_lp;
+window.cnt_lp = cnt_lp;

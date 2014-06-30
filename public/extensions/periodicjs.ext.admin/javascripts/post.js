@@ -402,7 +402,7 @@ module.exports = letterpress;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.letterpress = letterpress;
 }
-},{"classie":3,"domhelper":5,"events":13,"superagent":8,"util":14,"util-extend":7}],3:[function(require,module,exports){
+},{"classie":3,"domhelper":5,"events":13,"superagent":7,"util":14,"util-extend":10}],3:[function(require,module,exports){
 /*
  * classie
  * http://github.amexpub.com/modules/classie
@@ -846,41 +846,6 @@ if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.domhelper = domhelper;
 }
 },{"classie":3}],7:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-module.exports = extend;
-function extend(origin, add) {
-  // Don't do anything if add isn't an object
-  if (!add || typeof add !== 'object') return origin;
-
-  var keys = Object.keys(add);
-  var i = keys.length;
-  while (i--) {
-    origin[keys[i]] = add[keys[i]];
-  }
-  return origin;
-}
-
-},{}],8:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -1931,7 +1896,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":9,"reduce":10}],9:[function(require,module,exports){
+},{"emitter":8,"reduce":9}],8:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -2097,7 +2062,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -2122,18 +2087,56 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
+},{}],10:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+module.exports = extend;
+function extend(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || typeof add !== 'object') return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+}
+
 },{}],11:[function(require,module,exports){
 'use strict';
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
-	createPeriodicTag = function(id,val,callback,url){
+	createPeriodicTag = function(id,val,callback,url,type){
 		if((id==='NEWTAG' || id==='SELECT') && val){
 			request
 				.post(url)
 				.send({ title: val, _csrf: document.querySelector('input[name=_csrf]').value })
 				.set('Accept', 'application/json')
 				.end(function(error, res){
+					if(res.error){
+						error = res.error;
+					}
 					if(error){
 						ribbonNotification.showRibbon( error.message,4000,'error');
 					}
@@ -2146,12 +2149,14 @@ var request = require('superagent'),
 								res.body.data.doc._id,
 								res.body.data.doc.title,
 								error);	
+								console.log("type",type);
 						}
 					}
 				});
 		}
 		else if(id!=='SELECT'||id!=='NEWTAG'){
 			callback(id,val);
+			console.log("type",type);
 		}
 	},
 	wysihtml5Editor,
@@ -2191,11 +2196,9 @@ var request = require('superagent'),
 		sourcedata: '/contenttype/search.json',
 		sourcearrayname: 'contenttypes',
 		createTagFunc:function(id,val,callback){			
-			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200');
+			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200',"contenttype");
 		}
 	});
-
-
 
 window.addEventListener("load",function(e){
 	tag_lp.init();
@@ -2222,8 +2225,8 @@ window.addEventListener("load",function(e){
 	});
 });
 
-window.tag_lp = tag_lp;
-},{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
+window.cnt_lp = cnt_lp;
+},{"letterpressjs":1,"superagent":7}],12:[function(require,module,exports){
 
 
 //

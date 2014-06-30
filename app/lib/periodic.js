@@ -126,9 +126,7 @@ var init = {
 				express_session_config = {
 					secret:'hjoiuu87go9hui',
 					maxAge: new Date(Date.now() + 3600000),
-					store: new MongoStore({url:database[app.get('env')].url},function(err){
-						console.log("error in mongostore:",err);
-					})
+					store: new MongoStore({url:database[app.get('env')].url})
 				};
 			}
 			else{
@@ -192,7 +190,6 @@ var init = {
 				res.render('home/error500', { message: err.message,error: err });
 			}
 		});
-
 	},
 };
 

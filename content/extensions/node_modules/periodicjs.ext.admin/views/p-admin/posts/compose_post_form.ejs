@@ -26,7 +26,7 @@
 							<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue" href="javascript:;" unselectable="on">b</a> |
 							<a data-wysihtml5-command="undo" href="javascript:;" unselectable="on">undo</a> |
 							<a data-wysihtml5-command="redo" href="javascript:;" unselectable="on">redo</a> |
-							<a data-wysihtml5-command="insertSpeech" href="javascript:;" unselectable="on" style="position: relative;">speech<div style="left: 0px; margin: 0px; opacity: 0; overflow: hidden; padding: 0px; position: absolute; top: 0px; z-index: 1; width: 40px; height: 13px;"><input x-webkit-speech="" speech="" style="cursor: inherit; font-size: 50px; height: 50px; margin-top: -25px; outline: 0px; padding: 0px; position: absolute; right: -4px; top: 50%;"></div></a>
+							<!-- <a data-wysihtml5-command="insertSpeech" href="javascript:;" unselectable="on" style="position: relative;">speech<div style="left: 0px; margin: 0px; opacity: 0; overflow: hidden; padding: 0px; position: absolute; top: 0px; z-index: 1; width: 40px; height: 13px;"><input x-webkit-speech="" speech="" style="cursor: inherit; font-size: 50px; height: 50px; margin-top: -25px; outline: 0px; padding: 0px; position: absolute; right: -4px; top: 50%;"></div></a> -->
 							<a data-wysihtml5-action="change_view" href="javascript:;" unselectable="on" class="">&#60;/html&#62;</a>
 
 							<div data-wysihtml5-dialog="createLink" style="display: none;">
@@ -66,6 +66,34 @@
 			<div class="_pea-document">
 				new post
 			</div> -->
+			<h2>Content Type Attributes</h2>
+			<div class="_pea-document">
+				<% if(post && post.contenttypes){
+					post.contenttypes.forEach(function(ct){
+						%>
+						<div>
+							<h3 style="margin-top:0;"><%= ct.title %><small> <a href="/p-admin/contenttype/<%=ct.name%>">(edit)</a></small></h3>
+							<% if(ct.attributes){
+								ct.attributes.forEach(function(attr){
+									var defaultVal = attr.defaultvalue;
+
+									if(post.contenttypeattributes && post.contenttypeattributes[ct.name] && post.contenttypeattributes[ct.name][attr.name]){
+										defaultVal = post.contenttypeattributes[ct.name][attr.name];
+									}
+									%>
+									<div class="_pea-row _pea-container-forminput">
+										<label class="_pea-label _pea-col-span3">
+											<%= attr.title %>
+										</label>
+										<input class="_pea-col-span9 noFormSubmit" type="text" placeholder="<%= attr.title %>" value="<%- defaultVal %>" name="contenttypeattributes.<%= ct.title %>.<%= attr.name %>">
+									</div>
+								<%});
+							} %>
+						</div>
+						<%
+					});
+				} %>
+			</div>
 		</div>
 		<div class="_pea-col-span3 _pea-pull-right">
 			<h2>Options</h2>

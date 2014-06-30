@@ -80,6 +80,7 @@ var update = function(req, res, next) {
 
 var loadPost = function(req,res,next){
 	var params = req.params,
+		population = 'contenttypes',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};

@@ -40,7 +40,7 @@ formToObject.prototype.setForm = function(){
 
 // Set the elements we need to parse.
 formToObject.prototype.setFormElements = function(){
-	this.$formElements = this.$form.querySelectorAll('input, textarea, select');
+	this.$formElements = this.$form.querySelectorAll('input, button, textarea, select');
 	return this.$formElements.length;
 };
 

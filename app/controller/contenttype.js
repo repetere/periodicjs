@@ -37,13 +37,51 @@ var create = function(req, res, next) {
 	}
 };
 
+var append = function(req, res, next) {
+	var newattribute = applicationController.removeEmptyObjectValues(req.body);
+	newattribute.name = applicationController.makeNiceName(newattribute.title);
+	var objectToModify ={"attributes":newattribute};
+
+	applicationController.updateModel({
+		model:Contenttype,
+		id:req.controllerData.contenttype._id,
+		updatedoc:objectToModify,
+		saverevision:true,
+		res:res,
+		req:req,
+		appendArray : true,
+		successredirect:'/p-admin/contenttype/',
+		appendid:true
+	});
+};
+
+var removeitem = function(req, res, next) {
+	var removeAttribute = applicationController.removeEmptyObjectValues(req.body),
+		objectToModify ={"attributes":removeAttribute};
+
+	delete removeAttribute._csrf;
+	console.log(removeAttribute);
+
+	applicationController.updateModel({
+		model:Contenttype,
+		id:req.controllerData.contenttype._id,
+		updatedoc:objectToModify,
+		saverevision:true,
+		res:res,
+		req:req,
+		removeFromArray : true,
+		successredirect:'/p-admin/contenttype/',
+		appendid:true
+	});
+};
+
 var loadContenttypes = function(req,res,next){
 	var params = req.params,
 		query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		// population = 'contenttypes collections authors primaryauthor',
+		population = 'author',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
@@ -66,7 +104,7 @@ var loadContenttypes = function(req,res,next){
 		sort:sort,
 		limit:limit,
 		offset:offset,
-		// population:population,
+		population:population,
 		callback:function(err,documents){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -109,7 +147,6 @@ var loadContenttype = function(req,res,next){
 	});
 };
 
-
 var searchResults = function(req,res,next){
 	applicationController.getViewTemplate({
 		res:res,
@@ -144,6 +181,8 @@ var controller = function(resources){
 		loadContenttypes:loadContenttypes,
 		loadContenttype:loadContenttype,
 		create:create,
+		append:append,
+		removeitem:removeitem,
 		searchResults:searchResults
 	};
 };

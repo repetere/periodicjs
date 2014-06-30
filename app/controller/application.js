@@ -227,9 +227,23 @@ var applicationController = function(resources){
 			successredirect = options.successredirect,
 			failredirect = options.failredirect,
 			appendid = options.appendid,
-			responseData={};
+			responseData={},
+			updateOperation;
 
-		model.findByIdAndUpdate(id,{$set:updatedoc},function(err,saveddoc){
+			if(options.removeFromArray){
+				console.log("removing array in doc");
+				updateOperation = {$pull:updatedoc} ;
+			}
+			else if(options.appendArray){
+				console.log("appending array in doc");
+				updateOperation = {$push:updatedoc} ;
+			}
+			else{
+				console.log("updating entire doc");
+				updateOperation = {$set:updatedoc} ;
+			}
+
+		model.findByIdAndUpdate(id,updateOperation,function(err,saveddoc){
 			if(err){
 				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
 			}
@@ -276,6 +290,14 @@ var applicationController = function(resources){
 				if (err) return handleError(err);
 				res.send(tank);
 		});
+		Contact.findByIdAndUpdate(
+		    info._id,
+		    {$push: {"messages": {title: title, msg: msg}}},
+		    {safe: true, upsert: true},
+		    function(err, model) {
+		        console.log(err);
+		    }
+		);
 		*/
 	}.bind(this);
 

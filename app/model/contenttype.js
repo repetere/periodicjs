@@ -15,8 +15,9 @@ var contenttypeSchema = new Schema({
         ref:"User"
     },
     attributes:[{
+        title: String,
         name: String,
-        type: String,
+        datatype: String,
         defaultvalue: String,
     }]
 });
