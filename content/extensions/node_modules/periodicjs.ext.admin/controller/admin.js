@@ -191,6 +191,120 @@ var contenttype_show = function(req, res, next) {
     }});
 };
 
+var tags_index = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/tags/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'tag admin',
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                tags: req.controllerData.tags,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var tag_show = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/tags/show',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:req.controllerData.tag.title+' - Edit Tag',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/tag.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                tag: req.controllerData.tag,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var categories_index = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/categories/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'Category admin',
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                categories: req.controllerData.categories,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var category_show = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/categories/show',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:req.controllerData.category.title+' - Edit Tag',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/category.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                category: req.controllerData.category,
+                user:req.user
+            }
+        });
+    }});
+};
+
 var loadExtension = function(req, res, next){
     var extname = req.params.id,
         currentExtensions = appSettings.extconf.extensions,
@@ -469,7 +583,11 @@ var controller = function(resources){
         loadTheme:loadTheme,
         theme_show:theme_show,
         contenttypes_index:contenttypes_index,
-        contenttype_show:contenttype_show
+        contenttype_show:contenttype_show,
+        tags_index:tags_index,
+        tag_show:tag_show,
+        categories_index:categories_index,
+        category_show:category_show,
 	};
 };
 

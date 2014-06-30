@@ -30,8 +30,10 @@ var categorySchema = new Schema({
     },
     children: [{
         type:ObjectId,
-        ref:"Category"
+        ref:"Category",
+        index: true
     }], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
+    //http://www.codeproject.com/Articles/521713/Storing-Tree-like-Hierarchy-Structures-With-MongoD
     attributes: Schema.Types.Mixed,
     random: Number
 });

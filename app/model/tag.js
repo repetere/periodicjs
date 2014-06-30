@@ -10,8 +10,7 @@ var tagSchema = new Schema({
     name: {
         type: String, unique: true
     },
-    dek: String,
-    content: String,
+    description: String,
     author: {
         type:ObjectId,
         ref:"User"

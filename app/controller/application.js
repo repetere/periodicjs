@@ -253,8 +253,24 @@ var applicationController = function(resources){
 					responseData.result="success";
 					responseData.data = {};
 					responseData.data.flash_messages = req.flash();
-					responseData.data.doc = saveddoc;
-					res.send(responseData);
+					if(options.population){
+						model.findOne({_id:saveddoc._id}).populate(options.population).exec(function(err,popdoc){
+							if(err){
+								responseData.data.docpopulationerror = err;
+								responseData.data.status = 'couldnt populate';
+								responseData.data.doc = saveddoc;
+								res.send(responseData);
+							}
+							else{
+								responseData.data.doc = popdoc;
+								res.send(responseData);
+							}
+						});
+					}
+					else{
+						responseData.data.doc = saveddoc;
+						res.send(responseData);
+					}
 				}
 				else if(appendid){
 					req.flash("success","Saved");
