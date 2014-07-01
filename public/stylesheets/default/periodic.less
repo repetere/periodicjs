@@ -16,6 +16,10 @@ a:hover{
 	text-decoration: underline;
 }
 
+@_pea-color-warn :#fcd04b;
+@_pea-color-error :#e74c3c;
+@_pea-color-success :#2ac56c;
+@_pea-color-info :#4593e3;
 
 ._pea-container{
 	margin: 0 2em;
@@ -345,6 +349,15 @@ footer{
 		text-decoration: none;
 	}
 }
+.wysiwyg-color-red{
+	color:@_pea-color-warn;
+}
+.wysiwyg-color-green{
+	color:@_pea-color-success;
+}
+.wysiwyg-color-blue{
+	color:@_pea-color-info;
+}
 
 .transition(@tprop){
 	-webkit-transition: @tprop;
@@ -362,7 +375,6 @@ footer{
 	float:left;
 	box-sizing: border-box;
 }
-
 ._pea-color-warn{
 	background: #fcd04b;
 	color:#fff;

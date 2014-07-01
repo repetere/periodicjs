@@ -20,6 +20,10 @@ var collectionSchema = new Schema({
         type:ObjectId,
         ref:"Asset"
     },
+    primaryauthor:{
+        type:ObjectId,
+        ref:"User"
+    },
     createdat: {
         type: Date,
         "default": Date.now
@@ -34,6 +38,18 @@ var collectionSchema = new Schema({
 	        type:ObjectId,
 	        ref:"Post"
 	    }
+    }],
+    contenttypes: [{
+        type:ObjectId,
+        ref:"Contenttype"
+    }],
+    tags: [{
+        type:ObjectId,
+        ref:"Tag"
+    }],
+    categories: [{
+        type:ObjectId,
+        ref:"Category"
     }],
     attributes: Schema.Types.Mixed,
     random: Number
@@ -50,17 +66,17 @@ collectionSchema.pre('save',function(next,done){
 });
 
 collectionSchema.post('init', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been initialized from the db');
+    console.log("model - collection.js - "+doc._id+' has been initialized from the db');
 });
 collectionSchema.post('validate', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been validated (but not saved yet)');
+    console.log("model - collection.js - "+doc._id+' has been validated (but not saved yet)');
 });
 collectionSchema.post('save', function (doc) {
     // this.db.models.Post.emit('created', this);
-    console.log("model - post.js - "+doc._id+' has been saved');
+    console.log("model - collection.js - "+doc._id+' has been saved');
 });
 collectionSchema.post('remove', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been removed');
+    console.log("model - collection.js - "+doc._id+' has been removed');
 });
 
 collectionSchema.statics.getRandomWorkout = function(options,callback){

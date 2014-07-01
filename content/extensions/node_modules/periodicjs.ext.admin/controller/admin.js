@@ -134,6 +134,95 @@ var post_edit = function(req, res, next) {
     }});
 };
 
+var collections_index = function(req, res, next) {
+    console.log("req.controllerData.collections",req.controllerData.collections);
+
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/collections/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'Collections',
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                collections: req.controllerData.collections,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var collection_new = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/collections/new',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'New Collection',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/collection.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                collection:null,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var collection_edit = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/collections/edit',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:req.controllerData.collection.title+' - Edit Collection',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/collection.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                collection: req.controllerData.collection,
+                user:req.user
+            }
+        });
+    }});
+};
+
+
 var contenttypes_index = function(req, res, next) {
     applicationController.getPluginViewTemplate({
     res:res,
@@ -571,9 +660,12 @@ var controller = function(resources){
 	
 	return{
 		index:index,
-		posts_index:posts_index,
-		post_new:post_new,
+        posts_index:posts_index,
+        post_new:post_new,
         post_edit:post_edit,
+        collections_index:collections_index,
+        collection_new:collection_new,
+        collection_edit:collection_edit,
         extensions_index:extensions_index,
         loadExtensions:loadExtensions,
         loadExtension:loadExtension,

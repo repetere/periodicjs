@@ -10,6 +10,8 @@ module.exports = function(periodic){
 		contenttypeAdminRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		categoryAdminRouter = periodic.express.Router(),
+		collectionRouter = periodic.express.Router(),
+		// collectionAdminRouter = periodic.express.Router(),
 		extensionRouter = periodic.express.Router(),
 		themeRouter = periodic.express.Router(),
 		themeController = require('../../../../app/controller/theme')(periodic),
@@ -18,6 +20,7 @@ module.exports = function(periodic){
 		tagController = require('../../../../app/controller/tag')(periodic),
 		categoryController = require('../../../../app/controller/category')(periodic),
 		contenttypeController = require('../../../../app/controller/contenttype')(periodic),
+		collectionController = require('../../../../app/controller/collection')(periodic),
 		adminController = require('./controller/admin')(periodic),
 		authController = require('../periodicjs.ext.login/controller/auth')(periodic);
 
@@ -31,6 +34,7 @@ module.exports = function(periodic){
 	adminRouter.get('/contenttypes',authController.ensureAuthenticated,contenttypeController.loadContenttypes,adminController.contenttypes_index);
 	adminRouter.get('/tags',authController.ensureAuthenticated,tagController.loadTags,adminController.tags_index);
 	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
+	adminRouter.get('/collections',authController.ensureAuthenticated,collectionController.loadCollections,adminController.collections_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -59,6 +63,14 @@ module.exports = function(periodic){
 	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
 	postRouter.post('/edit',authController.ensureAuthenticated,postController.update);
+	/**
+	 * admin/collection manager routes
+	 */
+	adminRouter.get('/collection/new',authController.ensureAuthenticated,adminController.collection_new);
+	adminRouter.get('/collection/edit/:id',authController.ensureAuthenticated,collectionController.loadCollection,adminController.collection_edit);
+	collectionRouter.post('/new',collectionController.loadCollection,authController.ensureAuthenticated,collectionController.create);
+	collectionRouter.post('/edit',authController.ensureAuthenticated,collectionController.update);
+	// collectionRouter.post('/:id/delete',authController.ensureAuthenticated,collectionController.remove);
 	/**
 	 * admin/tag manager routes
 	 */
@@ -90,6 +102,7 @@ module.exports = function(periodic){
 	adminRouter.use('/category',categoryAdminRouter);
 	periodic.app.use('/p-admin',adminRouter);
 	periodic.app.use('/post',postRouter);
+	periodic.app.use('/collection',collectionRouter);
 	periodic.app.use('/tag',tagRouter);
 	periodic.app.use('/category',categoryRouter);
 	periodic.app.use('/contenttype',contenttypeRouter);
