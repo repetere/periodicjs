@@ -6,6 +6,7 @@ module.exports = function(periodic){
 		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		tagAdminRouter = periodic.express.Router(),
+		mediaRouter = periodic.express.Router(),
 		contenttypeRouter = periodic.express.Router(),
 		contenttypeAdminRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
@@ -18,6 +19,7 @@ module.exports = function(periodic){
 		extController = require('../../../../app/controller/extension')(periodic),
 		postController = require('../../../../app/controller/post')(periodic),
 		tagController = require('../../../../app/controller/tag')(periodic),
+		mediaassetController = require('../../../../app/controller/asset')(periodic),
 		categoryController = require('../../../../app/controller/category')(periodic),
 		contenttypeController = require('../../../../app/controller/contenttype')(periodic),
 		collectionController = require('../../../../app/controller/collection')(periodic),
@@ -94,8 +96,10 @@ module.exports = function(periodic){
 	contenttypeRouter.post('/removeitem/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.removeitem);
 	contenttypeAdminRouter.get('/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,adminController.contenttype_show);
 	/**
-	 * admin/collections manager routes
+	 * admin/media manager routes
 	 */
+	mediaRouter.post('/new',authController.ensureAuthenticated,mediaassetController.upload,mediaassetController.createassetfile);
+
 
 	adminRouter.use('/extension',extensionRouter);
 	adminRouter.use('/theme',themeRouter);
@@ -108,4 +112,5 @@ module.exports = function(periodic){
 	periodic.app.use('/tag',tagRouter);
 	periodic.app.use('/category',categoryRouter);
 	periodic.app.use('/contenttype',contenttypeRouter);
+	periodic.app.use('/mediaasset',mediaRouter);
 };

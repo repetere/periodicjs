@@ -62,10 +62,29 @@
 					</div>
 				</div>
 			</div>
-			<!-- <h2>Media Assets</h2>
+			<h2>Media Assets</h2>
 			<div class="_pea-document">
-				new post
-			</div> -->
+				<div class="_pea-row _pea-container-forminput">
+					<label class="_pea-label _pea-col-span3">file</label>
+					<input type="file" id="padmin-mediafiles" class="_pea-col-span9" name="mediafiles" multiple="multiple" />
+					<!-- <div id="filedrag">drag or drop files here</div> -->
+					<!-- http://www.sitepoint.com/html5-file-drag-and-drop/ -->
+				</div>
+				<div id="media-files-result" class="_pea-row _pea-container-forminput">
+					<% if(post && post.assets){
+						post.assets.forEach(function(asset){
+							%>
+							<div data-id="asset._id" class="_pea-col-span4 media-item-x">
+								<input style="display:none;" name="assets" type="checkbox" value="<%=asset._id%>" checked="checked"></input>
+								<% if(asset.assettype.match("image")){
+									%><img class="_pea-col-span11" src="<%=asset.fileurl%>"/><%
+								} %>
+							</div>
+							<%
+						});
+					} %>
+				</div>
+			</div>
 			<h2>Content Type Attributes</h2>
 			<div class="_pea-document" id="doc-ct-attr">
 				<% if(post && post.contenttypes){

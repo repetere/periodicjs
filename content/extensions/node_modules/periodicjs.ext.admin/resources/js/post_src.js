@@ -2,6 +2,7 @@
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
+	updatemedia = require('./updatemedia'),
 	createPeriodicTag = function(id,val,callback,url,type){
 		if((id==='NEWTAG' || id==='SELECT') && val){
 			request
@@ -73,7 +74,9 @@ var request = require('superagent'),
 		createTagFunc:function(id,val,callback){			
 			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200',"contenttype");
 		}
-	});
+	}),
+	mediafileinput,
+	mediafilesresult;
 
 window.addEventListener("load",function(e){
 	tag_lp.init();
@@ -98,6 +101,9 @@ window.addEventListener("load",function(e){
 		toolbar:      "wysihtml5-toolbar", // id of toolbar element
 		parserRules:  wysihtml5ParserRules // defined in parser rules set 
 	});
+	mediafileinput = document.getElementById("padmin-mediafiles");
+	mediafilesresult = document.getElementById("media-files-result");
+	mediafileinput.addEventListener("change",uploadMediaFiles,false);
 });
 
 window.updateContentTypes = function(AjaxDataResponse){
@@ -125,6 +131,71 @@ window.updateContentTypes = function(AjaxDataResponse){
 		contentTypeHtml+='</div>';
 	}
 	contenttypeContainer.innerHTML = contentTypeHtml;
+};
+
+var uploadFile = function(file){
+	var reader = new FileReader();
+	var client = new XMLHttpRequest();
+	var formData = new FormData();
+
+	reader.onload = function(e) {
+		// console.log(e);
+		// console.log(file);
+		formData.append("mediafile",file,file.name);
+
+		client.open("post", "/mediaasset/new?format=json", true);
+		client.setRequestHeader("x-csrf-token", document.querySelector('input[name=_csrf]').value );
+		client.send(formData);  /* Send to server */ 
+	}
+	reader.readAsDataURL(file);
+	client.onreadystatechange = function(){
+		if(client.readyState == 4){
+			try{
+				var res = JSON.parse(client.response);
+				if(res.result==='error'){
+					ribbonNotification.showRibbon( res.data.error,4000,'error');
+				}
+				else if(client.status !== 200){
+					ribbonNotification.showRibbon( client.status+": "+client.statusText,4000,'error');
+				}
+				else{
+					ribbonNotification.showRibbon("saved",4000,'success');
+					updatemedia(mediafilesresult,res.data.doc);
+				}
+			}
+			catch(e){
+				console.log(e);
+			}
+		}
+	}
+};
+
+// var updateMediaResultHtml = function(element,mediadoc){
+// 	element.appendChild(generateMediaHtml(mediadoc));
+// };
+
+// var generateMediaHtml = function(mediadoc){
+// 	var mediaHtml = document.createElement("div"),
+// 		htmlForInnerMedia='';
+// 	mediaHtml.setAttribute("class","_pea-col-span4 media-item-x");
+// 	mediaHtml.setAttribute("data-id",mediadoc._id);
+// 	htmlForInnerMedia+='<input style="display:none;" name="assets" type="checkbox" value="'+mediadoc._id+'" checked="checked"></input>';
+// 	if(mediadoc.assettype.match("image")){
+// 		htmlForInnerMedia+='<img class="_pea-col-span11" src="'+mediadoc.fileurl+'"/>';
+// 	}
+// 	mediaHtml.innerHTML = htmlForInnerMedia;
+// 	return mediaHtml;
+// };
+
+var uploadMediaFiles = function(e){
+	// fetch FileList object
+	var files = e.target.files || e.dataTransfer.files;
+
+	// process all File objects
+	for (var i = 0, f; f = files[i]; i++) {
+		// ParseFile(f);
+		uploadFile(f);
+	}
 };
 
 window.cnt_lp = cnt_lp;

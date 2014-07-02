@@ -52,6 +52,7 @@ var create = function(req, res, next) {
 	newpost.primaryauthor = req.user._id;
 	newpost.authors = [req.user._id];
 
+
     applicationController.createModel({
 	    model:Post,
 	    newdoc:newpost,
@@ -65,6 +66,9 @@ var create = function(req, res, next) {
 var update = function(req, res, next) {
 	var updatepost = applicationController.removeEmptyObjectValues(req.body);
 	updatepost.name = applicationController.makeNiceName(updatepost.title);
+	if(!updatepost.primaryasset && updatepost.assets && updatepost.assets.length>0){
+		updatepost.primaryasset = updatepost.assets[0];
+	}
 
     applicationController.updateModel({
 	    model:Post,

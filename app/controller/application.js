@@ -197,6 +197,7 @@ var applicationController = function(resources){
 
 		model.create(newdoc,function(err,saveddoc){
 			// console.log("createModel err",err);
+			// console.log("createModel saveddoc",saveddoc);
 			if(err){
 				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
 			}
