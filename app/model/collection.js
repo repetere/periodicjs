@@ -34,6 +34,7 @@ var collectionSchema = new Schema({
     },
     posts :[{
         order: Number,
+        additionalattributes: Schema.Types.Mixed,
         post:{
 	        type:ObjectId,
 	        ref:"Post"

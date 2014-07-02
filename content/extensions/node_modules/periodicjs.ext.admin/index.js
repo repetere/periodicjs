@@ -70,6 +70,8 @@ module.exports = function(periodic){
 	adminRouter.get('/collection/edit/:id',authController.ensureAuthenticated,collectionController.loadCollection,adminController.collection_edit);
 	collectionRouter.post('/new',collectionController.loadCollection,authController.ensureAuthenticated,collectionController.create);
 	collectionRouter.post('/edit',authController.ensureAuthenticated,collectionController.update);
+	collectionRouter.post('/append/:id',authController.ensureAuthenticated,collectionController.loadCollection,collectionController.append);
+
 	// collectionRouter.post('/:id/delete',authController.ensureAuthenticated,collectionController.remove);
 	/**
 	 * admin/tag manager routes

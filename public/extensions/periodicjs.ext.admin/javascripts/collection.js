@@ -2201,7 +2201,10 @@ var request = require('superagent'),
 	}),
 	searchDocButton,
 	searchDocInputText,
-	searchDocResults;
+	searchDocResults,
+	collectionDocs,
+	collectionDocsResults,
+	collectionDocsItemTable;
 
 window.addEventListener("load",function(e){
 	tag_lp.init();
@@ -2229,7 +2232,11 @@ window.addEventListener("load",function(e){
 	searchDocButton = document.getElementById("searchdocumentsbutton");
 	searchDocInputText = document.getElementById("searchdocumentstext");
 	searchDocResults = document.getElementById("collection-item-searchresult");
+	collectionDocs = document.getElementById("collection-items");
+	collectionDocsResults = document.getElementById("collection-item-documents");
+	collectionDocsItemTable = document.getElementById("collection-table-items");
 	searchDocButton.addEventListener("click",searchDocs,false);
+	collectionDocs.addEventListener("click",collectionDocsCLick,false);
 });
 
 window.updateContentTypes = function(AjaxDataResponse){
@@ -2257,6 +2264,56 @@ window.updateContentTypes = function(AjaxDataResponse){
 		contentTypeHtml+='</div>';
 	}
 	contenttypeContainer.innerHTML = contentTypeHtml;
+};
+
+var collectionDocsCLick = function(e){
+	var eTarget = e.target;
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("add-doc-to-collection")){
+		request
+			.post('/collection/append/'+document.querySelector('input[name=docid]').value)
+			.send({ 
+				_csrf: document.querySelector('input[name=_csrf]').value,
+				posts: {order:10, post:eTarget.getAttribute("data-docid")}
+			})
+			.set('Accept', 'application/json')
+			.query({ format: 'json' })
+			.end(function(error, res){
+				if(res.error){
+					error = res.error;
+				}
+				if(error){
+					ribbonNotification.showRibbon( error.message,4000,'error');
+				}
+				else{
+					if(res.body.result==='error'){
+						ribbonNotification.showRibbon( res.body.data.error,4000,'error');
+					}
+					else{
+						generateCollectionDoc(eTarget.parentElement.parentElement);
+					}
+				}
+			});
+	}
+	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("remove-doc-to-collection")){
+		// var elemtoremove = document.getElementById("tr-docid-"+eTarget.getAttribute("data-docid"));
+		var elemtoremove = eTarget.parentElement.parentElement;
+		elemtoremove.parentElement.removeChild(elemtoremove);
+	}
+};
+
+var generateCollectionDoc = function(documentstoadd){
+	documentstoadd.style.display="none";
+	var docid = documentstoadd.firstChild.firstChild.getAttribute("data-docid");
+	var removecolumn = document.createElement("td");
+	removecolumn.setAttribute("class","_pea-col-span3 _pea-text-right");
+	removecolumn.innerHTML='<a data-docid="'+docid+'" class="_pea-button remove-doc-to-collection _pea-color-error">x</a>';
+	// console.log("removecolumn",removecolumn);
+	documentstoadd.removeChild(documentstoadd.firstChild);
+	documentstoadd.appendChild(removecolumn);
+	documentstoadd.firstChild.setAttribute("class","_pea-col-span9");
+	collectionDocsItemTable.appendChild(documentstoadd);
+	documentstoadd.style.display="table-row";
+	documentstoadd.style.width="100%";
 };
 
 var searchDocs = function(e){
@@ -2289,18 +2346,39 @@ var generateSearchResult = function(documents){
 	for(var x in documents){
 		var docresult = documents[x];
 		docresulthtml+='<tr>';
-		docresulthtml+='<td><a data-docid="'+docresult._id+'" class="_pea-button _pea-color-success">+</a></td>';
-		docresulthtml+='<td>'+docresult.title+'</td>';
-		docresulthtml+='<td> tags:'+docresult.tags+',  categories:'+docresult.categories+', contenttypes:'+docresult.contenttypes+', authors:'+docresult.authors+',</td>';
+		docresulthtml+='<td><a data-docid="'+docresult._id+'" class="_pea-button add-doc-to-collection _pea-color-success">+</a></td>';
+		docresulthtml+='<td>'+docresult.title;
+		docresulthtml+='<div><small>';
+		if(docresult.authors){
+			docresulthtml+='<strong>authors:</strong> ';
+			for(var i in docresult.authors){
+				docresulthtml+=docresult.authors[i].username+', ';
+			}
+		}
+		if(docresult.tags){
+			docresulthtml+='<strong>tags:</strong> ';
+			for(var i in docresult.tags){
+				docresulthtml+=docresult.tags[i].title+', ';
+			}
+		}
+		if(docresult.categories){
+			docresulthtml+='<strong>categories:</strong> ';
+			for(var i in docresult.categories){
+				docresulthtml+=docresult.categories[i].title+', ';
+			}
+		}
+		if(docresult.contenttypes){
+			docresulthtml+='<strong>contenttypes:</strong> ';
+			for(var i in docresult.contenttypes){
+				docresulthtml+=docresult.contenttypes[i].title+', ';
+			}
+		}
+		docresulthtml+='</small></div></td>';
 		docresulthtml+='</tr>';
 	}
 	docresulthtml+='</table>';
 	searchDocResults.innerHTML=docresulthtml;
 };
-
-/*
-<div id="contenttypes-cbc" class="_ltr-cbc"><input id="lp-cbx_53b36eca5e922b7a6296bc4b" name="contenttypes" type="checkbox" value="53b36eca5e922b7a6296bc4b" checked="checked"></input></div>
- */
 
 window.cnt_lp = cnt_lp;
 },{"letterpressjs":1,"superagent":7}],12:[function(require,module,exports){

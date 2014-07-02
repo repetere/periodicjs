@@ -134,8 +134,10 @@ var applicationController = function(resources){
 	this.loadModel = function(options) {
 		var model = options.model,
 			docid = options.docid,
+			sort = options.sort,
 			callback = options.callback,
 			population = options.population,
+			selection = options.selection,
 			query;
 
 		if (isValidObjectID(docid)) {
@@ -154,10 +156,10 @@ var applicationController = function(resources){
 		}
 
 		if(population){
-			model.findOne(query).populate(population).exec(callback);
+			model.findOne(query).sort(sort).select(selection).populate(population).exec(callback);
 		}
 		else{
-			model.findOne(query).exec(callback);
+			model.findOne(query).sort(sort).select(selection).exec(callback);
 		}
 	};
 
@@ -166,6 +168,7 @@ var applicationController = function(resources){
 			query = options.query,
 			sort = options.sort,
 			offset = options.offset,
+			selection = options.selection,
 			limit = options.limit,
 			callback = options.callback,
 			population = options.population;
@@ -175,10 +178,10 @@ var applicationController = function(resources){
 		limit = (limit || limit >200)? limit : 30;
 
 		if(population){
-			model.find(query).sort(sort).limit(limit).skip(offset).populate(population).exec(callback);
+			model.find(query).sort(sort).select(selection).limit(limit).skip(offset).populate(population).exec(callback);
 		}
 		else{
-			model.find(query).sort(sort).limit(limit).skip(offset).exec(callback);
+			model.find(query).sort(sort).select(selection).limit(limit).skip(offset).exec(callback);
 		}
 	};
 
@@ -193,7 +196,7 @@ var applicationController = function(resources){
 			responseData={};
 
 		model.create(newdoc,function(err,saveddoc){
-			console.log("createModel err",err);
+			// console.log("createModel err",err);
 			if(err){
 				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
 			}
@@ -231,15 +234,15 @@ var applicationController = function(resources){
 			updateOperation;
 
 			if(options.removeFromArray){
-				console.log("removing array in doc");
+				logger.silly("removing array in doc");
 				updateOperation = {$pull:updatedoc} ;
 			}
 			else if(options.appendArray){
-				console.log("appending array in doc");
+				logger.silly("appending array in doc");
 				updateOperation = {$push:updatedoc} ;
 			}
 			else{
-				console.log("updating entire doc");
+				logger.silly("updating entire doc");
 				updateOperation = {$set:updatedoc} ;
 			}
 
