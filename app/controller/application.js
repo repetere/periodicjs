@@ -430,6 +430,7 @@ var applicationController = function(resources){
 	this.removePrivateInfo = function(obj) {
 		obj.password=null;
 		obj.apikey=null;
+		obj.random=null;
 		// console.log("removePrivateInfo obj",obj);
 		return obj;
 	}.bind(this);

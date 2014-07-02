@@ -19,6 +19,7 @@ module.exports = function(periodic){
 		categoryController = require('../controller/category')(periodic),
 		contenttypeController = require('../controller/contenttype')(periodic),
 		userController = require('../controller/user')(periodic),
+		searchController = require('../controller/search')(periodic),
 		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
@@ -40,7 +41,7 @@ module.exports = function(periodic){
 	appRouter.get('/',homeController.index);
 	appRouter.get('/404|/notfound',homeController.error404);
 	/*post: by id, get multiple posts by ids, get multiple posts by types */
-	postRouter.get('/search',postController.loadPost,postController.show);
+	postRouter.get('/search',postController.loadPosts,searchController.results);
 	postRouter.get('/:id',postController.loadPost,postController.show);
 	// postRouter.get('/group/:ids',postController.showType);
 	// postRouter.get('/type/:types',postController.showType);
