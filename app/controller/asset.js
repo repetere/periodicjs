@@ -87,18 +87,46 @@ var createassetfile = function(req, res, next) {
 	newasset.postauthorname = req.user.username;
 	newasset.primaryauthor = req.user._id;
 	newasset.authors = [req.user._id];
+	applicationController.loadModel({
+		model:MediaAsset,
+		docid:newasset.name,
+		callback:function(err,assetdoc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else if(assetdoc){
+				console.log("assetdoc",assetdoc);
+				applicationController.handleDocumentQueryRender({
+					req:req,
+					res:res,
+					responseData:{
+						result:"success",
+						data:{
+							doc:assetdoc
+						}
+					}
+				});
+			}
+			else{
+				applicationController.createModel({
+					model:MediaAsset,
+					newdoc:newasset,
+					res:res,
+					req:req,
+					successredirect:'/p-admin/media/edit/',
+					appendid:true
+				});
+			}
+		}
+	});
 
 	// res.status(500);
 	// res.send("crap error");
 // console.log("newasset",newasset);
-    applicationController.createModel({
-	    model:MediaAsset,
-	    newdoc:newasset,
-	    res:res,
-        req:req,
-	    successredirect:'/p-admin/media/edit/',
-	    appendid:true
-	});
 };
 
 

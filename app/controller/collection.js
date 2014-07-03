@@ -73,6 +73,9 @@ var update = function(req, res, next) {
 			updatecollection.posts[x] = JSON.parse(updatecollection.posts[x]);
 		}
 	}
+	if(!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length>0){
+		updatecollection.primaryasset = updatecollection.assets[0];
+	}
 
     applicationController.updateModel({
 	    model:Collection,
@@ -109,7 +112,7 @@ var append = function(req, res, next) {
 
 var loadCollection = function(req,res,next){
 	var params = req.params,
-		population = 'tags categories authors contenttypes primaryauthor posts',
+		population = 'tags categories authors assets primaryasset contenttypes primaryauthor posts',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
@@ -156,6 +159,10 @@ var loadCollection = function(req,res,next){
 							},
 							contenttypes:function(callback){
 								Collection.populate(populatedcollection,{path:"posts.post.contenttypes",model:"Contenttype",select:"title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor postauthorname"},
+								callback);
+							},
+							assets:function(callback){
+								Collection.populate(populatedcollection,{path:"posts.post.assets",model:"Asset",select:"title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor postauthorname"},
 								callback);
 							}
 						},function(err,results){

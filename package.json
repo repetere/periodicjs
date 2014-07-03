@@ -48,8 +48,8 @@
     "serve-favicon": "2.0.0",
     "util-extend": "1.0.1",
     "winston": "0.7.3",
-    "utils-merge": "~1.0.0",
-    "formidable": "~1.0.15"
+    "utils-merge": "1.0.0",
+    "formidable": "1.0.15"
   },
   "devDependencies": {
     "browserify": ">=3.46.0",

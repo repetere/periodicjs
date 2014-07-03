@@ -37,6 +37,19 @@ a:hover{
 	margin: 0.5em auto;
 	padding: 0.5em;
 	font-family: 'Lucida Grande',georgia,"times new roman", serif;
+
+	.media-item-x{
+		position: relative;
+		word-break: break-word;
+		margin-top: 1em;
+		min-height: 5em;
+		.mix-options{
+			position: absolute;
+			bottom:0.5em;
+			right:1em;
+			max-height: 1.5em;
+		}
+	}
 }
 
 ._pea-row{
@@ -220,6 +233,7 @@ header{
 					}
 				}
 				&:hover{
+					opacity: 1;
 					background: #fff;
 					color:#000;
 					._pea_menu-items-subnav{

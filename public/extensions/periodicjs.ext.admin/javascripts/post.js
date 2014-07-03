@@ -2229,6 +2229,7 @@ window.addEventListener("load",function(e){
 	mediafileinput = document.getElementById("padmin-mediafiles");
 	mediafilesresult = document.getElementById("media-files-result");
 	mediafileinput.addEventListener("change",uploadMediaFiles,false);
+	mediafilesresult.addEventListener("click",updatemedia.handleMediaButtonClick,false);
 });
 
 window.updateContentTypes = function(AjaxDataResponse){
@@ -2295,22 +2296,6 @@ var uploadFile = function(file){
 	}
 };
 
-// var updateMediaResultHtml = function(element,mediadoc){
-// 	element.appendChild(generateMediaHtml(mediadoc));
-// };
-
-// var generateMediaHtml = function(mediadoc){
-// 	var mediaHtml = document.createElement("div"),
-// 		htmlForInnerMedia='';
-// 	mediaHtml.setAttribute("class","_pea-col-span4 media-item-x");
-// 	mediaHtml.setAttribute("data-id",mediadoc._id);
-// 	htmlForInnerMedia+='<input style="display:none;" name="assets" type="checkbox" value="'+mediadoc._id+'" checked="checked"></input>';
-// 	if(mediadoc.assettype.match("image")){
-// 		htmlForInnerMedia+='<img class="_pea-col-span11" src="'+mediadoc.fileurl+'"/>';
-// 	}
-// 	mediaHtml.innerHTML = htmlForInnerMedia;
-// 	return mediaHtml;
-// };
 
 var uploadMediaFiles = function(e){
 	// fetch FileList object
@@ -2319,13 +2304,15 @@ var uploadMediaFiles = function(e){
 	// process all File objects
 	for (var i = 0, f; f = files[i]; i++) {
 		// ParseFile(f);
-		uploadFile(f);
+		// uploadFile(f);
+		updatemedia.uploadFile(mediafilesresult,f);
 	}
 };
 
 window.cnt_lp = cnt_lp;
 },{"./updatemedia":12,"letterpressjs":1,"superagent":7}],12:[function(require,module,exports){
 'use strict';
+var request = require('superagent');
 
 var updatemedia = function( element, mediadoc ){
 	var updateMediaResultHtml = function(element,mediadoc){
@@ -2344,6 +2331,10 @@ var updatemedia = function( element, mediadoc ){
 		else{
 			htmlForInnerMedia+='<div class="_pea-col-span11"> '+mediadoc.fileurl+'</div>';
 		}
+		htmlForInnerMedia+='<div class="mix-options _pea-text-right">';
+		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="make primary asset" class="_pea-button make-primary _pea-color-warn">*</a>';
+		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="remove asset" class="_pea-button remove-asset _pea-color-error">x</a>';
+		htmlForInnerMedia+='</div>';
 		mediaHtml.innerHTML = htmlForInnerMedia;
 		return mediaHtml;
 	};
@@ -2351,8 +2342,62 @@ var updatemedia = function( element, mediadoc ){
 	updateMediaResultHtml(element, mediadoc);
 };
 
+updatemedia.handleMediaButtonClick = function(e){
+	var eTarget = e.target;
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("remove-asset")){
+		document.getElementById("media-files-result").removeChild(eTarget.parentElement.parentElement);
+	}
+	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("make-primary")){
+		document.getElementById("primaryasset-input").value = eTarget.getAttribute("data-assetid");
+		var mpbuttons = document.querySelectorAll("._pea-button.make-primary");
+		for(var x in mpbuttons){
+			if(typeof mpbuttons[x]==="object"){
+				mpbuttons[x].style.display="inline-block";
+			}
+		};
+		eTarget.style.display="none";
+	}
+};
+
+updatemedia.uploadFile = function(mediafilesresult,file){
+	var reader = new FileReader();
+	var client = new XMLHttpRequest();
+	var formData = new FormData();
+
+	reader.onload = function(e) {
+		// console.log(e);
+		// console.log(file);
+		formData.append("mediafile",file,file.name);
+
+		client.open("post", "/mediaasset/new?format=json", true);
+		client.setRequestHeader("x-csrf-token", document.querySelector('input[name=_csrf]').value );
+		client.send(formData);  /* Send to server */ 
+	}
+	reader.readAsDataURL(file);
+	client.onreadystatechange = function(){
+		if(client.readyState == 4){
+			try{
+				var res = JSON.parse(client.response);
+				if(res.result==='error'){
+					ribbonNotification.showRibbon( res.data.error,4000,'error');
+				}
+				else if(client.status !== 200){
+					ribbonNotification.showRibbon( client.status+": "+client.statusText,4000,'error');
+				}
+				else{
+					ribbonNotification.showRibbon("saved",4000,'success');
+					updatemedia(mediafilesresult,res.data.doc);
+				}
+			}
+			catch(e){
+				console.log(e);
+			}
+		}
+	}
+};
+
 module.exports =updatemedia;
-},{}],13:[function(require,module,exports){
+},{"superagent":7}],13:[function(require,module,exports){
 
 
 //

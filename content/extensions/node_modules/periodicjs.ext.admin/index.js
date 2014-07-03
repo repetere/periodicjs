@@ -37,6 +37,7 @@ module.exports = function(periodic){
 	adminRouter.get('/tags',authController.ensureAuthenticated,tagController.loadTags,adminController.tags_index);
 	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
 	adminRouter.get('/collections',authController.ensureAuthenticated,collectionController.loadCollections,adminController.collections_index);
+	// adminRouter.get('/assets',authController.ensureAuthenticated,mediaassetController.loadAssets,adminController.assets_index);
 	/**
 	 * admin/extension manager routes
 	 */

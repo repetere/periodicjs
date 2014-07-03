@@ -6,6 +6,10 @@ var mongoose = require('mongoose'),
 
 var collectionSchema = new Schema({
     id: ObjectId,
+    status: {
+        type: String,
+        "default": "draft"
+    },
     title: String,
     name: {
         type: String, unique: true
@@ -20,6 +24,10 @@ var collectionSchema = new Schema({
         type:ObjectId,
         ref:"Asset"
     },
+    assets: [{
+        type:ObjectId,
+        ref:"Asset"
+    }],
     primaryauthor:{
         type:ObjectId,
         ref:"User"

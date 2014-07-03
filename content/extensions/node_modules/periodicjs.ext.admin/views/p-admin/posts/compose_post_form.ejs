@@ -2,170 +2,18 @@
 <div class="_pea-container">
 	<div class="_pea-row">
 		<div class="_pea-col-span8">
-			<h2><% if(post){%>Edit<%}else{%>New<%} %> Document</h2>
-			<%if(post){%>
-				<input type="hidden" name="docid" value="<%= post._id %>">
-			<%}%>
-			<div class="_pea-document">
-				<div class="_pea-row">
-					<div class="_pea-row _pea-container-forminput">
-						<input class="_pea-col-span12 noFormSubmit" type="text" placeholder="Title" value="<% if(post && typeof post.title==='string'){%><%= post.title %><%}%>" name="title"/>
-					</div>
-					<div class="_pea-row _pea-container-forminput no-margin">
-						<div id="wysihtml5-toolbar" class="wysihtml5">
-							<a data-wysihtml5-command="bold" title="CTRL+B" href="javascript:;" unselectable="on"><b>b</b></a> |
-							<a data-wysihtml5-command="italic" title="CTRL+I" href="javascript:;" unselectable="on"><i>i</i></a> |
-							<a data-wysihtml5-command="createLink" href="javascript:;" unselectable="on" class="">link</a> |
-							<a data-wysihtml5-command="insertImage" href="javascript:;" unselectable="on" class="">image</a> |
-							<a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" href="javascript:;" unselectable="on">h1</a> |
-							<a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" href="javascript:;" unselectable="on">h2</a> |
-							<a data-wysihtml5-command="insertUnorderedList" href="javascript:;" unselectable="on" class="">insertUnorderedList</a> |
-							<a data-wysihtml5-command="insertOrderedList" href="javascript:;" unselectable="on" class="">insertOrderedList</a> |
-							<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red" href="javascript:;" unselectable="on">r</a> |
-							<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green" href="javascript:;" unselectable="on">g</a> |
-							<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue" href="javascript:;" unselectable="on">b</a> |
-							<a data-wysihtml5-command="undo" href="javascript:;" unselectable="on">undo</a> |
-							<a data-wysihtml5-command="redo" href="javascript:;" unselectable="on">redo</a> |
-							<!-- <a data-wysihtml5-command="insertSpeech" href="javascript:;" unselectable="on" style="position: relative;">speech<div style="left: 0px; margin: 0px; opacity: 0; overflow: hidden; padding: 0px; position: absolute; top: 0px; z-index: 1; width: 40px; height: 13px;"><input x-webkit-speech="" speech="" style="cursor: inherit; font-size: 50px; height: 50px; margin-top: -25px; outline: 0px; padding: 0px; position: absolute; right: -4px; top: 50%;"></div></a> -->
-							<a data-wysihtml5-action="change_view" href="javascript:;" unselectable="on" class="">&#60;/html&#62;</a>
-
-							<div data-wysihtml5-dialog="createLink" style="display: none;">
-								<label>
-								Link:
-								<input data-wysihtml5-dialog-field="href" value="http://">
-								</label>
-								<a data-wysihtml5-dialog-action="save">OK</a>
-								&nbsp;
-								<a data-wysihtml5-dialog-action="cancel">Cancel</a>
-							</div>
-
-							<div data-wysihtml5-dialog="insertImage" style="display: none;">
-								<label>
-								Image:
-									<input data-wysihtml5-dialog-field="src" value="http://">
-								</label>
-								<label>
-								Align:
-									<select data-wysihtml5-dialog-field="className">
-										<option value="">default</option>
-										<option value="wysiwyg-float-left">left</option>
-										<option value="wysiwyg-float-right">right</option>
-									</select>
-								</label>
-								<a data-wysihtml5-dialog-action="save">OK</a>
-								&nbsp;
-								<a data-wysihtml5-dialog-action="cancel">Cancel</a>
-							</div>
-						</div>
-						<!-- https://github.com/yawetse/wysihtml5 -->
-						<textarea id="wysihtml5-textarea" class="textarea-tall _pea-col-span12" name="content" placeholder="New Post"><% if(post && typeof post.content==='string'){%><%= post.content %><%}%></textarea>
-					</div>
-				</div>
-			</div>
-			<h2>Media Assets</h2>
-			<div class="_pea-document">
-				<div class="_pea-row _pea-container-forminput">
-					<label class="_pea-label _pea-col-span3">file</label>
-					<input type="file" id="padmin-mediafiles" class="_pea-col-span9" name="mediafiles" multiple="multiple" />
-					<!-- <div id="filedrag">drag or drop files here</div> -->
-					<!-- http://www.sitepoint.com/html5-file-drag-and-drop/ -->
-				</div>
-				<div id="media-files-result" class="_pea-row _pea-container-forminput">
-					<% if(post && post.assets){
-						post.assets.forEach(function(asset){
-							%>
-							<div data-id="asset._id" class="_pea-col-span4 media-item-x">
-								<input style="display:none;" name="assets" type="checkbox" value="<%=asset._id%>" checked="checked"></input>
-								<% if(asset.assettype.match("image")){
-									%><img class="_pea-col-span11" src="<%=asset.fileurl%>"/><%
-								} %>
-							</div>
-							<%
-						});
-					} %>
-				</div>
-			</div>
-			<h2>Content Type Attributes</h2>
-			<div class="_pea-document" id="doc-ct-attr">
-				<% if(post && post.contenttypes){
-					post.contenttypes.forEach(function(ct){
-						%>
-						<div>
-							<h3 style="margin-top:0;"><%= ct.title %><small> <a href="/p-admin/contenttype/<%=ct.name%>">(edit)</a></small></h3>
-							<% if(ct.attributes){
-								ct.attributes.forEach(function(attr){
-									var defaultVal = attr.defaultvalue;
-
-									if(post.contenttypeattributes && post.contenttypeattributes[ct.name] && post.contenttypeattributes[ct.name][attr.name]){
-										defaultVal = post.contenttypeattributes[ct.name][attr.name];
-									}
-									%>
-									<div class="_pea-row _pea-container-forminput">
-										<label class="_pea-label _pea-col-span3">
-											<%= attr.title %>
-										</label>
-										<input class="_pea-col-span9 noFormSubmit" type="text" placeholder="<%= attr.title %>" value="<%- defaultVal %>" name="contenttypeattributes.<%= ct.name %>.<%= attr.name %>">
-									</div>
-								<%});
-							} %>
-						</div>
-						<%
-					});
-				} %>
-			</div>
+			<% 
+				var genericdoc = post; 
+				var genericdocTitle = "Document"; 
+			%>
+			
+			<% include ../../shared/compose_content %>
+			<% include ../../shared/media_asset %>
+			<% include ../../shared/content_attributes %>
 		</div>
 		<div class="_pea-col-span3 _pea-pull-right">
-			<h2>Options</h2>
-			<div class="_pea-document">
-				<div class="_pea-row _pea-container-forminput">
-				<% var docstatus = [{
-						"value":"publish",
-						"label":"Status: Publish"
-						},{
-						"value":"draft",
-						"label":"Status: Draft"
-						},{
-						"value":"review",
-						"label":"Status: Review"
-						},{
-						"value":"trash",
-						"label":"Status: Trash"
-						}]; %>
-					<select name="status" class="_pea-col-span12">
-						<% docstatus.forEach(function(status){
-							%>
-								<option <% if(post && typeof post.status==='string' && post.status === status.value ){%> selected="selected"
-								<%}%> value="<%= status.value %>"><%= status.label %></option>
-							<%
-							}); %>
-						
-					</select>
-				</div>
-				<div class="_pea-row _pea-container-forminput">
-					<small>Date: Publish Immediately</small>
-				</div>
-				<div class="_pea-text-center">
-					<input type="submit" name="save_button" value="<% if(post){%>Update<%}else{%>Save<%}%>" class="_pea-button _pea-color-default"/>
-				</div>
-			</div>
-			<h2>Attributes</h2>
-			<div class="_pea-document">
-				<div class="_pea-row _pea-container-forminput">
-					<input type="text" id="padmin-contenttypes" class="_pea-col-span12" placeholder="Type" name="contenttypes"/>
-				</div>
-				<div class="_pea-row _pea-container-forminput">
-					<input type="text" class="_pea-col-span12" id="padmin-tags" placeholder="Tags" name="tags"/>
-				</div>
-				<div class="_pea-row _pea-container-forminput">
-					<input type="text" class="_pea-col-span12" id="padmin-categories"  placeholder="Categories" name="categories"/>
-				</div>
-				<!-- <div class="_pea-row _pea-container-forminput">
-					<input type="text" placeholder="Collections" name="collections"/>
-				</div> -->
-				<div class="_pea-row _pea-container-forminput">
-					<input type="text" id="padmin-authors"class="_pea-col-span12" placeholder="Authors" name="authors"/>
-				</div>
-			</div>
+			<% include ../../shared/content_options %>
+			<% include ../../shared/content_taxonmy %>
 		</div>
 	</div>
 </div>
