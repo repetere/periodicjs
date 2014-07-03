@@ -235,6 +235,71 @@ var loadCollections = function(req,res,next){
 	});
 };
 
+var cli = function(argv){
+	if(argv.search){
+		// var Collection = mongoose.model('Collection');
+		// Collection.find({}).limit(2).exec(function(err,posts){ 
+		// 	if(err){ console.error(err); } else{ console.info(posts); }
+		// 	process.exit(0);
+		// });
+		var query,
+			offset = argv.offset,
+			sort = argv.sort,
+			limit = argv.limit,
+			population = 'tags categories authors contenttypes primaryauthor posts.post',
+			searchRegEx = new RegExp(applicationController.stripTags(argv.search), "gi");
+
+		if(argv.search===undefined || argv.search.length<1){
+			query={};
+		}
+		else{
+			query = {
+				$or: [{
+					title: searchRegEx,
+					}, {
+					'name': searchRegEx,
+				}]
+			};
+		}
+		// Collection.find(query).limit(5).populate(population).exec(function(err,docs){
+		// 		console.log("in model search cb");
+		// 		if(err){
+		// 			console.log(err);
+		// 			process.exit(0);
+		// 		}
+		// 		else{
+		// 			console.log("got docs");
+		// 			console.info(docs);
+		// 			process.exit(0);
+		// 		}
+		// 	});
+		applicationController.searchModel({
+			model:Collection,
+			query:query,
+			sort:sort,
+			limit:limit,
+			offset:offset,
+			population:population,
+			callback:function(err,docs){
+				console.log("in model search cb");
+				if(err){
+					console.log(err);
+					process.exit(0);
+				}
+				else{
+					console.log("got docs");
+					console.info(docs);
+					process.exit(0);
+				}
+			}
+		});
+	}
+	else{
+		logger.silly("invalid task");
+		process.exit(0);
+	}
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -249,6 +314,7 @@ var controller = function(resources){
 		create:create,
 		update:update,
 		append:append,
+		cli:cli,
 		loadCollection:loadCollection,
 		loadCollections:loadCollections
 	};

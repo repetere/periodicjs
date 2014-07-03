@@ -96,6 +96,13 @@ var config = function(){
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
+
+		if(config.theme){
+			config.themepath = path.join(__dirname,'../../content/themes',config.theme);
+		}
+		if(config.debug){
+			console.log(config);
+		}
 	}.bind(this);
 
 	this.init();

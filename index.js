@@ -5,6 +5,12 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 
-var periodic = require('./app/lib/periodic');
+var argv = require('optimist').argv;
 
-periodic.app.listen(periodic.port);
+if(argv.cli){
+	var cli = require('./app/lib/cli')(argv);
+}
+else{
+	var periodic = require('./app/lib/periodic');
+	periodic.app.listen(periodic.port);
+}
