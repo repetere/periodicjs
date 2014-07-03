@@ -98,7 +98,7 @@ var init = {
 		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(methodOverride());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
-		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
+		app.use(favicon( path.resolve(__dirname,'../../public/favicon.png') ) );
 	},
 	staticCaching : function(){
 		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};
