@@ -88,7 +88,12 @@ var init = {
 	expressSettings : function(){
 		app.use(responseTime(5));
 		app.use(flash());
-		app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
+		app.use(bodyParser.urlencoded({
+			extended: true
+		}));
+		app.use(bodyParser.json());
+		// parse application/x-www-form-urlencoded
+		// app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
 		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(methodOverride());

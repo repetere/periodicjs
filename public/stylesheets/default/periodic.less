@@ -16,6 +16,10 @@ a:hover{
 	text-decoration: underline;
 }
 
+@_pea-color-warn :#fcd04b;
+@_pea-color-error :#e74c3c;
+@_pea-color-success :#2ac56c;
+@_pea-color-info :#4593e3;
 
 ._pea-container{
 	margin: 0 2em;
@@ -33,6 +37,19 @@ a:hover{
 	margin: 0.5em auto;
 	padding: 0.5em;
 	font-family: 'Lucida Grande',georgia,"times new roman", serif;
+
+	.media-item-x{
+		position: relative;
+		word-break: break-word;
+		margin-top: 1em;
+		min-height: 5em;
+		.mix-options{
+			position: absolute;
+			bottom:0.5em;
+			right:1em;
+			max-height: 1.5em;
+		}
+	}
 }
 
 ._pea-row{
@@ -141,6 +158,7 @@ header{
 	display: block;
 	width: 100%;
 	top:0;
+	z-index: 100;
 
 	#_pea_menu{
 	   	background: rgba(0,0,0,0.9);
@@ -215,6 +233,7 @@ header{
 					}
 				}
 				&:hover{
+					opacity: 1;
 					background: #fff;
 					color:#000;
 					._pea_menu-items-subnav{
@@ -345,6 +364,15 @@ footer{
 		text-decoration: none;
 	}
 }
+.wysiwyg-color-red{
+	color:@_pea-color-warn;
+}
+.wysiwyg-color-green{
+	color:@_pea-color-success;
+}
+.wysiwyg-color-blue{
+	color:@_pea-color-info;
+}
 
 .transition(@tprop){
 	-webkit-transition: @tprop;
@@ -362,7 +390,6 @@ footer{
 	float:left;
 	box-sizing: border-box;
 }
-
 ._pea-color-warn{
 	background: #fcd04b;
 	color:#fff;

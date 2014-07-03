@@ -6,18 +6,23 @@ module.exports = function(periodic){
 		postRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		tagAdminRouter = periodic.express.Router(),
+		mediaRouter = periodic.express.Router(),
 		contenttypeRouter = periodic.express.Router(),
 		contenttypeAdminRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
 		categoryAdminRouter = periodic.express.Router(),
+		collectionRouter = periodic.express.Router(),
+		// collectionAdminRouter = periodic.express.Router(),
 		extensionRouter = periodic.express.Router(),
 		themeRouter = periodic.express.Router(),
 		themeController = require('../../../../app/controller/theme')(periodic),
 		extController = require('../../../../app/controller/extension')(periodic),
 		postController = require('../../../../app/controller/post')(periodic),
 		tagController = require('../../../../app/controller/tag')(periodic),
+		mediaassetController = require('../../../../app/controller/asset')(periodic),
 		categoryController = require('../../../../app/controller/category')(periodic),
 		contenttypeController = require('../../../../app/controller/contenttype')(periodic),
+		collectionController = require('../../../../app/controller/collection')(periodic),
 		adminController = require('./controller/admin')(periodic),
 		authController = require('../periodicjs.ext.login/controller/auth')(periodic);
 
@@ -31,6 +36,8 @@ module.exports = function(periodic){
 	adminRouter.get('/contenttypes',authController.ensureAuthenticated,contenttypeController.loadContenttypes,adminController.contenttypes_index);
 	adminRouter.get('/tags',authController.ensureAuthenticated,tagController.loadTags,adminController.tags_index);
 	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
+	adminRouter.get('/collections',authController.ensureAuthenticated,collectionController.loadCollections,adminController.collections_index);
+	// adminRouter.get('/assets',authController.ensureAuthenticated,mediaassetController.loadAssets,adminController.assets_index);
 	/**
 	 * admin/extension manager routes
 	 */
@@ -60,6 +67,16 @@ module.exports = function(periodic){
 	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
 	postRouter.post('/edit',authController.ensureAuthenticated,postController.update);
 	/**
+	 * admin/collection manager routes
+	 */
+	adminRouter.get('/collection/new',authController.ensureAuthenticated,adminController.collection_new);
+	adminRouter.get('/collection/edit/:id',authController.ensureAuthenticated,collectionController.loadCollection,adminController.collection_edit);
+	collectionRouter.post('/new',collectionController.loadCollection,authController.ensureAuthenticated,collectionController.create);
+	collectionRouter.post('/edit',authController.ensureAuthenticated,collectionController.update);
+	collectionRouter.post('/append/:id',authController.ensureAuthenticated,collectionController.loadCollection,collectionController.append);
+
+	// collectionRouter.post('/:id/delete',authController.ensureAuthenticated,collectionController.remove);
+	/**
 	 * admin/tag manager routes
 	 */
 	tagRouter.post('/new/:id',multer({ dest: process.cwd() + '/public/uploads/files'}),tagController.loadTag,tagController.create);
@@ -80,8 +97,10 @@ module.exports = function(periodic){
 	contenttypeRouter.post('/removeitem/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,contenttypeController.removeitem);
 	contenttypeAdminRouter.get('/:id',authController.ensureAuthenticated,contenttypeController.loadContenttype,adminController.contenttype_show);
 	/**
-	 * admin/collections manager routes
+	 * admin/media manager routes
 	 */
+	mediaRouter.post('/new',authController.ensureAuthenticated,mediaassetController.upload,mediaassetController.createassetfile);
+
 
 	adminRouter.use('/extension',extensionRouter);
 	adminRouter.use('/theme',themeRouter);
@@ -90,7 +109,9 @@ module.exports = function(periodic){
 	adminRouter.use('/category',categoryAdminRouter);
 	periodic.app.use('/p-admin',adminRouter);
 	periodic.app.use('/post',postRouter);
+	periodic.app.use('/collection',collectionRouter);
 	periodic.app.use('/tag',tagRouter);
 	periodic.app.use('/category',categoryRouter);
 	periodic.app.use('/contenttype',contenttypeRouter);
+	periodic.app.use('/mediaasset',mediaRouter);
 };

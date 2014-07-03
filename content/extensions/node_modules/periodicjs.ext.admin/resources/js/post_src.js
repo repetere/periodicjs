@@ -2,6 +2,7 @@
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
+	updatemedia = require('./updatemedia'),
 	createPeriodicTag = function(id,val,callback,url,type){
 		if((id==='NEWTAG' || id==='SELECT') && val){
 			request
@@ -73,7 +74,9 @@ var request = require('superagent'),
 		createTagFunc:function(id,val,callback){			
 			createPeriodicTag(id,val,callback,'/contenttype/new/'+makeNiceName(document.querySelector('#padmin-contenttypes').value)+'/?format=json&limit=200',"contenttype");
 		}
-	});
+	}),
+	mediafileinput,
+	mediafilesresult;
 
 window.addEventListener("load",function(e){
 	tag_lp.init();
@@ -98,6 +101,10 @@ window.addEventListener("load",function(e){
 		toolbar:      "wysihtml5-toolbar", // id of toolbar element
 		parserRules:  wysihtml5ParserRules // defined in parser rules set 
 	});
+	mediafileinput = document.getElementById("padmin-mediafiles");
+	mediafilesresult = document.getElementById("media-files-result");
+	mediafileinput.addEventListener("change",uploadMediaFiles,false);
+	mediafilesresult.addEventListener("click",updatemedia.handleMediaButtonClick,false);
 });
 
 window.updateContentTypes = function(AjaxDataResponse){
@@ -125,6 +132,18 @@ window.updateContentTypes = function(AjaxDataResponse){
 		contentTypeHtml+='</div>';
 	}
 	contenttypeContainer.innerHTML = contentTypeHtml;
+};
+
+var uploadMediaFiles = function(e){
+	// fetch FileList object
+	var files = e.target.files || e.dataTransfer.files;
+
+	// process all File objects
+	for (var i = 0, f; f = files[i]; i++) {
+		// ParseFile(f);
+		// uploadFile(f);
+		updatemedia.uploadFile(mediafilesresult,f);
+	}
 };
 
 window.cnt_lp = cnt_lp;
