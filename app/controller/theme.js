@@ -6,6 +6,7 @@
 // https://github.com/getperiodic/app.web-app/blob/master/dist/app/routes/home.js
 // https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/exercise.js
 // https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/application.js
+// https://www.npmjs.org/package/decompress
 var path = require('path'),
 	async = require('async'),
 	fs = require('fs-extra'),

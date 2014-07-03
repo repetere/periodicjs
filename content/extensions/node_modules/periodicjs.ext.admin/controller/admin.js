@@ -222,6 +222,62 @@ var collection_edit = function(req, res, next) {
     }});
 };
 
+var assets_index = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/assets/index',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:'Assets',
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                assets: req.controllerData.assets,
+                user:req.user
+            }
+        });
+    }});
+};
+
+var assets_show = function(req, res, next) {
+    applicationController.getPluginViewTemplate({
+    res:res,
+    req:req,
+    viewname:'p-admin/assets/show',
+    pluginname:'periodicjs.ext.admin',
+    themepath:appSettings.themepath,
+    themefileext:appSettings.templatefileextension,
+    callback:function(templatepath){
+        applicationController.handleDocumentQueryRender({
+            res:res,
+            req:req,
+            renderView:templatepath,
+            responseData:{
+                pagedata:{
+                    title:req.controllerData.asset.title+' - Edit Assets',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/assets.js"],
+                    extensions:getAdminMenu()
+                },
+                periodic:{
+                    version: appSettings.version
+                },
+                asset: req.controllerData.asset,
+                user:req.user
+            }
+        });
+    }});
+};
 
 var contenttypes_index = function(req, res, next) {
     applicationController.getPluginViewTemplate({
@@ -680,6 +736,8 @@ var controller = function(resources){
         tag_show:tag_show,
         categories_index:categories_index,
         category_show:category_show,
+        assets_index:assets_index,
+        assets_show:assets_show
 	};
 };
 
