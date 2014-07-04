@@ -238,6 +238,7 @@ var assets_index = function(req, res, next) {
             responseData:{
                 pagedata:{
                     title:'Assets',
+                    headerjs: ["/extensions/periodicjs.ext.admin/javascripts/asset.js"],
                     extensions:getAdminMenu()
                 },
                 periodic:{

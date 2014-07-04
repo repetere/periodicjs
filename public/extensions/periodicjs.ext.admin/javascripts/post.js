@@ -2259,44 +2259,6 @@ window.updateContentTypes = function(AjaxDataResponse){
 	contenttypeContainer.innerHTML = contentTypeHtml;
 };
 
-var uploadFile = function(file){
-	var reader = new FileReader();
-	var client = new XMLHttpRequest();
-	var formData = new FormData();
-
-	reader.onload = function(e) {
-		// console.log(e);
-		// console.log(file);
-		formData.append("mediafile",file,file.name);
-
-		client.open("post", "/mediaasset/new?format=json", true);
-		client.setRequestHeader("x-csrf-token", document.querySelector('input[name=_csrf]').value );
-		client.send(formData);  /* Send to server */ 
-	}
-	reader.readAsDataURL(file);
-	client.onreadystatechange = function(){
-		if(client.readyState == 4){
-			try{
-				var res = JSON.parse(client.response);
-				if(res.result==='error'){
-					ribbonNotification.showRibbon( res.data.error,4000,'error');
-				}
-				else if(client.status !== 200){
-					ribbonNotification.showRibbon( client.status+": "+client.statusText,4000,'error');
-				}
-				else{
-					ribbonNotification.showRibbon("saved",4000,'success');
-					updatemedia(mediafilesresult,res.data.doc);
-				}
-			}
-			catch(e){
-				console.log(e);
-			}
-		}
-	}
-};
-
-
 var uploadMediaFiles = function(e){
 	// fetch FileList object
 	var files = e.target.files || e.dataTransfer.files;
@@ -2359,17 +2321,27 @@ updatemedia.handleMediaButtonClick = function(e){
 	}
 };
 
-updatemedia.uploadFile = function(mediafilesresult,file){
-	var reader = new FileReader();
-	var client = new XMLHttpRequest();
-	var formData = new FormData();
+updatemedia.uploadFile = function(mediafilesresult,file,options){
+	var reader = new FileReader(),
+			client = new XMLHttpRequest(),
+			formData = new FormData();
+			if(options){
+				var posturl = options.posturl,
+						callback = options.callback;
+			}
+			else{
+				var posturl = "/mediaasset/new?format=json",
+					callback=function(data){
+						updatemedia(mediafilesresult,data);
+					};
+			}
 
 	reader.onload = function(e) {
 		// console.log(e);
 		// console.log(file);
 		formData.append("mediafile",file,file.name);
 
-		client.open("post", "/mediaasset/new?format=json", true);
+		client.open("post", posturl, true);
 		client.setRequestHeader("x-csrf-token", document.querySelector('input[name=_csrf]').value );
 		client.send(formData);  /* Send to server */ 
 	}
@@ -2386,7 +2358,7 @@ updatemedia.uploadFile = function(mediafilesresult,file){
 				}
 				else{
 					ribbonNotification.showRibbon("saved",4000,'success');
-					updatemedia(mediafilesresult,res.data.doc);
+					callback(res.data.doc);
 				}
 			}
 			catch(e){

@@ -109,7 +109,6 @@ var append = function(req, res, next) {
 	});
 };
 
-
 var loadCollection = function(req,res,next){
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor posts',

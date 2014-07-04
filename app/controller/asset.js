@@ -123,6 +123,46 @@ var createassetfile = function(req, res, next) {
 	});
 };
 
+var remove = function(req, res, next){
+	var asset = req.controllerData.asset;
+	if(asset.locationtype==='local'){
+		async.parallel({
+			deletefile:function(callback){
+				fs.remove(path.join(process.cwd(),asset.attributes.periodicPath), callback);
+			},
+			removeasset:function(callback){
+				applicationController.deleteModel({
+					model:MediaAsset,
+					deleteid:asset._id,
+					req:req,
+					res:res,
+					callback:callback
+				});
+			}
+		},function(err,results){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				applicationController.handleDocumentQueryRender({
+					req:req,
+					res:res,
+					redirecturl:'/p-admin/assets',
+					responseData:{
+						result:"success",
+						data:"deleted"
+					}
+				});
+			}
+		});
+	}
+	console.log("asset",asset);
+};
+
 var loadAssets = function(req,res,next){
 	var params = req.params,
 		query,
@@ -231,6 +271,7 @@ var controller = function(resources){
 	return{
 		// show:show,
 		// index:index,
+		remove:remove,
 		upload:upload,
 		createassetfile:createassetfile,
 		// update:update,

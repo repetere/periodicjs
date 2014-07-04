@@ -321,6 +321,16 @@ var applicationController = function(resources){
 		*/
 	}.bind(this);
 
+	this.deleteModel = function(options){
+		var model = options.model,
+			deleteid = options.deleteid,
+			req = options.req,
+			res = options.res,
+			callback = options.callback;
+
+		model.remove({_id:deleteid},callback);
+	}.bind(this);
+
 	this.loadExtensions = function(options){
 		var periodicsettings = options.periodicsettings,
 			callback = options.callback;

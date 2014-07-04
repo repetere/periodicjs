@@ -54,9 +54,11 @@ module.exports = function(periodic){
 	 */
 	themeRouter.get('/install',authController.ensureAuthenticated,themeController.install);
 	themeRouter.get('/install/log/:theme/:date',authController.ensureAuthenticated,themeController.install_getOutputLog);
+	themeRouter.get('/upload/log/:theme/:date',authController.ensureAuthenticated,themeController.upload_getOutputLog);
 	themeRouter.get('/remove/log/:theme/:date',authController.ensureAuthenticated,themeController.remove_getOutputLog);
 	themeRouter.get('/cleanup/log/:theme/:date',authController.ensureAuthenticated,themeController.cleanup_log);
 	themeRouter.get('/:id/enable',authController.ensureAuthenticated,themeController.enable);
+	themeRouter.post('/upload',authController.ensureAuthenticated,mediaassetController.upload,themeController.upload_install);
 	themeRouter.post('/:id/delete',authController.ensureAuthenticated,themeController.remove);
 	themeRouter.get('/:id',authController.ensureAuthenticated,adminController.loadTheme,adminController.theme_show);
 	/**
@@ -100,6 +102,7 @@ module.exports = function(periodic){
 	 * admin/media manager routes
 	 */
 	mediaRouter.post('/new',authController.ensureAuthenticated,mediaassetController.upload,mediaassetController.createassetfile);
+	mediaRouter.post('/:id/delete',authController.ensureAuthenticated,mediaassetController.loadAsset,mediaassetController.remove);
 
 
 	adminRouter.use('/extension',extensionRouter);

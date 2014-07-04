@@ -1,17 +1,11 @@
 'use strict';
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/model/workout.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/model/media.js
-// https://github.com/yawetse/getperiodic/blob/master/webapp/db/schema.js
-// https://github.com/getperiodic/app.web-app/blob/master/dist/app/controller/home.js
-// https://github.com/getperiodic/app.web-app/blob/master/dist/app/routes/home.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/exercise.js
-// https://github.com/silverlaketosoho/sweat/blob/master/repetere/controller/application.js
 // https://www.npmjs.org/package/decompress
 var path = require('path'),
 	async = require('async'),
 	fs = require('fs-extra'),
 	semver = require('semver'),
 	appController = require('./application'),
+	Decompress = require('decompress'),
 	applicationController,
 	appSettings,
 	mongoose,
@@ -374,7 +368,8 @@ var remove = function(req, res, next){
 
 var remove_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
-		logfile=path.join(logdir,'remove-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.theme)+'.'+req.params.date+'.log'),
+		themename = (req.params.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
+		logfile=path.join(logdir,'remove-theme.'+req.user._id+'.'+themename+'.'+req.params.date+'.log'),
 		stat = fs.statSync(logfile),
 		readStream = fs.createReadStream(logfile);
 
@@ -408,9 +403,25 @@ var install_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var upload_getOutputLog = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
+		logfile=path.join(logdir,'install-theme.'+req.user._id+'.'+req.params.theme+'.'+req.params.date+'.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+    res.writeHead(200, {
+        'Content-Type': ' text/plain',
+        'Content-Length': stat.size
+    });
+
+    readStream.pipe(res);
+};
+
 var cleanup_log = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
-		logfile=path.join(logdir,req.query.mode+'-theme.'+req.user._id+'.'+applicationController.makeNiceName(req.params.theme)+'.'+req.params.date+'.log');
+			themename = (req.params.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
+			logfile=path.join(logdir,req.query.mode+'-theme.'+req.user._id+'.'+themename+'.'+req.params.date+'.log');
+	console.log("cleaned up log",logfile);
 
 	fs.remove(logfile, function(err){
 		if (err){
@@ -547,6 +558,96 @@ var install_viaDownload = function(options){
 	});
 };
 
+var move_upload = function(options){
+	// console.log("options",options);
+	var logfile = options.logfile,
+			themename = options.themename;
+	// fs.rename(returnFile.path,newfilepath,function(err){
+	// });
+	var decompress = new Decompress()
+    .src(options.uploadedfile.path)
+    .dest(options.themedir)
+    .use(Decompress.zip());
+  decompress.decompress(function(err,files){
+		if(err){
+			install_logErrorOutput({
+				logfile : logfile,
+				logdata : err.message
+			});
+		}
+		else{
+			install_logOutput({
+				logfile : logfile,
+				logdata : 'unzipped directory'
+			});
+			fs.remove(options.uploadedfile.path,function(err,filedir){
+				if(err){
+					install_logErrorOutput({
+						logfile : logfile,
+						logdata : err.message
+					});
+				}
+				else{
+					install_logOutput({
+						logfile : logfile,
+						logdata : 'removed zip file'
+					});
+					install_themePublicDir({
+						logfile : logfile,
+						themename: themename
+					});
+				}
+			});
+		}
+  });
+};
+
+var upload_install = function(req, res, next){
+	var uploadedFile = applicationController.removeEmptyObjectValues(req.controllerData.fileData),
+      timestamp = (new Date()).getTime(),
+			themename = path.basename(uploadedFile.filename,path.extname(uploadedFile.filename)),
+      logdir = path.resolve(__dirname,'../../content/themes/log/'),
+			logfile = path.join(logdir,'install-theme.'+req.user._id+'.'+ themename +'.'+timestamp+'.log'),
+			themedir = path.join(process.cwd(),'content/themes');
+
+	install_logOutput({
+			logfile : logfile,
+			logdata : "installing uploaded theme",
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								doc:{
+									logfile:logfile,
+									uploadedfile:uploadedFile,
+									themename:themename,
+									time:timestamp
+								}
+							}
+						}
+					});
+					move_upload({
+						themedir : themedir,
+						themename:themename,
+						uploadedfile:uploadedFile,
+						logfile : logfile
+					});
+				}
+		}
+	});
+};
+
 var install = function(req, res, next){
     var repoversion = req.query.version,
         reponame = req.query.name,
@@ -616,7 +717,9 @@ var controller = function(resources){
 		remove_getOutputLog:remove_getOutputLog,
 		cleanup_log:cleanup_log,
 		install:install,
-		install_getOutputLog:install_getOutputLog
+		upload_install:upload_install,
+		install_getOutputLog:install_getOutputLog,
+		upload_getOutputLog:upload_getOutputLog
 	};
 };
 

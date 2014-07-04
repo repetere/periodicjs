@@ -2,6 +2,7 @@
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
+	updatemedia = require('./updatemedia'),
 	themeModal,
 	searchThemeInput,
 	searchThemeButton,
@@ -9,6 +10,7 @@ var request = require('superagent'),
 	searchGithubResultsTableBody,
 	installedtable,
 	installedtablebody,
+	uploadButton,
 	hideConsoleOutput,
 	consoleOutput;
 
@@ -22,13 +24,46 @@ window.addEventListener("load",function(e){
 	installedtablebody = document.getElementById("installed-theme-tablebody");
 	installedtable = document.getElementById("installed-theme-table");
 	hideConsoleOutput = document.getElementById("hide-theme-console");
+	uploadButton = document.getElementById("upload-theme_button");
 	searchThemeInput.addEventListener("keypress",searchInputKeypress,false);
 	searchThemeButton.addEventListener("click",searchThemeFromGithub,false);
 	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
 	themeModal.addEventListener("click",thememodalClick,false);
 	installedtable.addEventListener("click",installedTableClick,false);
 	hideConsoleOutput.addEventListener("click",hideConsoleOutputClick,false);
+	uploadButton.addEventListener("change",uploadMediaFiles,false);
 });
+
+var uploadMediaFiles = function(e){
+	// fetch FileList object
+	var files = e.target.files || e.dataTransfer.files;
+
+	// process all File objects
+	for (var i = 0, f; f = files[i]; i++) {
+		// ParseFile(f);
+		// uploadFile(f);
+		updatemedia.uploadFile(null,f,{
+			posturl:'/p-admin/theme/upload?format=json',
+			callback:function(doc){
+				console.log(doc);
+				var res = {
+					body:{
+						data:{
+							time:doc.time,
+							repo:doc.themename
+						}
+					}
+				};
+				document.getElementById("theme-console").style.display="block";
+				getConsoleOutput(res.body,null,null,null,{
+					getRequest:'/p-admin/theme/upload/log/'+doc.themename+'/'+doc.time,
+					themename:doc.themename,
+					time:doc.time
+				});
+			}
+		});
+	}
+};
 
 var hideConsoleOutputClick = function(e){
 	document.getElementById("theme-console").style.display="none";
@@ -147,13 +182,13 @@ var searchTblClick = function(e){
 		console.log("search table click");
 
 	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-theme')){
-		// console.log("pop modal");
 		themeModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.theme.','');
 		themeModal.querySelector('.desc').innerHTML=eTarget.getAttribute("data-desc");
 		repoversionlist = themeModal.querySelector('.versions');
 		repoversionlist.innerHTML='<li>loading versions...</li>';
 		fullreponame=eTarget.getAttribute("data-gitname");
-
+		
+		console.log("themeModal",themeModal);
 		silkscreenModal.showSilkscreen('Install Theme',themeModal,null,14);
 
 		request
@@ -205,19 +240,27 @@ var thememodalClick = function(e){
 	}
 };
 
-var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
+var getConsoleOutput = function(responsebody,fullrepo,extname,operation,options){
 	var t = setInterval(function(){
-			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
+			getOutputFromFile(responsebody.data.repo,responsebody.data.time,options);
 		},4000),
 		otf,
 		cnt=0,
 		lastres='',
 		repo = responsebody.data.repo,
-		time = responsebody.data.time,
-		getRequest = (operation === 'remove') ? '/p-admin/theme/remove/log/'+repo+'/'+time : '/p-admin/theme/install/log/'+repo+'/'+time;
+		time = responsebody.data.time;
+	if(options && options.getRequest){
+		var getRequest = options.getRequest,
+				fullrepo = options.repo,
+				repo = options.repo,
+				time = options.time;
+	}
+	else{
+		var getRequest = (operation === 'remove') ? '/p-admin/theme/remove/log/'+repo+'/'+time : '/p-admin/theme/install/log/'+repo+'/'+time;
+	}
 	consoleOutput.innerHTML='';
 
-	var getOutputFromFile = function(repo,time){
+	var getOutputFromFile = function(repo,time,options){
 		request
 			.get(getRequest)
 			.set('Accept', ' text/plain')
@@ -256,9 +299,9 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 								installedtablebody.appendChild(installedTheme);
 							}
 							else{
-								console.log("already installed");
+								console.log("already installed",repo,time);
 							}
-							cleanupLogFile(repo,time,'install');
+							cleanupLogFile(repo,time,'install',options);
 						}
 						clearTimeout(t);
 					}
@@ -276,12 +319,14 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 			});
 	}
 
-	var cleanupLogFile = function(repo,time,mode){
+	var cleanupLogFile = function(repo,time,mode,options){
+		var makenice = (options) ? true : false;
 		request
 			.get('/p-admin/theme/cleanup/log/'+repo+'/'+time)
 			.query({
 				format:"json",
-				mode:mode
+				mode:mode,
+				makenice:makenice
 			})
 			.set('Accept', ' application/json')
 			.end(function(error,res){

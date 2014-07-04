@@ -43,13 +43,26 @@ var cli = function(argv){
 	};
 	var loadScript = function(argv){
 		if(argv.controller){
-			var cliController = require('../controller/'+argv.controller)(periodicResources);
-			cliController.cli(argv);
+			try{
+				var cliController = require('../controller/'+argv.controller)(periodicResources);
+				cliController.cli(argv);
+			}
+			catch(e){
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
 		}
 		else if(argv.extension){
-			logger.silly(argv.extension);
-			console.log("in cli",argv);
-			process.exit(0);
+			try{
+				var cliExtension = require('../../content/extensions/node_modules/periodicjs.ext.'+argv.extension+'/cli')(periodicResources);
+				cliExtension.cli(argv);
+			}
+			catch(e){
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
 		}
 		// var Post = mongoose.model('Post');
 		// Post.find({}).limit(2).exec(function(err,posts){ if(err){ console.error(err); } else{ console.info(posts); } });

@@ -82,7 +82,8 @@
 						</div>
 						<div class="_pea-col-span2">
 							<div class="_pea-row _pea-container-forminput _pea-text-center _pea-form">
-								<input type="submit" name="upload-theme_button" value="Upload" class="_pea-button _pea-col-span12 _pea-color-default"/>
+								<input type="hidden" name="_csrf" value=<%= locals.token %> >
+								<input type="file" name="upload-theme_button" id="upload-theme_button" value="Upload" class="_pea-button _pea-col-span12 _pea-color-default"/>
 							</div>
 						</div>
 					</div>
