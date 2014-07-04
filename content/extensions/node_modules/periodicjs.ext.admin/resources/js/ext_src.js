@@ -2,6 +2,7 @@
 
 var request = require('superagent'),
 	letterpress = require('letterpressjs'),
+	updatemedia = require('./updatemedia'),
 	extModal,
 	searchExtInput,
 	searchExtButton,
@@ -9,6 +10,7 @@ var request = require('superagent'),
 	searchGithubResultsTableBody,
 	installedtable,
 	installedtablebody,
+	uploadButton,
 	hideConsoleOutput,
 	consoleOutput;
 
@@ -22,13 +24,47 @@ window.addEventListener("load",function(e){
 	installedtablebody = document.getElementById("installed-ext-tablebody");
 	installedtable = document.getElementById("installed-ext-table");
 	hideConsoleOutput = document.getElementById("hide-ext-console");
+	uploadButton = document.getElementById("upload-ext_button");
 	searchExtInput.addEventListener("keypress",searchInputKeypress,false);
 	searchExtButton.addEventListener("click",searchExtFromGithub,false);
 	searchGithubResultsTable.addEventListener("click",searchTblClick,false);
 	extModal.addEventListener("click",extmodalClick,false);
 	installedtable.addEventListener("click",installedTableClick,false);
 	hideConsoleOutput.addEventListener("click",hideConsoleOutputClick,false);
+	uploadButton.addEventListener("change",uploadMediaFiles,false);
 });
+
+var uploadMediaFiles = function(e){
+	// fetch FileList object
+	var files = e.target.files || e.dataTransfer.files;
+
+	// process all File objects
+	for (var i = 0, f; f = files[i]; i++) {
+		// ParseFile(f);
+		// uploadFile(f);
+		updatemedia.uploadFile(null,f,{
+			posturl:'/p-admin/extension/upload?format=json',
+			callback:function(doc){
+				// console.log(doc);
+				var res = {
+					body:{
+						data:{
+							time:doc.time,
+							repo:doc.extname
+						}
+					}
+				};
+				document.getElementById("ext-console").style.display="block";
+				getConsoleOutput(res.body,null,null,null,{
+					getRequest:'/p-admin/extension/upload/log/'+doc.extname+'/'+doc.time,
+					extname:doc.extname,
+					repo:doc.extname,
+					time:doc.time
+				});
+			}
+		});
+	}
+};
 
 var hideConsoleOutputClick = function(e){
 	document.getElementById("ext-console").style.display="none";
@@ -194,7 +230,7 @@ var extmodalClick = function(e){
 	}
 };
 
-var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
+var getConsoleOutput = function(responsebody,fullrepo,extname,operation,options){
 	var t = setInterval(function(){
 			getOutputFromFile(responsebody.data.repo,responsebody.data.time);
 		},4000),
@@ -202,8 +238,16 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 		cnt=0,
 		lastres='',
 		repo = responsebody.data.repo,
-		time = responsebody.data.time,
-		getRequest = (operation === 'remove') ? '/p-admin/extension/remove/log/'+repo+'/'+time : '/p-admin/extension/install/log/'+repo+'/'+time;
+		time = responsebody.data.time;
+	if(options && options.getRequest){
+		var getRequest = options.getRequest,
+				fullrepo = options.repo,
+				repo = options.repo,
+				time = options.time;
+	}
+	else{
+		var getRequest = (operation === 'remove') ? '/p-admin/extension/remove/log/'+repo+'/'+time : '/p-admin/extension/install/log/'+repo+'/'+time;
+	}
 	consoleOutput.innerHTML='';
 
 	var getOutputFromFile = function(repo,time){
@@ -218,7 +262,10 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 				if(error){
 					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
 					// console.log("error in ajax for file log data");
-					clearTimeout(t);
+					console.log(res.error,cnt);
+					if(res.error || cnt >5){
+						clearTimeout(t);
+					}
 				}
 				else{
 					if(cnt>20){
@@ -242,9 +289,9 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 								installedtablebody.appendChild(installedExt);
 							}
 							else{
-								console.log("already installed");
+								console.log("already installed",repo,time);
 							}
-							cleanupLogFile(repo,time,'install');
+							cleanupLogFile(repo,time,'install',options);
 						}
 						clearTimeout(t);
 					}
@@ -262,12 +309,14 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation){
 			});
 	}
 
-	var cleanupLogFile = function(repo,time,mode){
+	var cleanupLogFile = function(repo,time,mode,options){
+		var makenice = (options) ? true : false;
 		request
 			.get('/p-admin/extension/cleanup/log/'+repo+'/'+time)
 			.query({
 				format:"json",
-				mode:mode
+				mode:mode,
+				makenice:makenice
 			})
 			.set('Accept', ' application/json')
 			.end(function(error,res){

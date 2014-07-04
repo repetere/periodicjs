@@ -7,6 +7,7 @@ var path = require('path'),
 	async = require("async"),
 	appController = require('./application'),
 	Extensions = require('../lib/extensions'),
+	Decompress = require('decompress'),
 	applicationController,
 	appSettings,
 	mongoose,
@@ -59,7 +60,9 @@ var install_logOutput = function(options){
 			});
 		}
 		else{
-			callback(null);
+			if(callback){
+				callback(null);
+			}
 		}
 	});
 };
@@ -291,6 +294,104 @@ var install_viaNPM = function(options){
 	});
 };
 
+var upload_npminstall = function(options){
+	var extdir = options.extdir,
+			logfile = options.logfile,
+			extname = options.extname;
+	npm.load({
+			"strict-ssl" : false,
+			"production" : true,
+			prefix : path.join(extdir,extname)
+		},
+		function (err) {
+			if (err){
+				install_logErrorOutput({
+					logfile : logfile,
+					logdata : err.message
+				});
+			}
+			else{
+				npm.commands.install( function (err, data) {
+					if (err) {
+						install_logErrorOutput({
+							logfile : logfile,
+							logdata : err.message
+						});
+					}
+					else{
+						install_logOutput({
+							logfile : logfile,
+							logdata : data,
+							callback : function(err){
+								if (!err) {
+									install_extPublicDir({
+										logfile : logfile,
+										extname: extname
+									});
+								}
+							}
+						});
+					}
+					// command succeeded, and data might have some info
+				});
+				npm.on("log", function (message) {
+					install_logOutput({
+						logfile : logfile,
+						logdata : message,
+						callback : function(err){
+						}
+					});
+				});
+			}
+	});
+};
+
+var move_upload = function(options){
+	// console.log("options",options);
+	var logfile = options.logfile,
+			extname = options.extname,
+			extdir = options.extdir;
+	// fs.rename(returnFile.path,newfilepath,function(err){
+	// });
+	var decompress = new Decompress()
+    .src(options.uploadedfile.path)
+    .dest(extdir)
+    .use(Decompress.zip());
+  decompress.decompress(function(err,files){
+		if(err){
+			install_logErrorOutput({
+				logfile : logfile,
+				logdata : err.message
+			});
+		}
+		else{
+			install_logOutput({
+				logfile : logfile,
+				logdata : 'unzipped directory'
+			});
+			fs.remove(options.uploadedfile.path,function(err,filedir){
+				if(err){
+					install_logErrorOutput({
+						logfile : logfile,
+						logdata : err.message
+					});
+				}
+				else{
+					install_logOutput({
+						logfile : logfile,
+						logdata : 'removed zip file'
+					});
+					upload_npminstall({
+						extdir : extdir,
+						logfile : logfile,
+						extname : extname
+					});
+				}
+			});
+		}
+  });
+};
+
 var install = function(req, res, next){
     var repoversion = req.query.version,
         reponame = req.query.name,
@@ -299,19 +400,12 @@ var install = function(req, res, next){
             'https://github.com/'+reponame+'/tarball/'+repoversion,
         timestamp = (new Date()).getTime(),
         logdir= path.resolve(__dirname,'../../content/extensions/log/'),
-		logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+ applicationController.makeNiceName(reponame) +'.'+timestamp+'.log'),
-		myData = {
-			result:"start",
-			data:{
-				message:"beginning extension install: "+reponame,
-				time:timestamp
-			}
-		},
-		extdir = path.join(process.cwd(),'content/extensions/node_modules');
+				logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+ applicationController.makeNiceName(reponame) +'.'+timestamp+'.log'),
+				extdir = path.join(process.cwd(),'content/extensions/node_modules');
 	//JSON.stringify(myData, null, 4)
 	install_logOutput({
 			logfile : logfile,
-			logdata : myData.data.message,
+			logdata : "beginning extension install: "+reponame,
 			callback : function(err) {
 				if(err) {
 					applicationController.handleDocumentQueryErrorResponse({
@@ -338,6 +432,52 @@ var install = function(req, res, next){
 						repourl : repourl,
 						logfile : logfile,
 						reponame : reponame
+					});
+				}
+		}
+	});
+};
+
+var upload_install = function(req, res, next){
+	var uploadedFile = applicationController.removeEmptyObjectValues(req.controllerData.fileData),
+      timestamp = (new Date()).getTime(),
+			extname = path.basename(uploadedFile.filename,path.extname(uploadedFile.filename)),
+      logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+			logfile = path.join(logdir,'install-ext.'+req.user._id+'.'+ extname +'.'+timestamp+'.log'),
+			extdir = path.join(process.cwd(),'content/extensions/node_modules');
+
+	install_logOutput({
+			logfile : logfile,
+			logdata : "beginning extension install: "+extname,
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								doc:{
+									logfile:logfile,
+									uploadedfile:uploadedFile,
+									extname:extname,
+									time:timestamp
+								}
+							}
+						}
+					});
+					move_upload({
+						extdir : extdir,
+						extname : extname,
+						uploadedfile : uploadedFile,
+						logfile : logfile
 					});
 				}
 		}
@@ -548,6 +688,20 @@ var install_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var upload_getOutputLog = function(req,res,next){
+	var logdir= path.resolve(__dirname,'../../content/extensions/log/'),
+		logfile=path.join(logdir,'install-ext.'+req.user._id+'.'+req.params.extension+'.'+req.params.date+'.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+    res.writeHead(200, {
+        'Content-Type': ' text/plain',
+        'Content-Length': stat.size
+    });
+
+    readStream.pipe(res);
+};
+
 var disable = function(req,res,next){
 	var extname = req.params.id,
 		selectedExtObj = getCurrentExt({extname:extname}),
@@ -689,7 +843,9 @@ var controller = function(resources){
 		cleanup_log:cleanup_log,
 		remove:remove,
 		disable:disable,
-		enable:enable
+		enable:enable,
+		upload_install:upload_install,
+		upload_getOutputLog:upload_getOutputLog
 	};
 };
 
