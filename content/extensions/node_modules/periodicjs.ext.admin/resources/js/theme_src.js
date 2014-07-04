@@ -45,7 +45,7 @@ var uploadMediaFiles = function(e){
 		updatemedia.uploadFile(null,f,{
 			posturl:'/p-admin/theme/upload?format=json',
 			callback:function(doc){
-				console.log(doc);
+				// console.log(doc);
 				var res = {
 					body:{
 						data:{
@@ -179,7 +179,7 @@ var searchTblClick = function(e){
 		fullreponame,
 		repoversionlist;
 
-		console.log("search table click");
+		// console.log("search table click");
 
 	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match('view-theme')){
 		themeModal.querySelector('.title').innerHTML=eTarget.getAttribute("data-exttitle").replace('periodicjs.theme.','');
@@ -188,7 +188,7 @@ var searchTblClick = function(e){
 		repoversionlist.innerHTML='<li>loading versions...</li>';
 		fullreponame=eTarget.getAttribute("data-gitname");
 		
-		console.log("themeModal",themeModal);
+		// console.log("themeModal",themeModal);
 		silkscreenModal.showSilkscreen('Install Theme',themeModal,null,14);
 
 		request

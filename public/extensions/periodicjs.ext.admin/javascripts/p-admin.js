@@ -477,7 +477,7 @@ var silkscreen = function(config_options,show,hideOverlay,callback){
 	/** show platter in bar */
 	this.showSilkscreen = function(title,message,effect,type,hideOverlay,callback){
 		// console.log("msg",msg,"timed",timed,"type",type,"callback",callback);
-		console.log("message",message);
+		// console.log("message",message);
 		if(title){
 			this.setSilkscreenTitle(title);
 		}

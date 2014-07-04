@@ -368,7 +368,7 @@ var remove = function(req, res, next){
 
 var remove_getOutputLog = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
-		themename = (req.params.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
+		themename = (req.query.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
 		logfile=path.join(logdir,'remove-theme.'+req.user._id+'.'+themename+'.'+req.params.date+'.log'),
 		stat = fs.statSync(logfile),
 		readStream = fs.createReadStream(logfile);
@@ -419,9 +419,8 @@ var upload_getOutputLog = function(req,res,next){
 
 var cleanup_log = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
-			themename = (req.params.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
+			themename = (req.query.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
 			logfile=path.join(logdir,req.query.mode+'-theme.'+req.user._id+'.'+themename+'.'+req.params.date+'.log');
-	console.log("cleaned up log",logfile);
 
 	fs.remove(logfile, function(err){
 		if (err){
