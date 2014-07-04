@@ -48,6 +48,7 @@ var cli = function(argv){
 				cliController.cli(argv);
 			}
 			catch(e){
+				console.log("GOT NEW ERROR");
 				logger.error(e);
 				logger.error(e.stack);
 				process.exit(0);

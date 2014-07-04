@@ -107,6 +107,9 @@ var install_logErrorOutput = function(options){
 	fs.appendFile(logfile,logdata+'====!!ERROR!!====',function(err){
 		if(err){
 			logger.error(err);
+			if(options.cli){
+				throw new Error(err);
+			}
 		}
 	});
 };
@@ -417,6 +420,21 @@ var upload_getOutputLog = function(req,res,next){
     readStream.pipe(res);
 };
 
+var remove_clilog = function(options){
+	fs.remove(options.logfile, function(err){
+		if(err){
+			install_logErrorOutput({
+				logfile : options.logfile,
+				logdata : err.message,
+				cli: options.cli
+			});
+		}
+		else{
+			logger.info(options.themename+' log removed \r\n  ====##END##====');
+		}
+	});
+};
+
 var cleanup_log = function(req,res,next){
 	var logdir= path.resolve(__dirname,'../../content/themes/log/'),
 			themename = (req.query.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
@@ -464,6 +482,11 @@ var install_themePublicDir = function(options){
 						callback : function(err){
 						}
 					});
+					if(options.cli){
+						logger.info(themename+' installed \r\n  ====##END##====');
+						remove_clilog({logfile:logfile,themename:themename});
+						process.exit(0);
+					}
 				}
 			});
 		}
@@ -473,7 +496,8 @@ var install_themePublicDir = function(options){
 				if (err) {
 					install_logErrorOutput({
 						logfile : logfile,
-						logdata : err.message
+						logdata : err.message,
+						cli: options.cli
 					});
 				}
 				else{
@@ -481,7 +505,8 @@ var install_themePublicDir = function(options){
 						if (err) {
 							install_logErrorOutput({
 								logfile : logfile,
-								logdata : err.message
+								logdata : err.message,
+								cli: options.cli
 							});
 						}
 						else{
@@ -495,6 +520,11 @@ var install_themePublicDir = function(options){
 										callback : function(err){
 										}
 									});
+									if(options.cli){
+										logger.info(themename+' installed \r\n  ====##END##====');
+										remove_clilog({logfile:logfile,themename:themename});
+										process.exit(0);
+									}
 								}
 							});
 						}
@@ -506,6 +536,7 @@ var install_themePublicDir = function(options){
 };
 
 var install_viaDownload = function(options){
+	// console.log("options",options);
 	var themedir = options.themedir,
 		repourl = options.repourl,
 		reponame = options.reponame,
@@ -513,13 +544,13 @@ var install_viaDownload = function(options){
 		downloadtothemedir = path.join(themedir,reponame.split('/')[1]),
 		download = require('download'),
 		dlsteam;
-	// console.log("reponame",reponame);
 	// console.log("downloadtothemedir",downloadtothemedir);
 	fs.ensureDir(downloadtothemedir, function(err) {
 		if(err){
 			install_logErrorOutput({
 				logfile : logfile,
-				logdata : err.message
+				logdata : err.message,
+				cli : true
 			});
 		}
 		else{
@@ -550,7 +581,8 @@ var install_viaDownload = function(options){
 				});
 				install_themePublicDir({
 					logfile : logfile,
-					themename: reponame.split('/')[1]
+					themename: reponame.split('/')[1],
+					cli: options.cli
 				});
 			});
 		}
@@ -647,27 +679,43 @@ var upload_install = function(req, res, next){
 	});
 };
 
+var themeFunctions = {
+	getlogfile : function(options){
+		return path.join(options.logdir,'install-theme.'+options.userid+'.'+ applicationController.makeNiceName(options.reponame) +'.'+options.timestamp+'.log');
+	},
+	getrepourl : function(options){
+		return (options.repoversion==='latest' || !options.repoversion) ?
+            'https://github.com/'+options.reponame+'/archive/master.tar.gz' :
+            'https://github.com/'+options.reponame+'/tarball/'+options.repoversion;
+	},
+	getlogdir : function(options){
+		return path.resolve(__dirname,'../../content/themes/log/');
+	},
+	getthemedir : function(options){
+		return path.join(process.cwd(),'content/themes');
+	}
+};
+
 var install = function(req, res, next){
-    var repoversion = req.query.version,
-        reponame = req.query.name,
-        repourl = (repoversion==='latest' || !repoversion) ?
-            'https://github.com/'+reponame+'/archive/master.tar.gz' :
-            'https://github.com/'+reponame+'/tarball/'+repoversion,
-        timestamp = (new Date()).getTime(),
-        logdir= path.resolve(__dirname,'../../content/themes/log/'),
-		logfile=path.join(logdir,'install-theme.'+req.user._id+'.'+ applicationController.makeNiceName(reponame) +'.'+timestamp+'.log'),
-		myData = {
-			result:"start",
-			data:{
-				message:"beginning theme install: "+reponame,
-				time:timestamp
-			}
-		},
-		themedir = path.join(process.cwd(),'content/themes');
+  var repoversion = req.query.version,
+      reponame = req.query.name,
+      repourl = themeFunctions.getrepourl({
+				repoversion:repoversion,
+				reponame:reponame
+      }),
+      timestamp = (new Date()).getTime(),
+      logdir= themeFunctions.getlogdir(),
+			logfile= themeFunctions.getlogfile({
+				logdir:logdir,
+				userid:req.user._id,
+				reponame:reponame,
+				timestamp:timestamp
+			}),
+			themedir = themeFunctions.getthemedir;
 	//JSON.stringify(myData, null, 4)
 	install_logOutput({
 			logfile : logfile,
-			logdata : myData.data.message,
+			logdata : "beginning theme install: "+reponame,
 			callback : function(err) {
 				if(err) {
 					applicationController.handleDocumentQueryErrorResponse({
@@ -700,6 +748,51 @@ var install = function(req, res, next){
 	});
 };
 
+var cli = function(argv){
+	//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+	if(argv.install){
+		var repoversion = argv.version,
+			reponame = argv.name,
+			repourl = themeFunctions.getrepourl({
+				repoversion:repoversion,
+				reponame:reponame
+			}),
+			timestamp = (new Date()).getTime(),
+			logdir= themeFunctions.getlogdir(),
+			logfile= themeFunctions.getlogfile({
+				logdir:logdir,
+				userid:'cli',
+				reponame:reponame,
+				timestamp:timestamp
+			}),
+			themedir = themeFunctions.getthemedir();
+
+		install_logOutput({
+			logfile : logfile,
+			logdata : "beginning theme install: "+reponame,
+			callback : function(err) {
+				if(err) {
+					throw new Error(err);
+				}
+				else {
+					install_viaDownload({
+						themedir : themedir,
+						repourl : repourl,
+						logfile : logfile,
+						reponame : reponame,
+						cli : true
+					});
+				}
+			}
+		});
+	}
+	else{
+		console.log(argv);
+		console.log(themeFunctions.getlogfile(argv));
+		process.exit(0);
+	}
+};
+
 var controller = function(resources){
 	logger = resources.logger;
 	mongoose = resources.mongoose;
@@ -718,7 +811,8 @@ var controller = function(resources){
 		install:install,
 		upload_install:upload_install,
 		install_getOutputLog:install_getOutputLog,
-		upload_getOutputLog:upload_getOutputLog
+		upload_getOutputLog:upload_getOutputLog,
+		cli:cli
 	};
 };
 
