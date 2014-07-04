@@ -255,14 +255,20 @@ var getConsoleOutput = function(responsebody,fullrepo,extname,operation,options)
 			.get(getRequest)
 			.set('Accept', ' text/plain')
 			.end(function(error, res){
-				if(res.error){
-					error = res.error;
+				try{
+					if(res.error){
+						error = res.error;
+					}
+				}
+				catch(e){
+					console.log(e);
 				}
 
 				if(error){
 					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
 					// console.log("error in ajax for file log data");
-					console.log(res.error,cnt);
+					console.log("cnt",cnt);
+					console.log("res",res);
 					if(res.error || cnt >5){
 						clearTimeout(t);
 					}

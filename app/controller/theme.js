@@ -107,9 +107,9 @@ var install_logErrorOutput = function(options){
 	fs.appendFile(logfile,logdata+'====!!ERROR!!====',function(err){
 		if(err){
 			logger.error(err);
-			if(options.cli){
-				throw new Error(err);
-			}
+		}
+		if(options.cli){
+			throw new Error(logdata);
 		}
 	});
 };
