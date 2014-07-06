@@ -12,34 +12,33 @@ var createNewUser = function(options){
 		req = options.req,
 		res = options.res,
 		userError;
-    if (
-        userdata.password === undefined || !userdata.password || userdata.password === '' || userdata.password === ' ' || userdata.passwordconfirm === undefined || !userdata.passwordconfirm || userdata.passwordconfirm === '' || userdata.passwordconfirm === ' ') {
-        delete userdata.password;
-        delete userdata.passwordconfirm;
+  if ( userdata.password === undefined || !userdata.password || userdata.password === '' || userdata.password === ' ' || userdata.passwordconfirm === undefined || !userdata.passwordconfirm || userdata.passwordconfirm === '' || userdata.passwordconfirm === ' ') {
+    delete userdata.password;
+    delete userdata.passwordconfirm;
 
-        userError = new Error("missing password");
-        applicationController.handleDocumentQueryErrorResponse({
+    userError = new Error("missing password");
+    applicationController.handleDocumentQueryErrorResponse({
 			err:userError,
 			res:res,
 			req:req,
 			errorflash:userError.message,
 			redirecturl:"/user/new"
 		});
-    }
-    else if (userdata.passwordconfirm !== userdata.password) {
-        delete userdata.password;
-        delete userdata.passwordconfirm;
+  }
+  else if (userdata.passwordconfirm !== userdata.password) {
+      delete userdata.password;
+      delete userdata.passwordconfirm;
 
-        userError = new Error("confirmation password doesn't match");
-        applicationController.handleDocumentQueryErrorResponse({
-			err:userError,
-			res:res,
-			req:req,
-			errorflash:userError.message,
-			redirecturl:"/user/new"
-		});
-    }
-    else if (userdata.email === undefined || !userdata.email || userdata.username === undefined || !userdata.username) {
+      userError = new Error("confirmation password doesn't match");
+      applicationController.handleDocumentQueryErrorResponse({
+				err:userError,
+				res:res,
+				req:req,
+				errorflash:userError.message,
+				redirecturl:"/user/new"
+			});
+  }
+  else if (userdata.email === undefined || !userdata.email || userdata.username === undefined || !userdata.username) {
 		userError = new Error("missing required data");
 		applicationController.handleDocumentQueryErrorResponse({
 			err:userError,
@@ -48,8 +47,8 @@ var createNewUser = function(options){
 			errorflash:userError.message,
 			redirecturl:"/user/new"
 		});
-    }
-    else {
+  }
+  else {
 		var searchUsernameRegEx = new RegExp(userdata.username, "gi"),
 			searchEmailRegEx = new RegExp(userdata.email, "gi"),
 			query = {};
@@ -77,7 +76,7 @@ var createNewUser = function(options){
 		User.findOne(query,function(err,user){
 			if (err) {
 				userError = err;
-		        applicationController.handleDocumentQueryErrorResponse({
+        applicationController.handleDocumentQueryErrorResponse({
 					err:userError,
 					res:res,
 					req:req,
@@ -132,8 +131,9 @@ var createNewUser = function(options){
 								}
 							}
 						});
-
-						User.sendAsyncWelcomeEmail(userdata, function() {});
+						if(options.callback){
+							options.callback(userdata);
+						}
 					}
 				});
 			}

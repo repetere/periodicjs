@@ -67,7 +67,6 @@ var facebookcallback = function(req, res, next) {
 		failureRedirect: loginFailureUrl,
 		failureFlash: 'Invalid username or password.'
 	})(req, res, next);
-
 };
 
 var ensureAuthenticated = function(req, res, next) {
@@ -205,7 +204,7 @@ var controller = function(resources){
 		logout:logout,
 		facebook:facebook,
 		facebookcallback:facebookcallback,
-        ensureAuthenticated:ensureAuthenticated
+    ensureAuthenticated:ensureAuthenticated
 	};
 };
 
@@ -355,21 +354,7 @@ exports.mobileLogin = function(req, res, next) {
 					});
 				}
 			})
-
 		}
-
 	})(req, res, next);
 };
-
-exports.
-exports.
-
-// Passport session setup.
-
-
-
-// Use the LocalStrategy within Passport.
-
-
-
  */

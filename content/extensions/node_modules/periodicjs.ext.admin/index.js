@@ -38,6 +38,7 @@ module.exports = function(periodic){
 	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
 	adminRouter.get('/collections',authController.ensureAuthenticated,collectionController.loadCollections,adminController.collections_index);
 	adminRouter.get('/assets',authController.ensureAuthenticated,mediaassetController.loadAssets,adminController.assets_index);
+	adminRouter.get('/mailer',authController.ensureAuthenticated,adminController.mail_index);
 	/**
 	 * admin/extension manager routes
 	 */

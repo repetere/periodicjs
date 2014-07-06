@@ -11,7 +11,10 @@
     "email": "yaw.etse@gmail.com",
     "url": "http://about.me/yawjosephetse"
   },
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/typesettin/periodicjs.ext.admin.git"
+  },
   "scripts": {},
   "devDependencies": {},
   "keywords": [

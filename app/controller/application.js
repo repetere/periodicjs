@@ -1,11 +1,13 @@
 'use strict';
 
 var path = require('path'),
-	fs = require('fs');
+    extend = require('util-extend'),
+		fs = require('fs');
 
 var applicationController = function(resources){
 	var logger = resources.logger;
 	var theme = resources.settings.theme;
+	var appSettings = resources.settings;
 
 	function isValidObjectID(str) {
 		// coerce to string so the function can be generically used to test both strings and native objectIds created by the driver
@@ -17,6 +19,16 @@ var applicationController = function(resources){
 		}
 		return valid;
 	}
+
+	this.run_cmd = function(cmd, args, callBack ) {
+    var spawn = require('child_process').spawn;
+    var child = spawn(cmd, args);
+    var resp = "";
+
+    child.stdout.on('data', function (buffer) { resp += buffer.toString(); });
+    child.stdout.on('end', function() { callBack (resp); });
+    //run_cmd( "ls", ["-l"], function(text) { console.log (text) });
+	};
 
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
@@ -465,6 +477,16 @@ var applicationController = function(resources){
 		else {
 			return false;
 		}
+	};
+
+	this.getAdminMenu = function(options){
+    var adminmenu = {};
+    for(var x in appSettings.extconf.extensions){
+      if( appSettings.extconf.extensions[x].enabled===true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']){
+          adminmenu = extend( adminmenu,appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'] );
+      }
+	  }
+	  return adminmenu;
 	};
 };
 
