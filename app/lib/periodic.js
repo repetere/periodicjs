@@ -34,7 +34,6 @@ var express = require('express'),
 	path = require('path'),
 	fs = require('fs'),
 	bodyParser = require('body-parser'),
-	multer = require('multer'),
 	methodOverride = require('method-override'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
@@ -67,14 +66,8 @@ var init = {
 	},
 	loadConfiguration : function(){
 		appconfig = new config();
-		if(appconfig.settings().debug){
-			console.log(appconfig.settings());
-		}
 		app.set('port',appconfig.settings().application.port);
 		app.set('env',appconfig.settings().application.environment);
-		if(appconfig.settings().theme){
-			appconfig.setSetting('themepath',path.join(__dirname,'../../content/themes',appconfig.settings().theme));
-		}
 		db = database[app.get('env')];
 		dburl = db.url;
 		mngse =  db.mongoose;
@@ -92,13 +85,9 @@ var init = {
 			extended: true
 		}));
 		app.use(bodyParser.json());
-		// parse application/x-www-form-urlencoded
-		// app.use(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
-		// app.get(bodyParser({ keepExtensions: true, uploadDir: __dirname + '/public/uploads/files' }));
-		// app.use(multer({dest: __dirname + '/public/uploads/files' }));
 		app.use(methodOverride());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
-		app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
+		app.use(favicon( path.resolve(__dirname,'../../public/favicon.png') ) );
 	},
 	staticCaching : function(){
 		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {maxAge: 86400000};

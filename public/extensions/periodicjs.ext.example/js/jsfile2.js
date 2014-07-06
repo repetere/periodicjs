@@ -1,1 +1,0 @@
-console.log("hello world js 2");

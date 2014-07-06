@@ -8,7 +8,7 @@
     "enabled": true,
     "type": "mongo"
   },
-  "theme": "periodicjs.theme.minimal",
+  "theme": "periodicjs.theme.philosophiae",
   "userauth": {
     "enabled": false,
     "rememberme": false,

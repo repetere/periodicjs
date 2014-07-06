@@ -84,9 +84,7 @@ var upload = function(req,res,next){
 var createassetfile = function(req, res, next) {
 	var newasset = applicationController.removeEmptyObjectValues(req.controllerData.fileData);
 	newasset.name = applicationController.makeNiceName(newasset.fileurl);
-	newasset.postauthorname = req.user.username;
-	newasset.primaryauthor = req.user._id;
-	newasset.authors = [req.user._id];
+	newasset.author = req.user._id;
 	applicationController.loadModel({
 		model:MediaAsset,
 		docid:newasset.name,
@@ -123,12 +121,144 @@ var createassetfile = function(req, res, next) {
 			}
 		}
 	});
-
-	// res.status(500);
-	// res.send("crap error");
-// console.log("newasset",newasset);
 };
 
+var remove = function(req, res, next){
+	var asset = req.controllerData.asset;
+	if(asset.locationtype==='local'){
+		async.parallel({
+			deletefile:function(callback){
+				fs.remove(path.join(process.cwd(),asset.attributes.periodicPath), callback);
+			},
+			removeasset:function(callback){
+				applicationController.deleteModel({
+					model:MediaAsset,
+					deleteid:asset._id,
+					req:req,
+					res:res,
+					callback:callback
+				});
+			}
+		},function(err,results){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				applicationController.handleDocumentQueryRender({
+					req:req,
+					res:res,
+					redirecturl:'/p-admin/assets',
+					responseData:{
+						result:"success",
+						data:"deleted"
+					}
+				});
+			}
+		});
+	}
+	console.log("asset",asset);
+};
+
+var loadAssets = function(req,res,next){
+	var params = req.params,
+		query,
+		offset = req.query.offset,
+		sort = req.query.sort,
+		limit = req.query.limit,
+		population = 'author',
+		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+	if(req.query.search===undefined || req.query.search.length<1){
+		query={};
+	}
+	else{
+		query = {
+			$or: [{
+				title: searchRegEx,
+				}, {
+				'name': searchRegEx,
+			}]
+		};
+	}
+
+	applicationController.searchModel({
+		model:MediaAsset,
+		query:query,
+		sort:sort,
+		limit:limit,
+		offset:offset,
+		population:population,
+		callback:function(err,documents){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				// console.log(documents);
+				req.controllerData.assets = documents;
+				next();
+			}
+		}
+	});
+};
+
+var loadAsset = function(req,res,next){
+	var params = req.params,
+		population = 'author',
+		docid = params.id;
+
+	req.controllerData = (req.controllerData)?req.controllerData:{};
+
+	applicationController.loadModel({
+		docid:docid,
+		model:MediaAsset,
+		population:population,
+		callback:function(err,doc){
+			if(err){
+				applicationController.handleDocumentQueryErrorResponse({
+					err:err,
+					res:res,
+					req:req
+				});
+			}
+			else{
+				req.controllerData.asset = doc;
+				next();
+			}
+		}
+	});
+};
+
+var searchResults = function(req,res,next){
+	applicationController.getViewTemplate({
+		res:res,
+		req:req,
+		templatetype:'search-results',
+		themepath:appSettings.themepath,
+		themefileext:appSettings.templatefileextension,
+		callback:function(templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:"Search Results"
+					},
+					categories:req.controllerData.assets,
+					user: applicationController.removePrivateInfo(req.user)
+				}
+			});
+	}});
+};
 
 var controller = function(resources){
 	logger = resources.logger;
@@ -141,53 +271,15 @@ var controller = function(resources){
 	return{
 		// show:show,
 		// index:index,
+		remove:remove,
 		upload:upload,
 		createassetfile:createassetfile,
 		// update:update,
 		// append:append,
-		// loadCollection:loadCollection,
-		// loadCollections:loadCollections
+		loadAsset:loadAsset,
+		loadAssets:loadAssets,
+		searchResults:searchResults
 	};
 };
-
-/*
-// console.log("req",req);
-	// http://stackoverflow.com/questions/20553575/how-to-cancel-user-upload-in-formidable-node-js
-	form.keepExtensions = true;
-	form.uploadDir = path.join(process.cwd(),uploadDirectory);
-	form.parse(req, function(err, fields, files) {
-		// console.log(err,fields,files);
-	  // res.writeHead(200, {'content-type': 'text/plain'});
-	  // res.write('received upload:\n\n');
-	  // res.end(util.inspect({fields: fields, files: files}));
-	});
-	form.on('error', function(err) {
-		logger.error(err);
-		applicationController.handleDocumentQueryErrorResponse({
-			err:err,
-			res:res,
-			req:req
-		});
-	});
-
-	    form.on('field', function(field, value) {
-			console.log("field, value");
-			console.log(field, value);
-			fields.push([field, value]);
-		});
-			    form.on('file', function(field, file) {
-			console.log("field, file");
-			// console.log(field, file);
-			if(file.size > 9){
-				this.emit("aborted",'file too big');
-				this.emit("error",'file too big error',file);
-			} 
-						files.push(file);
-	});
-	form.on('end',function(){
-		req.controllerData.fileData = files;
-		next();
-	});
-*/
 
 module.exports = controller;

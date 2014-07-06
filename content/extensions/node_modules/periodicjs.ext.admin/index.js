@@ -37,16 +37,19 @@ module.exports = function(periodic){
 	adminRouter.get('/tags',authController.ensureAuthenticated,tagController.loadTags,adminController.tags_index);
 	adminRouter.get('/categories',authController.ensureAuthenticated,categoryController.loadCategories,adminController.categories_index);
 	adminRouter.get('/collections',authController.ensureAuthenticated,collectionController.loadCollections,adminController.collections_index);
-	// adminRouter.get('/assets',authController.ensureAuthenticated,mediaassetController.loadAssets,adminController.assets_index);
+	adminRouter.get('/assets',authController.ensureAuthenticated,mediaassetController.loadAssets,adminController.assets_index);
+	adminRouter.get('/mailer',authController.ensureAuthenticated,adminController.mail_index);
 	/**
 	 * admin/extension manager routes
 	 */
 	extensionRouter.get('/install',authController.ensureAuthenticated,extController.install);
 	extensionRouter.get('/install/log/:extension/:date',authController.ensureAuthenticated,extController.install_getOutputLog);
+	extensionRouter.get('/upload/log/:extension/:date',authController.ensureAuthenticated,extController.upload_getOutputLog);
 	extensionRouter.get('/remove/log/:extension/:date',authController.ensureAuthenticated,extController.remove_getOutputLog);
 	extensionRouter.get('/cleanup/log/:extension/:date',authController.ensureAuthenticated,extController.cleanup_log);
 	extensionRouter.get('/:id/disable',authController.ensureAuthenticated,extController.disable);
 	extensionRouter.get('/:id/enable',authController.ensureAuthenticated,extController.enable);
+	extensionRouter.post('/upload',authController.ensureAuthenticated,mediaassetController.upload,extController.upload_install);
 	extensionRouter.post('/:id/delete',authController.ensureAuthenticated,extController.remove);
 	extensionRouter.get('/:id',authController.ensureAuthenticated,adminController.loadExtension,adminController.extension_show);
 	/**
@@ -54,9 +57,11 @@ module.exports = function(periodic){
 	 */
 	themeRouter.get('/install',authController.ensureAuthenticated,themeController.install);
 	themeRouter.get('/install/log/:theme/:date',authController.ensureAuthenticated,themeController.install_getOutputLog);
+	themeRouter.get('/upload/log/:theme/:date',authController.ensureAuthenticated,themeController.upload_getOutputLog);
 	themeRouter.get('/remove/log/:theme/:date',authController.ensureAuthenticated,themeController.remove_getOutputLog);
 	themeRouter.get('/cleanup/log/:theme/:date',authController.ensureAuthenticated,themeController.cleanup_log);
 	themeRouter.get('/:id/enable',authController.ensureAuthenticated,themeController.enable);
+	themeRouter.post('/upload',authController.ensureAuthenticated,mediaassetController.upload,themeController.upload_install);
 	themeRouter.post('/:id/delete',authController.ensureAuthenticated,themeController.remove);
 	themeRouter.get('/:id',authController.ensureAuthenticated,adminController.loadTheme,adminController.theme_show);
 	/**
@@ -100,6 +105,7 @@ module.exports = function(periodic){
 	 * admin/media manager routes
 	 */
 	mediaRouter.post('/new',authController.ensureAuthenticated,mediaassetController.upload,mediaassetController.createassetfile);
+	mediaRouter.post('/:id/delete',authController.ensureAuthenticated,mediaassetController.loadAsset,mediaassetController.remove);
 
 
 	adminRouter.use('/extension',extensionRouter);

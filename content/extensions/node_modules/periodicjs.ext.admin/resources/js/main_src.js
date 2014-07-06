@@ -64,14 +64,14 @@ window.ajaxFormEventListers = function(selector){
 					.query({ format: 'json' })
 					.send(formData)
 					.end(function(error, res){
-						if(res.error || error || res.body.result==='error'){
-							if(res.error){
-								error = res.error;
-							}
+						if(res && res.body && res.body.result==='error'){
 							ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 						}
-						else if(res.clientError){
+						else if(res && res.clientError){
 							ribbonNotification.showRibbon( res.status+": "+res.text,4000,'error');
+						}
+						else if(error){
+							ribbonNotification.showRibbon( error.message ,4000,'error');
 						}
 						else{
 							ribbonNotification.showRibbon("saved",4000,'success');
