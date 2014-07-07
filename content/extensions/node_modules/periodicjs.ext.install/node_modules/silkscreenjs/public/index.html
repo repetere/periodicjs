@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
+	<title>Manuscript Producer</title>
+	<meta name="author" content="Yaw Joseph Etse" />
+	<meta name="description" content="fullPage full-screen backgrounds." />
+	<meta name="keywords"  content="fullpage,demo,screen,fullscreen,backgrounds,full-screen" />
+	<meta name="Resource-type" content="Document" />
+	<link rel="stylesheet" type="text/css" href="./styles/manuscript.css" />
+</head>
+<body>
+	<header>
+		<div id="_mms_ribbon-element"> </div>
+		<div id="_mss_menu">
+			<a class="_mss_menu-heading _mss-pull-left">Manuscript</a>
+			<nav class="_mss_menu-nav _mss-pull-left">
+				<ul class="_mss_menu-items">
+					<li>File
+						<ul class="_mss_menu-items-subnav">
+							<li>New</li>
+							<li>Save</li>
+							<li>Load</li>
+							<li id="_mss_export-mms-to-html">Export Manuscript HTML</li>
+						</ul>
+					</li>
+					<li>Sources
+						<ul class="_mss_menu-items-subnav">
+							<li>Add stylesheets</li>
+							<li>Add scripts</li>
+							<li>Add templates</li>
+							<li>Add data</li>
+							<li>Add modules</li>
+						</ul>
+					</li>
+					<li>Help</li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<div id="_mss_document">
+		<iframe id="_mss_document_iframe" name="_mss_windowFrame">
+			
+		</iframe>
+	</div>
+	<div id="_mss_helpers"></div>
+	<div id="_mss_panels">
+		<div id="_mss_panel-info" class="_mss-panel">
+			<h3>Information</h3>
+			<form class="_mss_panel-form">
+				<div class="form-section">
+					<label>File Name</label>
+					<input type="text" name="_mss_panel-info-filename" id="_mss_panel-info-filename" class="_mss-form-xl" value="draft">
+				</div>
+				<div class="form-section">
+					<label>File Type</label>
+					<select name="_mss_panel-info-type" id="_mss_panel-info-type" class="_mss-form-xl">
+						<option value="static">Static Flat File</option>
+					</select>
+				</div>
+				<div class="form-section">
+					<label>Screen Size</label>
+					<select name="_mss_panel-info-dimension-option" id="_mss_panel-info-dimension-option">
+						<option value="max">Fill Window Size</option>
+						<option value="desktop">Desktop</option>
+						<option value="tablet-vert">Tablet (vertical)</option>
+						<option selected="selected" value="tablet-horz">Tablet (horizontal)</option>
+						<option value="mobile-vert">Mobile (vertical)</option>
+						<option value="mobile-horz">Mobile (horizontal)</option>
+						<option value="custom">Custom</option>
+					</select>
+				</div>
+				<div class="form-section">
+					<label>Dimensions</label>
+					<input type="text" name="_mss_panel-info-dimension-width" id="_mss_panel-info-dimension-width" value="100%" class="_mss-form-md"> x 
+					<input type="text" name="_mss_panel-info-dimension-height"id="_mss_panel-info-dimension-height" value="100%" class="_mss-form-md">
+				</div>
+			</form>
+		</div>
+		<div id="_mss_panel-data" class="_mss-panel">
+			<h3>Data (JSON)</h3>
+			<form>
+				<textarea id="_mss_panel_textarea_datapanel" name="_mss_data_textarea">
+{
+response: [
+{
+created_at: "2013-10-02T14:53:02Z",
+id: 56695,
+image_url: "http://distilleryimage6.s3.amazonaws.com/b7ca8d90233911e38fcc22000aa801f0_7.jpg",
+source: "instagram",
+source_id: "550306389751476354_175994331",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_175994331_75sq_1376482584.jpg",
+source_user_id: "175994331",
+source_user_name: "myschqaqylla",
+text: "Muka tak rela blik hostel. #turquoise #hijab #muslimah #kmm #veterinarian",
+updated_at: "2013-10-02T14:53:02Z",
+url: "http://instagram.com/p/ejFL7uw7CC/"
+},
+{
+created_at: "2013-10-02T14:31:18Z",
+id: 56694,
+image_url: "http://distilleryimage3.s3.amazonaws.com/cb2540302b6611e39d8022000a1fa9ec_7.jpg",
+source: "instagram",
+source_id: "557847489418861371_44867533",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_44867533_75sq_1374281479.jpg",
+source_user_id: "44867533",
+source_user_name: "ninacocoabeana",
+text: "Gawd I love doing my nails bahahaha",
+updated_at: "2013-10-02T14:31:18Z",
+url: "http://instagram.com/p/e931YFp5s7/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56686,
+image_url: "http://distilleryimage6.s3.amazonaws.com/f217e1242b6711e3814022000aa80033_8.jpg",
+source: "instagram",
+source_id: "557851640472571062_304318874",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_304318874_75sq_1378231944.jpg",
+source_user_id: "304318874",
+source_user_name: "s_adams97",
+text: "I love Converse ❤️ #Converse #Turquoise #Blue #White",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e94xyDvIy2/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56685,
+image_url: "http://distilleryimage1.s3.amazonaws.com/57a899522b6811e3a5b3123139272901_7.jpg",
+source: "instagram",
+source_id: "557853069882548929_347433447",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_347433447_75sq_1365439788.jpg",
+source_user_id: "347433447",
+source_user_name: "rosestyleshoppe",
+text: "#turquoise #scarves #fabulous #sweaters",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e95GlTNeLB/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56684,
+image_url: "http://distilleryimage6.s3.amazonaws.com/3b96fba02b6811e3a94c22000ab68b88_7.jpg",
+source: "instagram",
+source_id: "557852674809466506_23600322",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_23600322_75sq_1343686758.jpg",
+source_user_id: "23600322",
+source_user_name: "sugarandtype",
+text: "Glitter and sparkles and candy oh my! @bashbybrenly asked me to design some items for her launch party, and they were soooo fun! Photography by the wonderful @amy_demos and @jordan_demos and a feature today on hostess with the mostess! #smallbiz #collab #gold #glitter #handlettering #candy #pink #turquoise #collab #feature #blog",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e95A1XBQ6K/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56683,
+image_url: "http://distilleryimage0.s3.amazonaws.com/09f401142b6911e3b7fb22000aeb106a_7.jpg",
+source: "instagram",
+source_id: "557855579124940956_28963471",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_28963471_75sq_1378260537.jpg",
+source_user_id: "28963471",
+source_user_name: "sarahrolamal",
+text: "Picture of the day #braces #turquoise #lazyday #roar",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e95rGNtkCc/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56682,
+image_url: "http://distilleryimage7.s3.amazonaws.com/08d5fb022b6911e3b79722000aeb11d7_8.jpg",
+source: "instagram",
+source_id: "557855563456013899_4264440",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_4264440_75sq_1380127627.jpg",
+source_user_id: "4264440",
+source_user_name: "luisameirelles",
+text: "Bom dia! Tem post novo com as lindezas da @mairabumachar  www.luisameirelles.com #mairabumachar #turquoise",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e95q3nxWZL/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56681,
+image_url: "http://distilleryimage4.s3.amazonaws.com/f32ac1d42b6811e3af3822000ae802ec_8.jpg",
+source: "instagram",
+source_id: "557855258416995268_36905469",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_36905469_75sq_1380529911.jpg",
+source_user_id: "36905469",
+source_user_name: "eileenlykacholo",
+text: "Breaking out the vest #denimvest #turquoise #levis #fall",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e95mbiB1vE/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56680,
+image_url: "http://distilleryimage7.s3.amazonaws.com/44751d322b6911e3b26122000a1fb538_7.jpg",
+source: "instagram",
+source_id: "557856402574895479_313012521",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_313012521_75sq_1380510934.jpg",
+source_user_id: "313012521",
+source_user_name: "xwenddyrenaud",
+text: "Peinard din toilette de l'école . #peace#toilette#school#turquoise#haha#peinard#coool#étuie#papillon#instacool#picoftheday#jsuis#cool#au#yah#bonne#journée#la",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e953FHJ2l3/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56679,
+image_url: "http://distilleryimage9.s3.amazonaws.com/9c48c1bc2b6911e3b8d122000aeb43f3_8.jpg",
+source: "instagram",
+source_id: "557857638537098157_30398963",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_30398963_75sq_1372815360.jpg",
+source_user_id: "30398963",
+source_user_name: "fortalexa",
+text: " #furby #new #baby #love #egg #turquoise",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e96JEMPfOt/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56678,
+image_url: "http://distilleryimage6.s3.amazonaws.com/a56efedc2b6911e3a49722000aaa05c4_8.jpg",
+source: "instagram",
+source_id: "557857767374921070_29106222",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_29106222_75sq_1372198937.jpg",
+source_user_id: "29106222",
+source_user_name: "charlpickeringxo",
+text: "Finally got an elastic band on my braces, don't like it! #elastic #band #braces #feels #weird #turquoise #teeth",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e96K8Lkx1u/"
+},
+{
+created_at: "2013-10-02T14:31:16Z",
+id: 56677,
+image_url: "http://distilleryimage10.s3.amazonaws.com/2ca498762b6a11e3bd1c22000a1fd1e7_8.jpg",
+source: "instagram",
+source_id: "557859670254713926_356530798",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_356530798_75sq_1376635887.jpg",
+source_user_id: "356530798",
+source_user_name: "emmajeanwade",
+text: "Yay new shirts!! #work #LEAP #WSRA #specialrecreation #shirt #turquoise #instahappy",
+updated_at: "2013-10-02T14:31:16Z",
+url: "http://instagram.com/p/e96moYDHxG/"
+},
+{
+created_at: "2013-10-02T14:31:15Z",
+id: 56676,
+image_url: "http://distilleryimage5.s3.amazonaws.com/514bfef82b6a11e3865522000ae81dbd_8.jpg",
+source: "instagram",
+source_id: "557860186074260537_261089744",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_261089744_75sq_1380376155.jpg",
+source_user_id: "261089744",
+source_user_name: "babelineyyyy",
+text: "Walletnizer from Gwyneth Leather Handbags Green,wisteria,Turquoise,redlust #Gwyneth #Brands #Walletnizer #Gwynethleatherhandbags #wisteria #Turquoise #Green #redlust #Color #Colour #Nice",
+updated_at: "2013-10-02T14:31:15Z",
+url: "http://instagram.com/p/e96uIxSiQ5/"
+},
+{
+created_at: "2013-10-02T14:31:15Z",
+id: 56675,
+image_url: "http://distilleryimage0.s3.amazonaws.com/37e293aa2b6a11e3829f22000ae9027d_8.jpg",
+source: "instagram",
+source_id: "557859828509615196_571059520",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_571059520_75sq_1379958480.jpg",
+source_user_id: "571059520",
+source_user_name: "macaverdescs",
+text: "Corre que ainda temos alguma peças! #mintdress #turquoise #dress #vestido",
+updated_at: "2013-10-02T14:31:15Z",
+url: "http://instagram.com/p/e96o7wxqRc/"
+},
+{
+created_at: "2013-10-02T14:31:15Z",
+id: 56674,
+image_url: "http://distilleryimage7.s3.amazonaws.com/665783622b6a11e3a73b22000aa80571_8.jpg",
+source: "instagram",
+source_id: "557860482291108475_271313105",
+source_user_avatar: "http://images.ak.instagram.com/profiles/profile_271313105_75sq_1378258400.jpg",
+source_user_id: "271313105",
+source_user_name: "katrinaklee",
+text: "Last full day with my #turquoise #braces. -_- I will miss you. Going pink next!",
+updated_at: "2013-10-02T14:31:15Z",
+url: "http://instagram.com/p/e96ycpMIp7/"
+}
+],
+count: 30,
+pagination: {
+previous: null,
+next: 2,
+current: 1,
+per_page: 30,
+count: 52047,
+pages: 1735
+}
+}		
+				</textarea>
+			</form>
+		</div>
+		<div id="_mss_panel-template" class="_mss-panel">
+
+			<h3>Template (EJS mode)</h3>
+			<form>
+				<textarea id="_mss_panel_textarea_templatepanel" name="_mss_template_textarea">
+<%
+var responsedata = {{-datapanel}};
+function hello(who) {
+	return "Hello " + who;
+}
+%>
+<!doctype>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>HTML5 canvas demo</title>
+		<style id="code_styles">
+		p {font-family: monospace;}
+		{{-csspanel}}
+		</style>
+	</head>
+	<body>
+		This is an example of EJS (embedded javascript)
+		<p>The program says <%= hello("Attenda prego!") %>.</p>
+		<p>Canvas pane goes here:</p>
+		<canvas id="pane" width=300 height=200></canvas>
+		<script>
+		var canvas = document.getElementById('pane');
+		var context = canvas.getContext('2d');
+
+		context.fillStyle = 'rgb(250,0,0)';
+		context.fillRect(10, 10, 55, 50);
+
+		context.fillStyle = 'rgba(0, 0, 250, 0.5)';
+		context.fillRect(30, 30, 55, 50);
+		</script>
+	</body>
+</html>			
+				</textarea>
+			</form>
+		</div>
+		<div id="_mss_panel-style" class="_mss-panel">
+			<h3>Styles (LESS mode)</h3>
+			<form>
+				<textarea id="_mss_panel_textarea_stylepanel" name="_mss_style_textarea">
+body{
+	background:#fff;
+}
+.btn {
+  // reset here as of 2.0.3 due to Recess property order
+  border-color: #ccc;
+  border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
+}
+fieldset span button, fieldset span input[type="file"] {
+  font-size:12px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+.rounded-corners (@radius: 5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+}
+
+@import url("something.css");
+
+@blue:   hsl(190, 50%, 65%);
+@medium:   hsl(190, 50%, 65%);
+@highlight:   hsl(190, 50%, 65%);
+@alpha-blue:   hsl(190, 50%, 65%);
+@light-blue:   hsl(190, 50%, 65%);
+
+#menu {
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+  clear: both;
+  display: block;
+  background-color: @blue;
+  height: 42px;
+  border-top: 2px solid lighten(@alpha-blue, 20%);
+  border-bottom: 2px solid darken(@alpha-blue, 25%);
+  -moz-box-shadow: 0 0 0 #000; // Because firefox sucks.
+
+  &.docked {
+    background-color: hsla(210, 60%, 40%, 0.4);
+  }
+  &:hover {
+    background-color: @blue;
+  }
+
+  #dropdown {
+    margin: 0 0 0 117px;
+    padding: 0;
+    padding-top: 5px;
+    display: none;
+    width: 190px;
+    border-top: 2px solid @medium;
+    color: @highlight;
+    border: 2px solid darken(@medium, 25%);
+    border-left-color: darken(@medium, 15%);
+    border-right-color: darken(@medium, 15%);
+    border-top-width: 0;
+    background-color: darken(@medium, 10%);
+    ul {
+      padding: 0px;  
+    }
+    li {
+      font-size: 14px;
+      display: block;
+      text-align: left;
+      padding: 0;
+      border: 0;
+      a {
+        display: block;
+        padding: 0px 15px;  
+        text-decoration: none;
+        color: white;  
+        &:hover {
+          background-color: darken(@medium, 15%);
+          text-decoration: none;
+        }
+      }
+    }
+    .rounded-corners
+  }
+}
+				</textarea>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript" src="./scripts/index.js"></script>
+</body>
+</html>
