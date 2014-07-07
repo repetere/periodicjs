@@ -2105,15 +2105,17 @@ var getConsoleOutput = function(){
 			.get(getRequest)
 			.set('Accept', ' text/plain')
 			.end(function(error, res){
-				try{
-					if(res.error){
-						error = res.error;
+				// console.log("made request",cnt, error,res);
+
+				if(res && res.error){
+					ribbonNotification.showRibbon( res.error.message || res.text ,8000,'error');
+					// console.log("error in ajax for file log data");
+					console.log("cnt",cnt);
+					console.log("res",res);
+					if(res.error || cnt >5){
+						clearTimeout(t);
 					}
 				}
-				catch(e){
-					console.log(e);
-				}
-
 				if(error){
 					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
 					// console.log("error in ajax for file log data");
@@ -2136,8 +2138,8 @@ var getConsoleOutput = function(){
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
 					}
-					if(res.text.match('====!!ERROR!!====') || res.text.match('====##END##====')){
-						if(res.text.match('====##END##====')){
+					if(res.text.match('====!!ERROR!!====') || res.text.match('====##CONFIGURED##====')){
+						if(res.text.match('====##CONFIGURED##====')){
 							ribbonNotification.showRibbon( 'installed, refresh to get started' ,8000,'success');
 						}
 						clearTimeout(t);

@@ -72,40 +72,72 @@ var configurePeriodic = function(req,res,next,options){
 			});
 			User.fastRegisterUser(userdata,callback);
 		};
-		// asyncTasks.installMailer = function(callback){
-		// 	update_outputlog({
-		// 		logdata : 'installing mailer extension'
-		// 	});
-		// 	applicationController.async_run_cmd(
-		// 		'node',
-		// 		[process.cwd()+'/index.js','--cli','--controller extension','--install true','--name "typesettin/periodicjs.ext.mailer"','--version latest'],
-		// 		function(consoleoutput){
-		// 			update_outputlog({
-		// 				logdata : consoleoutput
-		// 			});
-		// 		},
-		// 		callback);
-		// 	// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-		// 	// 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
-		// };
+		asyncTasks.installMailer = function(callback){
+			update_outputlog({
+				logdata : 'installing mailer extension'
+			});
+			applicationController.async_run_cmd(
+				'node',
+				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.mailer','--version','latest'],
+				function(consoleoutput){
+					update_outputlog({
+						logdata : consoleoutput
+					});
+				},
+				callback
+			);
+			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+		};
+		asyncTasks.installLogin = function(callback){
+			update_outputlog({
+				logdata : 'installing login extension'
+			});
+			applicationController.async_run_cmd(
+				'node',
+				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.login','--version','latest'],
+				function(consoleoutput){
+					update_outputlog({
+						logdata : consoleoutput
+					});
+				},
+				callback
+			);
+			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+		};
+		asyncTasks.installAdmin = function(callback){
+			update_outputlog({
+				logdata : 'installing admin extension'
+			});
+			applicationController.async_run_cmd(
+				'node',
+				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.admin','--version','latest'],
+				function(consoleoutput){
+					update_outputlog({
+						logdata : consoleoutput
+					});
+				},
+				callback
+			);
+			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+		};
 	}
 	if(updatesettings.theme){
-		// console.log("install admin");
 		asyncTasks.installTheme = function(callback){
 			update_outputlog({
 				logdata : 'installing theme: '+updatesettings.theme
 			});
 			applicationController.async_run_cmd(
 				'node',
-				[process.cwd()+'/index.js','--cli','--controller theme','--install true','--name "typesettin/periodicjs.theme.'+updatesettings.theme+'"','--version latest'],
+				['index.js','--cli','--controller','theme','--install','true','--name','typesettin/periodicjs.theme.'+updatesettings.theme,'--version','latest'],
+				// ['index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.'+updatesettings.theme+'" --version latest'],
 				function(consoleoutput){
 					update_outputlog({
 						logdata : consoleoutput
 					});
 				},
-				callback);
-			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-			// 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+				callback
+			);
+			// node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
 		};
 	}
 
@@ -119,15 +151,17 @@ var configurePeriodic = function(req,res,next,options){
 				});
 			}
 			else{
+				console.log(results);
 				update_outputlog({
-					logdata : 'installed, extensions.conf updated, application restarting \r\n  ====##END##====',
+					logdata : 'installed, extensions.conf updated, application restarting \r\n  ====##CONFIGURED##====',
 					callback : function(err){
 					}
 				});
 				if(options.cli){
-					logger.info('installed, extensions.conf updated \r\n  ====##END##====');
+					logger.info('installed, extensions.conf updated \r\n  ====##CONFIGURED##====');
 					process.exit(0);
 				}
+				applicationController.restart_app();
 			}
 	});
 };

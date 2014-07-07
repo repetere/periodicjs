@@ -2,7 +2,7 @@
 
 var path = require('path'),
     extend = require('util-extend'),
-		fs = require('fs');
+		fs = require('fs-extra');
 
 var applicationController = function(resources){
 	var logger = resources.logger;
@@ -31,8 +31,8 @@ var applicationController = function(resources){
 	};
 
 	this.async_run_cmd = function(cmd, args, asynccallback ,callback ) {
-		console.log("cmd",cmd);
-		console.log("args",args);
+		logger.silly("cmd",cmd);
+		logger.silly("args",args);
     var spawn = require('child_process').spawn;
     var child = spawn(cmd, args);
     var resp = "";
@@ -42,26 +42,35 @@ var applicationController = function(resources){
 			callback(err,null);
 		});
 		child.stdout.on('data', function (buffer) {
-			console.log("got data",buffer.toString());
 			asynccallback(buffer.toString());
 		});
 		child.stderr.on('data', function (buffer) {
-			console.log("got err",buffer.toString());
 			asynccallback(buffer.toString());
 		});
-    // child.stdout.on('end', function() { callback(null,"command run: "+cmd+" "+args); });
-    child.stdout.on('end', function() {
-			console.log("got stdout end callback");
-			callback(null,"command run: "+cmd+" "+args);
-    });
-    child.stderr.on('end', function() {
-			console.log("got stderr end callback");
-			callback(null,"command run: "+cmd+" "+args);
-    });
+   //  child.stdout.on('end', function() {
+			// console.log("got stdout end callback");
+			// callback(null,"command run: "+cmd+" "+args);
+   //  });
+   //  child.stderr.on('end', function() {
+			// console.log("got stderr end callback");
+			// callback(null,"command run: "+cmd+" "+args);
+   //  });
     child.on('exit', function() {
-			console.log("got exit callback");
+			logger.silly("got exit callback");
 			callback(null,"command run: "+cmd+" "+args);
     });//run_cmd( "ls", ["-l"], function(text) { console.log (text) });
+	};
+
+	this.restart_app = function(){
+		var d = new Date(),
+				restartfile=path.join(process.cwd(),'/content/extensions/restart.json');
+
+		// logger.silly("restartfile",restartfile);
+		fs.outputFile(restartfile,'restart log '+d+'- \r\n ',function(err){
+			if(err){
+				logger.error(err);
+			}
+		});
 	};
 
 	this.getPluginViewTemplate = function(options){
