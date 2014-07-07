@@ -842,6 +842,7 @@ var disable = function(req,res,next){
 						}
 					}
 				});
+				applicationController.restart_app();
 			}
 		}
 	);
@@ -915,6 +916,7 @@ var enable = function(req,res,next){
 									}
 								}
 							});
+							applicationController.restart_app();
 						}
 					}
 				);

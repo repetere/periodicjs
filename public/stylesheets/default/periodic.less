@@ -3,6 +3,9 @@ body{
 	padding: 0;
 	background: #efefef;
 	// font-family: monospace, "times new roman", serif;
+	.lucidagrande;
+}
+.lucidagrande{
 	font-family: 'Lucida Grande',georgia,"times new roman", serif;
 }
 .monospace{
@@ -28,7 +31,25 @@ a:hover{
 		small{
 			font-size: 50%;
 		}
+		&._pea-h1-logo{
+			margin: 0.25em 0;
+			font-size: 3em;
+			.lucidagrande;
+			img{
+				height: 1em;
+				margin-right: -.4em;
+				position: relative;
+				bottom: -.06em;
+			}
+		}
 	}
+}
+._pea-console{
+	max-height: 15em;
+	overflow: auto;
+	overflow-x: hidden;
+	word-break: break-word;
+	.pea-border();
 }
 
 ._pea-document{
@@ -266,7 +287,9 @@ header{
 
 footer{
 	margin: 1em 0em;
-	font-size: .7em;
+	p{
+		font-size: .7em;
+	}
 }
 ._pea-table{
     border-spacing: 0;
@@ -345,6 +368,14 @@ footer{
 	}
 }
 
+._pea-toottip{
+	zoom:1;
+	._pea-cursor();
+}
+._pea-cursor{
+	cursor: pointer;
+}
+
 ._pea-button{
 	display: inline-block;
 	min-height: 2em;
@@ -368,6 +399,9 @@ footer{
 	}
 	&:hover{
 		text-decoration: none;
+	}
+	&._pea-reg-size{
+		font-size: 1em;
 	}
 }
 .wysiwyg-color-red{

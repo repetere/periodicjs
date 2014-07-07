@@ -61,25 +61,33 @@ var cli = function(argv){
 			catch(e){
 				logger.error(e);
 				logger.error(e.stack);
-				console.log("got error!!!!!!!!!!");
 				process.exit(0);
 			}
+		}
+		else{
+			logger.error("no valid arguments", argv);
+			process.exit(0);
 		}
 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
 		// var Post = mongoose.model('Post');
 		// Post.find({}).limit(2).exec(function(err,posts){ if(err){ console.error(err); } else{ console.info(posts); } });
-		// process.exit(0);
 	};
 
 	var init = function(argv){
 		loadConfig();
 		useLogger();
-		setupMongoDB();
-		mongoose.connection.on("open",function(){
+		if(appconfig.settings().status === "install"){
 			setResources();
 			loadScript(argv);
-		});
+		}
+		else{
+			setupMongoDB();
+			mongoose.connection.on("open",function(){
+				setResources();
+				loadScript(argv);
+			});
+		}
 	};
 
 	init(argv);

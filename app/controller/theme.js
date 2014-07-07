@@ -27,6 +27,10 @@ var customLayout = function(options){
 			path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewpath+'.'+themefileext),
 		parallelTask = {};
 
+	Post = mongoose.model('Post');
+	User = mongoose.model('User');
+	Category = mongoose.model('Category');
+
 	function getModelFromName(modelname){
 		switch(modelname){
 			case 'Category':
@@ -750,6 +754,7 @@ var install = function(req, res, next){
 
 var cli = function(argv){
 	//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+
 	if(argv.install){
 		var repoversion = argv.version,
 			reponame = argv.name,
@@ -798,9 +803,6 @@ var controller = function(resources){
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	Post = mongoose.model('Post');
-	User = mongoose.model('User');
-	Category = mongoose.model('Category');
 
 	return{
 		customLayout:customLayout,

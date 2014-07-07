@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
+	<title>Platter</title>
+	<meta name="author" content="Yaw Joseph Etse" />
+	<meta name="description" content="fullPage full-screen backgrounds." />
+	<meta name="keywords"  content="fullpage,demo,screen,fullscreen,backgrounds,full-screen" />
+	<meta name="Resource-type" content="Document" />
+</head>
+<body>
+	platter window
+	<script>
+		alert("works");
+		alert("works2");
+		alert(window.opener.document.body.innerHTML);
+		// alert(window.opener.location);
+		// alert(window.opener);
+	// window.opener.console.log("opened pop");
+
+		/*
+		* In the popup's scripts, running on <http://example.org>:
+		*/
+
+		// Called sometime after postMessage is called
+		function receiveMessage(event){
+			console.log(event);
+			// Do we trust the sender of this message?
+			if (event.origin !== "http://example.com:8080"){
+				return;
+			}
+			// event.source is window.opener
+			// event.data is "hello there!"
+
+			// Assuming you've verified the origin of the received message (which
+			// you must do in any case), a convenient idiom for replying to a
+			// message is to call postMessage on event.source and provide
+			// event.origin as the targetOrigin.
+			event.source.postMessage("hi there yourself!  the secret response " +
+			"is: rheeeeet!",
+			event.origin);
+		}
+
+		window.addEventListener("message", receiveMessage, false);
+
+	</script>
+</body>
+</html>

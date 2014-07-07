@@ -8,11 +8,12 @@
     "enabled": true,
     "type": "mongo"
   },
-  "theme": "periodicjs.theme.philosophiae",
+  "theme": "periodicjs.theme.minimal",
   "userauth": {
     "enabled": false,
     "rememberme": false,
     "passport": false
   },
-  "debug": true
+  "debug": true,
+  "status":"install" 
 }
