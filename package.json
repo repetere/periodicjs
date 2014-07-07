@@ -18,7 +18,7 @@
   "scripts": {
     "startdev": "supervisor -w app,content/extensions,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public -- index.js",
     "startdevtest": "supervisor -w app,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public,content/extensions/node_modules -- index.js",
-    "start": "supervisor -w app,content/config,content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -- index.js -e prodution -p 80",
+    "start": "supervisor -w content/config/config.json,content/extensions/extensions.json,package.json -e js,node,json -i public -- index.js",
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {

@@ -30,6 +30,40 @@ var applicationController = function(resources){
     //run_cmd( "ls", ["-l"], function(text) { console.log (text) });
 	};
 
+	this.async_run_cmd = function(cmd, args, asynccallback ,callback ) {
+		console.log("cmd",cmd);
+		console.log("args",args);
+    var spawn = require('child_process').spawn;
+    var child = spawn(cmd, args);
+    var resp = "";
+
+		child.stdout.on('error', function (err) {
+			console.log("got error callback");
+			callback(err,null);
+		});
+		child.stdout.on('data', function (buffer) {
+			console.log("got data",buffer.toString());
+			asynccallback(buffer.toString());
+		});
+		child.stderr.on('data', function (buffer) {
+			console.log("got err",buffer.toString());
+			asynccallback(buffer.toString());
+		});
+    // child.stdout.on('end', function() { callback(null,"command run: "+cmd+" "+args); });
+    child.stdout.on('end', function() {
+			console.log("got stdout end callback");
+			callback(null,"command run: "+cmd+" "+args);
+    });
+    child.stderr.on('end', function() {
+			console.log("got stderr end callback");
+			callback(null,"command run: "+cmd+" "+args);
+    });
+    child.on('exit', function() {
+			console.log("got exit callback");
+			callback(null,"command run: "+cmd+" "+args);
+    });//run_cmd( "ls", ["-l"], function(text) { console.log (text) });
+	};
+
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
 			templatePath = options.templatePath, // user/login
@@ -388,7 +422,7 @@ var applicationController = function(resources){
 		logger.error(err);
 		logger.error(errormessage,req.url);
 		if(req.query.format === "json") {
-			res.status(404);
+			res.status(400);
 			res.send({
 				"result": "error",
 				"data": {

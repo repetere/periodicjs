@@ -750,6 +750,8 @@ var install = function(req, res, next){
 
 var cli = function(argv){
 	//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+	console.log("this should be cli running");
+
 	if(argv.install){
 		var repoversion = argv.version,
 			reponame = argv.name,

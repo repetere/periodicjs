@@ -58,12 +58,6 @@ var express = require('express'),
 //https://github.com/expressjs/vhost 
 
 var init = {
-	useLogger : function(){
-		logger = new appLog(app.get('env'));
-		process.on('uncaughtException',function(err){
-			logger.error(err.message);
-		});
-	},
 	loadConfiguration : function(){
 		appconfig = new config();
 		app.set('port',appconfig.settings().application.port);
@@ -71,6 +65,12 @@ var init = {
 		db = database[app.get('env')];
 		dburl = db.url;
 		mngse =  db.mongoose;
+	},
+	useLogger : function(){
+		logger = new appLog(app.get('env'));
+		process.on('uncaughtException',function(err){
+			logger.error(err.message);
+		});
 	},
 	viewSettings : function(){
 		app.set('view engine', 'ejs');
@@ -116,7 +116,7 @@ var init = {
 	useSessions: function(){
 		if(appconfig.settings().sessions.enabled){
 			var express_session_config = {};
-			if(appconfig.settings().sessions.type==="mongo"){
+			if(appconfig.settings().sessions.type==="mongo" && appconfig.settings().status !=='install'){
 				express_session_config = {
 					secret:'hjoiuu87go9hui',
 					maxAge: new Date(Date.now() + 3600000),
@@ -138,18 +138,10 @@ var init = {
 	},
 	useLocals : function(){
 		app.locals = require('./staticviewhelper');
-		if(appconfig.settings().crsf){
-			app.use(function(req,res,next){
-				app.locals.token = req.csrfToken();
-				next();
-			});
-		}
-		else{
-			app.use(function(req,res,next){
-				app.locals.token = '';
-				next();
-			});
-		}
+		app.use(function(req,res,next){
+			app.locals.token = (appconfig.settings().crsf)? req.csrfToken() : '';
+			next();
+		});
 		app.use(function(req,res,next){
 			app.locals.isLoggedIn = function(){
 				return req.user;
@@ -159,7 +151,12 @@ var init = {
 	},
 	applicationRouting : function(){
 		var periodicObj = {express:express,app:app,logger:logger,settings:appconfig.settings(),db:db,mongoose:mngse};
-		require('../routes/index')(periodicObj);
+		if(appconfig.settings().status ==='install'){
+			require('../../content/extensions/node_modules/periodicjs.ext.install/index')(periodicObj);
+		}
+		else{
+			require('../routes/index')(periodicObj);
+		}
 	},
 	serverStatus: function(){
 		logger.info('Express server listening on port ' + app.get('port'));

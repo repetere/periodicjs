@@ -41,6 +41,10 @@ var userSchema = new Schema({
         type: Boolean,
         "default": false
     },
+    usertype: {
+        type: String,
+        "default": "regular"
+    },
     location: {
         city: String,
         country: String,
@@ -51,8 +55,8 @@ var userSchema = new Schema({
             latitude: Number
         },
     },
-    roles:[String],
-    privileges:[Number],
+    roles:Schema.Types.Mixed,
+    privileges:Schema.Types.Mixed,
     createdat: {
         type: Date,
         "default": Date.now
@@ -109,7 +113,7 @@ userSchema.pre('save', function(next, done) {
         done(new Error('Password is too short'));
     } else if (this.username !== undefined && this.username.length < 4) {
         done(new Error('Username is too short'));
-    } else if (this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+    } else if (this.email===undefined || this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
         done(new Error('Invalid email'));
     } else if (this.username !== undefined && badusername.test(this.username)) {
         done(new Error('Invalid username'));
