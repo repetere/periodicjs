@@ -74,7 +74,7 @@ var getConsoleOutput = function(){
 					}
 				}
 				else{
-					if(cnt>20){
+					if(cnt>30){
 						console.log("made 20 req stop ajax");
 						clearTimeout(t);
 					}
@@ -88,7 +88,7 @@ var getConsoleOutput = function(){
 					}
 					if(res.text.match('====!!ERROR!!====') || res.text.match('====##CONFIGURED##====')){
 						if(res.text.match('====##CONFIGURED##====')){
-							ribbonNotification.showRibbon( 'installed, refresh to get started' ,8000,'success');
+							ribbonNotification.showRibbon( 'installed, refresh to get started' ,false,'success');
 						}
 						clearTimeout(t);
 					}
@@ -107,4 +107,9 @@ var getConsoleOutput = function(){
 window.updateConsole = function(){
 	document.getElementById("install-console").style.display="block";
 	getConsoleOutput();
+};
+
+window.successFormPost = function(resdata){
+	// console.log("resdata",resdata);
+	ribbonNotification.showRibbon( 'beginning installation' ,4000,'info');
 };

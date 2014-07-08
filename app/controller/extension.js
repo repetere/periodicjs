@@ -1,17 +1,17 @@
 'use strict';
 
 var path = require('path'),
-	fs = require('fs-extra'),
-	npm = require("npm"),
-	semver = require("semver"),
-	async = require("async"),
-	appController = require('./application'),
-	Extensions = require('../lib/extensions'),
-	Decompress = require('decompress'),
-	applicationController,
-	appSettings,
-	mongoose,
-	logger;
+		fs = require('fs-extra'),
+		npm = require("npm"),
+		semver = require("semver"),
+		async = require("async"),
+		appController = require('./application'),
+		Extensions = require('../lib/extensions'),
+		Decompress = require('decompress'),
+		applicationController,
+		appSettings,
+		mongoose,
+		logger;
 
 
 var getCurrentExt = function(options){

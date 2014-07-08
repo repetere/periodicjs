@@ -64,6 +64,118 @@ var configurePeriodic = function(req,res,next,options){
 			User = mongoose.model('User',userSchema),
 			asyncTasks = {};
 
+	var writeConfJson = function(){
+		var confJsonFilePath = path.resolve(process.cwd(),'content/config/config.json'),
+				confJson={
+					"application":{
+						"port": "8786",
+						"environment": "development"
+					},
+					"cookies":{
+						"cookieParser":updatesettings.cookieparser
+					},
+				  "theme": "periodicjs.theme."+updatesettings.theme,
+				  "status":"active"
+				};
+		if(updatesettings.appname){
+			confJson.name = updatesettings.appname;
+		}
+		switch(updatesettings.sessions){
+			case 'mongo':
+				confJson.sessions = {
+					"enabled":true,
+					"type":"mongo"
+				};
+				confJson.crsf = true;
+				break;
+			case 'cookie':
+				confJson.sessions = {
+					"enabled":true,
+					"type":"cookie"
+				};
+				confJson.crsf = true;
+				break;
+			default:
+				confJson.sessions = {
+					"enabled":false,
+					"type":"default"
+				};
+				confJson.crsf = false;
+				break;
+		}
+
+		update_outputlog({
+			logdata : 'installed, config.conf updated \r\n  ====##CONFIGURED##====',
+			callback : function(err){
+			}
+		});
+		fs.outputJson(confJsonFilePath,confJson,function(err){
+			if(err){
+				errorlog_outputlog({
+					logdata : err.message,
+					cli : options.cli
+				});
+			}
+			else{
+				if(options.cli){
+					logger.info('installed, config.conf updated \r\n  ====##CONFIGURED##====');
+					process.exit(0);
+				}
+			}
+		});
+	};
+
+	var updateExtensionConf = function(callback){
+		var updateConfSettings = {},
+				currentExtensionsConf,
+				extfilepath=path.join(process.cwd(),'/content/extensions/extensions.json'),
+				ext_install,
+				ext_mailer,
+				ext_login,
+				// ext_seed,
+				ext_admin;
+		updateConfSettings.extensions = [];
+
+		fs.readJson(extfilepath,function(err,extConfJSON){
+			if(err){
+				callback(err,null);
+			}
+			else{
+				currentExtensionsConf = extConfJSON;
+				for(var x in currentExtensionsConf.extensions){
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.install'){
+						ext_install=currentExtensionsConf.extensions[x];
+						ext_install.enabled=false;
+					}
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.mailer'){
+						ext_mailer=currentExtensionsConf.extensions[x];
+						ext_mailer.enabled=true;
+					}
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.login'){
+						ext_login=currentExtensionsConf.extensions[x];
+						ext_login.enabled=true;
+					}
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.admin'){
+						ext_admin=currentExtensionsConf.extensions[x];
+						ext_admin.enabled=true;
+					}
+				}
+				updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin];
+				fs.outputJson(extfilepath,updateConfSettings,function(err){
+					if(err){
+						callback(err,null);
+					}
+					else{
+						update_outputlog({
+							logdata : 'updated conf settings'
+						});
+						callback(null,"updated conf settings");
+					}
+				});
+			}
+		});
+	};
+
 	if(updatesettings.admin){
 		// console.log("install admin");
 		asyncTasks.createUser = function(callback){
@@ -141,6 +253,37 @@ var configurePeriodic = function(req,res,next,options){
 		};
 	}
 
+	asyncTasks.writeDatabaseJson = function(callback){
+		var dbjson='',
+				dbjsfile=path.join(process.cwd(),'/content/config/database.js');
+		dbjson+='"use strict";\r\n';
+		dbjson+='\r\n';
+		dbjson+='var mongoose = require("mongoose");\r\n';
+		dbjson+='\r\n';
+		dbjson+='module.exports = {\r\n';
+		dbjson+='	"development":{\r\n';
+		dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
+		dbjson+='		mongoose: mongoose,\r\n';
+		dbjson+='		mongooptions:{}\r\n';
+		dbjson+='	},\r\n';
+		dbjson+='	"production":{\r\n';
+		dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
+		dbjson+='		mongoose: mongoose,\r\n';
+		dbjson+='		mongooptions:{}\r\n';
+		dbjson+='	}\r\n';
+		dbjson+='};\r\n';
+
+		// logger.silly("restartfile",restartfile);
+		fs.outputFile(dbjsfile,dbjson,function(err){
+			if(err){
+				callback(err,null);
+			}
+			else{
+				callback(null,"updated database.json");
+			}
+		});
+	};
+
 	async.parallel(
 		asyncTasks,
 		function(err,results){
@@ -152,16 +295,18 @@ var configurePeriodic = function(req,res,next,options){
 			}
 			else{
 				console.log(results);
-				update_outputlog({
-					logdata : 'installed, extensions.conf updated, application restarting \r\n  ====##CONFIGURED##====',
-					callback : function(err){
+				updateExtensionConf(function(err,updatestatus){
+					if(err){
+						errorlog_outputlog({
+							logdata : err.message,
+							cli : options.cli
+						});
+					}
+					else{
+						writeConfJson();
 					}
 				});
-				if(options.cli){
-					logger.info('installed, extensions.conf updated \r\n  ====##CONFIGURED##====');
-					process.exit(0);
-				}
-				applicationController.restart_app();
+				// applicationController.restart_app();
 			}
 	});
 };
