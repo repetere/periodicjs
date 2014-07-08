@@ -75,9 +75,9 @@ var applicationController = function(resources){
 
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
-			templatePath = options.templatePath, // user/login
+			templatePath = options.templatePath || '', // user/login
 			pluginname = options.pluginname, //periodicjs.plugin.login
-			themepath = options.themepath,
+			themepath = options.themepath || '',
 			viewname = options.viewname,
 			themefileext = options.themefileext,
 			req = options.req,

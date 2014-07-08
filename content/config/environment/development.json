@@ -1,24 +1,12 @@
 {
-	"name": "Periodic Web Client[dev]",
+	"name": "Periodic Enterprise Content Management[dev]",
 	"version": "0.0.2",
 	"application":{
-		"port": "3331",
+		"port": "8384",
 		"environment": "development"
 	},
 	"sessions":{
 		"enabled":true,
 		"type":"default"
-	},
-	"userauth":{
-		"enabled":false,
-		"rememberme":false,
-		"passport":false
-	},
-	"oauth":{
-		"facebook":{
-			"appid": "NEEDFBAPPID",
-			"appsecret": "NEEDFBAPPSECRET",
-			"callbackurl": "http://local.getperiodic.com:8080/auth/facebook/callback"
-		}
 	}
 }
