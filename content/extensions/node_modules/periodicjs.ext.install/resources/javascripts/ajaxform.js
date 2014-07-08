@@ -69,7 +69,9 @@ ajaxform.ajaxFormEventListers = function(selector,ribbonNotification){
 							ribbonNotification.showRibbon( error.message ,4000,'error');
 						}
 						else{
-							ribbonNotification.showRibbon("saved",4000,'success');
+							if(!f.getAttribute("data-blockdefaultsuccess") && f.getAttribute("data-successfunction")){
+								ribbonNotification.showRibbon("saved",4000,'success');
+							}
 							if(f.getAttribute("data-successfunction")){
 								var successFunctionString = f.getAttribute("data-successfunction"),
 								successfn = window[successFunctionString];

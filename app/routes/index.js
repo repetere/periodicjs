@@ -75,6 +75,7 @@ module.exports = function(periodic){
 	// searchRouter.get('/posts/:searchquery',searchController.searchPosts);
 	// searchRouter.get('/tags/:searchquery',searchController.searchTags);
 	// searchRouter.get('/collections/:searchquery',searchController.searchCollections);
+	appRouter.get('/install/getlog',homeController.get_installoutputlog);
 	appRouter.get('*',homeController.catch404);
 
 	periodic.app.use('/post',postRouter);

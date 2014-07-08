@@ -17,5 +17,12 @@
 	"templatefileextension": "ejs",
 	"crsf": true,
   "debug": true,
-  "status":"install"
+  "status":"install",
+	"oauth":{
+		"facebook":{
+			"appid": "NEEDFBAPPID",
+			"appsecret": "NEEDFBAPPSECRET",
+			"callbackurl": "http://local.getperiodic.com:8080/auth/facebook/callback"
+		}
+	}
 }

@@ -2,6 +2,7 @@
 
 var path = require('path'),
 	appController = require('./application'),
+	fs = require('fs-extra'),
 	applicationController,
 	appSettings,
 	mongoose,
@@ -27,6 +28,17 @@ var index = function(req,res,next){
 				}
 			});
 	}});
+};
+var get_installoutputlog = function(req,res,next){
+	var logfile = path.resolve(process.cwd(),'logs/install-periodicjs.log'),
+			stat = fs.statSync(logfile),
+			readStream = fs.createReadStream(logfile);
+
+	res.writeHead(200, {
+		'Content-Type': ' text/plain',
+		'Content-Length': stat.size
+	});
+	readStream.pipe(res);
 };
 var error404 = function(req,res,next){
 	res.status(404);
@@ -88,6 +100,7 @@ var controller = function(resources){
 
 	return{
 		index:index,
+		get_installoutputlog:get_installoutputlog,
 		error404:error404,
 		catch404:catch404
 	};

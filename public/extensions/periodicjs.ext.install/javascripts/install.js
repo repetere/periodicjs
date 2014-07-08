@@ -1877,7 +1877,9 @@ ajaxform.ajaxFormEventListers = function(selector,ribbonNotification){
 							ribbonNotification.showRibbon( error.message ,4000,'error');
 						}
 						else{
-							ribbonNotification.showRibbon("saved",4000,'success');
+							if(!f.getAttribute("data-blockdefaultsuccess") && f.getAttribute("data-successfunction")){
+								ribbonNotification.showRibbon("saved",4000,'success');
+							}
 							if(f.getAttribute("data-successfunction")){
 								var successFunctionString = f.getAttribute("data-successfunction"),
 								successfn = window[successFunctionString];
@@ -2126,7 +2128,7 @@ var getConsoleOutput = function(){
 					}
 				}
 				else{
-					if(cnt>20){
+					if(cnt>30){
 						console.log("made 20 req stop ajax");
 						clearTimeout(t);
 					}
@@ -2140,7 +2142,7 @@ var getConsoleOutput = function(){
 					}
 					if(res.text.match('====!!ERROR!!====') || res.text.match('====##CONFIGURED##====')){
 						if(res.text.match('====##CONFIGURED##====')){
-							ribbonNotification.showRibbon( 'installed, refresh to get started' ,8000,'success');
+							ribbonNotification.showRibbon( 'installed, refresh to get started' ,false,'success');
 						}
 						clearTimeout(t);
 					}
@@ -2159,6 +2161,11 @@ var getConsoleOutput = function(){
 window.updateConsole = function(){
 	document.getElementById("install-console").style.display="block";
 	getConsoleOutput();
+};
+
+window.successFormPost = function(resdata){
+	// console.log("resdata",resdata);
+	ribbonNotification.showRibbon( 'beginning installation' ,4000,'info');
 };
 },{"./ajaxform":13,"ribbonjs":1,"silkscreenjs":5,"superagent":9}],16:[function(require,module,exports){
 
