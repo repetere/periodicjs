@@ -2158,13 +2158,11 @@ var getConsoleOutput = function(){
 	}
 };
 
-window.updateConsole = function(){
-	document.getElementById("install-console").style.display="block";
-	getConsoleOutput();
-};
 
 window.successFormPost = function(resdata){
 	// console.log("resdata",resdata);
+	document.getElementById("install-console").style.display="block";
+	getConsoleOutput();
 	ribbonNotification.showRibbon( 'beginning installation' ,4000,'info');
 };
 },{"./ajaxform":13,"ribbonjs":1,"silkscreenjs":5,"superagent":9}],16:[function(require,module,exports){

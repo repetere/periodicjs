@@ -9,7 +9,7 @@
 						</h1>
 					</div>
 				<div class="_pea-document">
-					<form action="/install/updateconfig" method="post" autocomplete="on" id="install_form" name="login_form" class="_pea-form _pea-ajaxforms" data-beforesubmitfunction="updateConsole" data-blockdefaultsuccess="true" data-successfunction="successFormPost">
+					<form action="/install/updateconfig" method="post" autocomplete="on" id="install_form" name="login_form" class="_pea-form _pea-ajaxforms" data-blockdefaultsuccess="true" data-successfunction="successFormPost">
 						<input type="hidden" name="_csrf" value="<%= locals.token %>" >
 						<div class="_pea-row _pea-container-forminput  no-margin">
 							<h2 class="_pea-text-center">Configure your ECM Instance</h2>
@@ -95,11 +95,11 @@
 											<div id="admin-install-info">
 												<div class="_pea-row _pea-container-forminput">
 													<label class="_pea-col-span3 _pea-label _pea-text-right">Email </label>
-													<input class="_pea-col-span6 noFormSubmit" type="text" placeholder="name@domain.com" value="<%= pagedata.temppassword %>@dm.com" name="email"/>
+													<input class="_pea-col-span6 noFormSubmit" type="text" placeholder="name@domain.com" value="" name="email"/>
 												</div>
 												<div class="_pea-row _pea-container-forminput">
 													<label class="_pea-col-span3 _pea-label _pea-text-right">Username </label>
-													<input class="_pea-col-span6 noFormSubmit" type="text" placeholder="admin" value="<%= pagedata.temppassword %>" name="username"/>
+													<input class="_pea-col-span6 noFormSubmit" type="text" placeholder="admin" value="" name="username"/>
 												</div>
 												<div class="_pea-row _pea-container-forminput">
 													<label class="_pea-col-span3 _pea-label _pea-text-right">Password</label>
@@ -107,7 +107,7 @@
 												</div>
 												<div class="_pea-row _pea-container-forminput">
 													<label class="_pea-col-span3 _pea-label _pea-text-right">Confirm Password</label>
-													<input class="_pea-col-span6 noFormSubmit" type="password" placeholder="" value="<%= pagedata.temppassword %>" name="passwordconfirm"/>
+													<input class="_pea-col-span6 noFormSubmit" type="password" placeholder="" value="" name="passwordconfirm"/>
 												</div>
 											</div>
 										</div>
