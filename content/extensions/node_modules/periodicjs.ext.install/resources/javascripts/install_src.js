@@ -86,14 +86,14 @@ var getConsoleOutput = function(){
 						consoleOutput.appendChild(otf);
 						consoleOutput.scrollTop=consoleOutput.scrollHeight;
 					}
-					if(res.text.match('====!!ERROR!!====') || res.text.match('====##CONFIGURED##====')){
-						if(res.text.match('====##CONFIGURED##====')){
-							ribbonNotification.showRibbon( 'installed, refresh to get started' ,false,'success');
-						}
+					
+					if(res.text.match('====##CONFIGURED##====')){
+						ribbonNotification.showRibbon( 'installed, refresh window to get started' ,false,'success');
 						clearTimeout(t);
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
-
+						// console.error("there was an error in installing periodic");
+						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic",14,"error");
 						ribbonNotification.showRibbon(' there was an error in installing periodic' ,4000,'warn');
 						clearTimeout(t);
 					}
@@ -104,12 +104,10 @@ var getConsoleOutput = function(){
 	}
 };
 
-window.updateConsole = function(){
-	document.getElementById("install-console").style.display="block";
-	getConsoleOutput();
-};
 
 window.successFormPost = function(resdata){
 	// console.log("resdata",resdata);
+	document.getElementById("install-console").style.display="block";
+	getConsoleOutput();
 	ribbonNotification.showRibbon( 'beginning installation' ,4000,'info');
 };

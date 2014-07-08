@@ -1,6 +1,5 @@
 {
 	"name": "Periodic Enterprise Content Management[dev]",
-	"version": "0.0.2",
 	"application":{
 		"port": "8384",
 		"environment": "development"

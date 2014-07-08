@@ -339,38 +339,76 @@ var update = function(req, res, next){
 				password: updatesettings.password,
 				passwordconfirm: updatesettings.passwordconfirm
 			},
-			d = new Date();
-	fs.outputFile(logfile,'configuration log '+d+'- \r\n ');
-	// console.log("updatesettings",updatesettings);
+			d = new Date(),
+			badusername = new RegExp(/\bremove\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 
-	update_outputlog({
-		logdata : "begginning configuration install: ",
-		callback : function(err) {
-			if(err) {
-				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
-				});
-			}
-			else {
-				applicationController.handleDocumentQueryRender({
-					res:res,
-					req:req,
-					responseData:{
-						result:"success",
-						data:{
-							message:"allgood"
+	if (updatesettings.admin && (userdata.username === undefined || badusername.test(userdata.username))) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('Invalid username'),
+			res:res,
+			req:req
+		});
+	}
+	else if (updatesettings.admin && (userdata.username === undefined || userdata.username.length < 4)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('Username is too short'),
+			res:res,
+			req:req
+		});
+	}
+	else if (updatesettings.admin && (userdata.email===undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('Invalid email'),
+			res:res,
+			req:req
+		});
+	}
+	else if (updatesettings.admin && (userdata.password === undefined || userdata.password.length < 8)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('Password is too short'),
+			res:res,
+			req:req
+		});
+	}
+	else if (updatesettings.admin && (userdata.password !== userdata.passwordconfirm)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err:new Error('Passwords do not match'),
+			res:res,
+			req:req
+		});
+	}
+	else {
+		fs.outputFile(logfile,'configuration log '+d+'- \r\n ');
+
+		update_outputlog({
+			logdata : "begginning configuration install: ",
+			callback : function(err) {
+				if(err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err:err,
+						res:res,
+						req:req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						res:res,
+						req:req,
+						responseData:{
+							result:"success",
+							data:{
+								message:"allgood"
+							}
 						}
-					}
-				});
-				testmongoconfig(req,res,next,{
-					updatesettings:updatesettings,
-					userdata:userdata
-				});
+					});
+					testmongoconfig(req,res,next,{
+						updatesettings:updatesettings,
+						userdata:userdata
+					});
+				}
 			}
-		}
-	});
+		});
+	}
 };
 
 var index = function(req, res, next) {

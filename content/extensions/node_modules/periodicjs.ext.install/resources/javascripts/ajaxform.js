@@ -37,7 +37,7 @@ ajaxform.makeNiceName = function(username) {
 
 ajaxform.ajaxFormEventListers = function(selector,ribbonNotification){
 	var ajaxforms = document.querySelectorAll(selector);
-	console.log("ajaxforms",ajaxforms);
+	// console.log("ajaxforms",ajaxforms);
 	for(var x in ajaxforms){
 		if(typeof ajaxforms[x] ==='object'){
 			// console.log(new FormData(ajaxforms[x]));
