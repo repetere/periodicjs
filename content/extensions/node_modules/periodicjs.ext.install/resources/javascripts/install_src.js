@@ -93,7 +93,9 @@ var getConsoleOutput = function(){
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
 						// console.error("there was an error in installing periodic");
-						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic",14,"error");
+						console.log("res",res);
+						var errortext = res.error.message || '';
+						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic. "+errortext,14,"error");
 						ribbonNotification.showRibbon(' there was an error in installing periodic' ,4000,'warn');
 						clearTimeout(t);
 					}
