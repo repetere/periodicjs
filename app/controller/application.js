@@ -2,6 +2,7 @@
 
 var path = require('path'),
     extend = require('util-extend'),
+    merge = require('utils-merge'),
 		fs = require('fs-extra');
 
 var applicationController = function(resources){
@@ -65,7 +66,7 @@ var applicationController = function(resources){
 		var d = new Date(),
 				restartfile=path.join(process.cwd(),'/content/extensions/restart.json');
 
-		// logger.silly("restartfile",restartfile);
+		logger.silly("application restarted");
 		fs.outputFile(restartfile,'restart log '+d+'- \r\n ',function(err){
 			if(err){
 				logger.error(err);
@@ -523,10 +524,35 @@ var applicationController = function(resources){
 	};
 
 	this.getAdminMenu = function(options){
-    var adminmenu = {};
+		var adminmenu = {
+			menu: {
+				Content : {},
+				Themes : {},
+				Extensions : {},
+				Settings : {},
+				User : {},
+			}
+    };
     for(var x in appSettings.extconf.extensions){
-      if( appSettings.extconf.extensions[x].enabled===true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']){
-          adminmenu = extend( adminmenu,appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'] );
+			if( appSettings.extconf.extensions[x].enabled===true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']){
+					var extmenudata = appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'];
+					console.log("before adminmenu",adminmenu);
+					if(extmenudata.menu.Content){
+						adminmenu.menu.Content = merge(extmenudata.menu.Content, adminmenu.menu.Content);
+					}
+					if(extmenudata.menu.Themes){
+						adminmenu.menu.Themes = merge(extmenudata.menu.Themes, adminmenu.menu.Themes);
+					}
+					if(extmenudata.menu.Extensions){
+						adminmenu.menu.Extensions = merge(extmenudata.menu.Extensions, adminmenu.menu.Extensions);
+					}
+					if(extmenudata.menu.Settings){
+						adminmenu.menu.Settings = merge(extmenudata.menu.Settings, adminmenu.menu.Settings);
+					}
+					if(extmenudata.menu.User){
+						adminmenu.menu.User = merge(extmenudata.menu.User, adminmenu.menu.User);
+					}
+					console.log("after adminmenu",adminmenu);
       }
 	  }
 	  return adminmenu;

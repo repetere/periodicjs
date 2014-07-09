@@ -89,6 +89,7 @@ var getConsoleOutput = function(){
 					
 					if(res.text.match('====##CONFIGURED##====')){
 						ribbonNotification.showRibbon( 'installed, refresh window to get started' ,false,'success');
+						silkscreenModal.showSilkscreen('Install Complete',"Lets get <a href='"+window.location.href+"'>started</a>. "+errortext,14,"success");
 						clearTimeout(t);
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
