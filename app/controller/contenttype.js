@@ -39,7 +39,7 @@ var create = function(req, res, next) {
 
 var append = function(req, res, next) {
 	var newattribute = applicationController.removeEmptyObjectValues(req.body);
-	newattribute.name = applicationController.makeNiceName(newattribute.title);
+	newattribute.name = applicationController.makeNiceAttribute(newattribute.title);
 	var objectToModify ={"attributes":newattribute};
 
 	applicationController.updateModel({

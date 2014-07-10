@@ -342,35 +342,35 @@ var update = function(req, res, next){
 			d = new Date(),
 			badusername = new RegExp(/\bremove\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 
-	if (updatesettings.admin && (userdata.username === undefined || badusername.test(userdata.username))) {
+	if (updatesettings.admin==="true" && (userdata.username === undefined || badusername.test(userdata.username))) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Invalid username'),
 			res:res,
 			req:req
 		});
 	}
-	else if (updatesettings.admin && (userdata.username === undefined || userdata.username.length < 4)) {
+	else if (updatesettings.admin==="true" && (userdata.username === undefined || userdata.username.length < 4)) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Username is too short'),
 			res:res,
 			req:req
 		});
 	}
-	else if (updatesettings.admin && (userdata.email===undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null)) {
+	else if (updatesettings.admin==="true" && (userdata.email===undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null)) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Invalid email'),
 			res:res,
 			req:req
 		});
 	}
-	else if (updatesettings.admin && (userdata.password === undefined || userdata.password.length < 8)) {
+	else if (updatesettings.admin==="true" && (userdata.password === undefined || userdata.password.length < 8)) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Password is too short'),
 			res:res,
 			req:req
 		});
 	}
-	else if (updatesettings.admin && (userdata.password !== userdata.passwordconfirm)) {
+	else if (updatesettings.admin==="true" && (userdata.password !== userdata.passwordconfirm)) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Passwords do not match'),
 			res:res,

@@ -89,11 +89,14 @@ var getConsoleOutput = function(){
 					
 					if(res.text.match('====##CONFIGURED##====')){
 						ribbonNotification.showRibbon( 'installed, refresh window to get started' ,false,'success');
+						silkscreenModal.showSilkscreen('Install Complete',"Lets get <a href='"+window.location.href+"'>started</a>. ","default");
 						clearTimeout(t);
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
 						// console.error("there was an error in installing periodic");
-						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic",14,"error");
+						console.log("res",res);
+						var errortext = res.error.message || '';
+						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic. "+errortext,14,"error");
 						ribbonNotification.showRibbon(' there was an error in installing periodic' ,4000,'warn');
 						clearTimeout(t);
 					}
