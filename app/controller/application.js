@@ -522,6 +522,14 @@ var applicationController = function(resources){
 			return false;
 		}
 	};
+	this.makeNiceAttribute = function(username) {
+		if (username) {
+			return username.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+		}
+		else {
+			return false;
+		}
+	};
 
 	this.getAdminMenu = function(options){
 		var adminmenu = {
@@ -536,7 +544,7 @@ var applicationController = function(resources){
     for(var x in appSettings.extconf.extensions){
 			if( appSettings.extconf.extensions[x].enabled===true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']){
 					var extmenudata = appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'];
-					console.log("before adminmenu",adminmenu);
+					// console.log("before adminmenu",adminmenu);
 					if(extmenudata.menu.Content){
 						adminmenu.menu.Content = merge(extmenudata.menu.Content, adminmenu.menu.Content);
 					}
@@ -552,7 +560,7 @@ var applicationController = function(resources){
 					if(extmenudata.menu.User){
 						adminmenu.menu.User = merge(extmenudata.menu.User, adminmenu.menu.User);
 					}
-					console.log("after adminmenu",adminmenu);
+					// console.log("after adminmenu",adminmenu);
       }
 	  }
 	  return adminmenu;

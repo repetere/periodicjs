@@ -164,7 +164,7 @@ var install_updateExtConf = function(options){
 		extpackfileJSON = {},
 		currentExtensionsConf;
 
-console.log("cli",options.cli);
+	// console.log("cli",options.cli);
 
 	applicationController.loadExtensions({
 		periodicsettings:appSettings,
@@ -178,7 +178,7 @@ console.log("cli",options.cli);
 			}
 			else{
 				currentExtensionsConf = extensions;
-				console.log('currentExtensionsConf',currentExtensionsConf);
+				// console.log('currentExtensionsConf',currentExtensionsConf);
 				async.parallel({
 					packfile:function(callback){
 						Extensions.readJSONFileAsync(extpackfile,callback);

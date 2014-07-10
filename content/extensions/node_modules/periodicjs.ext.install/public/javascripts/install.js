@@ -2143,7 +2143,7 @@ var getConsoleOutput = function(){
 					
 					if(res.text.match('====##CONFIGURED##====')){
 						ribbonNotification.showRibbon( 'installed, refresh window to get started' ,false,'success');
-						silkscreenModal.showSilkscreen('Install Complete',"Lets get <a href='"+window.location.href+"'>started</a>. "+errortext,14,"success");
+						silkscreenModal.showSilkscreen('Install Complete',"Lets get <a href='"+window.location.href+"'>started</a>. ","default");
 						clearTimeout(t);
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
@@ -3159,5 +3159,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this,require("0NpzKc"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":19,"0NpzKc":18,"inherits":17}]},{},[15])
+}).call(this,require("lppjwH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":19,"inherits":17,"lppjwH":18}]},{},[15])
