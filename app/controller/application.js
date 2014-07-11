@@ -10,7 +10,7 @@ var applicationController = function(resources){
 	var theme = resources.settings.theme;
 	var appSettings = resources.settings;
 
-	function isValidObjectID(str) {
+	this.isValidObjectID = function(str) {
 		// coerce to string so the function can be generically used to test both strings and native objectIds created by the driver
 		str = str + '';
 		var len = str.length,
@@ -19,7 +19,7 @@ var applicationController = function(resources){
 			valid = /^[0-9a-fA-F]+$/.test(str);
 		}
 		return valid;
-	}
+	};
 
 	this.run_cmd = function(cmd, args, callBack ) {
     var spawn = require('child_process').spawn;
@@ -196,7 +196,7 @@ var applicationController = function(resources){
 			selection = options.selection,
 			query;
 
-		if (isValidObjectID(docid)) {
+		if (this.isValidObjectID(docid)) {
 			query = {
 				$or: [{
 				name: docid
@@ -217,7 +217,7 @@ var applicationController = function(resources){
 		else{
 			model.findOne(query).sort(sort).select(selection).exec(callback);
 		}
-	};
+	}.bind(this);
 
 	this.searchModel = function(options){
 		var	model = options.model,
