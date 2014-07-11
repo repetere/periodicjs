@@ -14,7 +14,9 @@ var path = require('path'),
 		logger;
 
 var updateRunningExtensions  = function(options){
-	appSettings.extconf.extensions = options.extensions;
+	if(appSettings.extconf){
+		appSettings.extconf.extensions = options.extensions;
+	}
 };
 var getCurrentExt = function(options){
 	var extname = options.extname,
