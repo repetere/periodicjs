@@ -623,6 +623,7 @@ var install_removeExtFromConf = function(options){
 					callback : function(err){
 					}
 				});
+				applicationController.restart_app();
 			}
 		}
 	);
@@ -864,6 +865,7 @@ var enable = function(req,res,next){
 		confirmedDeps = [];
 
 	selectedExt.enabled = true;
+	appSettings.extconf.extensions = req.controllerData.extensions;
 
 	try{
 		if(!semver.lte(
@@ -895,6 +897,8 @@ var enable = function(req,res,next){
 
 			if(numSelectedExtDeps === confirmedDeps.length){
 				// console.log("confirmedDeps",confirmedDeps);
+				// console.log("confirmedDeps",confirmedDeps);
+				// console.log("appSettings.extconf",appSettings.extconf);
 				appSettings.extconf.extensions[numX].enabled = true;
 
 				fs.outputJson(
