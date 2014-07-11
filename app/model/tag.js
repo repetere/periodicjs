@@ -49,17 +49,17 @@ tagSchema.pre('save',function(next,done){
 });
 
 tagSchema.post('init', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been initialized from the db');
+    console.log("model - tag.js - "+doc._id+' has been initialized from the db');
 });
 tagSchema.post('validate', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been validated (but not saved yet)');
+    console.log("model - tag.js - "+doc._id+' has been validated (but not saved yet)');
 });
 tagSchema.post('save', function (doc) {
     // this.db.models.Post.emit('created', this);
-    console.log("model - post.js - "+doc._id+' has been saved');
+    console.log("model - tag.js - "+doc._id+' has been saved');
 });
 tagSchema.post('remove', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been removed');
+    console.log("model - tag.js - "+doc._id+' has been removed');
 });
 
 tagSchema.statics.getRandomWorkout = function(options,callback){

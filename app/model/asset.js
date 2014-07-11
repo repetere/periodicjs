@@ -38,16 +38,16 @@ var assetSchema = new Schema({
 
 
 assetSchema.post('init', function (doc) {
-  logger.info("model - image.js - "+doc._id+' has been initialized from the db');
+  logger.info("model - asset.js - "+doc._id+' has been initialized from the db');
 });
 assetSchema.post('validate', function (doc) {
-  logger.info("model - image.js - "+doc._id+' has been validated (but not saved yet)');
+  logger.info("model - asset.js - "+doc._id+' has been validated (but not saved yet)');
 });
 assetSchema.post('save', function (doc) {
-  logger.info("model - image.js - "+doc._id+' has been saved');
+  logger.info("model - asset.js - "+doc._id+' has been saved');
 });
 assetSchema.post('remove', function (doc) {
-  logger.info("model - image.js - "+doc._id+' has been removed');
+  logger.info("model - asset.js - "+doc._id+' has been removed');
 });
 
 
