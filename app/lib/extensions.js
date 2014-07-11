@@ -76,8 +76,13 @@ var extensions = function(appsettings){
 			// 	// console.log(this.getExtensionPeriodicConfFilePath(val.name));
 			// 	val.periodicConfig = readJSONFile(this.getExtensionPeriodicConfFilePath(val.name));
 			// }
-			if(semver.lte(val.periodicCompatibility,appsettings.version) && val.enabled){
-				extensionsFiles.push(this.getExtensionFilePath(val.name));
+			try{
+				if(semver.lte(val.periodicCompatibility,appsettings.version) && val.enabled){
+					extensionsFiles.push(this.getExtensionFilePath(val.name));
+				}
+			}
+			catch(e){
+				throw new Error('Invalid Extension Configuration');
 			}
 		}.bind(this));
 	}.bind(this);

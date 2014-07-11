@@ -69,6 +69,7 @@ var init = {
 	useLogger : function(){
 		logger = new appLog(app.get('env'));
 		process.on('uncaughtException',function(err){
+			logger.error(err.stack);
 			logger.error(err.message);
 		});
 	},
