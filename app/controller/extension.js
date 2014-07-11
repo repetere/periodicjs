@@ -13,7 +13,9 @@ var path = require('path'),
 		mongoose,
 		logger;
 
-
+var updateRunningExtensions  = function(options){
+	appSettings.extconf.extensions = options.extensions;
+};
 var getCurrentExt = function(options){
 	var extname = options.extname,
 		currentExtensions = appSettings.extconf.extensions,
@@ -139,6 +141,8 @@ var install_updateExtConfFile = function(options){
 				});
 			}
 			else{
+				//updated running extensions:
+				updateRunningExtensions({extensions:currentExtConfSettings.extensions});
 				install_logOutput({
 					logfile : logfile,
 					logdata : extToAdd.name+' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
@@ -812,7 +816,7 @@ var upload_getOutputLog = function(req,res,next){
 
 var disable = function(req,res,next){
 	var extname = req.params.id,
-		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExtObj = {selectedExt:req.controllerData.extension,numX:req.controllerData.extensionx},
 		selectedExt = selectedExtObj.selectedExt,
 		numX = selectedExtObj.numX;
 
@@ -850,7 +854,7 @@ var disable = function(req,res,next){
 
 var enable = function(req,res,next){
 	var extname = req.params.id,
-		selectedExtObj = getCurrentExt({extname:extname}),
+		selectedExtObj = {selectedExt:req.controllerData.extension,numX:req.controllerData.extensionx},
 		selectedExt = selectedExtObj.selectedExt,
 		numX = selectedExtObj.numX,
 		selectedExtDeps = selectedExt.periodicConfig.periodicDependencies,
