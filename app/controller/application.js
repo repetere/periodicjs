@@ -429,7 +429,7 @@ var applicationController = function(resources){
 			errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
 
 
-		logger.error(err);
+		logger.error(err.stack);
 		logger.error(errormessage,req.url);
 		if(req.query.format === "json") {
 			res.status(400);
