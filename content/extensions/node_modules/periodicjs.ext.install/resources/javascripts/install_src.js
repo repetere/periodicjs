@@ -45,6 +45,7 @@ var getConsoleOutput = function(){
 			otf,
 			cnt=0,
 			lastres='outputlog',
+			MAXLOGREQUESTS = 40,
 			getRequest = '/install/getlog';
 	consoleOutput.innerHTML='';
 
@@ -58,24 +59,30 @@ var getConsoleOutput = function(){
 				if(res && res.error){
 					ribbonNotification.showRibbon( res.error.message || res.text ,8000,'error');
 					// console.log("error in ajax for file log data");
-					console.log("cnt",cnt);
-					console.log("res",res);
-					if(res.error || cnt >5){
-						clearTimeout(t);
+					try{
+						if((res && res.error) || cnt >MAXLOGREQUESTS){
+							clearTimeout(t);
+						}
+					}
+					catch(e){
+						console.warn("error",e);
 					}
 				}
 				if(error){
 					ribbonNotification.showRibbon( error.message || res.text ,8000,'error');
 					// console.log("error in ajax for file log data");
-					console.log("cnt",cnt);
-					console.log("res",res);
-					if(res.error || cnt >5){
-						clearTimeout(t);
+					try{
+						if((res && res.error) || cnt >MAXLOGREQUESTS){
+							clearTimeout(t);
+						}
+					}
+					catch(e){
+						console.warn("error",e);
 					}
 				}
 				else{
-					if(cnt>30){
-						console.log("made 20 req stop ajax");
+					if(cnt>MAXLOGREQUESTS){
+						console.warn("made "+MAXLOGREQUESTS+" req stop ajax");
 						clearTimeout(t);
 					}
 					// console.log(cnt);
@@ -94,7 +101,6 @@ var getConsoleOutput = function(){
 					}
 					else if(res.text.match('====!!ERROR!!====') || res.text.match('====##REMOVED-END##====')){
 						// console.error("there was an error in installing periodic");
-						console.log("res",res);
 						var errortext = res.error.message || '';
 						silkscreenModal.showSilkscreen('Install error',"there was an error in installing periodic. "+errortext,14,"error");
 						ribbonNotification.showRibbon(' there was an error in installing periodic' ,4000,'warn');
