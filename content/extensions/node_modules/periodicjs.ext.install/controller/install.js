@@ -132,7 +132,7 @@ var configurePeriodic = function(req,res,next,options){
 				ext_install,
 				ext_mailer,
 				ext_login,
-				ext_seed,
+				ext_dbseed,
 				ext_admin;
 		updateConfSettings.extensions = [];
 
@@ -159,12 +159,12 @@ var configurePeriodic = function(req,res,next,options){
 						ext_admin=currentExtensionsConf.extensions[x];
 						ext_admin.enabled=true;
 					}
-					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.seed'){
-						ext_seed=currentExtensionsConf.extensions[x];
-						ext_seed.enabled=true;
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.dbseed'){
+						ext_dbseed=currentExtensionsConf.extensions[x];
+						ext_dbseed.enabled=true;
 					}
 				}
-				updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin,ext_seed];
+				updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin,ext_dbseed];
 				fs.outputJson(extfilepath,updateConfSettings,function(err){
 					if(err){
 						callback(err,null);
