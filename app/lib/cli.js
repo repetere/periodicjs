@@ -77,17 +77,11 @@ var cli = function(argv){
 	var init = function(argv){
 		loadConfig();
 		useLogger();
-		if(appconfig.settings().status === "install"){
+		setupMongoDB();
+		mongoose.connection.on("open",function(){
 			setResources();
 			loadScript(argv);
-		}
-		else{
-			setupMongoDB();
-			mongoose.connection.on("open",function(){
-				setResources();
-				loadScript(argv);
-			});
-		}
+		});
 	};
 
 	init(argv);

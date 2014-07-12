@@ -132,7 +132,7 @@ var configurePeriodic = function(req,res,next,options){
 				ext_install,
 				ext_mailer,
 				ext_login,
-				// ext_seed,
+				ext_seed,
 				ext_admin;
 		updateConfSettings.extensions = [];
 
@@ -159,8 +159,12 @@ var configurePeriodic = function(req,res,next,options){
 						ext_admin=currentExtensionsConf.extensions[x];
 						ext_admin.enabled=true;
 					}
+					if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.seed'){
+						ext_seed=currentExtensionsConf.extensions[x];
+						ext_seed.enabled=true;
+					}
 				}
-				updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin];
+				updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin,ext_seed];
 				fs.outputJson(extfilepath,updateConfSettings,function(err){
 					if(err){
 						callback(err,null);
@@ -232,6 +236,24 @@ var configurePeriodic = function(req,res,next,options){
 			);
 			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
 		};
+		asyncTasks.installDbseed = function(callback){
+			update_outputlog({
+				logdata : 'installing dbseed extension'
+			});
+			applicationController.async_run_cmd(
+				'node',
+				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.dbseed','--version','latest'],
+				function(consoleoutput){
+					update_outputlog({
+						logdata : consoleoutput
+					});
+				},
+				callback
+			);
+			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+				// node index.js --cli --extension seed --task sampledata
+
+		};
 	}
 	if(updatesettings.theme){
 		asyncTasks.installTheme = function(callback){
@@ -253,7 +275,7 @@ var configurePeriodic = function(req,res,next,options){
 		};
 	}
 
-	asyncTasks.writeDatabaseJson = function(callback){
+	var writeDatabaseJson = function(callback){
 		var dbjson='',
 				dbjsfile=path.join(process.cwd(),'/content/config/database.js');
 		dbjson+='"use strict";\r\n';
@@ -284,18 +306,44 @@ var configurePeriodic = function(req,res,next,options){
 		});
 	};
 
-	async.parallel(
-		asyncTasks,
-		function(err,results){
-			if(err){
-				errorlog_outputlog({
-					logdata : err.message,
-					cli : options.cli
+	var load_seeddata = function (callback) {
+		update_outputlog({
+			logdata : 'seeding database'
+		});
+		applicationController.async_run_cmd(
+			'node',
+			['index.js','--cli','--extension','dbseed','--task','sampledata'],
+			function(consoleoutput){
+				update_outputlog({
+					logdata : consoleoutput
 				});
+			},
+			function(err,data){
+				if(err){
+					callback(err,null);
+				}
+				else{
+					callback(null,data);
+				}
 			}
-			else{
-				console.log(results);
-				updateExtensionConf(function(err,updatestatus){
+		);
+		// node index.js --cli --extension seed --task sampledata
+	};
+
+	writeDatabaseJson(function(err,dbupdatestatus){
+		if(err){
+			errorlog_outputlog({
+				logdata : err.message,
+				cli : options.cli
+			});
+		}
+		else{
+			update_outputlog({
+				logdata : dbupdatestatus
+			});
+			async.parallel(
+				asyncTasks,
+				function(err,results){
 					if(err){
 						errorlog_outputlog({
 							logdata : err.message,
@@ -303,11 +351,32 @@ var configurePeriodic = function(req,res,next,options){
 						});
 					}
 					else{
-						writeConfJson();
+						console.log(results);
+						updateExtensionConf(function(err,updatestatus){
+							if(err){
+								errorlog_outputlog({
+									logdata : err.message,
+									cli : options.cli
+								});
+							}
+							else{
+								load_seeddata(function(err,seedresult){
+									if(err){
+										errorlog_outputlog({
+											logdata : err.message,
+											cli : options.cli
+										});
+									}
+									else{
+										writeConfJson();
+									}
+								});
+							}
+						});
+						// applicationController.restart_app();
 					}
-				});
-				// applicationController.restart_app();
-			}
+			});
+		}
 	});
 };
 

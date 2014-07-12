@@ -69,6 +69,7 @@ var init = {
 	useLogger : function(){
 		logger = new appLog(app.get('env'));
 		process.on('uncaughtException',function(err){
+			logger.error(err.stack);
 			logger.error(err.message);
 		});
 	},
@@ -110,7 +111,12 @@ var init = {
 				return '\x1b[' + color + 'm'+status+'\x1b[90m';
 			});
 			expressAppLogger.format('app','\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m' );
-			app.use(expressAppLogger({format:"app"}));
+			if(appconfig.settings().status!=='install'){
+				app.use(expressAppLogger({format:"app"}));
+			}
+			else{
+				app.use(expressAppLogger());
+			}
 		}
 	},
 	useSessions: function(){

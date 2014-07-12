@@ -9,6 +9,7 @@ module.exports = function(periodic){
 	installRouter.get('/install', installController.index);
 	installRouter.get('/install/getlog',installController.get_outputlog);
 	installRouter.post('/install/updateconfig', installController.update);
+	installRouter.get('/*', installController.index);
 
 	periodic.app.use(installRouter);
 };
