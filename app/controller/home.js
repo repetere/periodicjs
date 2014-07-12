@@ -9,13 +9,13 @@ var path = require('path'),
 	logger;
 
 var index = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		templatetype:'home-index',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	var recentposts = req.controllerData.posts || {};
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'home/index',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
@@ -24,10 +24,12 @@ var index = function(req,res,next){
 					pagedata: {
 						title:"homepage"
 					},
+					posts: recentposts,
 					user:req.user
 				}
 			});
-	}});
+		}
+	);
 };
 var get_installoutputlog = function(req,res,next){
 	var logfile = path.resolve(process.cwd(),'logs/install-periodicjs.log'),
@@ -42,13 +44,12 @@ var get_installoutputlog = function(req,res,next){
 };
 var error404 = function(req,res,next){
 	res.status(404);
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		templatetype:'home-404',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'home/error404',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
@@ -61,7 +62,8 @@ var error404 = function(req,res,next){
 					url:req.url
 				}
 			});
-	}});
+		}
+	);
 };
 
 var catch404 = function(req, res, next){

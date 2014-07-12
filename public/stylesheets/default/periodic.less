@@ -194,6 +194,16 @@ header{
 		z-index: 1;
 		color: #fff;
 		overflow: hidden;
+		._pea-container{
+			._pea_menu-heading._pea-pull-left{
+				padding-left: 0;
+			}
+		}
+		._pea-pull-right{ 
+			ul._pea_menu-items li:last-child{
+				padding-right: 0;
+			}
+		}
 		// -webkit-backface-visibility: hidden;
 		.transition(opacity 0.2s ease-in,height 0.2s ease-out;);
 		&:hover{
@@ -207,6 +217,9 @@ header{
 			height: 2em;
 			font-size: 160%;
 			/* line-height: 2em; */
+			text-overflow:ellipsis;
+			max-width: 8em;
+			overflow: hidden;
 			font-weight: bold;
 			padding: 0 1em;
 			.monospace;
@@ -219,6 +232,12 @@ header{
 			margin: 0;
 			padding: 0;
 			line-height: 2em;
+			.header-input{
+				border: none;
+				min-height: 1.5em;
+				bottom: .2em;
+				position: relative;
+			}
 			li{
 				padding: 0em 0.5em;			
 				display: inline-block;
@@ -481,6 +500,17 @@ footer{
 	}
 	&._pea-button{
 		border: 1px solid darken(#efefef,20%);
+	}
+}
+
+._pea-theme{
+	._pea-document{
+		h2{
+			margin-top: 0;
+		}
+		._pea-content{
+			line-height: 1.5em;
+		}
 	}
 }
 

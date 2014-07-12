@@ -117,26 +117,26 @@ var loadUsers = function(req,res,next){
 };
 
 var searchResults = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		templatetype:'search-results',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'search/index',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:"Search Results"
+						title:"User Search Results"
 					},
 					users:req.controllerData.users,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
-	}});
+		}
+	);
 };
 
 var controller = function(resources){

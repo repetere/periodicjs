@@ -1,13 +1,74 @@
-<nav>
-	<div class="container">
-		<h1><%= locals.title%></h1>
-		<div class="pull-right">
-		<% if(locals.isLoggedIn()){
-			%>(<%= user.username %> - <a href="/auth/logout">logout</a>)<%
-		} 
-		else{
-			%>(<a href="/auth/login">login</a>)<%
-		} %>
-		</div>
+<header>
+	<div id="_pea_ribbon-element"> </div>
+	<div id="_pea_menu">
+		<a class="_pea_menu-heading _pea-pull-left" href="/p-admin">Periodic</a>
+		<nav id="_pea-main-navigation" class="_pea_menu-nav _pea-pull-left">
+			<ul class="_pea_menu-items">
+				<li>Content
+					<ul class="_pea_menu-items-subnav">
+						<li><a href="/p-admin/posts">Documents</a></li>
+						<li><a href="/p-admin/collections">Collections</a></li>
+						<li><a href="/p-admin/contenttypes">Content Types</a></li>
+						<li><a href="/p-admin/tags">Tags</a></li>
+						<li><a href="/p-admin/categories">Categories</a></li>
+						<li><a href="/p-admin/assets">Media Assets</a></li>
+					</ul>
+				</li>
+				<li><a href="/p-admin/themes">Themes</a>
+					<ul class="_pea_menu-items-subnav">
+						<li><a href="/p-admin/themes">Manage Themes</a></li>
+					</ul>
+				</li>
+				<li><a href="/p-admin/extensions">Extensions</a>
+					<ul class="_pea_menu-items-subnav">
+						<li><a href="/p-admin/extensions">Manage Extensions</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<nav id="_pea-user-settings" class="_pea-pull-right">
+			<ul class="_pea_menu-items">
+				<li>
+					<a href="/p-admin/settings">Settings</a>
+					<ul class="_pea_menu-items-subnav _pea-right">
+						<li><a href="/p-admin/settings">Periodic Settings</a></li>
+						<li><a href="/p-admin/users/edit">Manage Users</a></li>
+					</ul>
+				</li>
+				<li>
+					<% if(locals.isLoggedIn()){
+						%>
+						<li>
+							Settings
+							<ul class="_pea_menu-items-subnav _pea-right">
+								<li>Periodic Settings</li>
+								<li>Manage Users</li>
+							</ul>
+						</li>
+						<li>
+							<%= user.username %>
+							<ul class="_pea_menu-items-subnav _pea-right">
+								<li>Edit Profile</li>
+								<li><a href="/auth/logout">Logout</a></li>
+							</ul>
+						</li>
+						<%
+					} 
+					else{
+						%>
+						<li>
+							<a href="/auth/login">Login</a>
+							<ul class="_pea_menu-items-subnav _pea-right">
+								<li><a href="/auth/login" class="btn btn-info">Sign In</a></li>
+								<li><a href="/user/register" class="btn btn-info">Register</a></li>
+								<li><a href="/auth/facebook" class="btn btn-info">Login with Facebook</a></li>
+							</ul>
+						</li>
+						<%
+					} %>
+					</ul>
+				</li>
+			</ul>
+		</nav>
 	</div>
-</nav>
+</header>

@@ -9,40 +9,49 @@ var path = require('path'),
 	logger;
 
 var show = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		id:req.controllerData.post.name,
-		templatetype:'post-single',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'documentpost/show',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:"single post"
+						title:req.controllerData.post.title
 					},
 					post:req.controllerData.post,
 					user:req.user
 				}
 			});
-	}});
+		}
+	);
 };
 
 var index = function(req,res,next){
-	console.log('index list');
-	Post.find({ title: /title/ }).exec(function(err,posts){
-		console.log("model search");
-		if(err){
-			res.send(err);
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'documentpost/index',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:'Articles'
+					},
+					posts:req.controllerData.posts,
+					user:req.user
+				}
+			});
 		}
-		else{
-			res.send(posts);
-		}
-	});
+	);
 };
 
 var create = function(req, res, next) {
@@ -141,7 +150,7 @@ var loadPosts = function(req,res,next){
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		population = 'tags categories authors contenttypes primaryauthor',
+		population = 'tags categories authors contenttypes primaryasset primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};

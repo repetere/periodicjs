@@ -74,6 +74,64 @@ var applicationController = function(resources){
 		});
 	};
 
+	this.getPluginViewDefaultTemplate = function(options,callback){
+		var extname = options.extname || '',
+				themename = theme,
+				viewname = options.viewname,
+				themefileext = options.themefileext;
+
+		var getExtensionView = function(viewname,callback){
+			if(extname){
+				var exttemplatefile = path.join(path.resolve(__dirname,'../../content/extensions/node_modules',extname,'views',viewname),'.'+themefileext);
+				fs.open(exttemplatefile,'r',function(err,file){
+					if(err){
+						callback(err,viewname,null);
+					}
+					else{
+						callback(null,viewname,exttemplatefile);
+					}
+				});
+			}
+			else{
+				callback(null,viewname,viewname);
+			}
+		}.bind(this);
+
+		var getThemeView = function(viewname,callback){
+			if(theme){
+				var themetemplatefile = path.join(path.resolve(__dirname,'../../content/themes'),themename,'views',viewname+'.'+themefileext);
+				console.log("themetemplatefile",themetemplatefile);
+				fs.open(themetemplatefile,'r',function(err,file){
+					if(err){
+						callback(err,viewname,null);
+					}
+					else{
+						callback(null,viewname,themetemplatefile);
+					}
+				});
+			}
+			else{
+				callback(null,viewname,viewname);
+			}
+		}.bind(this);
+
+		getThemeView(viewname,function(err,defaultview,themeview){
+			if(err){
+				getExtensionView(defaultview,function(err,defaultview,extname){
+					if(err){
+						callback(null,defaultview);
+					}
+					else{
+						callback(null,extname);
+					}
+				});
+			}
+			else{
+				callback(null,themeview);
+			}
+		});
+	}.bind(this);
+
 	this.getPluginViewTemplate = function(options){
 		var callback = options.callback,
 			templatePath = options.templatePath || '', // user/login
@@ -402,20 +460,32 @@ var applicationController = function(resources){
 
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
-			req = options.req;
+				req = options.req,
+				responseData = options.responseData;
 
-		options.responseData.flash_messages = req.flash();
+		responseData.periodic = responseData.periodic || {};
+		responseData.periodic.version = appSettings.version;
+		responseData.periodic.name = appSettings.name;
+		responseData.request = {
+			query : req.query,
+			params : req.params,
+			baseurl : req.baseUrl,
+			originalurl : req.originalUrl,
+			parsed : req._parsedUrl,
+		};
+
+		responseData.flash_messages = req.flash();
 		if(req.query.format === "json" || req.params.ext === "json") {
-			res.send(options.responseData);
+			res.send(responseData);
 		}
 		else if(req.query.callback) {
-			res.jsonp(options.responseData);
+			res.jsonp(responseData);
 		}
 		else if(options.redirecturl) {
 			res.redirect(options.redirecturl);
 		}
 		else{
-			res.render(options.renderView,options.responseData);
+			res.render(options.renderView,responseData);
 		}
 	};
 
@@ -428,11 +498,11 @@ var applicationController = function(resources){
 			callback = options.callback,
 			errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
 
+		res.status(400);
 
 		logger.error(err.stack);
 		logger.error(errormessage,req.url);
 		if(req.query.format === "json") {
-			res.status(400);
 			res.send({
 				"result": "error",
 				"data": {
@@ -441,7 +511,6 @@ var applicationController = function(resources){
 			});
 		}
 		else {
-			res.status(404);
 			if(options.errorflash!==false){
 				req.flash('error', errormessage);
 			}
@@ -452,20 +521,13 @@ var applicationController = function(resources){
 				res.redirect(redirecturl);
 			}
 			else{
-				// res.render('home/error404',{
-				// 	url: req.url
-				// });
-
 				var self = this;
-
-				res.status(404);
-				self.getViewTemplate({
-					res:res,
-					req:req,
-					templatetype:'home-404',
-					themepath:resources.settings.themepath,
-					themefileext:resources.settings.templatefileextension,
-					callback:function(templatepath){
+				self.getPluginViewDefaultTemplate(
+					{
+						viewname:'home/error404',
+						themefileext:appSettings.templatefileextension
+					},
+					function(err,templatepath){
 						self.handleDocumentQueryRender({
 							res:res,
 							req:req,
@@ -478,7 +540,8 @@ var applicationController = function(resources){
 								url:req.url
 							}
 						});
-				}});
+					}
+				);
 			}
 		}
 	}.bind(this);

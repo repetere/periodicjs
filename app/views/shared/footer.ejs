@@ -1,9 +1,10 @@
 	<footer>
 		<div class="_pea-container">
-			<div class="_pea-row">
+			<div class="_pea-row _pea-text-small">
 				<div class="_pea-col-span6">Thank you for curating with <a href="http://getperiodic.com" target="_blank">Periodic</a></div>
 				<div class="_pea-col-span6 _pea-text-right">
-					Version <%= periodic.version %>
+					Version
+					<% if(pagedata && periodic){%><%= periodic.version %><%}%> | <a href="/p-admin">Admin</a>
 				</div>
 			</div>
 		</div>
@@ -15,8 +16,9 @@
 			for(x in flash_messages){
 				if(delayMultiplier === 0){
 					%>
-					ribbonNotification.showRibbon( '<%=flash_messages[x].join(". ") %>',4000,'<%= x %>');
-						
+					if(typeof ribbonNotification === "object"){
+						ribbonNotification.showRibbon( '<%=flash_messages[x].join(". ") %>',8000,'<%= x %>');
+					}						
 					<%
 				}
 				delayMultiplier++;
