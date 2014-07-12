@@ -236,13 +236,13 @@ var configurePeriodic = function(req,res,next,options){
 			);
 			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
 		};
-		asyncTasks.installSeed = function(callback){
+		asyncTasks.installDbseed = function(callback){
 			update_outputlog({
-				logdata : 'installing seed extension'
+				logdata : 'installing dbseed extension'
 			});
 			applicationController.async_run_cmd(
 				'node',
-				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.seed','--version','latest'],
+				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.dbseed','--version','latest'],
 				function(consoleoutput){
 					update_outputlog({
 						logdata : consoleoutput
@@ -312,7 +312,7 @@ var configurePeriodic = function(req,res,next,options){
 		});
 		applicationController.async_run_cmd(
 			'node',
-			['index.js','--cli','--extension','seed','--task','sampledata'],
+			['index.js','--cli','--extension','dbseed','--task','sampledata'],
 			function(consoleoutput){
 				update_outputlog({
 					logdata : consoleoutput
