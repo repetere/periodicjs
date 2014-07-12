@@ -122,6 +122,8 @@ var loadCollection = function(req,res,next){
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor posts',
 		docid = params.id;
+		console.log("params",params);
+
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
 

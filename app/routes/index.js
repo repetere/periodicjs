@@ -63,8 +63,8 @@ module.exports = function(periodic){
 	 * collections
 	 */
 	collectionRouter.get('/search',collectionController.loadCollections,collectionController.index);
+	collectionRouter.get('/:id/page/:pagenumber',collectionController.loadCollection,collectionController.show);
 	collectionRouter.get('/:id',collectionController.loadCollection,collectionController.show);
-	collectionRouter.get('/:id/page/:pagenumber|/:id/post/:postid',collectionController.loadCollection,collectionController.show);
 
 	/* tags: get tag, get posts by tag  */
 	// tagRouter.get('/:id',tagController.show);

@@ -33,6 +33,24 @@ module.exports = {
 		},
 		passObjToClient : function(obj,nameOfClientObj){
 			return "var "+nameOfClientObj+" = "+(JSON.stringify(obj));
+		},
+		getPaginationHtml : function(options){
+			var pagecount = options.pagecount,
+					urlbase = options.urlbase,
+					currentpage = (options.pagenumber)? options.pagenumber - 1 : false,
+					paginationHtml = '<div class="_pea-row _pea-form _pea-container-forminput">';
+			paginationHtml += '<div class="_pea-col-span12 _pea-text-right _pea-text-small">';
+			paginationHtml += 'pages ';
+			for(var x=0;x<pagecount;x++){
+				paginationHtml += ' <a href="'+urlbase+'/'+(x+1)+'" class="_pea-button';
+				if( currentpage === x ){
+					paginationHtml += " _pea-color-info ";
+				}
+				paginationHtml += '">'+(x+1)+'</a>';
+			}
+			paginationHtml += '</div>';
+			paginationHtml += '</div>';
+			return paginationHtml;
 		}
 	},
 	themehelper:{

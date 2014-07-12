@@ -1,6 +1,12 @@
 <div class="_pea-row">
+	<% if(!collectionpost){%>
 	<div class="_pea-document">
 		<h2><a href="/article/<%= post.name %>"><%= post.title %></a></h2>
+	<%}
+	else{%>
+	<div class="">
+		<h3><%= post.title %></h3>
+	<%}%>
 		<div class="_pea-content"><%= post.content %></div>
 	</div>
 </div>
