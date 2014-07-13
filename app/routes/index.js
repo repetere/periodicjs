@@ -21,6 +21,7 @@ module.exports = function(periodic){
 		userController = require('../controller/user')(periodic),
 		searchController = require('../controller/search')(periodic),
 		collectionController = require('../controller/collection')(periodic),
+		themeController = require('../controller/theme')(periodic),
 		postRouter = periodic.express.Router(),
 		browseRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
@@ -45,7 +46,6 @@ module.exports = function(periodic){
 	/**
 	 * root routes
 	 */
-	appRouter.get('/',postController.loadPosts,homeController.index);
 	appRouter.get('/articles|/posts',postController.loadPosts,postController.index);
 	appRouter.get('/collections',collectionController.loadCollections,collectionController.index);
 	appRouter.get('/404|/notfound',homeController.error404);
@@ -98,6 +98,53 @@ module.exports = function(periodic){
 	 * final root routes
 	 */
 	appRouter.get('/install/getlog',homeController.get_installoutputlog);
+	// appRouter.get('/',postController.loadPosts,homeController.index);
+	appRouter.get('/',function(req,res,next){
+		themeController.customLayout({
+			req:req,
+			res:res,
+			next:false,
+			viewpath:'home/index',
+			layoutdata:{
+				categories:{
+					model:'Category',
+					search:{
+						query:req.params.cat,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				docs:{
+					model:'Post',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0,population:'authors primaryauthor'
+					}
+				},
+				collections:{
+					model:'Collection',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				tags:{
+					model:'Tag',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				authors:{
+					model:'User',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				contenttypes:{
+					model:'Contenttype',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				}
+			}
+		});
+	});
 	appRouter.get('*',homeController.catch404);
 
 	periodic.app.use('/post|/article|/document',postRouter);

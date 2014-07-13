@@ -36,6 +36,8 @@ var customLayout = function(options){
 				return Post;
 			case 'Tag':
 				return Tag;
+			case 'User':
+				return User;
 			case 'Asset':
 				return Asset;
 			case 'Collection':
@@ -71,6 +73,7 @@ var customLayout = function(options){
 				sort:functiondata.search.sort,
 				limit:functiondata.search.limit,
 				offset:functiondata.search.offset,
+				selection:functiondata.search.selection,
 				population:functiondata.search.population,
 				callback:cb
 			});
@@ -96,34 +99,35 @@ var customLayout = function(options){
 					next();
 				}
 				else{
-					var viewtype = options.viewtype,
-							viewpath = options.viewpath,
-							pluginname = options.pluginname,
-							themepath = appSettings.themepath,
-							themefileext = appSettings.templatefileextension,
-							viewfilepath = (options.viewtype ==='theme')?
-								path.join(themepath,'views',viewpath+'.'+themefileext) :
-								path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewpath+'.'+themefileext);
+					var viewpath = options.viewpath,
+							extname = options.extname;
 
-					applicationController.handleDocumentQueryRender({
-            res:res,
-            req:req,
-            renderView:viewfilepath,
-            responseData:{
-                layoutdata:results,
-								pagedata: {
-									title:pagetitle,
-                    headerjs: [],
-                },
-                periodic:{
-                    version: appSettings.version
-                },
-                user:req.user
-            }
-        });
+					applicationController.getPluginViewDefaultTemplate(
+						{
+							viewname:viewpath,
+							extname:extname,
+							themefileext:appSettings.templatefileextension
+						},
+						function(err,templatepath){
+							applicationController.handleDocumentQueryRender({
+								res:res,
+								req:req,
+								renderView:templatepath,
+								responseData:{
+									layoutdata:results,
+									pagedata: {
+										title:pagetitle
+									},
+	                periodic:{
+	                    version: appSettings.version
+	                },
+									user: applicationController.removePrivateInfo(req.user)
+								}
+							});
+						}
+					);
 				}
 			}
-		    // results is now equals to: {one: 1, two: 2}
 	});
 };
 

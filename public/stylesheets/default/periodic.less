@@ -123,6 +123,32 @@ a:hover{
 	._pea-col-span4{
 		.col-span;
 		width: percentage(4 / 12);
+		&._pea-grid{
+		  margin-left: -1em;
+			margin-right: -1em;
+			// color:blue;	
+			._pea-row{
+				._pea-document{
+					height:25em;
+					overflow: hidden;
+				}
+			}
+		}
+		&._pea-grid:nth-child(3n-2){  
+	    margin-left: 2em;
+	    margin-right: 0em;
+			// color:green;
+		}
+		&._pea-grid:nth-child(3n+2){  
+	    margin-left: 0em;
+	    margin-right: 0em;
+			// color:red;
+			._pea-row{
+				._pea-document{
+			    margin-right: 2em;
+				}
+			}
+		}
 	}
 	._pea-col-span3{
 		.col-span;
@@ -143,6 +169,7 @@ a:hover{
 		float:none;
 		margin: auto;
 	}
+
 	table._pea-table{
 		tr{
 			td,th{
@@ -523,6 +550,18 @@ footer{
 		}
 		._pea-content-meta{
 			margin-bottom: 1em;
+		}
+		ul{
+			list-style: none;
+			padding-left: 1em;
+			li{
+				margin-bottom: .2em;
+			}
+		}
+	}
+	._pea-callout{
+		._pea-document{
+			height: 20em;
 		}
 	}
 }
