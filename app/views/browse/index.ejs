@@ -1,0 +1,29 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="_pea-container _pea-theme">
+		<h1> Browse <a href="/browse/<%= request.params.entitytype %>"><%= request.params.entitytype %></a> 
+		</h1>
+		<div class=" _pea-form">
+			<% if(tags && tags.length>0){
+				tags.forEach(function(tag){
+					if(request.params.entitytype==="authors"){
+						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="_pea-button _pea-color-info"><%= tag.username %></a> <%
+					}
+					else{
+						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="_pea-button _pea-color-info"><%= tag.title %></a> <%
+					}
+				});
+				} %>
+		</div>
+		<% if(docs && docs.length>0){
+			var fullpost=false;
+			var collectionpost=false;
+			docs.forEach(function(post){%>
+				<% include ../shared/partial/_post %>
+			<%});
+		}
+		else{%>
+			no docs
+		<%}%>
+	</div>
+<% include ../shared/footer %>

@@ -1,12 +1,35 @@
 <div class="_pea-row">
-	<% if(!collectionpost){%>
+	<%
+	 if(!collectionpost){%>
 	<div class="_pea-document">
-		<h2><a href="/article/<%= post.name %>"><%= post.title %></a></h2>
+		<h2>
+		<% if(post.entitytype && post.entitytype==="collection"){%>
+		<a href="/collection/<%= post.name %>">
+		<%}
+		else{%>
+		<a href="/article/<%= post.name %>">
+		<%}%>
+		<%= post.title %></a></h2>
 	<%}
 	else{%>
 	<div class="">
 		<h3><%= post.title %></h3>
 	<%}%>
-		<div class="_pea-content"><%= post.content %></div>
+	<% 	
+		if(!collectionpost){
+			var metaauthor = post.primaryauthor;
+			var metadate = post.createdat; 
+			}%>
+		<% include _postmeta %>
+		<%
+	 if(fullpost){%>
+		<div class="_pea-content"><%- post.content %></div>
+	<%}
+	else if(!fullpost && post.contenttypeattributes && post.contenttypeattributes.blog && post.contenttypeattributes.blog.summary){%>
+		<div class="_pea-content"><%- post.contenttypeattributes.blog.summary %></div>
+	<%}
+	else{%>
+		<div class="_pea-content"><%- post.content %></div>
+	<%}%>
 	</div>
 </div>

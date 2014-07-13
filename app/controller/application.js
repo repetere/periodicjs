@@ -594,6 +594,34 @@ var applicationController = function(resources){
 		}
 	};
 
+	this.sortObject = function(dir,field){
+		var comparefunction;
+		if(dir==="desc"){
+			comparefunction = function(a,b){
+				if(a[field] < b[field]){
+					return 1;
+				}
+				if(a[field] > b[field]){
+					return -1;
+				}
+				return 0;
+			};
+		}
+		else{
+			comparefunction = function(a,b){
+				if(a[field] < b[field]){
+					return -1;
+				}
+				if(a[field] > b[field]){
+					return 1;
+				}
+				return 0;
+			};
+		}
+
+		return comparefunction;
+	};
+
 	this.getAdminMenu = function(options){
 		var adminmenu = {
 			menu: {

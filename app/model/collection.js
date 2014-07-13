@@ -10,6 +10,10 @@ var collectionSchema = new Schema({
         type: String,
         "default": "draft"
     },
+    entitytype: {
+        type: String,
+        "default": "collection"
+    },
     title: String,
     name: {
         type: String, unique: true

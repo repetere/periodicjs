@@ -94,13 +94,14 @@ var update = function(req, res, next) {
 
 var loadPost = function(req,res,next){
 	var params = req.params,
-		population = 'contenttypes',
+		population = 'contenttypes primaryauthor authors',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
 
 	applicationController.loadModel({
 		docid:docid,
+		population:population,
 		model:Post,
 		callback:function(err,doc){
 			if(err){
