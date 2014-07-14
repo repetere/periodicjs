@@ -20,7 +20,10 @@ module.exports = function(periodic){
 		contenttypeController = require('../controller/contenttype')(periodic),
 		userController = require('../controller/user')(periodic),
 		searchController = require('../controller/search')(periodic),
+		collectionController = require('../controller/collection')(periodic),
+		themeController = require('../controller/theme')(periodic),
 		postRouter = periodic.express.Router(),
+		browseRouter = periodic.express.Router(),
 		tagRouter = periodic.express.Router(),
 		collectionRouter = periodic.express.Router(),
 		categoryRouter = periodic.express.Router(),
@@ -28,61 +31,129 @@ module.exports = function(periodic){
 		contenttypeRouter = periodic.express.Router(),
 		userRouter = periodic.express.Router(),
 		appRouter = periodic.express.Router(),
-		themeRoute = path.join(periodic.settings.themepath,'routes.js'),
 		extensions = new ExtentionLoader(periodic.settings);
 
 	periodic.settings.extconf =extensions.settings();
 	extensions.loadExtensions(periodic);
 
-	if(periodic.settings.theme && fs.existsSync(themeRoute)){
-		require(themeRoute)(periodic);
+	if(periodic.settings.theme){
+		var themeRoute = path.join(periodic.settings.themepath,'routes.js');
+		if(fs.existsSync(themeRoute)){
+			require(themeRoute)(periodic);
+		}
 	}
 
-	appRouter.get('/',homeController.index);
+	/**
+	 * root routes
+	 */
+	appRouter.get('/articles|/posts',postController.loadPosts,postController.index);
+	appRouter.get('/collections',collectionController.loadCollections,collectionController.index);
 	appRouter.get('/404|/notfound',homeController.error404);
-	/*post: by id, get multiple posts by ids, get multiple posts by types */
-	postRouter.get('/search',postController.loadPosts,searchController.results);
-	postRouter.get('/:id',postController.loadPost,postController.show);
-	// postRouter.get('/group/:ids',postController.showType);
-	// postRouter.get('/type/:types',postController.showType);
+	appRouter.get('/search',searchController.browse,searchController.results);
 
-	/* tags: get tag, get posts by tag  */
-	// tagRouter.get('/:id',tagController.show);
-	// tagRouter.get('/:ids/posts',tagController.show);
+	/**
+	 * documentpost-articles routes
+	 */
+	postRouter.get('/search',postController.loadPosts,postController.index);
+	postRouter.get('/:id',postController.loadPost,postController.show);
+
+	/**
+	 * collections
+	 */
+	collectionRouter.get('/search',collectionController.loadCollections,collectionController.index);
+	collectionRouter.get('/:id/page/:pagenumber',collectionController.loadCollection,collectionController.show);
+	collectionRouter.get('/:id',collectionController.loadCollection,collectionController.show);
+
+	/**
+	 * tags
+	 */
 	tagRouter.get('/search.:ext',tagController.loadTags,tagController.searchResults);
 	tagRouter.get('/search',tagController.loadTags,tagController.searchResults);
 
-	/* collections(slideshows): get collection, get posts by collection, get posts by collection and tags */
-	// collectionRouter.get('/:id',collectionRouter.show);
-	// collectionRouter.get('/:id/post/:postid',collectionRouter.show);
-	// collectionRouter.get('/:id/page/:pagenumber',collectionRouter.show);
-
-	/* categories: get collection, get posts by collection, get posts by collection and tags */
-	// categoryRouter.get('/:id',categoryRouter.show);
-	// categoryRouter.get('/:id/posts',categoryRouter.show);
-	// categoryRouter.get('/:id/posts/:tags',categoryRouter.show);
+	/**
+	 * categories
+	 */
 	categoryRouter.get('/search.:ext',categoryController.loadCategories,categoryController.searchResults);
 	categoryRouter.get('/search',categoryController.loadCategories,categoryController.searchResults);
 
+	/**
+	 * content types
+	 */
 	contenttypeRouter.get('/search.:ext',contenttypeController.loadContenttypes,contenttypeController.searchResults);
 	contenttypeRouter.get('/search',contenttypeController.loadContenttypes,contenttypeController.searchResults);
 
+	/**
+	 * authors
+	 */
 	userRouter.get('/search.:ext',userController.loadUsers,userController.searchResults);
 	userRouter.get('/search',userController.loadUsers,userController.searchResults);
+	appRouter.get('/author/:id',userController.loadUser,userController.show);
 
-	/* searchs: search posts, search tags, search collections */
-	// searchRouter.get('/:searchquery',searchController.searchPosts);
-	// searchRouter.get('/posts/:searchquery',searchController.searchPosts);
-	// searchRouter.get('/tags/:searchquery',searchController.searchTags);
-	// searchRouter.get('/collections/:searchquery',searchController.searchCollections);
+	/**
+	 * browse/search
+	 */
+	browseRouter.get('/:entitytype/:entityitems',searchController.browsefilter,searchController.browse,searchController.index);
+	browseRouter.get('/:entitytype',searchController.browsetags,searchController.browsefilter,searchController.browse,searchController.index);
+
+	/**
+	 * final root routes
+	 */
 	appRouter.get('/install/getlog',homeController.get_installoutputlog);
+	// appRouter.get('/',postController.loadPosts,homeController.index);
+	appRouter.get('/',function(req,res,next){
+		themeController.customLayout({
+			req:req,
+			res:res,
+			next:false,
+			viewpath:'home/index',
+			layoutdata:{
+				categories:{
+					model:'Category',
+					search:{
+						query:req.params.cat,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				docs:{
+					model:'Post',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0,population:'authors primaryauthor'
+					}
+				},
+				collections:{
+					model:'Collection',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				tags:{
+					model:'Tag',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				authors:{
+					model:'User',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				},
+				contenttypes:{
+					model:'Contenttype',
+					search:{
+						query:req.params.post,sort:'-createdat',limit:10,offset:0
+					}
+				}
+			}
+		});
+	});
 	appRouter.get('*',homeController.catch404);
 
-	periodic.app.use('/post',postRouter);
+	periodic.app.use('/post|/article|/document',postRouter);
 	periodic.app.use('/tag',tagRouter);
 	periodic.app.use('/category',categoryRouter);
-	// periodic.app.use('/collection',collectionRouter);
+	periodic.app.use('/collection',collectionRouter);
 	periodic.app.use('/user',userRouter);
 	periodic.app.use('/contenttype',contenttypeRouter);
+	periodic.app.use('/browse',browseRouter);
 	periodic.app.use(appRouter);
 };

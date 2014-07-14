@@ -9,27 +9,26 @@ var path = require('path'),
 	logger;
 
 var show = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		id:req.controllerData.post.name,
-		templatetype:'post-single',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'author/show',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:"single post"
+						title:req.controllerData.user.username
 					},
-					post:req.controllerData.post,
-					user:req.user
+					author:applicationController.removePrivateInfo(req.controllerData.user),
+					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
-	}});
+		}
+	);
 };
 
 var index = function(req,res,next){
@@ -47,13 +46,15 @@ var index = function(req,res,next){
 
 var loadUser = function(req,res,next){
 	var params = req.params,
-		docid = params.id;
+			population = 'userassets coverimages userasset coverimage',
+			docid = params.id;
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
 
 	applicationController.loadModel({
 		docid:docid,
 		model:User,
+		searchusername:true,
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -63,7 +64,7 @@ var loadUser = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.post = doc;
+				req.controllerData.user = doc;
 				next();
 			}
 		}
@@ -117,26 +118,26 @@ var loadUsers = function(req,res,next){
 };
 
 var searchResults = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		templatetype:'search-results',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'search/index',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:"Search Results"
+						title:"User Search Results"
 					},
 					users:req.controllerData.users,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
-	}});
+		}
+	);
 };
 
 var controller = function(resources){

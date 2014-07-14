@@ -12,40 +12,49 @@ var path = require('path'),
 	logger;
 
 var show = function(req,res,next){
-	applicationController.getViewTemplate({
-		res:res,
-		req:req,
-		id:req.controllerData.post.name,
-		templatetype:'post-single',
-		themepath:appSettings.themepath,
-		themefileext:appSettings.templatefileextension,
-		callback:function(templatepath){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'collection/show',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
 			applicationController.handleDocumentQueryRender({
 				res:res,
 				req:req,
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:"single post"
+						title:req.controllerData.collection.title
 					},
-					post:req.controllerData.post,
+					collection:req.controllerData.collection,
 					user:req.user
 				}
 			});
-	}});
+		}
+	);
 };
 
 var index = function(req,res,next){
-	console.log('index list');
-	Post.find({ title: /title/ }).exec(function(err,posts){
-		console.log("model search");
-		if(err){
-			res.send(err);
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'collection/index',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:'Collections'
+					},
+					collections:req.controllerData.collections,
+					user:req.user
+				}
+			});
 		}
-		else{
-			res.send(posts);
-		}
-	});
+	);
 };
 
 var create = function(req, res, next) {
@@ -113,6 +122,8 @@ var loadCollection = function(req,res,next){
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor posts',
 		docid = params.id;
+		// console.log("params",params);
+
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};
 
@@ -226,7 +237,7 @@ var loadCollections = function(req,res,next){
 				});
 			}
 			else{
-				console.log(documents);
+				// console.log(documents);
 				req.controllerData.collections = documents;
 				next();
 			}

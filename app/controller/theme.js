@@ -10,26 +10,23 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	logger,
-	User, Category, Post;
+	User, Category, Post, Tag, Asset, Collection, Contenttype;
 
 var customLayout = function(options){
-	var pagedata = options.pagedata,
-		viewtype = options.viewtype,
-		viewpath = options.viewpath,
-		req = options.req,
-		res = options.res,
-		next = options.next,
-		pluginname = options.pluginname,
-		themepath = appSettings.themepath,
-		themefileext = appSettings.templatefileextension,
-		viewfilepath = (options.viewtype ==='theme')?
-			path.join(themepath,'views',viewpath+'.'+themefileext) :
-			path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewpath+'.'+themefileext),
-		parallelTask = {};
+	var req = options.req,
+			res = options.res,
+			next = options.next,
+			parallelTask = {},
+			layoutdata = options.layoutdata,
+			pagetitle = (options.pagetitle) ? options.pagetitle : 'Periodic';
 
 	Post = mongoose.model('Post');
 	User = mongoose.model('User');
 	Category = mongoose.model('Category');
+	Tag = mongoose.model('Tag');
+	Asset = mongoose.model('Asset');
+	Collection = mongoose.model('Collection');
+	Contenttype = mongoose.model('Contenttype');
 
 	function getModelFromName(modelname){
 		switch(modelname){
@@ -37,6 +34,16 @@ var customLayout = function(options){
 				return Category;
 			case 'Post':
 				return Post;
+			case 'Tag':
+				return Tag;
+			case 'User':
+				return User;
+			case 'Asset':
+				return Asset;
+			case 'Collection':
+				return Collection;
+			case 'Contenttype':
+				return Contenttype;
 		}
 	}
 	function getTitleNameQuerySearch(searchterm){
@@ -66,13 +73,14 @@ var customLayout = function(options){
 				sort:functiondata.search.sort,
 				limit:functiondata.search.limit,
 				offset:functiondata.search.offset,
+				selection:functiondata.search.selection,
 				population:functiondata.search.population,
 				callback:cb
 			});
 		};
 	}
-	for(var x in pagedata){
-		parallelTask[x] = getAsyncCallback (pagedata[x]);
+	for(var x in layoutdata){
+		parallelTask[x] = getAsyncCallback (layoutdata[x]);
 	}
 	// an example using an object instead of an array
 	async.parallel(
@@ -91,16 +99,35 @@ var customLayout = function(options){
 					next();
 				}
 				else{
-					res.render(viewfilepath,{
-						layoutdata:results,
-						pagedata: {
-								title:"custom page"
+					var viewpath = options.viewpath,
+							extname = options.extname;
+
+					applicationController.getPluginViewDefaultTemplate(
+						{
+							viewname:viewpath,
+							extname:extname,
+							themefileext:appSettings.templatefileextension
 						},
-						user:req.user
-					});
+						function(err,templatepath){
+							applicationController.handleDocumentQueryRender({
+								res:res,
+								req:req,
+								renderView:templatepath,
+								responseData:{
+									layoutdata:results,
+									pagedata: {
+										title:pagetitle
+									},
+	                periodic:{
+	                    version: appSettings.version
+	                },
+									user: applicationController.removePrivateInfo(req.user)
+								}
+							});
+						}
+					);
 				}
 			}
-		    // results is now equals to: {one: 1, two: 2}
 	});
 };
 

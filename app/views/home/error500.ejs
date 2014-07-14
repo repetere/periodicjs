@@ -1,17 +1,10 @@
-<!doctype>
-<html>
-	<head>
-		<title> Error 500</title>
-		<style>
-			pre{
-				/*word-break: break-word;*/
-			}
-		</style>
-	</head>
-	<body>
-		<!-- <pre><%- JSON.stringify(error) %></pre>
-		<pre><%- message %></pre> -->
-		<pre><%- error.stack %></pre>
-		<div>:(</div>
-	</body>
-</html>
+<% include ../shared/error_header %>
+	<div class="_pea-container _pea-theme">
+		<div class="_pea-row">
+			<div class="_pea-document">
+					<h3 style="word-wrap:break-word;"><%- error.message %></h3>
+					<pre style="overflow:auto"><%- error.stack %></pre>
+			</div>
+		</div>
+	</div>
+<% include ../shared/error_footer %>
