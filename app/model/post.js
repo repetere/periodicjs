@@ -10,6 +10,10 @@ var postSchema = new Schema({
         type: String,
         "default": "draft"
     },
+    entitytype: {
+        type: String,
+        "default": "documentpost"
+    },
     publishat: {
         type: Date,
         "default": Date.now

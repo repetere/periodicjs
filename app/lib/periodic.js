@@ -184,6 +184,7 @@ var init = {
 			}
 			else {
 				res.status(500);
+				// if(appconfig.settings().theme)
 				res.render('home/error500', { message: err.message,error: err });
 			}
 		});

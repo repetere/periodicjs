@@ -43,6 +43,12 @@ a:hover{
 			}
 		}
 	}
+	h2{
+		margin: 0 0 0.1em;
+	}
+	h3{
+		margin: 0 0 0.5em;
+	}
 }
 ._pea-console{
 	max-height: 15em;
@@ -117,6 +123,32 @@ a:hover{
 	._pea-col-span4{
 		.col-span;
 		width: percentage(4 / 12);
+		&._pea-grid{
+		  margin-left: -1em;
+			margin-right: -1em;
+			// color:blue;	
+			._pea-row{
+				._pea-document{
+					height:25em;
+					overflow: hidden;
+				}
+			}
+		}
+		&._pea-grid:nth-child(3n-2){  
+	    margin-left: 2em;
+	    margin-right: 0em;
+			// color:green;
+		}
+		&._pea-grid:nth-child(3n+2){  
+	    margin-left: 0em;
+	    margin-right: 0em;
+			// color:red;
+			._pea-row{
+				._pea-document{
+			    margin-right: 2em;
+				}
+			}
+		}
 	}
 	._pea-col-span3{
 		.col-span;
@@ -137,6 +169,7 @@ a:hover{
 		float:none;
 		margin: auto;
 	}
+
 	table._pea-table{
 		tr{
 			td,th{
@@ -194,6 +227,16 @@ header{
 		z-index: 1;
 		color: #fff;
 		overflow: hidden;
+		._pea-container{
+			._pea_menu-heading._pea-pull-left{
+				padding-left: 0;
+			}
+		}
+		._pea-pull-right{ 
+			ul._pea_menu-items li:last-child{
+				padding-right: 0;
+			}
+		}
 		// -webkit-backface-visibility: hidden;
 		.transition(opacity 0.2s ease-in,height 0.2s ease-out;);
 		&:hover{
@@ -207,6 +250,9 @@ header{
 			height: 2em;
 			font-size: 160%;
 			/* line-height: 2em; */
+			text-overflow:ellipsis;
+			max-width: 8em;
+			overflow: hidden;
 			font-weight: bold;
 			padding: 0 1em;
 			.monospace;
@@ -219,6 +265,12 @@ header{
 			margin: 0;
 			padding: 0;
 			line-height: 2em;
+			.header-input{
+				border: none;
+				min-height: 1.5em;
+				bottom: .2em;
+				position: relative;
+			}
 			li{
 				padding: 0em 0.5em;			
 				display: inline-block;
@@ -481,6 +533,36 @@ footer{
 	}
 	&._pea-button{
 		border: 1px solid darken(#efefef,20%);
+	}
+}
+
+._pea-theme{
+	h1{
+		font-family: inherit;
+		text-transform: capitalize;
+	}
+	._pea-document{
+		h2{
+			margin-top: 0;
+		}
+		._pea-content{
+			line-height: 1.5em;
+		}
+		._pea-content-meta{
+			margin-bottom: 1em;
+		}
+		ul{
+			list-style: none;
+			padding-left: 1em;
+			li{
+				margin-bottom: .2em;
+			}
+		}
+	}
+	._pea-callout{
+		._pea-document{
+			height: 20em;
+		}
 	}
 }
 
