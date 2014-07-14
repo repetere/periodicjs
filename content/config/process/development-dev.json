@@ -2,8 +2,8 @@
   "apps":[{
     "name"              : "periodicjs",
     "script"            : "index.js",
-    "instances"         : "6",
-    "min_uptime"        : "200", 
+    "instances"         : "1",
+    "min_uptime"        : "1000", 
     "max_restarts"      : "10", 
     "cron_restart"      : "1 0 * * *",
     "watch"             : ["app","content/config","content/extensions","content/themes","content/config/config.json","content/extensions/extensions.json","content/extensions/restart.json","package.json","content/config/config.json", "content/extensions/restart.json"],
