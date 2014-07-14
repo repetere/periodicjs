@@ -31,6 +31,27 @@ var index = function(req,res,next){
 		}
 	);
 };
+var default_view = function(req,res,next){
+	applicationController.getPluginViewDefaultTemplate(
+		{
+			viewname:'home/default',
+			themefileext:appSettings.templatefileextension
+		},
+		function(err,templatepath){
+			applicationController.handleDocumentQueryRender({
+				res:res,
+				req:req,
+				renderView:templatepath,
+				responseData:{
+					pagedata: {
+						title:"default"
+					},
+					user:req.user
+				}
+			});
+		}
+	);
+};
 var get_installoutputlog = function(req,res,next){
 	var logfile = path.resolve(process.cwd(),'logs/install-periodicjs.log'),
 			stat = fs.statSync(logfile),
@@ -102,6 +123,7 @@ var controller = function(resources){
 
 	return{
 		index:index,
+		default_view:default_view,
 		get_installoutputlog:get_installoutputlog,
 		error404:error404,
 		catch404:catch404

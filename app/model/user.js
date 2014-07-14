@@ -115,9 +115,11 @@ userSchema.pre('save', function(next, done) {
         done(new Error('Username is too short'));
     } else if (this.email===undefined || this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
         done(new Error('Invalid email'));
-    } else if (this.username !== undefined && badusername.test(this.username)) {
-        done(new Error('Invalid username'));
-    } else {
+    }
+    // else if (this.username !== undefined && badusername.test(this.username)) {
+    //     done(new Error('Invalid username'));
+    // } 
+    else {
         next();
     }
 });

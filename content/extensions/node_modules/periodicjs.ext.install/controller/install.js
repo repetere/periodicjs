@@ -136,6 +136,7 @@ var configurePeriodic = function(req,res,next,options){
 				ext_mailer=false,
 				ext_login=false,
 				ext_dbseed=false,
+				ext_defaultroutes=false,
 				ext_admin=false;
 		updateConfSettings.extensions = [];
 
@@ -150,6 +151,10 @@ var configurePeriodic = function(req,res,next,options){
 						if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.install'){
 							ext_install=currentExtensionsConf.extensions[x];
 							ext_install.enabled=false;
+						}
+						if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.default_routes'){
+							ext_defaultroutes=currentExtensionsConf.extensions[x];
+							ext_defaultroutes.enabled=true;
 						}
 						if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.mailer'){
 							ext_mailer=currentExtensionsConf.extensions[x];
@@ -172,6 +177,9 @@ var configurePeriodic = function(req,res,next,options){
 					if(!ext_install){
 						callback(new Error("Invalid extension installation: periodicjs.ext.install"),null);
 					}
+					if(!ext_defaultroutes){
+						callback(new Error("Invalid extension installation: periodicjs.ext.defaultroutes"),null);
+					}
 					if(!ext_mailer){
 						console.log("ext_mailer",ext_mailer);
 						callback(new Error("Invalid extension installation: periodicjs.ext.mailer"),null);
@@ -186,8 +194,8 @@ var configurePeriodic = function(req,res,next,options){
 					if(!ext_dbseed){
 						callback(new Error("Invalid extension installation: periodicjs.ext.dbseed"),null);
 					}
-					if(ext_install && ext_mailer && ext_login && ext_admin && ext_dbseed){
-						updateConfSettings.extensions = [ext_install,ext_mailer,ext_login,ext_admin,ext_dbseed];
+					if(ext_install && ext_defaultroutes && ext_mailer && ext_login && ext_admin && ext_dbseed){
+						updateConfSettings.extensions = [ext_install,ext_defaultroutes,ext_mailer,ext_login,ext_admin,ext_dbseed];
 						fs.outputJson(extfilepath,updateConfSettings,function(err){
 							if(err){
 								callback(err,null);
@@ -245,14 +253,20 @@ var configurePeriodic = function(req,res,next,options){
 		}
 	};
 
-	if(updatesettings.admin==="true"){
-		// console.log("install admin");
-		asyncTasks.createUser = function(callback){
+	var createUser = function(userdata,callback){
+		if(updatesettings.admin==="true"){
 			update_outputlog({
 				logdata : 'creating admin user'
 			});
 			User.fastRegisterUser(userdata,callback);
-		};
+		}
+		else{
+			callback(null,"skipping admin user set up");
+		}
+	};
+
+	if(updatesettings.admin==="true"){
+		// console.log("install admin");
 		asyncTasks.installMailer = function(callback){
 			update_outputlog({
 				logdata : 'installing mailer extension'
@@ -425,18 +439,20 @@ var configurePeriodic = function(req,res,next,options){
 			update_outputlog({
 				logdata : dbupdatestatus
 			});
-			async.parallel(
-				asyncTasks,
-				function(err,results){
-					if(err){
-						errorlog_outputlog({
-							logdata : err.message,
-							cli : options.cli
-						});
-					}
-					else{
-						console.log(results);
-						updateExtensionConf(function(err,updatestatus){
+			createUser(userdata,function(err,newuserdata){
+				if(err){
+					errorlog_outputlog({
+						logdata : err.message,
+						cli : options.cli
+					});
+				}
+				else{
+					update_outputlog({
+						logdata : newuserdata
+					});
+					async.parallel(
+						asyncTasks,
+						function(err,results){
 							if(err){
 								errorlog_outputlog({
 									logdata : err.message,
@@ -444,7 +460,8 @@ var configurePeriodic = function(req,res,next,options){
 								});
 							}
 							else{
-								load_seeddata(function(err,seedresult){
+								console.log(results);
+								updateExtensionConf(function(err,updatestatus){
 									if(err){
 										errorlog_outputlog({
 											logdata : err.message,
@@ -452,13 +469,23 @@ var configurePeriodic = function(req,res,next,options){
 										});
 									}
 									else{
-										writeConfJson();
+										load_seeddata(function(err,seedresult){
+											if(err){
+												errorlog_outputlog({
+													logdata : err.message,
+													cli : options.cli
+												});
+											}
+											else{
+												writeConfJson();
+											}
+										});
 									}
 								});
+								// applicationController.restart_app();
 							}
-						});
-						// applicationController.restart_app();
-					}
+					});
+				}
 			});
 		}
 	});
