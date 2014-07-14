@@ -119,7 +119,6 @@ module.exports = function(periodic){
 			}
 		});
 	});
-	appRouter.get('*',homeController.catch404);
 
 	periodic.app.use('/post|/article|/document',postRouter);
 	periodic.app.use('/tag',tagRouter);

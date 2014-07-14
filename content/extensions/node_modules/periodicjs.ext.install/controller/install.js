@@ -124,6 +124,9 @@ var configurePeriodic = function(req,res,next,options){
 					logger.info('installed, config.conf updated \r\n  ====##CONFIGURED##====');
 					process.exit(0);
 				}
+				else{
+					applicationController.restart_app();
+				}
 			}
 		});
 	};
@@ -522,14 +525,15 @@ var update = function(req, res, next){
 			d = new Date(),
 			badusername = new RegExp(/\bremove\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 
-	if (updatesettings.admin==="true" && (userdata.username === undefined || badusername.test(userdata.username))) {
-		applicationController.handleDocumentQueryErrorResponse({
-			err:new Error('Invalid username'),
-			res:res,
-			req:req
-		});
-	}
-	else if (updatesettings.admin==="true" && (userdata.username === undefined || userdata.username.length < 4)) {
+	// if (updatesettings.admin==="true" && (userdata.username === undefined || badusername.test(userdata.username))) {
+	// 	applicationController.handleDocumentQueryErrorResponse({
+	// 		err:new Error('Invalid username'),
+	// 		res:res,
+	// 		req:req
+	// 	});
+	// }
+	// else 
+	if (updatesettings.admin==="true" && (userdata.username === undefined || userdata.username.length < 4)) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err:new Error('Username is too short'),
 			res:res,
@@ -561,7 +565,7 @@ var update = function(req, res, next){
 		fs.outputFile(logfile,'configuration log '+d+'- \r\n ');
 
 		update_outputlog({
-			logdata : "begginning configuration install: ",
+			logdata : "beginning configuration install: ",
 			callback : function(err) {
 				if(err) {
 					applicationController.handleDocumentQueryErrorResponse({

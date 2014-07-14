@@ -2,11 +2,11 @@
   "apps":[{
     "name"              : "periodicjs",
     "script"            : "index.js",
-    "instances"         : "6",
+    "instances"         : "1",
     "min_uptime"        : "200", 
     "max_restarts"      : "10", 
     "cron_restart"      : "1 0 * * *",
-    "watch"             : ["content/config/config.json", "content/extensions/restart.json"],
+    "watch"             : ["content/extensions/restart.json"],
     "error_file"        : "logs/development-err.log",
     "out_file"          : "logs/development-out.log",
     "pid_file"          : "processes/development-child.pid",
