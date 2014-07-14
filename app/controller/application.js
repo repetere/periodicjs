@@ -100,7 +100,7 @@ var applicationController = function(resources){
 		var getThemeView = function(viewname,callback){
 			if(theme){
 				var themetemplatefile = path.join(path.resolve(__dirname,'../../content/themes'),themename,'views',viewname+'.'+themefileext);
-				console.log("themetemplatefile",themetemplatefile);
+				// console.log("themetemplatefile",themetemplatefile);
 				fs.open(themetemplatefile,'r',function(err,file){
 					if(err){
 						callback(err,viewname,null);
@@ -570,10 +570,12 @@ var applicationController = function(resources){
 	}.bind(this);
 
 	this.removePrivateInfo = function(obj) {
-		obj.password=null;
-		obj.apikey=null;
-		obj.random=null;
-		// console.log("removePrivateInfo obj",obj);
+		console.log("removePrivateInfo obj",obj);
+		if(typeof obj ==='object'){
+			obj.password=null;
+			obj.apikey=null;
+			obj.random=null;
+		}
 		return obj;
 	}.bind(this);
 

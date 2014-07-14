@@ -63,9 +63,16 @@ var loadUser = function(req,res,next){
 					req:req
 				});
 			}
-			else{
+			else if(doc){
 				req.controllerData.user = doc;
 				next();
+			}
+			else{
+				applicationController.handleDocumentQueryErrorResponse({
+					err:new Error("invalid user request"),
+					res:res,
+					req:req
+				});
 			}
 		}
 	});

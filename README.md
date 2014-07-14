@@ -1,4 +1,4 @@
-periodic [![Build Status](https://travis-ci.org/typesettin/periodic.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs)
+periodic [![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs)
 ==========
 
 customizable node based cms
