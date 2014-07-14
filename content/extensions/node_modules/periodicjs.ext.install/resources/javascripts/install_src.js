@@ -45,7 +45,7 @@ var getConsoleOutput = function(){
 			otf,
 			cnt=0,
 			lastres='outputlog',
-			MAXLOGREQUESTS = 40,
+			MAXLOGREQUESTS = 100,
 			getRequest = '/install/getlog';
 	consoleOutput.innerHTML='';
 

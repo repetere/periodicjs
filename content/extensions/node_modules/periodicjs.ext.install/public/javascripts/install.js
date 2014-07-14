@@ -2099,7 +2099,7 @@ var getConsoleOutput = function(){
 			otf,
 			cnt=0,
 			lastres='outputlog',
-			MAXLOGREQUESTS = 40,
+			MAXLOGREQUESTS = 100,
 			getRequest = '/install/getlog';
 	consoleOutput.innerHTML='';
 
@@ -3165,5 +3165,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this,require("lppjwH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":19,"inherits":17,"lppjwH":18}]},{},[15])
+}).call(this,require("0NpzKc"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":19,"0NpzKc":18,"inherits":17}]},{},[15])
