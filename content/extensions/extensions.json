@@ -11,6 +11,18 @@
         "periodicCompatibility": "0.0.2",
         "periodicDependencies": []
       }
+    },
+    {
+      "name": "periodicjs.ext.default_routes",
+      "version": "0.0.1",
+      "periodicCompatibility": "0.0.2",
+      "installed": true,
+      "enabled": true,
+      "periodicConfig": {
+        "name": "periodicjs.ext.default_routes",
+        "periodicCompatibility": "0.0.2",
+        "periodicDependencies": []
+      }
     }
   ]
 }
