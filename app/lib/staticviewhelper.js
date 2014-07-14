@@ -57,6 +57,10 @@ module.exports = {
 		extensionPublicResourcePath : function(ext,resource){
 			var addPath = (resource)? resource+'/' : '';
 			return '/extensions/'+ext+'/'+addPath;
+		},
+		themePublicResourcePath : function(ext,resource){
+			var addPath = (resource)? resource+'/' : '';
+			return '/themes/'+ext+'/'+addPath;
 		}
 	}
 };

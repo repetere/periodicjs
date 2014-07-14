@@ -263,6 +263,15 @@ var applicationController = function(resources){
 				}]
 			};
 		}
+		else if(options.searchusername){
+			query = {
+				$or: [{
+				name: docid
+				}, {
+				username: docid
+				}]
+			};
+		}
 		else {
 			query = {
 				name: docid

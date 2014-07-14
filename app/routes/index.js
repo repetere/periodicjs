@@ -87,6 +87,7 @@ module.exports = function(periodic){
 	 */
 	userRouter.get('/search.:ext',userController.loadUsers,userController.searchResults);
 	userRouter.get('/search',userController.loadUsers,userController.searchResults);
+	appRouter.get('/author/:id',userController.loadUser,userController.show);
 
 	/**
 	 * browse/search
