@@ -183,11 +183,18 @@ var loadCollection = function(req,res,next){
 									req:req
 								});
 							}
-							else{
+							else if(populatedcollection){
 								var mergedCollectionData = merge(populatedcollection,results.tags);
 								req.controllerData.collection = mergedCollectionData;
 								// req.controllerData.collectionData = results;
 								next();
+							}
+							else{
+								applicationController.handleDocumentQueryErrorResponse({
+									err:new Error("invalid collection request"),
+									res:res,
+									req:req
+								});
 							}
 							// console.log("results",results.tags.posts[0].post);
 						});

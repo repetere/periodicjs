@@ -111,9 +111,16 @@ var loadPost = function(req,res,next){
 					req:req
 				});
 			}
-			else{
+			else if(doc){
 				req.controllerData.post = doc;
 				next();
+			}
+			else{
+				applicationController.handleDocumentQueryErrorResponse({
+					err:new Error("invalid document request"),
+					res:res,
+					req:req
+				});
 			}
 		}
 	});
