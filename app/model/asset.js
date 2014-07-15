@@ -33,6 +33,7 @@ var assetSchema = new Schema({
     description: String,
     filedata: Schema.Types.Mixed,
     attributes: Schema.Types.Mixed,
+    extensionattributes: Schema.Types.Mixed,
     random: Number
 });
 

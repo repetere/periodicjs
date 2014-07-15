@@ -32,6 +32,7 @@ var tagSchema = new Schema({
         ref:"Tag"
     }], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
     attributes: Schema.Types.Mixed,
+    extensionattributes: Schema.Types.Mixed,
     random: Number
 });
 

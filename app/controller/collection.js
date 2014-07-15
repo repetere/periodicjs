@@ -2,6 +2,7 @@
 
 var path = require('path'),
 	async = require('async'),
+	moment = require('moment'),
 	merge = require('utils-merge'),
 	appController = require('./application'),
 	applicationController,
@@ -63,6 +64,9 @@ var create = function(req, res, next) {
 	newcollection.postauthorname = req.user.username;
 	newcollection.primaryauthor = req.user._id;
 	newcollection.authors = [req.user._id];
+	if(newcollection.date && newcollection.time){
+		newcollection.publishat = new Date(moment(newcollection.date+' '+newcollection.time).format());
+	}
 
     applicationController.createModel({
 	    model:Collection,
@@ -84,6 +88,9 @@ var update = function(req, res, next) {
 	}
 	if(!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length>0){
 		updatecollection.primaryasset = updatecollection.assets[0];
+	}
+	if(updatecollection.date && updatecollection.time){
+		updatecollection.publishat = new Date(moment(updatecollection.date+' '+updatecollection.time).format());
 	}
 
     applicationController.updateModel({

@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path'),
+	moment = require('moment'),
 	appController = require('./application'),
 	applicationController,
 	appSettings,
@@ -56,39 +57,46 @@ var index = function(req,res,next){
 
 var create = function(req, res, next) {
 	var newpost = applicationController.removeEmptyObjectValues(req.body);
-	newpost.name = applicationController.makeNiceName(newpost.title);
-	newpost.postauthorname = req.user.username;
-	newpost.primaryauthor = req.user._id;
-	newpost.authors = [req.user._id];
+			newpost.name = applicationController.makeNiceName(newpost.title);
+			newpost.postauthorname = req.user.username;
+			newpost.primaryauthor = req.user._id;
+			newpost.authors = [req.user._id];
+			if(newpost.date && newpost.time){
+				newpost.publishat = new Date(moment(newpost.date+' '+newpost.time).format());
+			}
 
-
-    applicationController.createModel({
-	    model:Post,
-	    newdoc:newpost,
-	    res:res,
-        req:req,
-	    successredirect:'/p-admin/post/edit/',
-	    appendid:true
+	// console.log(newpost);
+	applicationController.createModel({
+	  model:Post,
+	  newdoc:newpost,
+	  res:res,
+    req:req,
+	  successredirect:'/p-admin/post/edit/',
+	  appendid:true
 	});
 };
 
 var update = function(req, res, next) {
 	var updatepost = applicationController.removeEmptyObjectValues(req.body);
+
 	updatepost.name = applicationController.makeNiceName(updatepost.title);
 	if(!updatepost.primaryasset && updatepost.assets && updatepost.assets.length>0){
 		updatepost.primaryasset = updatepost.assets[0];
 	}
+	if(updatepost.date && updatepost.time){
+		updatepost.publishat = new Date(moment(updatepost.date+' '+updatepost.time).format());
+	}
 
-    applicationController.updateModel({
-	    model:Post,
-	    id:updatepost.docid,
-	    updatedoc:updatepost,
-	    saverevision:true,
-	    population:'contenttypes',
-	    res:res,
-        req:req,
-	    successredirect:'/p-admin/post/edit/',
-	    appendid:true
+	applicationController.updateModel({
+		model:Post,
+		id:updatepost.docid,
+		updatedoc:updatepost,
+		saverevision:true,
+		population:'contenttypes',
+		res:res,
+		  req:req,
+		successredirect:'/p-admin/post/edit/',
+		appendid:true
 	});
 };
 

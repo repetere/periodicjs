@@ -4,6 +4,9 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
+//http://cookbook.mongodb.org/patterns/date_range/
+//http://cronchecker.net/check?utf8=%E2%9C%93&statement=1+*+*+*+*+*&button=
+//http://crontab-generator.org/
 var postSchema = new Schema({
     id: ObjectId,
     status: {
@@ -16,7 +19,8 @@ var postSchema = new Schema({
     },
     publishat: {
         type: Date,
-        "default": Date.now
+        "default": Date.now,
+        index: true
     },
     createdat: {
         type: Date,
@@ -63,6 +67,10 @@ var postSchema = new Schema({
         type:ObjectId,
         ref:"Source"
     },
+    collectionitemonly: {
+        type: Boolean,
+        "default": false
+    },
     postauthorname: String,
     originalpost :{
         originalid: String,
@@ -80,6 +88,7 @@ var postSchema = new Schema({
     visibility: String,
     visibilitypassword: String,
     contenttypeattributes: Schema.Types.Mixed,
+    extensionattributes: Schema.Types.Mixed,
     random: Number
 });
 

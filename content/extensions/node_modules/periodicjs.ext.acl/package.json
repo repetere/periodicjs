@@ -1,0 +1,21 @@
+{
+  "name": "periodicjs.ext.default_routes",
+  "description": "default for periodicjs.",
+  "version": "0.1.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.x"
+  },
+  "author": {
+    "name": "Yaw Joseph Etse",
+    "email": "yaw.etse@gmail.com",
+    "url": "http://about.me/yawjosephetse"
+  },
+  "repository": {},
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "periodicjs"
+  ]
+}

@@ -73,14 +73,16 @@ module.exports = function(periodic){
 	 */
 	adminRouter.get('/post/new',authController.ensureAuthenticated,adminController.post_new);
 	adminRouter.get('/post/edit/:id',authController.ensureAuthenticated,postController.loadFullPost,adminController.post_edit);
-	postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
+	postRouter.post('/new',authController.ensureAuthenticated,postController.create);
+	// postRouter.post('/new',postController.loadPost,authController.ensureAuthenticated,postController.create);
 	postRouter.post('/edit',authController.ensureAuthenticated,postController.update);
 	/**
 	 * admin/collection manager routes
 	 */
 	adminRouter.get('/collection/new',authController.ensureAuthenticated,adminController.collection_new);
 	adminRouter.get('/collection/edit/:id',authController.ensureAuthenticated,collectionController.loadCollection,adminController.collection_edit);
-	collectionRouter.post('/new',collectionController.loadCollection,authController.ensureAuthenticated,collectionController.create);
+	collectionRouter.post('/new',authController.ensureAuthenticated,collectionController.create);
+	// collectionRouter.post('/new',collectionController.loadCollection,authController.ensureAuthenticated,collectionController.create);
 	collectionRouter.post('/edit',authController.ensureAuthenticated,collectionController.update);
 	collectionRouter.post('/append/:id',authController.ensureAuthenticated,collectionController.loadCollection,collectionController.append);
 

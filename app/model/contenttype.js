@@ -19,7 +19,8 @@ var contenttypeSchema = new Schema({
         name: String,
         datatype: String,
         defaultvalue: String,
-    }]
+    }],
+    extensionattributes: Schema.Types.Mixed
 });
 
 contenttypeSchema.pre('save',function(next,done){
