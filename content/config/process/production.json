@@ -5,7 +5,7 @@
     "instances"         : "1",
     "min_uptime"        : "200", 
     "max_restarts"      : "10", 
-    "cron_restart"      : "1 0 * * *",
+    "cron_restart"      : "3 */4 * * * *",
     "watch"             : ["content/extensions/restart.json"],
     "error_file"        : "logs/production-err.log",
     "out_file"          : "logs/production-out.log",

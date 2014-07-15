@@ -2,11 +2,14 @@
 <div class="_pea-document">
 	<div class="_pea-row _pea-container-forminput">
 	<% var docstatus = [{
-			"value":"publish",
-			"label":"Status: Publish"
-			},{
 			"value":"draft",
 			"label":"Status: Draft"
+			},{
+			"value":"schedule",
+			"label":"Status: Schedule in advance"
+			},{
+			"value":"publish",
+			"label":"Status: Publish"
 			},{
 			"value":"review",
 			"label":"Status: Review"
@@ -24,7 +27,17 @@
 		</select>
 	</div>
 	<div class="_pea-row _pea-container-forminput">
-		<small>Date: Publish Immediately</small>
+		<div class="_pea-col-span2">
+			<small>Date:</small>
+		</div>
+		<input type="date" id="newitemdate" class="_pea-col-span10" value="<% if(serverdate){%><%= serverdate %><%}%>" name="date">
+	</div>
+	<div class="_pea-row _pea-container-forminput">
+		<div class="_pea-col-span2">
+			<small>Time:</small>
+		</div>
+		<input type="time" id="newitemtime" class="_pea-col-span10" value="<% if(servertime){%><%= servertime %><%}%>" name="time">
+		<!-- http://cronchecker.net/check?utf8=%E2%9C%93&statement=1+*+*+*+*+*&button= -->
 	</div>
 	<div class="_pea-text-center">
 		<input type="submit" name="save_button" value="<% if(genericdoc){%>Update<%}else{%>Save<%}%>" class="_pea-button _pea-color-default"/>

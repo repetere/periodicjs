@@ -44,6 +44,11 @@ var collectionSchema = new Schema({
         type: Date,
         "default": Date.now
     },
+    publishat: {
+        type: Date,
+        "default": Date.now,
+        index: true
+    },
     posts :[{
         order: Number,
         additionalattributes: Schema.Types.Mixed,
@@ -65,6 +70,7 @@ var collectionSchema = new Schema({
         ref:"Category"
     }],
     attributes: Schema.Types.Mixed,
+    extensionattributes: Schema.Types.Mixed,
     random: Number
 });
 
