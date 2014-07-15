@@ -3,6 +3,7 @@
 var path = require('path'),
 		async = require('async'),
 		fs = require('fs-extra'),
+		npm = require("npm"),
 		mongoose = require('mongoose'),
 		appController = require(path.join(process.cwd(),'app/controller/application')),
 		logdir = path.resolve(process.cwd(),'logs/'),
@@ -64,7 +65,26 @@ var configurePeriodic = function(req,res,next,options){
 			User = mongoose.model('User',userSchema),
 			asyncTasks = {};
 
-	var writeConfJson = function(){
+	var installExtensionDependencies = function(extname,callback){
+		var extdir = path.join(process.cwd(),'content/extensions/node_modules',extname);
+		console.log("trying to install: ",extname,"to",extdir);
+
+		applicationController.async_run_cmd(
+			'npm',
+			['install','--prefix','content/extensions/node_modules/'+extname+'/','content/extensions/node_modules/'+extname+'/','--production'],
+			function(consoleoutput){
+				update_outputlog({
+					logdata : consoleoutput
+				});
+			},
+			callback
+		);
+		// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+		//npm install --prefix content/extensions/node_modules/periodicjs.ext.mailer/ content/extensions/node_modules/periodicjs.ext.mailer/
+	};
+
+
+	var writeConfJson = function(callback){
 		var confJsonFilePath = path.resolve(process.cwd(),'content/config/config.json'),
 				confJson={
 					"application":{
@@ -107,26 +127,22 @@ var configurePeriodic = function(req,res,next,options){
 				break;
 		}
 
-		update_outputlog({
-			logdata : 'installed, config.conf updated \r\n  ====##CONFIGURED##====',
-			callback : function(err){
-			}
-		});
-		fs.outputJson(confJsonFilePath,confJson,function(err){
+		fs.outputJson(confJsonFilePath,confJson,function(err,data){
 			if(err){
-				errorlog_outputlog({
-					logdata : err.message,
-					cli : options.cli
-				});
+				callback(err,null);
 			}
 			else{
-				if(options.cli){
-					logger.info('installed, config.conf updated \r\n  ====##CONFIGURED##====');
-					process.exit(0);
-				}
-				else{
-					applicationController.restart_app();
-				}
+				update_outputlog({
+					logdata : 'installed, config.conf updated \r\n  ====##CONFIGURED##====',
+					callback : function(err){
+						if(err){
+							callback(err,null);
+						}
+						else{
+							callback(null,"updated conf");
+						}
+					}
+				});
 			}
 		});
 	};
@@ -256,182 +272,130 @@ var configurePeriodic = function(req,res,next,options){
 		}
 	};
 
-	var createUser = function(userdata,callback){
-		if(updatesettings.admin==="true"){
-			update_outputlog({
-				logdata : 'creating admin user'
-			});
-			User.fastRegisterUser(userdata,callback);
-		}
-		else{
-			callback(null,"skipping admin user set up");
-		}
-	};
+	async.series([
+		//write database json
+		function(callback){
+			var dbjson='',
+					dbjsfile=path.join(process.cwd(),'/content/config/database.js');
+			dbjson+='"use strict";\r\n';
+			dbjson+='\r\n';
+			dbjson+='var mongoose = require("mongoose");\r\n';
+			dbjson+='\r\n';
+			dbjson+='module.exports = {\r\n';
+			dbjson+='	"development":{\r\n';
+			dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
+			dbjson+='		mongoose: mongoose,\r\n';
+			dbjson+='		mongooptions:{}\r\n';
+			dbjson+='	},\r\n';
+			dbjson+='	"production":{\r\n';
+			dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
+			dbjson+='		mongoose: mongoose,\r\n';
+			dbjson+='		mongooptions:{}\r\n';
+			dbjson+='	}\r\n';
+			dbjson+='};\r\n';
 
-	if(updatesettings.admin==="true"){
-		// console.log("install admin");
-		asyncTasks.installMailer = function(callback){
-			update_outputlog({
-				logdata : 'installing mailer extension'
+			// logger.silly("restartfile",restartfile);
+			fs.outputFile(dbjsfile,dbjson,function(err){
+				if(err){
+					callback(err,null);
+				}
+				else{
+					callback(null,"updated database.json");
+				}
 			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.mailer','--version','latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-		};
-		asyncTasks.installLogin = function(callback){
-			update_outputlog({
-				logdata : 'installing login extension'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.login','--version','latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-		};
-		asyncTasks.installAdmin = function(callback){
-			update_outputlog({
-				logdata : 'installing admin extension'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.admin','--version','latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-		};
-		asyncTasks.installDbseed = function(callback){
-			update_outputlog({
-				logdata : 'installing dbseed extension'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','extension','--install','true','--name','typesettin/periodicjs.ext.dbseed','--version','latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
-				// node index.js --cli --extension seed --task sampledata
-		};
-		asyncTasks.installThemeBootstrap = function(callback){
-			update_outputlog({
-				logdata : 'installing theme: bootstrap'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','theme','--install','true','--name','typesettin/periodicjs.theme.bootstrap','--version','latest'],
-				// ['index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.'+updatesettings.theme+'" --version latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.bootstrap" --version latest
-		};
-		asyncTasks.installThemeMinimal = function(callback){
-			update_outputlog({
-				logdata : 'installing theme: minimal'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--controller','theme','--install','true','--name','typesettin/periodicjs.theme.minimal','--version','latest'],
-				// ['index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.'+updatesettings.theme+'" --version latest'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				callback
-			);
-			// node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
-		};
-	}
-
-	var writeDatabaseJson = function(callback){
-		var dbjson='',
-				dbjsfile=path.join(process.cwd(),'/content/config/database.js');
-		dbjson+='"use strict";\r\n';
-		dbjson+='\r\n';
-		dbjson+='var mongoose = require("mongoose");\r\n';
-		dbjson+='\r\n';
-		dbjson+='module.exports = {\r\n';
-		dbjson+='	"development":{\r\n';
-		dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
-		dbjson+='		mongoose: mongoose,\r\n';
-		dbjson+='		mongooptions:{}\r\n';
-		dbjson+='	},\r\n';
-		dbjson+='	"production":{\r\n';
-		dbjson+='		url: "'+updatesettings.mongoconnectionurl+'",\r\n';
-		dbjson+='		mongoose: mongoose,\r\n';
-		dbjson+='		mongooptions:{}\r\n';
-		dbjson+='	}\r\n';
-		dbjson+='};\r\n';
-
-		// logger.silly("restartfile",restartfile);
-		fs.outputFile(dbjsfile,dbjson,function(err){
-			if(err){
-				callback(err,null);
+		},
+		//create user data
+		function(callback){
+			if(updatesettings.admin==="true"){
+				update_outputlog({
+					logdata : 'creating admin user'
+				});
+				User.fastRegisterUser(userdata,callback);
 			}
 			else{
-				callback(null,"updated database.json");
+				callback(null,"skipping admin user set up");
 			}
-		});
-	};
-
-	var load_seeddata = function (callback) {
-		if(updatesettings.admin==="true"){
-			update_outputlog({
-				logdata : 'seeding database'
-			});
-			applicationController.async_run_cmd(
-				'node',
-				['index.js','--cli','--extension','dbseed','--task','sampledata'],
-				function(consoleoutput){
-					update_outputlog({
-						logdata : consoleoutput
-					});
-				},
-				function(err,data){
+		},
+		function(callback){
+			if(updatesettings.admin==="true"){
+				// console.log("install admin");
+				// asyncTasks.installMailer = ;
+				// asyncTasks.installLogin = ;
+				// asyncTasks.installAdmin = ;
+				// asyncTasks.installDbseed = ;
+				async.parallel([
+					function(callback){
+						update_outputlog({
+							logdata : 'installing admin extension'
+						});
+						installExtensionDependencies('periodicjs.ext.admin',callback);
+						// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+					},
+					function(callback){
+						update_outputlog({
+							logdata : 'installing mailer extension'
+						});
+						installExtensionDependencies('periodicjs.ext.mailer',callback);
+					},
+					function(callback){
+						update_outputlog({
+							logdata : 'installing login extension'
+						});
+						installExtensionDependencies('periodicjs.ext.login',callback);
+						// node index.js --cli --controller extension --install true --name "typesettin/periodicjs.ext.install" --version latest
+					}
+				],
+				function(err,results){
 					if(err){
 						callback(err,null);
 					}
 					else{
-						callback(null,data);
+						// console.log("results");
+						callback(null,results);
 					}
-				}
-			);
+				});
+			}
+			else{
+				callback(null,"skipping extension install for admin");
+			}
+		},
+		function(callback){
+			updateExtensionConf(callback);
+		},
+		function(callback){
+			if(updatesettings.admin==="true"){
+				update_outputlog({
+					logdata : 'seeding database'
+				});
+				applicationController.async_run_cmd(
+					'node',
+					['index.js','--cli','--extension','dbseed','--task','sampledata'],
+					function(consoleoutput){
+						update_outputlog({
+							logdata : consoleoutput
+						});
+					},
+					function(err,data){
+						if(err){
+							callback(err,null);
+						}
+						else{
+							callback(null,data);
+						}
+					}
+				);
+			}
+			else{
+				callback(null,"skipping seeding database");
+			}
+			// node index.js --cli --extension seed --task sampledata
+		},
+		function(callback){
+			writeConfJson(callback);
 		}
-		else{
-			callback(null,"skipping seeding database");
-		}
-		// node index.js --cli --extension seed --task sampledata
-	};
-
-	writeDatabaseJson(function(err,dbupdatestatus){
+	],
+	//final result
+	function(err,results){
 		if(err){
 			errorlog_outputlog({
 				logdata : err.message,
@@ -439,59 +403,23 @@ var configurePeriodic = function(req,res,next,options){
 			});
 		}
 		else{
-			update_outputlog({
-				logdata : dbupdatestatus
-			});
-			createUser(userdata,function(err,newuserdata){
-				if(err){
-					errorlog_outputlog({
-						logdata : err.message,
-						cli : options.cli
-					});
-				}
-				else{
-					update_outputlog({
-						logdata : newuserdata
-					});
-					async.parallel(
-						asyncTasks,
-						function(err,results){
-							if(err){
-								errorlog_outputlog({
-									logdata : err.message,
-									cli : options.cli
-								});
-							}
-							else{
-								console.log(results);
-								updateExtensionConf(function(err,updatestatus){
-									if(err){
-										errorlog_outputlog({
-											logdata : err.message,
-											cli : options.cli
-										});
-									}
-									else{
-										load_seeddata(function(err,seedresult){
-											if(err){
-												errorlog_outputlog({
-													logdata : err.message,
-													cli : options.cli
-												});
-											}
-											else{
-												writeConfJson();
-											}
-										});
-									}
-								});
-								// applicationController.restart_app();
-							}
-					});
-				}
-			});
+			if(options.cli){
+				logger.info('installed, config.conf updated \r\n  ====##CONFIGURED##====');
+				process.exit(0);
+			}
+			else{
+				applicationController.restart_app();
+			}
 		}
 	});
+
+
+	// var createUser = 
+
+	// var writeDatabaseJson = 
+
+	// var load_seeddata = 
+
 };
 
 var testmongoconfig = function(req,res,next,options){
