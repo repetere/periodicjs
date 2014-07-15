@@ -1,0 +1,110 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea_row">
+			<div class="_pea-col-span12">
+				<h2>Edit Content Type: <%= contenttype.name %></h2>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<form class="_pea-ajax-form" id="contenttype-remove-form" name="contenttype-remove-form" method="post" action="/contenttype/removeitem/<%= contenttype.name %>" data-successfunction="RemoveContentTypeRowResult" data-beforesubmitfunction="setItemToRemove" >
+						<input type="hidden" name="_csrf" value=<%= locals.token %> />
+						<input type="hidden" name="name" id="remove-item-name" value="" />
+						<table class="_pea-table _pea-form" style="margin-bottom:1em;">
+							<thead>
+								<tr class="_pea-text-left">
+									<th class="_pea-col-span5" >Attribute Name</th>
+									<th class="_pea-col-span2" >Data Type</th>
+									<th class="_pea-col-span5" >Default Value</th>
+								</tr>
+							</thead>
+							<tbody id="ct-t-body">
+								<% if (contenttype.attributes && contenttype.attributes.length>0){
+									contenttype.attributes.forEach(function(attribute){
+										%>
+										<tr id="attr-name-val-<%= attribute.name %>">
+											<td><%= attribute.title %></td>
+											<td><%= attribute.datatype %></td>
+											<td><%- attribute.defaultvalue %>
+												<button type="button" value="<%= attribute.name %>" name="attributename" class="edit-content-type-button _pea-button _pea-pull-right _pea-color-error">x</button>
+											</td>	
+										</tr>
+										<%
+									});
+								}%>
+							</tbody>
+						</table>
+					</form>
+					<form class="_pea-ajax-form" id="contenttype-add-form" name="contenttype-add-form" method="post" action="/contenttype/append/<%= contenttype.name %>" data-successfunction="addContentTypeRowResult" enctype='multipart/form-data'>
+						<table class="_pea-table _pea-form">
+							<tfoot>
+								<tr style="border-bottom:none;">
+									<td class="_pea-col-span5">
+										<input type="hidden" name="_csrf" value=<%= locals.token %> >
+										<div class="_pea-row _pea-container-forminput">
+											<input type="text" class="_pea-col-span12" id="padmin-name" placeholder="Attribute Name" name="title"/>
+										</div>
+									</td>
+									<td class="_pea-col-span2">
+										<div class="_pea-row _pea-container-forminput">
+											<% var contenttypeselect = [{
+												"value":"string",
+												"label":"String"
+												},{
+												"value":"url",
+												"label":"Url"
+												},{
+												"value":"number",
+												"label":"Number"
+												},{
+												"value":"array",
+												"label":"Array"
+												},{
+												"value":"object",
+												"label":"Object"
+												}]; %>
+											<select name="datatype" id="padmin-datatype" class="_pea-col-span12">
+												<% contenttypeselect.forEach(function(type){
+													%>
+														<option value="<%= type.value %>"><%= type.label %>
+														</option>
+													<%
+												}) %>	
+											</select>
+										</div>
+									</td>
+									<td class="_pea-col-span5">
+										<div class="_pea-row _pea-container-forminput">
+											<input type="text" class="_pea-col-span12" id="padmin-defaultvalue" placeholder="Default Value" name="defaultvalue"/>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="3">
+										<div class="_pea-text-center">
+											<input type="submit" name="save_button" value="add attribute" class="_pea-button _pea-color-info"/>
+										</div>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="display:none">
+		<div id="view-ext-info-modal">
+			<h1 class="title" style="word-wrap: break-word;">Extension name</h1>
+			<p class="desc">description</p>
+			<p>
+				<ul class="versions">
+					<li>install <a class="install-ext-version">latest<a></li>
+					<li>install 0.0.1</li>
+				</ul>
+			</p>
+		</div>
+	</div>
+<% include ../../shared/footer %>

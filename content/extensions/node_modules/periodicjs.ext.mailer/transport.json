@@ -1,0 +1,9 @@
+{
+	"development":{
+		"type":"sendmail",
+		"transportoptions":{
+			"debug":true,
+			"args":["-t","-i"]
+		}
+	}
+}

@@ -1,0 +1,8 @@
+<h2><a href="/collection/<%= collection.name %>"><%= collection.title %></a></h2>
+<%if(collection.contenttypeattributes && collection.contenttypeattributes.blog && collection.contenttypeattributes.blog.summary){%>
+	<div class="_post-micro-content"><%- collection.contenttypeattributes.blog.summary %></div>
+<%}
+else{%>
+	<div class="_post-micro-content"><%- collection.content %></div>
+<%}%>
+<p><a class="btn btn-default" href="/collection/<%= collection.name %>" role="button">View details »</a></p>

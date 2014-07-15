@@ -1,0 +1,28 @@
+<h2>Content Type Attributes</h2>
+<div class="_pea-document" id="doc-ct-attr">
+	<% if(genericdoc && genericdoc.contenttypes){
+		genericdoc.contenttypes.forEach(function(ct){
+			%>
+			<div>
+				<h3 style="margin-top:0;"><%= ct.title %><small> <a href="/p-admin/contenttype/<%=ct.name%>">(edit)</a></small></h3>
+				<% if(ct.attributes){
+					ct.attributes.forEach(function(attr){
+						var defaultVal = attr.defaultvalue;
+
+						if(genericdoc.contenttypeattributes && genericdoc.contenttypeattributes[ct.name] && genericdoc.contenttypeattributes[ct.name][attr.name]){
+							defaultVal = genericdoc.contenttypeattributes[ct.name][attr.name];
+						}
+						%>
+						<div class="_pea-row _pea-container-forminput">
+							<label class="_pea-label _pea-col-span3">
+								<%= attr.title %>
+							</label>
+							<input class="_pea-col-span9 noFormSubmit" type="text" placeholder="<%= attr.title %>" value="<%- defaultVal %>" name="contenttypeattributes.<%= ct.name %>.<%= attr.name %>">
+						</div>
+					<%});
+				} %>
+			</div>
+			<%
+		});
+	} %>
+</div>

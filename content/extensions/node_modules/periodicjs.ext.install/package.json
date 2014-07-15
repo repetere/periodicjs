@@ -1,7 +1,7 @@
 {
   "name": "periodicjs.ext.install",
   "description": "install extensions for periodicjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
@@ -17,11 +17,9 @@
   },
   "scripts": {},
   "dependencies": {
-    "domhelper": ">=0.0.1",
-    "util-extend": "^1.0.1",
-    "superagent": "~0.18.1",
-    "ribbonjs": "~0.1.3",
-    "silkscreenjs": "~0.1.3"
+    "superagent": "0.18.1",
+    "ribbonjs": "0.1.3",
+    "silkscreenjs": "0.1.3"
   },
   "devDependencies": {},
   "keywords": [

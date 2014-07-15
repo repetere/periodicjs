@@ -1,0 +1,81 @@
+<input type="hidden" name="_csrf" value=<%= locals.token %> >
+<div class="_pea-container">
+	<div class="_pea-row">
+		<div class="_pea-col-span8">
+			<% 
+				var genericdoc = collection; 
+				var genericdocTitle = "Collection"; 
+			%>
+			
+			<% include ../../shared/compose_content %>
+			<% include ../../shared/media_asset %>
+			<h2>Collection Items</h2>
+			<div class="_pea-document" id="collection-items">
+				<div id="collection-item-documents" class="_pea-row _pea-container-forminput">
+					<table class="_pea-table _pea-form">
+					<tbody id="collection-table-items">
+					<%if(collection && collection.posts){ %>
+						<% collection.posts.forEach(function(docresult){%>
+							<tr id="tr-docid-<%= docresult.post._id%>">
+								<td class="_pea-col-span9">
+									<input style="display:none;"  name="posts" type="checkbox" value='{"order":<%=docresult.order%>,"post":"<%=docresult.post._id%>"}' checked="checked"></input>
+									<%= docresult.post.title %>
+									<div><small>
+										<%
+										if(docresult.post.tags){
+											%>
+											<strong>tags:</strong> <%
+											for(var i in docresult.post.tags){
+												%> 
+												<%=docresult.post.tags[i].title %>, 
+												<%
+											}
+										}
+										if(docresult.post.categories){
+											%>
+											<strong>categories:</strong> <%
+											for(var i in docresult.post.categories){
+												%> 
+												<%=docresult.post.categories[i].title %>, 
+												<%
+											}
+										}
+										if(docresult.post.contenttypes){
+											%>
+											<strong>contenttypes:</strong> <%
+											for(var i in docresult.post.contenttypes){
+												%> 
+												<%=docresult.post.contenttypes[i].title %>, 
+												<%
+											}
+										}
+										%>
+									</small></div>
+								</td>
+								<td class="_pea-col-span3 _pea-text-right">
+									<a data-docid="<%= docresult.post._id%>" class="_pea-button remove-doc-to-collection _pea-color-error">x</a>
+								</td>
+							</tr>
+						<%})%>
+					<%}%>
+					</tbody>
+					</table>
+				</div>
+				<div class="_pea-row">
+					<input type="text" placeholder="search documents" class="_pea-col-span10" id="searchdocumentstext" name="search"/>
+					<input type="button" id="searchdocumentsbutton" name="searchdocumentsbutton" value="search" class="_pea-col-span2"  />
+				</div>
+				<div id="collection-item-searchresult" class="_pea-row _pea-container-forminput">
+					
+				</div>
+			</div>
+			<% include ../../shared/content_attributes %>
+		</div>
+		<div class="_pea-col-span3 _pea-pull-right">
+			<% include ../../shared/content_options %>
+			<% include ../../shared/content_taxonmy %>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-advanced.js"></script>
+<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-0.4.0pre.min.js"></script>

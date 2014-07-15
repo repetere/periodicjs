@@ -1,0 +1,15 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="width100">
+		<% if(posts && posts.length>0){
+			var fullpost=false;
+			var collectionpost=false;
+			posts.forEach(function(post){%>
+				<% include ../shared/partial/_post %>
+			<%});
+		}
+		else{%>
+			no posts
+		<%}%>
+	</div>
+<% include ../shared/footer %>

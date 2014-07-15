@@ -1,0 +1,12 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<script type="text/javascript">
+	<%- locals.viewhelper.passObjToClient(collection.tags,"collectiontags") %>
+	<%- locals.viewhelper.passObjToClient(collection.categories,"collectioncategories") %>
+	<%- locals.viewhelper.passObjToClient(collection.authors,"collectionauthors") %>
+	<%- locals.viewhelper.passObjToClient(collection.contenttypes,"collectioncontenttypes") %>
+	</script>
+	<form class="_pea-form _pea-ajax-form noFormSubmit" id="edit-collection-form" name="edit-collection-form" method="post" action="/collection/edit" data-successfunction="updateContentTypes" onsubmit="return false;" enctype='multipart/form-data'>
+		<% include compose_collection_form %>
+	</form>
+<% include ../../shared/footer %>

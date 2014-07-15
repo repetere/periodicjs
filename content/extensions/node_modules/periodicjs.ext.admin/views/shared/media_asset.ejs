@@ -1,0 +1,39 @@
+<h2>Media Assets</h2>
+	<div class="_pea-document">
+		<div class="_pea-row _pea-container-forminput">
+			<input type="file" id="padmin-mediafiles" class="_pea-col-span12" name="mediafiles" multiple="multiple" />
+			<!-- <div id="filedrag">drag or drop files here</div> -->
+			<!-- http://www.sitepoint.com/html5-file-drag-and-drop/ -->
+		</div>
+		<div id="media-files-result" class="_pea-row _pea-container-forminput">
+			<% 
+			if (genericdoc && genericdoc.primaryasset){%><input type="hidden" id="primaryasset-input" name="primaryasset" value="<%- genericdoc.primaryasset._id%>"/><%} %>
+			
+			<% if(genericdoc && genericdoc.assets){
+				genericdoc.assets.forEach(function(asset){
+					%>
+					<div data-id="asset._id" class="_pea-col-span4 media-item-x">
+						<input style="display:none;" name="assets" type="checkbox" value="<%=asset._id%>" checked="checked"></input>
+						<% if(asset.assettype && asset.assettype.match("image")){
+							%><img class="_pea-col-span11" src="<%=asset.fileurl%>"/><%
+						} 
+						else{%>
+							<div class="_pea-col-span11"> <%=asset.fileurl%></div>
+						<%
+						}%>
+						<div class="mix-options _pea-text-right">	
+							
+							<a data-assetid="<%= asset._id %>" title="make primary asset" class="_pea-button make-primary _pea-color-warn"
+							<% if(genericdoc.primaryasset && genericdoc.primaryasset._id.toString() === asset._id.toString()){%>
+							style="display:none;"
+							<%}%>
+							>*</a>
+							
+							<a data-assetid="<%= asset._id %>" title="remove asset" class="_pea-button remove-asset _pea-color-error">x</a>
+						</div>
+					</div>
+					<%
+				});
+			} %>
+		</div>
+	</div>

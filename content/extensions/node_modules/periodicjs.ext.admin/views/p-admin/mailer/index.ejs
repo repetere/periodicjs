@@ -1,0 +1,130 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<input type="hidden" name="_csrf" value=<%= locals.token %> >
+	<div class="_pea-container">
+		<div class="_pea-row">
+			<div class="_pea-col-span7">
+				<h2>Test Email</h2>
+				<form class="_pea-form _pea-ajax-form" method="post" action="/p-admin/mailer/testmail">
+					<div class="_pea-document">
+						<div class="_pea-row">
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">from</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="from" value="local@local.getperiodic.com" name="from"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">to</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="subject" value="<%- user.email %>" name="to"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">cc</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="subject" value="<%- user.email %>" name="cc"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">bcc</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="subject" value="" name="bcc"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">replyTo</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="subject" value="<%- user.email %>" name="replyTo"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<label class="_pea-col-span1 _pea-label _pea-text-right">subject</label>
+								<input class="_pea-col-span11 noFormSubmit" type="text" placeholder="subject" value="testing email from node server" name="subject"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput ">
+								<div id="wysihtml5-toolbar" class="wysihtml5">
+									<a data-wysihtml5-command="bold" title="CTRL+B" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default"><b>b</b></a> 
+									<a data-wysihtml5-command="italic" title="CTRL+I" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default"><i>i</i></a> 
+									<a data-wysihtml5-command="createLink" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">link</a> 
+									<a data-wysihtml5-command="insertImage" href="javascript:;" unselectable="on"  class="_pea-button _pea-color-default">image</a> 
+									<a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">h1</a> 
+									<a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">h2</a> 
+									<a data-wysihtml5-command="insertUnorderedList" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">List</a> 
+									<a data-wysihtml5-command="insertOrderedList" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">OrderedList</a> 
+									<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">r</a> 
+									<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">g</a> 
+									<a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">b</a> 
+									<a data-wysihtml5-command="undo" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">undo</a> 
+									<a data-wysihtml5-command="redo" href="javascript:;" unselectable="on" class="_pea-button _pea-color-default">redo</a> 
+									<a data-wysihtml5-action="change_view" href="javascript:;" unselectable="on" class="_pea-button  _pea-color-default">&#60;/html&#62;</a>
+
+									<div data-wysihtml5-dialog="createLink" style="display: none;">
+										<label>
+										Link:
+										<input data-wysihtml5-dialog-field="href" value="http://">
+										</label>
+										<a data-wysihtml5-dialog-action="save">OK</a>
+										&nbsp;
+										<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+									</div>
+
+									<div data-wysihtml5-dialog="insertImage" style="display: none;">
+										<label>
+										Image:
+											<input data-wysihtml5-dialog-field="src" value="http://">
+										</label>
+										<label>
+										Align:
+											<select data-wysihtml5-dialog-field="className">
+												<option value="">default</option>
+												<option value="wysiwyg-float-left">left</option>
+												<option value="wysiwyg-float-right">right</option>
+											</select>
+										</label>
+										<a data-wysihtml5-dialog-action="save">OK</a>
+										&nbsp;
+										<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+									</div>
+								</div>
+								<!-- https://github.com/yawetse/wysihtml5 -->
+								<textarea id="wysihtml5-textarea" class="textarea-tall _pea-col-span12" name="html" placeholder="New Email">does this HTML email work? <b>this text should be bold</b><br><br><ol><li>I want an ordered list</li><li>num2</li><li>num3</li></ol></textarea>
+							</div>
+							<div class="_pea-row _pea-text-center _pea-container-forminput no-margin">
+								<input type="submit" class="_pea-color-success _pea-button" value="Send Email" name="send_mail_button"/>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="_pea-col-span4 _pea-pull-right">
+				<h2>Mail Settings</h2>
+				<form class="_pea-form _pea-ajax-form" method="post" action="/p-admin/mailer/updatesettings">
+					<div class="_pea-document">
+						<div class="_pea-row _pea-container-forminput">
+						<% var docstatus = [{
+								"value":"publish",
+								"label":"Status: Publish"
+								},{
+								"value":"draft",
+								"label":"Status: Draft"
+								},{
+								"value":"review",
+								"label":"Status: Review"
+								},{
+								"value":"trash",
+								"label":"Status: Trash"
+								}]; %>
+							<select name="status" class="_pea-col-span12">
+								<% docstatus.forEach(function(status){
+									%>
+										<option <% if('publish' === status.value ){%> selected="selected"
+										<%}%> value="<%= status.value %>"><%= status.label %></option>
+									<%
+									}); %>
+							</select>
+						</div>
+						<div class="_pea-row _pea-container-forminput">
+							<small>Date: Publish Immediately</small>
+						</div>
+						<div class="_pea-text-center">
+							<input type="submit" name="save_button" value="Sendmail" class="_pea-button _pea-color-default"/>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-advanced.js"></script>
+	<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-0.4.0pre.min.js"></script>
+<% include ../../shared/footer %>

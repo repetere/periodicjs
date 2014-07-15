@@ -1,0 +1,23 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="container">
+		<% if(posts && posts.length>0){%>
+		<div class="row">
+		<%
+			posts.forEach(function(post){%>
+        <div class="col-6 col-sm-6 col-lg-4">
+          <% include ../shared/partial/_post_micro %>
+        </div>
+			<%});%>
+		</div>
+		<%
+		}
+		else{%>
+			<div class="row">
+        <div class="jumbotron">
+          <h1>No Posts!</h1>
+        </div>
+      </div>
+		<%}%>
+	</div>
+<% include ../shared/footer %>

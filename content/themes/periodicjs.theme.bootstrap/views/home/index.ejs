@@ -1,0 +1,76 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+  <div class="container theme-showcase" role="main">
+    <% 
+    if(layoutdata.docs && layoutdata.docs.length>0){
+      var post = layoutdata.docs[0];
+      %>
+      <div class="jumbotron">
+        <% include ../shared/partial/_post_micro %>
+      </div>
+      <div class="row"><%
+      layoutdata.docs.forEach(function(post,index){
+        if(index !==0){%>
+          <div class="col-6 col-sm-6 col-lg-4">
+            <% include ../shared/partial/_post_micro %>
+          </div>
+        <%}
+        %>
+      <%});
+      %></div><%
+    }
+    else{%>
+      <div class="row">
+        <div class="jumbotron">
+          <h1>No Posts!</h1>
+        </div>
+      </div>
+    <%}%>
+    <div class="page-header">
+      <h1>Read More</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            Authors
+          </a>
+          <% layoutdata.authors.forEach(function(author){%>
+            <a href="/browse/authors/<%= author.username %>" class="list-group-item"><%= author.username %></a>
+          <%})%>
+        </div>
+      </div><!-- /.col-sm-3 -->
+      <div class="col-sm-3">
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            Browse
+          </a>
+            <% layoutdata.contenttypes.forEach(function(contenttype){%>
+            <a class="list-group-item" href="/browse/contenttypes/<%= contenttype.name %>"><%= contenttype.title %></a>
+          <%})%>
+        </div>
+      </div><!-- /.col-sm-3 -->
+      <div class="col-sm-3">
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            Categories
+          </a>
+          <% layoutdata.categories.forEach(function(category){%>
+            <a class="list-group-item" href="/browse/categories/<%= category.name %>"><%= category.title %></a>
+          <%})%>
+        </div>
+      </div><!-- /.col-sm-3 -->
+      <div class="col-sm-3">
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            Tags
+          </a>
+            <% layoutdata.tags.forEach(function(tag){%>
+            <a class="list-group-item" href="/browse/tags/<%= tag.name %>"><%= tag.title %></a>
+          <%})%>
+        </div>
+      </div><!-- /.col-sm-3 -->
+    </div>
+  </div> <!-- /container -->
+<% include ../shared/footer %>
+

@@ -1,0 +1,74 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row _pea-form">
+			<div class="_pea-col-span6">
+				<!-- <a href="/p-admin/post/new" class="_pea-button _pea-color-info">New Post</a> -->
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<form class="_pea-form" method="get">
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
+				</form>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<input type="hidden" name="_csrf" value=<%= locals.token %> >
+					<table id="pea-asset-admin" class="_pea-table _pea-form">
+						<thead>
+							<tr class="_pea-text-left">
+								<th class="_pea-col-span2">Title</th>
+								<th class="_pea-col-span1">Author</th>
+								<th >Attributes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(assets.length>0){
+									assets.forEach(function(asset){ %>
+										<tr data-tr-assetid="<%= asset._id %>">
+											<td> 
+												<div data-id="asset._id" style="margin-top:0" class="_pea-col-span12 media-item-x">
+													<a href="/p-admin/asset/<%= asset._id %>"> 
+													<% if(asset.assettype && asset.assettype.match("image")){
+														%><img class="_pea-col-span11" src="<%=asset.fileurl%>"/><%
+													} 
+													else{%>
+														<div class="_pea-col-span11"> <%=asset.fileurl%></div>
+													<%
+													}%>
+												 	</a>
+											 	</div>
+											</td>
+											<td>
+												<% if(asset.author){%>
+													<a href="/p-admin/user/<%= asset.author.username %>/edit"><%= asset.author.username %></a>
+												<%} %>
+											</td>
+											<td>
+												<a data-href="/mediaasset/<%= asset._id %>/delete" assetid="<%= asset._id %>" class="_pea-button _pea-pull-right delete-asset-button _pea-color-error">delete</a>
+												<a href="/p-admin/asset/<%= asset._id %>" class="_pea-button _pea-pull-right">edit</a>
+												<small style="word-break: break-word;"><%- JSON.stringify( asset.attributes) %></small>
+											</td>
+										</tr>
+										<%
+									});
+								}
+								else{ %>
+									<tr><td colspan="3" class="_pea-text-center">No Assets!</td></tr>
+								<%} %>
+						</tbody>
+						<tfoot>
+							<tr class="_pea-text-left">
+								<th>Title</th>
+								<th>Author</th>
+								<th>Attributes</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../../shared/footer %>
