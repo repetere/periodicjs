@@ -26,7 +26,8 @@ module.exports = function(periodic){
 	/**
 	 * root routes
 	 */
-	appRouter.get('/articles|/posts',postController.loadPosts,postController.index);
+	// appRouter.get('/posts',postController.loadPosts,postController.index);
+	appRouter.get('/articles',postController.loadPosts,postController.index);
 	appRouter.get('/collections',collectionController.loadCollections,collectionController.index);
 	appRouter.get('/404|/notfound',homeController.error404);
 	appRouter.get('/search',searchController.browse,searchController.results);

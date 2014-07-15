@@ -1,0 +1,55 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row _pea-form">
+			<div class="_pea-col-span6">
+				<a href="/p-admin/tag/new" class="_pea-button _pea-color-info">New Tag</a>
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<form class="_pea-form" method="get">
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
+				</form>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<table class="_pea-table _pea-form">
+						<thead>
+							<tr class="_pea-text-left">
+								<th>Title</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(tags.length>0){
+									tags.forEach(function(tag){ %>
+										<tr>
+											<td> 
+												<a href="/p-admin/tag/<%= tag.name %>"> <%= tag.title %> </a>
+											</td>
+											<td>
+												<%- tag.description %>
+												<a href="/p-admin/tag/<%= tag.name %>" class="_pea-button _pea-pull-right">edit</a>
+											</td>
+										</tr>
+										<%
+									});
+								}
+								else{ %>
+									<tr><td colspan="3" class="_pea-text-center">No Tags!</td></tr>
+								<%} %>
+						</tbody>
+						<tfoot>
+							<tr class="_pea-text-left">
+								<th>Title</th>
+								<th>Description</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../../shared/footer %>

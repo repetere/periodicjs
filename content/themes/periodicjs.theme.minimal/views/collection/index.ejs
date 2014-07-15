@@ -1,0 +1,14 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="width100">
+		<% var fullcollection=false; %>
+		<% if(collections && collections.length>0){
+			collections.forEach(function(collection){%>
+				<% include ../shared/partial/_collection %>
+			<%});
+		}
+		else{%>
+			no collections
+		<%}%>
+	</div>
+<% include ../shared/footer %>

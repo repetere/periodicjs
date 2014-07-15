@@ -1,0 +1,14 @@
+<div class="width100">
+	<% if(metaauthor) {
+			if(metaauthor.firstname && metaauthor.lastname){
+				%>by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.firstname %>  <%= metaauthor.lastname %></a> <%
+			}
+			else{
+				%>by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.username %></a> &mdash; <%
+			}
+		}
+		if(metadate){
+				var d = new Date(metadate);
+				%> <%= (d.getMonth()+1) %>/<%= d.getDate() %>/<%= d.getFullYear() %> <%
+		}%>
+</div>

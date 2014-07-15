@@ -1,0 +1,32 @@
+<h2>Options</h2>
+<div class="_pea-document">
+	<div class="_pea-row _pea-container-forminput">
+	<% var docstatus = [{
+			"value":"publish",
+			"label":"Status: Publish"
+			},{
+			"value":"draft",
+			"label":"Status: Draft"
+			},{
+			"value":"review",
+			"label":"Status: Review"
+			},{
+			"value":"trash",
+			"label":"Status: Trash"
+			}]; %>
+		<select name="status" class="_pea-col-span12">
+			<% docstatus.forEach(function(status){
+				%>
+					<option <% if(genericdoc && typeof genericdoc.status==='string' && genericdoc.status === status.value ){%> selected="selected"
+					<%}%> value="<%= status.value %>"><%= status.label %></option>
+				<%
+				}); %>
+		</select>
+	</div>
+	<div class="_pea-row _pea-container-forminput">
+		<small>Date: Publish Immediately</small>
+	</div>
+	<div class="_pea-text-center">
+		<input type="submit" name="save_button" value="<% if(genericdoc){%>Update<%}else{%>Save<%}%>" class="_pea-button _pea-color-default"/>
+	</div>
+</div>

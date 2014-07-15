@@ -82,7 +82,8 @@ var applicationController = function(resources){
 
 		var getExtensionView = function(viewname,callback){
 			if(extname){
-				var exttemplatefile = path.join(path.resolve(__dirname,'../../content/extensions/node_modules',extname,'views',viewname),'.'+themefileext);
+				var exttemplatefile = path.join(path.resolve(__dirname,'../../content/extensions/node_modules',extname),'views',viewname+'.'+themefileext);
+				console.log("exttemplatefile",exttemplatefile);
 				fs.open(exttemplatefile,'r',function(err,file){
 					if(err){
 						callback(err,viewname,null);

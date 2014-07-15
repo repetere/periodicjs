@@ -1,0 +1,43 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+<div class="container">
+  <div class="row">
+  	<div class="col-md-8">
+      <div class="panel panel-default">
+				<div class="panel-body">
+      		
+            <div class="row">
+            	<div class="col-xs-12 col-sm-4 text-center">
+	              <img src="/favicon.png" alt="" class="center-block img-responsive">
+	              <!-- <img src="/favicon.png" alt="" class="center-block img-circle img-responsive"> -->
+	            </div><!--/col-->           
+	            <div class="col-xs-12 col-sm-8">
+	              <h2><%= author.username %></h2>
+	              <p><strong>Name: </strong> <%= author.firstname %> <%= author.lastname %></p>
+	              <p><strong>About: </strong> <%= author.description %></p>
+	            </div><!--/col--> 
+            </div>
+            <div class="row">
+	            <div class="col-xs-12 col-sm-4">
+	              <h2><strong> 20,7K </strong></h2>                    
+	              <p><small>Followers</small></p>
+	              <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button>
+	            </div><!--/col-->
+	            <div class="col-xs-12 col-sm-4">
+	              <h2><strong>245</strong></h2>                    
+	              <p><small>Following</small></p>
+	              <a class="btn btn-info btn-block" href="/browse/authors/<%= author.username %>"><span class="fa fa-user"></span> View Documents </a>
+	            </div><!--/col-->
+	            <div class="col-xs-12 col-sm-4">
+	              <h2><strong>43</strong></h2>                    
+	              <p><small>Snippets</small></p>
+	              <button type="button" class="btn btn-primary btn-block"><span class="fa fa-gear"></span> Options </button>  
+	            </div><!--/col-->
+            </div>
+      		<!--/row-->
+        </div><!--/panel-body-->
+      </div><!--/panel-->
+    </div>
+  </div>
+</div>
+<% include ../shared/footer %>
