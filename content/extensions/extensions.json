@@ -61,6 +61,18 @@
       }
     },
     {
+      "name": "periodicjs.ext.scheduled_content",
+      "version": "0.1.0",
+      "periodicCompatibility": "0.1.0",
+      "installed": true,
+      "enabled": false,
+      "periodicConfig": {
+        "name": "periodicjs.ext.scheduled_content",
+        "periodicCompatibility": "0.1.0",
+        "periodicDependencies": []
+      }
+    },
+    {
       "name": "periodicjs.ext.admin",
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
@@ -76,6 +88,10 @@
           },
           {
             "extname": "periodicjs.ext.login",
+            "version": "0.1.0"
+          },
+          {
+            "extname": "periodicjs.ext.schueduled_content",
             "version": "0.1.0"
           }
         ]
