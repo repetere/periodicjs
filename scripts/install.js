@@ -22,53 +22,61 @@ var fs = require('fs-extra'),
 	    }
 	  };
 
-
-prompt.start();
-prompt.get(schema, function (err, result) {
-  if(err){
-		console.error(err);
+fs.open(originallocation,'r',function(err,file){
+	if(err){
+		console.log("Installed Periodicjs");
 		process.exit(0);
 	}
 	else{
-		if(result.auto_clean_up.match(/y/gi)){
-			// console.log("move",originallocation);
-			// console.log("to",newlocation);
+		console.log('\u0007');
+		prompt.start();
+		prompt.get(schema, function (err, result) {
+		  if(err){
+				console.error(err);
+				process.exit(0);
+			}
+			else{
+				if(result.auto_clean_up.match(/y/gi)){
+					// console.log("move",originallocation);
+					// console.log("to",newlocation);
 
-			fs.ensureDir(newlocation,function(err){
-				if(err){
-					console.error(err);
-					process.exit(0);
-				}
-				else{
-					fs.copy(
-						originallocation,
-						newlocation,
-						function(err){
+					fs.ensureDir(newlocation,function(err){
 						if(err){
 							console.error(err);
-							console.log(err.stack);
 							process.exit(0);
 						}
 						else{
-							fs.remove(originalnodemoduleslocation, function(err){
+							fs.copy(
+								originallocation,
+								newlocation,
+								function(err){
 								if(err){
 									console.error(err);
 									console.log(err.stack);
 									process.exit(0);
 								}
-								else{	
-									console.log("Installed Periodicjs");
-									process.exit(0);
+								else{
+									fs.remove(originalnodemoduleslocation, function(err){
+										if(err){
+											console.error(err);
+											console.log(err.stack);
+											process.exit(0);
+										}
+										else{	
+											console.log("Installed Periodicjs");
+											process.exit(0);
+										}
+									});
 								}
 							});
 						}
 					});
 				}
-			});
-		}
-		else{
-			console.log("Installed Periodicjs");
-			process.exit(0);
-		}
+				else{
+					console.log("Installed Periodicjs");
+					process.exit(0);
+				}
+			}
+		});
 	}
-});		
+});
