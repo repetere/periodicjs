@@ -61,6 +61,18 @@
       }
     },
     {
+      "name": "periodicjs.ext.user_acces_control",
+      "version": "0.1.0",
+      "periodicCompatibility": "0.1.0",
+      "installed": true,
+      "enabled": false,
+      "periodicConfig": {
+        "name": "periodicjs.ext.user_acces_control",
+        "periodicCompatibility": "0.1.0",
+        "periodicDependencies": []
+      }
+    },
+    {
       "name": "periodicjs.ext.scheduled_content",
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
@@ -74,7 +86,7 @@
     },
     {
       "name": "periodicjs.ext.admin",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "periodicCompatibility": "0.1.0",
       "installed": true,
       "enabled": false,
@@ -92,6 +104,10 @@
           },
           {
             "extname": "periodicjs.ext.schueduled_content",
+            "version": "0.1.0"
+          },
+          {
+            "extname": "periodicjs.ext.user_acces_control",
             "version": "0.1.0"
           }
         ]

@@ -1,5 +1,5 @@
 {
-	"name": "periodicjs.ext.default_routes",
+	"name": "periodicjs.ext.user_acces_control",
 	"periodicCompatibility":"0.1.0",
 	"periodicDependencies":[]
 }

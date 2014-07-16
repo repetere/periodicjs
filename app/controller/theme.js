@@ -211,6 +211,9 @@ var updateConfigTheme = function(options){
 									theme:themename,
 									msg:'theme enabled'
 								}
+							},
+							callback:function(){
+								applicationController.restart_app();
 							}
 						});
 					}

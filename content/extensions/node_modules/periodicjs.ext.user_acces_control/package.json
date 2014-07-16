@@ -1,6 +1,6 @@
 {
-  "name": "periodicjs.ext.default_routes",
-  "description": "default for periodicjs.",
+  "name": "periodicjs.ext.user_acces_control",
+  "description": "User access control for Periodicjs",
   "version": "0.1.0",
   "main": "index.js",
   "engines": {
