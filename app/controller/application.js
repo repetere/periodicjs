@@ -471,6 +471,7 @@ var applicationController = function(resources){
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 				req = options.req,
+				callback = options.callback,
 				responseData = options.responseData;
 
 		responseData.periodic = responseData.periodic || {};
@@ -496,6 +497,9 @@ var applicationController = function(resources){
 		}
 		else{
 			res.render(options.renderView,responseData);
+		}
+		if(callback){
+			callback();
 		}
 	};
 

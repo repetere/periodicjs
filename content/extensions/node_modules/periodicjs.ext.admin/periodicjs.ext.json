@@ -7,5 +7,11 @@
 	},{
     	"extname":"periodicjs.ext.login",
     	"version":"0.1.0"
-	}]
+	},{
+    "extname": "periodicjs.ext.schueduled_content",
+    "version": "0.1.0"
+  },{
+    "extname": "periodicjs.ext.user_acces_control",
+    "version": "0.1.0"
+  }]
 }
