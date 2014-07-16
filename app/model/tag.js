@@ -42,7 +42,7 @@ tagSchema.pre('save',function(next,done){
         done(new Error('Tag title is too short'));
     }
     else if(this.name !== undefined && badname.test(this.name) ){
-        done(new Error('Tag title is invalid'));
+        done(new Error('Tag title('+this.name+') is a reserved word invalid'));
     }
     else{
         next();
