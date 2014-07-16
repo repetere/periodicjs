@@ -22,7 +22,8 @@
     "start_prod": "pm2 start content/config/process/production.json",
     "start_prodclient": "pm2 start content/config/process/production-client.json",
     "start": "pm2 start content/config/process/development.json",
-    "test": "mocha -R spec --recursive"
+    "test": "mocha -R spec --recursive",
+    "postinstall" : "node scripts/install.js"
   },
   "dependencies": {
     "async": "0.9.0",
@@ -49,6 +50,7 @@
     "npm": "1.4.15",
     "optimist": "0.6.1",
     "passport": "~0.2.0",
+    "prompt": "0.2.13",
     "response-time": "2.0.0",
     "semver": "2.3.0",
     "serve-favicon": "2.0.0",
