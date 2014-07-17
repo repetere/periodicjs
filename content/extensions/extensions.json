@@ -5,7 +5,7 @@
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": true,
+      "enabled": false,
       "periodicConfig": {
         "name": "periodicjs.ext.install",
         "periodicCompatibility": "0.1.0",
@@ -29,7 +29,7 @@
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.mailer",
         "periodicCompatibility": "0.1.0",
@@ -48,7 +48,7 @@
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.login",
         "periodicCompatibility": "0.1.0",
@@ -61,13 +61,13 @@
       }
     },
     {
-      "name": "periodicjs.ext.user_acces_control",
+      "name": "periodicjs.ext.user_access_control",
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
-        "name": "periodicjs.ext.user_acces_control",
+        "name": "periodicjs.ext.user_access_control",
         "periodicCompatibility": "0.1.0",
         "periodicDependencies": []
       }
@@ -77,7 +77,7 @@
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.scheduled_content",
         "periodicCompatibility": "0.1.0",
@@ -89,7 +89,7 @@
       "version": "0.1.1",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.admin",
         "periodicCompatibility": "0.1.0",
@@ -107,7 +107,7 @@
             "version": "0.1.0"
           },
           {
-            "extname": "periodicjs.ext.user_acces_control",
+            "extname": "periodicjs.ext.user_access_control",
             "version": "0.1.0"
           }
         ]
@@ -118,7 +118,7 @@
       "version": "0.1.0",
       "periodicCompatibility": "0.1.0",
       "installed": true,
-      "enabled": false,
+      "enabled": true,
       "periodicConfig": {
         "name": "periodicjs.ext.dbseed",
         "periodicCompatibility": "0.1.0",
