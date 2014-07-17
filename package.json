@@ -22,6 +22,8 @@
     "start_prod": "pm2 start content/config/process/production.json",
     "start_prodclient": "pm2 start content/config/process/production-client.json",
     "start": "pm2 start content/config/process/development.json",
+    "stop": "pm2 delete periodicjs",
+    "restart": "pm2 reload periodicjs",
     "test": "mocha -R spec --recursive",
     "postinstall" : "node scripts/install.js"
   },
