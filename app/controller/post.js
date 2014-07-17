@@ -100,7 +100,7 @@ var update = function(req, res, next) {
 	});
 };
 
-var loadPost = function(req,res,next){
+var loadItem = function(req,res,next){
 	var params = req.params,
 		population = 'contenttypes primaryauthor authors',
 		docid = params.id;
@@ -134,7 +134,7 @@ var loadPost = function(req,res,next){
 	});
 };
 
-var loadFullPost = function(req,res,next){
+var loadFullItem = function(req,res,next){
 	var params = req.params,
 		docid = params.id;
 
@@ -160,7 +160,7 @@ var loadFullPost = function(req,res,next){
 	});
 };
 
-var loadPosts = function(req,res,next){
+var loadItems = function(req,res,next){
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -218,9 +218,9 @@ var controller = function(resources){
 		index:index,
 		create:create,
 		update:update,
-		loadPost:loadPost,
-		loadFullPost:loadFullPost,
-		loadPosts:loadPosts
+		loadItem:loadItem,
+		loadFullItem:loadFullItem,
+		loadItems:loadItems
 	};
 };
 

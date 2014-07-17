@@ -4,7 +4,7 @@ module.exports = function(options){
 	var mongoose = options.mongoose,
 		db = mongoose.connect(options.dburl),
 		userSchema = require('../../app/model/user.js'),
-		postSchema = require('../../app/model/post.js'),
+		itemSchema = require('../../app/model/item.js'),
 		collectionSchema = require('../../app/model/collection.js'),
 		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
@@ -16,7 +16,7 @@ module.exports = function(options){
 		mongoose.set('debug', true);
 	}
 	mongoose.model('User',userSchema);
-	mongoose.model('Post',postSchema);
+	mongoose.model('Post',itemSchema);
 	mongoose.model('Collection',collectionSchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);

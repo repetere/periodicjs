@@ -48,7 +48,9 @@ module.exports = function(grunt) {
         'index.js',
         'app/**/*.js','!app/doc/**/*.js',
         'test/**/*.js',
-        'content/extensions/node_modules/periodicjs.ext.user_access_control/**/*.js'
+        'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
+        'content/extensions/node_modules/periodicjs.ext.admin/index.js'
       ]
     },
     jsdoc : {
@@ -109,7 +111,9 @@ module.exports = function(grunt) {
           'index.js',
           'app/**/*.js',
           'test/**/*.js',
-          'content/extensions/node_modules/periodicjs.ext.user_access_control/**/*.js'
+          'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
+          'content/extensions/node_modules/periodicjs.ext.admin/index.js'
         ],
         tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
         options: {

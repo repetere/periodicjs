@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 //http://cookbook.mongodb.org/patterns/date_range/
 //http://cronchecker.net/check?utf8=%E2%9C%93&statement=1+*+*+*+*+*&button=
 //http://crontab-generator.org/
-var postSchema = new Schema({
+var itemSchema = new Schema({
     id: ObjectId,
     status: {
         type: String,
@@ -93,7 +93,7 @@ var postSchema = new Schema({
 });
 
 
-postSchema.pre('save',function(next,done){
+itemSchema.pre('save',function(next,done){
     this.random = Math.random();
     var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
     if(this.name !== undefined && this.name.length <4){
@@ -104,28 +104,28 @@ postSchema.pre('save',function(next,done){
     next();
 });
 
-postSchema.post('init', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been initialized from the db');
+itemSchema.post('init', function (doc) {
+    console.log("model - item.js - "+doc._id+' has been initialized from the db');
 });
-postSchema.post('validate', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been validated (but not saved yet)');
+itemSchema.post('validate', function (doc) {
+    console.log("model - item.js - "+doc._id+' has been validated (but not saved yet)');
 });
-postSchema.post('save', function (doc) {
+itemSchema.post('save', function (doc) {
     // this.db.models.Post.emit('created', this);
-    console.log("model - post.js - "+doc._id+' has been saved');
+    console.log("model - item.js - "+doc._id+' has been saved');
 });
-postSchema.post('remove', function (doc) {
-    console.log("model - post.js - "+doc._id+' has been removed');
+itemSchema.post('remove', function (doc) {
+    console.log("model - item.js - "+doc._id+' has been removed');
 });
 
-postSchema.statics.getRandomWorkout = function(options,callback){
+itemSchema.statics.getRandomWorkout = function(options,callback){
     var self = this;
     // queryHelper.getRandomDocument({model:self},callback);
 };
 
-postSchema.statics.getUserWorkouts = function(options,callback){
+itemSchema.statics.getUserWorkouts = function(options,callback){
     this.find({userid:options.user._id}).populate('media').exec(callback);
 };
 
 
-module.exports = postSchema;
+module.exports = itemSchema;
