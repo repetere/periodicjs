@@ -46,7 +46,7 @@ var index = function(req,res,next){
 
 var loadUser = function(req,res,next){
 	var params = req.params,
-			population = 'userassets coverimages userasset coverimage',
+			population = 'userassets coverimages userasset coverimage extensionattributes',
 			docid = params.id;
 
 	req.controllerData = (req.controllerData)?req.controllerData:{};

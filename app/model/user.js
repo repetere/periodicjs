@@ -194,6 +194,16 @@ userSchema.statics.validApiKey = function(userid, apikey, callback) {
     });
 };
 
+userSchema.statics.hasPrivilege = function(user,privilege){
+    var hasPrivilege = false;
+    if(user.extensionattributes 
+        && user.extensionattributes.user_access_control 
+        && user.extensionattributes.user_access_control.privileges[privilege]){
+        hasPrivilege = true;
+    }
+    return hasPrivilege;
+};
+
 userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
     var bcrypt = require('bcrypt');
     var application_controller = require('../controller/application');
