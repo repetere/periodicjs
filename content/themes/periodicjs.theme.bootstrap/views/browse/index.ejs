@@ -16,11 +16,11 @@
 				} %>
 			</div>
 		<% if(docs && docs.length>0){
-			var fullpost=false;
-			var collectionpost=false;
-			docs.forEach(function(post){%>
+			var fullitem=false;
+			var collectionitem=false;
+			docs.forEach(function(item){%>
 				<div class="col-12">
-          <% include ../shared/partial/_post_micro %>
+          <% include ../shared/partial/_item_micro %>
         </div>
 			<%});
 		}

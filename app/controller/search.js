@@ -7,7 +7,7 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	logger,
-	Post,Collection,User,Contenttype,Category,Tag;
+	Item,Collection,User,Contenttype,Category,Tag;
 
 var results = function(req,res,next){
 	applicationController.getPluginViewDefaultTemplate(
@@ -141,7 +141,7 @@ var browse = function(req,res,next){
 		},
 		searchDocuments:function(callback){
 			applicationController.searchModel({
-				model:Post,
+				model:Item,
 				query:query,
 				sort:sort,
 				limit:limit,
@@ -316,7 +316,7 @@ var controller = function(resources){
 	Category = mongoose.model('Category');
 	Collection = mongoose.model('Collection');
 	Contenttype = mongoose.model('Contenttype');
-	Post = mongoose.model('Post');
+	Item = mongoose.model('Item');
 	Tag = mongoose.model('Tag');
 	User = mongoose.model('User');
 

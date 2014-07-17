@@ -15,7 +15,7 @@ var itemSchema = new Schema({
     },
     entitytype: {
         type: String,
-        "default": "documentpost"
+        "default": "item"
     },
     publishat: {
         type: Date,
@@ -71,8 +71,8 @@ var itemSchema = new Schema({
         type: Boolean,
         "default": false
     },
-    postauthorname: String,
-    originalpost :{
+    itemauthorname: String,
+    originalitem :{
         originalid: String,
         originaldate: Date,
         originaldata: Schema.Types.Mixed
@@ -111,7 +111,7 @@ itemSchema.post('validate', function (doc) {
     console.log("model - item.js - "+doc._id+' has been validated (but not saved yet)');
 });
 itemSchema.post('save', function (doc) {
-    // this.db.models.Post.emit('created', this);
+    // this.db.models.Item.emit('created', this);
     console.log("model - item.js - "+doc._id+' has been saved');
 });
 itemSchema.post('remove', function (doc) {

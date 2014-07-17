@@ -2293,7 +2293,7 @@ var collectionDocsCLick = function(e){
 			.post('/collection/append/'+document.querySelector('input[name=docid]').value)
 			.send({ 
 				_csrf: document.querySelector('input[name=_csrf]').value,
-				posts: {order:10, post:eTarget.getAttribute("data-docid")}
+				items: {order:10, post:eTarget.getAttribute("data-docid")}
 			})
 			.set('Accept', 'application/json')
 			.query({ format: 'json' })
@@ -2355,7 +2355,7 @@ var searchDocs = function(e){
 					ribbonNotification.showRibbon( res.body.data.error,4000,'error');
 				}
 				else{
-					generateSearchResult(res.body.searchdata.posts);
+					generateSearchResult(res.body.searchdata.items);
 				}
 			}
 		});

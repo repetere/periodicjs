@@ -1,0 +1,35 @@
+<div class="_pea-row">
+	<%
+	 if(!collectionitem){%>
+	<div class="_pea-document">
+		<h2>
+		<% if(item.entitytype && item.entitytype==="collection"){%>
+		<a href="/collection/<%= item.name %>">
+		<%}
+		else{%>
+		<a href="/article/<%= item.name %>">
+		<%}%>
+		<%= item.title %></a></h2>
+	<%}
+	else{%>
+	<div class="">
+		<h3><%= item.title %></h3>
+	<%}%>
+	<% 	
+		if(!collectionitem){
+			var metaauthor = item.primaryauthor;
+			var metadate = item.createdat; 
+			}%>
+		<% include _itemmeta %>
+		<%
+	 if(fullitem){%>
+		<div class="_pea-content"><%- item.content %></div>
+	<%}
+	else if(!fullitem && item.contenttypeattributes && item.contenttypeattributes.blog && item.contenttypeattributes.blog.summary){%>
+		<div class="_pea-content"><%- item.contenttypeattributes.blog.summary %></div>
+	<%}
+	else{%>
+		<div class="_pea-content"><%- item.content %></div>
+	<%}%>
+	</div>
+</div>

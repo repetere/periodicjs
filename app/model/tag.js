@@ -56,7 +56,7 @@ tagSchema.post('validate', function (doc) {
     console.log("model - tag.js - "+doc._id+' has been validated (but not saved yet)');
 });
 tagSchema.post('save', function (doc) {
-    // this.db.models.Post.emit('created', this);
+    // this.db.models.Item.emit('created', this);
     console.log("model - tag.js - "+doc._id+' has been saved');
 });
 tagSchema.post('remove', function (doc) {

@@ -3,15 +3,8 @@
     "port": "8786",
     "environment": "development"
   },
-  "cookies": {
-    "cookieParser": "4gzzrxktzdvd9529767mbwisdrvygb9"
-  },
-  "theme": "periodicjs.theme.default",
-  "status": "active",
-  "name": "Periodicjs",
   "sessions": {
     "enabled": true,
-    "type": "mongo"
-  },
-  "crsf": true
+    "type": "default"
+  }
 }

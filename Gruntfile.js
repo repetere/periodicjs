@@ -50,7 +50,22 @@ module.exports = function(grunt) {
         'test/**/*.js',
         'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
         'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
-        'content/extensions/node_modules/periodicjs.ext.admin/index.js'
+        'content/extensions/node_modules/periodicjs.ext.admin/index.js',
+        'content/extensions/node_modules/periodicjs.ext.dbseed/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.dbseed/index.js',
+        'content/extensions/node_modules/periodicjs.ext.default_routes/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.default_routes/index.js',
+        'content/extensions/node_modules/periodicjs.ext.install/resources/*.js',
+        'content/extensions/node_modules/periodicjs.ext.install/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.install/index.js',
+        'content/extensions/node_modules/periodicjs.ext.login/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.login/index.js',
+        'content/extensions/node_modules/periodicjs.ext.mailer/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.mailer/index.js',
+        'content/extensions/node_modules/periodicjs.ext.scheduled_content/index.js',
+        'content/extensions/node_modules/periodicjs.ext.user_access_control/contoller/*.js',
+        'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
+        'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
       ]
     },
     jsdoc : {
@@ -113,7 +128,22 @@ module.exports = function(grunt) {
           'test/**/*.js',
           'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
           'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
-          'content/extensions/node_modules/periodicjs.ext.admin/index.js'
+          'content/extensions/node_modules/periodicjs.ext.admin/index.js',
+          'content/extensions/node_modules/periodicjs.ext.dbseed/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.dbseed/index.js',
+          'content/extensions/node_modules/periodicjs.ext.default_routes/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.default_routes/index.js',
+          'content/extensions/node_modules/periodicjs.ext.install/resources/*.js',
+          'content/extensions/node_modules/periodicjs.ext.install/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.install/index.js',
+          'content/extensions/node_modules/periodicjs.ext.login/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.login/index.js',
+          'content/extensions/node_modules/periodicjs.ext.mailer/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.mailer/index.js',
+          'content/extensions/node_modules/periodicjs.ext.scheduled_content/index.js',
+          'content/extensions/node_modules/periodicjs.ext.user_access_control/contoller/*.js',
+          'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
+          'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
         ],
         tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
         options: {

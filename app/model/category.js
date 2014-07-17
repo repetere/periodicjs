@@ -56,7 +56,7 @@ categorySchema.post('validate', function (doc) {
     console.log("model - category.js - "+doc._id+' has been validated (but not saved yet)');
 });
 categorySchema.post('save', function (doc) {
-    // this.db.models.Post.emit('created', this);
+    // this.db.models.Item.emit('created', this);
     console.log("model - category.js - "+doc._id+' has been saved');
 });
 categorySchema.post('remove', function (doc) {

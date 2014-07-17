@@ -16,7 +16,7 @@ module.exports = function(options){
 		mongoose.set('debug', true);
 	}
 	mongoose.model('User',userSchema);
-	mongoose.model('Post',itemSchema);
+	mongoose.model('Item',itemSchema);
 	mongoose.model('Collection',collectionSchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);

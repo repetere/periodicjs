@@ -43,7 +43,7 @@ contenttypeSchema.post('validate', function (doc) {
     console.log("model - contenttype.js - "+doc._id+' has been validated (but not saved yet)');
 });
 contenttypeSchema.post('save', function (doc) {
-    // this.db.models.Post.emit('created', this);
+    // this.db.models.Item.emit('created', this);
     console.log("model - contenttype.js - "+doc._id+' has been saved');
 });
 contenttypeSchema.post('remove', function (doc) {

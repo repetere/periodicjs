@@ -9,7 +9,7 @@ var path = require('path'),
 	logger;
 
 var index = function(req,res,next){
-	var recentposts = req.controllerData.posts || {};
+	var recentitems = req.controllerData.items || {};
 	applicationController.getPluginViewDefaultTemplate(
 		{
 			viewname:'home/index',
@@ -24,7 +24,7 @@ var index = function(req,res,next){
 					pagedata: {
 						title:"homepage"
 					},
-					posts: recentposts,
+					items: recentitems,
 					user:req.user
 				}
 			});

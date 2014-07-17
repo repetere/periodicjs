@@ -49,12 +49,12 @@ var collectionSchema = new Schema({
         "default": Date.now,
         index: true
     },
-    posts :[{
+    items:[{
         order: Number,
         additionalattributes: Schema.Types.Mixed,
-        post:{
+        item:{
 	        type:ObjectId,
-	        ref:"Post"
+	        ref:"Item"
 	    }
     }],
     contenttypes: [{
@@ -91,7 +91,7 @@ collectionSchema.post('validate', function (doc) {
     console.log("model - collection.js - "+doc._id+' has been validated (but not saved yet)');
 });
 collectionSchema.post('save', function (doc) {
-    // this.db.models.Post.emit('created', this);
+    // this.db.models.Item.emit('created', this);
     console.log("model - collection.js - "+doc._id+' has been saved');
 });
 collectionSchema.post('remove', function (doc) {

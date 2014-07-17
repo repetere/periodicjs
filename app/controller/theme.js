@@ -10,7 +10,7 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	logger,
-	User, Category, Post, Tag, Asset, Collection, Contenttype;
+	User, Category, Item, Tag, Asset, Collection, Contenttype;
 
 var customLayout = function(options){
 	var req = options.req,
@@ -20,7 +20,7 @@ var customLayout = function(options){
 			layoutdata = options.layoutdata,
 			pagetitle = (options.pagetitle) ? options.pagetitle : 'Periodic';
 
-	Post = mongoose.model('Post');
+	Item = mongoose.model('Item');
 	User = mongoose.model('User');
 	Category = mongoose.model('Category');
 	Tag = mongoose.model('Tag');
@@ -32,8 +32,8 @@ var customLayout = function(options){
 		switch(modelname){
 			case 'Category':
 				return Category;
-			case 'Post':
-				return Post;
+			case 'Item':
+				return Item;
 			case 'Tag':
 				return Tag;
 			case 'User':

@@ -6,13 +6,13 @@ var path = require('path'),
 	applicationController,
 	appSettings,
 	mongoose,
-	Post,
+	Item,
 	logger;
 
 var show = function(req,res,next){
 	applicationController.getPluginViewDefaultTemplate(
 		{
-			viewname:'documentpost/show',
+			viewname:'item/show',
 			themefileext:appSettings.templatefileextension
 		},
 		function(err,templatepath){
@@ -22,9 +22,9 @@ var show = function(req,res,next){
 				renderView:templatepath,
 				responseData:{
 					pagedata: {
-						title:req.controllerData.post.title
+						title:req.controllerData.item.title
 					},
-					post:req.controllerData.post,
+					item:req.controllerData.item,
 					user:req.user
 				}
 			});
@@ -35,7 +35,7 @@ var show = function(req,res,next){
 var index = function(req,res,next){
 	applicationController.getPluginViewDefaultTemplate(
 		{
-			viewname:'documentpost/index',
+			viewname:'item/index',
 			themefileext:appSettings.templatefileextension
 		},
 		function(err,templatepath){
@@ -47,7 +47,7 @@ var index = function(req,res,next){
 					pagedata: {
 						title:'Articles'
 					},
-					posts:req.controllerData.posts,
+					items:req.controllerData.items,
 					user:req.user
 				}
 			});
@@ -56,46 +56,46 @@ var index = function(req,res,next){
 };
 
 var create = function(req, res, next) {
-	var newpost = applicationController.removeEmptyObjectValues(req.body);
-			newpost.name = applicationController.makeNiceName(newpost.title);
-			newpost.postauthorname = req.user.username;
-			newpost.primaryauthor = req.user._id;
-			newpost.authors = [req.user._id];
-			if(newpost.date && newpost.time){
-				newpost.publishat = new Date(moment(newpost.date+' '+newpost.time).format());
+	var newitem = applicationController.removeEmptyObjectValues(req.body);
+			newitem.name = applicationController.makeNiceName(newitem.title);
+			newitem.itemauthorname = req.user.username;
+			newitem.primaryauthor = req.user._id;
+			newitem.authors = [req.user._id];
+			if(newitem.date && newitem.time){
+				newitem.publishat = new Date(moment(newitem.date+' '+newitem.time).format());
 			}
 
-	// console.log(newpost);
+	// console.log(newitem);
 	applicationController.createModel({
-	  model:Post,
-	  newdoc:newpost,
+	  model:Item,
+	  newdoc:newitem,
 	  res:res,
     req:req,
-	  successredirect:'/p-admin/post/edit/',
+	  successredirect:'/p-admin/item/edit/',
 	  appendid:true
 	});
 };
 
 var update = function(req, res, next) {
-	var updatepost = applicationController.removeEmptyObjectValues(req.body);
+	var updateitem = applicationController.removeEmptyObjectValues(req.body);
 
-	updatepost.name = applicationController.makeNiceName(updatepost.title);
-	if(!updatepost.primaryasset && updatepost.assets && updatepost.assets.length>0){
-		updatepost.primaryasset = updatepost.assets[0];
+	updateitem.name = applicationController.makeNiceName(updateitem.title);
+	if(!updateitem.primaryasset && updateitem.assets && updateitem.assets.length>0){
+		updateitem.primaryasset = updateitem.assets[0];
 	}
-	if(updatepost.date && updatepost.time){
-		updatepost.publishat = new Date(moment(updatepost.date+' '+updatepost.time).format());
+	if(updateitem.date && updateitem.time){
+		updateitem.publishat = new Date(moment(updateitem.date+' '+updateitem.time).format());
 	}
 
 	applicationController.updateModel({
-		model:Post,
-		id:updatepost.docid,
-		updatedoc:updatepost,
+		model:Item,
+		id:updateitem.docid,
+		updatedoc:updateitem,
 		saverevision:true,
 		population:'contenttypes',
 		res:res,
 		  req:req,
-		successredirect:'/p-admin/post/edit/',
+		successredirect:'/p-admin/item/edit/',
 		appendid:true
 	});
 };
@@ -110,7 +110,7 @@ var loadItem = function(req,res,next){
 	applicationController.loadModel({
 		docid:docid,
 		population:population,
-		model:Post,
+		model:Item,
 		callback:function(err,doc){
 			if(err){
 				applicationController.handleDocumentQueryErrorResponse({
@@ -120,7 +120,7 @@ var loadItem = function(req,res,next){
 				});
 			}
 			else if(doc){
-				req.controllerData.post = doc;
+				req.controllerData.item = doc;
 				next();
 			}
 			else{
@@ -142,7 +142,7 @@ var loadFullItem = function(req,res,next){
 
 	applicationController.loadModel({
 		docid:docid,
-		model:Post,
+		model:Item,
 		population:'tags collections contenttypes categories assets primaryasset authors primaryauthor',
 		callback:function(err,doc){
 			if(err){
@@ -153,7 +153,7 @@ var loadFullItem = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.post = doc;
+				req.controllerData.item = doc;
 				next();
 			}
 		}
@@ -184,7 +184,7 @@ var loadItems = function(req,res,next){
 	}
 
 	applicationController.searchModel({
-		model:Post,
+		model:Item,
 		query:query,
 		sort:sort,
 		limit:limit,
@@ -199,7 +199,7 @@ var loadItems = function(req,res,next){
 				});
 			}
 			else{
-				req.controllerData.posts = documents;
+				req.controllerData.items = documents;
 				next();
 			}
 		}
@@ -211,7 +211,7 @@ var controller = function(resources){
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	Post = mongoose.model('Post');
+	Item = mongoose.model('Item');
 
 	return{
 		show:show,

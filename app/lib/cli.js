@@ -70,8 +70,8 @@ var cli = function(argv){
 		}
 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
-		// var Post = mongoose.model('Post');
-		// Post.find({}).limit(2).exec(function(err,posts){ if(err){ console.error(err); } else{ console.info(posts); } });
+		// var Item = mongoose.model('Item');
+		// Item.find({}).limit(2).exec(function(err,items){ if(err){ console.error(err); } else{ console.info(items); } });
 	};
 
 	var init = function(argv){

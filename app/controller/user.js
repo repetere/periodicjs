@@ -33,13 +33,13 @@ var show = function(req,res,next){
 
 var index = function(req,res,next){
 	console.log('index list');
-	User.find({ title: /title/ }).exec(function(err,posts){
+	User.find({ title: /title/ }).exec(function(err,items){
 		console.log("model search");
 		if(err){
 			res.send(err);
 		}
 		else{
-			res.send(posts);
+			res.send(items);
 		}
 	});
 };

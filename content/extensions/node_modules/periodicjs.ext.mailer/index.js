@@ -1,5 +1,4 @@
-// var path = require('path'),
-// 	passport = require('passport');
+'use strict';
 
 module.exports = function(periodic){
 	// express,app,logger,config,db,mongoose
