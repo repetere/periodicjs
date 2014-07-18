@@ -27,9 +27,9 @@ userprivilegeSchema.pre('save',function(next,done){
     if(this.name !== undefined && this.name.length <4){
         done(new Error('User privilege title is too short'));
     }
-    else if(this.name !== undefined && badname.test(this.name) ){
-        done(new Error('User privilege title('+this.name+') is a reserved word invalid'));
-    }
+    // else if(this.name !== undefined && badname.test(this.name) ){
+    //     done(new Error('User privilege title('+this.name+') is a reserved word invalid'));
+    // }
     else{
         next();
     }

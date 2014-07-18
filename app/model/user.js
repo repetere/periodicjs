@@ -89,6 +89,10 @@ var userSchema = new Schema({
         type:ObjectId,
         ref:"Asset"
     },
+    usergroups: [{
+        type: ObjectId,
+        ref: "Usergroup"
+    }],
     apikey: String,
     twitterAccessToken: String,
     twitterAccessTokenSecret: String,
@@ -196,9 +200,7 @@ userSchema.statics.validApiKey = function(userid, apikey, callback) {
 
 userSchema.statics.hasPrivilege = function(user,privilege){
     var hasPrivilege = false;
-    if(user.extensionattributes 
-        && user.extensionattributes.user_access_control 
-        && user.extensionattributes.user_access_control.privileges[privilege]){
+    if(user.extensionattributes && user.extensionattributes.user_access_control && user.extensionattributes.user_access_control.privileges[privilege]){
         hasPrivilege = true;
     }
     return hasPrivilege;
