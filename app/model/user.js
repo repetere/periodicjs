@@ -89,9 +89,9 @@ var userSchema = new Schema({
         type:ObjectId,
         ref:"Asset"
     },
-    usergroups: [{
+    userroles: [{
         type: ObjectId,
-        ref: "Usergroup"
+        ref: "Userrole"
     }],
     apikey: String,
     twitterAccessToken: String,
