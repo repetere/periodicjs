@@ -471,37 +471,50 @@ var applicationController = function(resources){
 	this.handleDocumentQueryRender = function(options){
 		var res = options.res,
 				req = options.req,
+				redirecturl = options.redirecturl,
+				err = options.err,
 				callback = options.callback,
 				responseData = options.responseData;
 
-		responseData.periodic = responseData.periodic || {};
-		responseData.periodic.version = appSettings.version;
-		responseData.periodic.name = appSettings.name;
-		responseData.request = {
-			query : req.query,
-			params : req.params,
-			baseurl : req.baseUrl,
-			originalurl : req.originalUrl,
-			parsed : req._parsedUrl,
-		};
-
-		responseData.flash_messages = req.flash();
-		if(req.query.format === "json" || req.params.ext === "json") {
-			res.send(responseData);
-		}
-		else if(req.query.callback) {
-			res.jsonp(responseData);
-		}
-		else if(options.redirecturl) {
-			res.redirect(options.redirecturl);
+		if(err){
+			this.handleDocumentQueryErrorResponse({
+				res:res,
+				req:req,
+				err:err,
+				callback:callback,
+				redirecturl:redirecturl
+			});
 		}
 		else{
-			res.render(options.renderView,responseData);
+			responseData.periodic = responseData.periodic || {};
+			responseData.periodic.version = appSettings.version;
+			responseData.periodic.name = appSettings.name;
+			responseData.request = {
+				query : req.query,
+				params : req.params,
+				baseurl : req.baseUrl,
+				originalurl : req.originalUrl,
+				parsed : req._parsedUrl,
+			};
+
+			responseData.flash_messages = req.flash();
+			if(req.query.format === "json" || req.params.ext === "json") {
+				res.send(responseData);
+			}
+			else if(req.query.callback) {
+				res.jsonp(responseData);
+			}
+			else if(options.redirecturl) {
+				res.redirect(options.redirecturl);
+			}
+			else{
+				res.render(options.renderView,responseData);
+			}
 		}
 		if(callback){
 			callback();
 		}
-	};
+	}.bind(this);
 
 	this.handleDocumentQueryErrorResponse = function(options){
 		var err = options.err,

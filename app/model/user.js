@@ -199,11 +199,8 @@ userSchema.statics.validApiKey = function(userid, apikey, callback) {
 };
 
 userSchema.statics.hasPrivilege = function(user,privilege){
-    var hasPrivilege = false;
-    if(user.extensionattributes && user.extensionattributes.user_access_control && user.extensionattributes.user_access_control.privileges[privilege]){
-        hasPrivilege = true;
-    }
-    return hasPrivilege;
+    // console.log(" hasPrivilege user, privilege",user,privilege);
+    return user.accounttype==='admin' || user.privileges[privilege];
 };
 
 userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
