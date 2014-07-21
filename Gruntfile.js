@@ -5,6 +5,7 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 'use strict';
+var path = require('path');
 
 module.exports = function(grunt) {
 	grunt.initConfig({
@@ -56,25 +57,26 @@ module.exports = function(grunt) {
         'test/**/*.js',
         'package.json',
         'config/**/*.js',
-        '!content/extensions/node_modules/**/node_modules/**/*.js',
-        'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
-        'content/extensions/node_modules/periodicjs.ext.admin/index.js',
-        'content/extensions/node_modules/periodicjs.ext.dbseed/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.dbseed/index.js',
-        'content/extensions/node_modules/periodicjs.ext.default_routes/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.default_routes/index.js',
-        'content/extensions/node_modules/periodicjs.ext.install/resources/*.js',
-        'content/extensions/node_modules/periodicjs.ext.install/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.install/index.js',
-        'content/extensions/node_modules/periodicjs.ext.login/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.login/index.js',
-        'content/extensions/node_modules/periodicjs.ext.mailer/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.mailer/index.js',
-        'content/extensions/node_modules/periodicjs.ext.scheduled_content/index.js',
-        'content/extensions/node_modules/periodicjs.ext.user_access_control/contoller/*.js',
-        'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
-        'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
+        'content/extensions/node_modules/**/index.js',
+        'content/extensions/node_modules/**/contoller/*.js',
+        'content/extensions/node_modules/**/resources/*.js',
+        '!content/extensions/node_modules/**/node_modules/**/*.js'
+        // 'content/extensions/node_modules/periodicjs.ext.admin/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.dbseed/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.dbseed/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.default_routes/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.default_routes/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.install/resources/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.install/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.install/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.login/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.login/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.mailer/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.mailer/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.scheduled_content/index.js',
+        // 'content/extensions/node_modules/periodicjs.ext.user_access_control/contoller/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
+        // 'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
       ]
 		},
 		jsdoc: {
@@ -88,9 +90,20 @@ module.exports = function(grunt) {
 		},
 		browserify: {
 			dist: {
-				files: {
-					'public/scripts/index.js': ['client/scripts/**/*.js'],
-				},
+				files: [{
+					expand: true,
+					cwd: 'content/extensions/node_modules',
+					src: ['**/resources/js/*_src.js'],
+					dest: 'public/extensions',
+					rename: function(dest, src) {
+						var finallocation = path.join(dest, src);
+						finallocation = finallocation.replace("_src", "");
+						finallocation = finallocation.replace("resources", "");
+						finallocation = path.resolve(finallocation);
+						console.log("dest", dest, "src", src, "finallocation", finallocation);
+						return finallocation;
+					}
+        }],
 				options: {
 					// transform: ['coffeeify']
 				}
@@ -167,5 +180,5 @@ module.exports = function(grunt) {
 	grunt.registerTask('packagejs', 'newer:browserify');
 	grunt.registerTask('minjs', 'newer:uglify');
 	grunt.registerTask('css', 'newer:less');
-	grunt.registerTask('doc', 'jsdoc');
+	grunt.registerTask('doc', 'newer:jsdoc');
 };
