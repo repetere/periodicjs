@@ -7,10 +7,9 @@
 
 var argv = require('optimist').argv;
 
-if(argv.cli){
+if(argv.cli) {
 	var cli = require('./app/lib/cli')(argv);
-}
-else{
+} else {
 	var periodic = require('./app/lib/periodic');
 	periodic.app.listen(periodic.port);
 }

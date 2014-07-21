@@ -9,30 +9,29 @@ var path = require('path'),
 	logger;
 
 var create = function(req, res, next) {
-	if(req.controllerData.contenttype){
+	if(req.controllerData.contenttype) {
 		applicationController.handleDocumentQueryRender({
-			req:req,
-			res:res,
-			responseData:{
-				result:"success",
-				data:{
-					doc:req.controllerData.contenttype
+			req: req,
+			res: res,
+			responseData: {
+				result: "success",
+				data: {
+					doc: req.controllerData.contenttype
 				}
 			}
 		});
-	}
-	else{
+	} else {
 		var newcontenttype = applicationController.removeEmptyObjectValues(req.body);
 		newcontenttype.name = applicationController.makeNiceName(newcontenttype.title);
 		newcontenttype.author = req.user._id;
 
-	    applicationController.createModel({
-		    model:Contenttype,
-		    newdoc:newcontenttype,
-		    res:res,
-	        req:req,
-		    successredirect:'/p-admin/contenttype/edit/',
-		    appendid:true
+		applicationController.createModel({
+			model: Contenttype,
+			newdoc: newcontenttype,
+			res: res,
+			req: req,
+			successredirect: '/p-admin/contenttype/edit/',
+			appendid: true
 		});
 	}
 };
@@ -40,42 +39,46 @@ var create = function(req, res, next) {
 var append = function(req, res, next) {
 	var newattribute = applicationController.removeEmptyObjectValues(req.body);
 	newattribute.name = applicationController.makeNiceAttribute(newattribute.title);
-	var objectToModify ={"attributes":newattribute};
+	var objectToModify = {
+		"attributes": newattribute
+	};
 
 	applicationController.updateModel({
-		model:Contenttype,
-		id:req.controllerData.contenttype._id,
-		updatedoc:objectToModify,
-		saverevision:true,
-		res:res,
-		req:req,
-		appendArray : true,
-		successredirect:'/p-admin/contenttype/',
-		appendid:true
+		model: Contenttype,
+		id: req.controllerData.contenttype._id,
+		updatedoc: objectToModify,
+		saverevision: true,
+		res: res,
+		req: req,
+		appendArray: true,
+		successredirect: '/p-admin/contenttype/',
+		appendid: true
 	});
 };
 
 var removeitem = function(req, res, next) {
 	var removeAttribute = applicationController.removeEmptyObjectValues(req.body),
-		objectToModify ={"attributes":removeAttribute};
+		objectToModify = {
+			"attributes": removeAttribute
+		};
 
 	delete removeAttribute._csrf;
 	console.log(removeAttribute);
 
 	applicationController.updateModel({
-		model:Contenttype,
-		id:req.controllerData.contenttype._id,
-		updatedoc:objectToModify,
-		saverevision:true,
-		res:res,
-		req:req,
-		removeFromArray : true,
-		successredirect:'/p-admin/contenttype/',
-		appendid:true
+		model: Contenttype,
+		id: req.controllerData.contenttype._id,
+		updatedoc: objectToModify,
+		saverevision: true,
+		res: res,
+		req: req,
+		removeFromArray: true,
+		successredirect: '/p-admin/contenttype/',
+		appendid: true
 	});
 };
 
-var loadContenttypes = function(req,res,next){
+var loadContenttypes = function(req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -84,36 +87,34 @@ var loadContenttypes = function(req,res,next){
 		population = 'author',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
-	if(req.query.search===undefined || req.query.search.length<1){
-		query={};
-	}
-	else{
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
+	if(req.query.search === undefined || req.query.search.length < 1) {
+		query = {};
+	} else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-				}, {
+      }, {
 				'name': searchRegEx,
-			}]
+      }]
 		};
 	}
 
 	applicationController.searchModel({
-		model:Contenttype,
-		query:query,
-		sort:sort,
-		limit:limit,
-		offset:offset,
-		population:population,
-		callback:function(err,documents){
-			if(err){
+		model: Contenttype,
+		query: query,
+		sort: sort,
+		limit: limit,
+		offset: offset,
+		population: population,
+		callback: function(err, documents) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else{
+			} else {
 				req.controllerData.contenttypes = documents;
 				next();
 			}
@@ -121,25 +122,24 @@ var loadContenttypes = function(req,res,next){
 	});
 };
 
-var loadContenttype = function(req,res,next){
+var loadContenttype = function(req, res, next) {
 	var params = req.params,
 		docid = params.id;
-		console.log("docid",docid);
+	console.log("docid", docid);
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	applicationController.loadModel({
-		docid:docid,
-		model:Contenttype,
-		callback:function(err,doc){
-			if(err){
+		docid: docid,
+		model: Contenttype,
+		callback: function(err, doc) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else{
+			} else {
 				req.controllerData.contenttype = doc;
 				next();
 			}
@@ -147,22 +147,21 @@ var loadContenttype = function(req,res,next){
 	});
 };
 
-var searchResults = function(req,res,next){
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'search/index',
-			themefileext:appSettings.templatefileextension
+var searchResults = function(req, res, next) {
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function(err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"Content Type Search Results"
+						title: "Content Type Search Results"
 					},
-					contenttypes:req.controllerData.contenttypes,
+					contenttypes: req.controllerData.contenttypes,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -170,20 +169,20 @@ var searchResults = function(req,res,next){
 	);
 };
 
-var controller = function(resources){
+var controller = function(resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
 	Contenttype = mongoose.model('Contenttype');
 
-	return{
-		loadContenttypes:loadContenttypes,
-		loadContenttype:loadContenttype,
-		create:create,
-		append:append,
-		removeitem:removeitem,
-		searchResults:searchResults
+	return {
+		loadContenttypes: loadContenttypes,
+		loadContenttype: loadContenttype,
+		create: create,
+		append: append,
+		removeitem: removeitem,
+		searchResults: searchResults
 	};
 };
 

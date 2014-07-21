@@ -7,47 +7,56 @@
 'use strict';
 
 module.exports = function(grunt) {
-  grunt.initConfig({
-    jsbeautifier: {
-      files: ["<%= jshint.all %>"],
-      options: {
-        "indent_size": 2,
-        "indent_char": " ",
-        "indent_level": 0,
-        "indent_with_tabs": false,
-        "preserve_newlines": true,
-        "max_preserve_newlines": 10,
-        "brace_style": "collapse",
-        "keep_array_indentation": false,
-        "keep_function_indentation": false,
-        "space_before_conditional": true,
-        "eval_code": false,
-        "indent_case": false,
-        "unescape_strings": false,
-        "space_after_anon_function": true
-      }
-    },
-    simplemocha: {
-      options: {
-        globals: ['should','navigator'],
-        timeout: 3000,
-        ignoreLeaks: false,
-        ui: 'bdd',
-        reporter: 'spec'
-      },
-      all: {
-        src: 'test/**/*.js'
-      }
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
+	grunt.initConfig({
+		jsbeautifier: {
+			files: ["<%= jshint.all %>"],
+			options: {
+				js: {
+					braceStyle: "collapse",
+					breakChainedMethods: false,
+					// e4x: false,
+					// evalCode: false,
+					indentChar: " ",
+					// indentLevel: 0,
+					indentSize: 2,
+					indentWithTabs: true,
+					// jslintHappy: false,
+					keepArrayIndentation: true,
+					keepFunctionIndentation: true,
+					maxPreserveNewlines: 10,
+					preserveNewlines: true,
+					spaceBeforeConditional: false,
+					spaceInParen: false,
+					// unescapeStrings: false,
+					// wrapLineLength: 0
+				}
+			},
+		},
+		simplemocha: {
+			options: {
+				globals: ['should', 'navigator'],
+				timeout: 3000,
+				ignoreLeaks: false,
+				ui: 'bdd',
+				reporter: 'spec'
+			},
+			all: {
+				src: 'test/**/*.js'
+			}
+		},
+		jshint: {
+			options: {
+				jshintrc: '.jshintrc'
+			},
+			all: [
         'Gruntfile.js',
         'index.js',
-        'app/**/*.js','!app/doc/**/*.js',
+        'app/**/*.js',
+        '!app/doc/**/*.js',
         'test/**/*.js',
+        'package.json',
+        'config/**/*.js',
+        '!content/extensions/node_modules/**/node_modules/**/*.js',
         'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
         'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
         'content/extensions/node_modules/periodicjs.ext.admin/index.js',
@@ -67,106 +76,96 @@ module.exports = function(grunt) {
         'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
         'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
       ]
-    },
-    jsdoc : {
-        dist : {
-            src: ['app/lib/*.js', 'test/*.js'],
-            options: {
-                destination: 'app/doc/html',
-                configure: 'app/config/jsdoc.json'
-            }
-        }
-    },
-    browserify: {
-      dist: {
-        files: {
-          'public/scripts/index.js': ['client/scripts/**/*.js'],
-        },
-        options: {
-          // transform: ['coffeeify']
-        }
-      }
-    },
-    uglify: {
-      my_target: {
-        options: {
-          sourceMap: true,
-          sourceMapName: 'public/scripts/index-sourcemap.map'
-        },
-        files: {
-          'public/scripts/index.min.js': ['public/scripts/index.js']
-        }
-      }
-    },
-    less: {
-      development: {
-        options: {
-          paths: ["client/stylesheets"],
-          yuicompress: true
-        },
-        files: {
-          "public/styles/manuscript.css": ['client/stylesheets/**/*.less'],
-        }
-      }
-    },
-    cssmin: {
-      combine: {
-        files: {
-          'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
-        }
-      }
-    },
-    watch: {
-      scripts: {
-        // files: '**/*.js',
-        files: [
-          'Gruntfile.js',
-          'package.json',
-          'config/**/*.js',
-          'index.js',
-          'app/**/*.js',
-          'test/**/*.js',
-          'content/extensions/node_modules/periodicjs.ext.admin/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.admin/resources/*.js',
-          'content/extensions/node_modules/periodicjs.ext.admin/index.js',
-          'content/extensions/node_modules/periodicjs.ext.dbseed/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.dbseed/index.js',
-          'content/extensions/node_modules/periodicjs.ext.default_routes/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.default_routes/index.js',
-          'content/extensions/node_modules/periodicjs.ext.install/resources/*.js',
-          'content/extensions/node_modules/periodicjs.ext.install/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.install/index.js',
-          'content/extensions/node_modules/periodicjs.ext.login/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.login/index.js',
-          'content/extensions/node_modules/periodicjs.ext.mailer/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.mailer/index.js',
-          'content/extensions/node_modules/periodicjs.ext.scheduled_content/index.js',
-          'content/extensions/node_modules/periodicjs.ext.user_access_control/contoller/*.js',
-          'content/extensions/node_modules/periodicjs.ext.user_access_control/model/*.js',
-          'content/extensions/node_modules/periodicjs.ext.user_access_control/index.js'
-        ],
-        tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
-        options: {
-          interrupt: true
-        }
-      }
-      // files: "./assets/stylesheets/less/*",
-      // tasks: ["less"]
-    }
-  });
+		},
+		jsdoc: {
+			dist: {
+				src: ['app/lib/*.js', 'test/*.js'],
+				options: {
+					destination: 'app/doc/html',
+					configure: 'app/config/jsdoc.json'
+				}
+			}
+		},
+		browserify: {
+			dist: {
+				files: {
+					'public/scripts/index.js': ['client/scripts/**/*.js'],
+				},
+				options: {
+					// transform: ['coffeeify']
+				}
+			}
+		},
+		uglify: {
+			my_target: {
+				options: {
+					sourceMap: true,
+					sourceMapName: 'public/scripts/index-sourcemap.map'
+				},
+				files: {
+					'public/scripts/index.min.js': ['public/scripts/index.js']
+				}
+			}
+		},
+		less: {
+			development: {
+				options: {
+					sourceMap: true,
+					yuicompress: true,
+					compress: true
+				},
+				files: {
+					"public/styles/manuscript.css": ['client/stylesheets/**/*.less'],
+				}
+			}
+		},
+		cssmin: {
+			combine: {
+				files: {
+					'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
+				}
+			}
+		},
+		// imagemin: {                          // Task
+		//   dynamic: {                         // Another target
+		//     options: {                       // Target options
+		//       optimizationLevel: 7
+		//     },
+		//     files: [{
+		//       expand: true,                  // Enable dynamic expansion
+		//       cwd: 'src/',                   // Src matches are relative to this path
+		//       src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
+		//       dest: 'dist/'                  // Destination path prefix
+		//     }]
+		//   }
+		// },
+		watch: {
+			scripts: {
+				files: ["<%= jshint.all %>"],
+				tasks: ['lint', 'packagejs', 'doc', 'css', 'test', 'less'],
+				options: {
+					interrupt: true
+				}
+			}
+		}
+	});
 
-  grunt.loadNpmTasks('grunt-simple-mocha');
-  grunt.loadNpmTasks('grunt-jsbeautifier');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-simple-mocha');
+	grunt.loadNpmTasks('grunt-jsbeautifier');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-newer');
 
-  grunt.registerTask('default', ['lint','browserify','doc','cssmin','uglify', 'test','less']);
-  grunt.registerTask('lint', 'jshint');
-  grunt.registerTask('doc','jsdoc');
-  grunt.registerTask('test', 'simplemocha');
+	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
+	grunt.registerTask('lint', ['newer:jshint', 'newer:jsbeautifier']);
+	grunt.registerTask('test', 'newer:simplemocha');
+	grunt.registerTask('packagejs', 'newer:browserify');
+	grunt.registerTask('minjs', 'newer:uglify');
+	grunt.registerTask('css', 'newer:less');
+	grunt.registerTask('doc', 'jsdoc');
 };

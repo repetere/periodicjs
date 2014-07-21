@@ -8,22 +8,21 @@ var path = require('path'),
 	User,
 	logger;
 
-var show = function(req,res,next){
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'author/show',
-			themefileext:appSettings.templatefileextension
+var show = function(req, res, next) {
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'author/show',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function(err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:req.controllerData.user.username
+						title: req.controllerData.user.username
 					},
-					author:applicationController.removePrivateInfo(req.controllerData.user),
+					author: applicationController.removePrivateInfo(req.controllerData.user),
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -31,54 +30,53 @@ var show = function(req,res,next){
 	);
 };
 
-var index = function(req,res,next){
+var index = function(req, res, next) {
 	console.log('index list');
-	User.find({ title: /title/ }).exec(function(err,items){
+	User.find({
+		title: /title/
+	}).exec(function(err, items) {
 		console.log("model search");
-		if(err){
+		if(err) {
 			res.send(err);
-		}
-		else{
+		} else {
 			res.send(items);
 		}
 	});
 };
 
-var loadUser = function(req,res,next){
+var loadUser = function(req, res, next) {
 	var params = req.params,
-			population = 'userassets coverimages userasset coverimage extensionattributes',
-			docid = params.id;
+		population = 'userassets coverimages userasset coverimage extensionattributes',
+		docid = params.id;
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	applicationController.loadModel({
-		docid:docid,
-		model:User,
-		searchusername:true,
-		callback:function(err,doc){
-			if(err){
+		docid: docid,
+		model: User,
+		searchusername: true,
+		callback: function(err, doc) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else if(doc){
+			} else if(doc) {
 				req.controllerData.user = doc;
 				next();
-			}
-			else{
+			} else {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:new Error("invalid user request"),
-					res:res,
-					req:req
+					err: new Error("invalid user request"),
+					res: res,
+					req: req
 				});
 			}
 		}
 	});
 };
 
-var loadUsers = function(req,res,next){
+var loadUsers = function(req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -87,36 +85,34 @@ var loadUsers = function(req,res,next){
 		// population = 'contenttypes collections authors primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
-	if(req.query.search===undefined || req.query.search.length<1){
-		query={};
-	}
-	else{
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
+	if(req.query.search === undefined || req.query.search.length < 1) {
+		query = {};
+	} else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-				}, {
+      }, {
 				'name': searchRegEx,
-			}]
+      }]
 		};
 	}
 
 	applicationController.searchModel({
-		model:User,
-		query:query,
-		sort:sort,
-		limit:limit,
-		offset:offset,
+		model: User,
+		query: query,
+		sort: sort,
+		limit: limit,
+		offset: offset,
 		// population:population,
-		callback:function(err,documents){
-			if(err){
+		callback: function(err, documents) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else{
+			} else {
 				req.controllerData.users = documents;
 				next();
 			}
@@ -124,22 +120,21 @@ var loadUsers = function(req,res,next){
 	});
 };
 
-var searchResults = function(req,res,next){
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'search/index',
-			themefileext:appSettings.templatefileextension
+var searchResults = function(req, res, next) {
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function(err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"User Search Results"
+						title: "User Search Results"
 					},
-					users:req.controllerData.users,
+					users: req.controllerData.users,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -147,19 +142,19 @@ var searchResults = function(req,res,next){
 	);
 };
 
-var controller = function(resources){
+var controller = function(resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
 	User = mongoose.model('User');
 
-	return{
-		show:show,
-		index:index,
-		loadUser:loadUser,
-		loadUsers:loadUsers,
-		searchResults:searchResults
+	return {
+		show: show,
+		index: index,
+		loadUser: loadUser,
+		loadUsers: loadUsers,
+		searchResults: searchResults
 	};
 };
 

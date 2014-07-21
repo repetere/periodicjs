@@ -9,35 +9,34 @@ var path = require('path'),
 	logger;
 
 var create = function(req, res, next) {
-	if(req.controllerData.category){
+	if(req.controllerData.category) {
 		applicationController.handleDocumentQueryRender({
-			req:req,
-			res:res,
-			responseData:{
-				result:"success",
-				data:{
-					doc:req.controllerData.category
+			req: req,
+			res: res,
+			responseData: {
+				result: "success",
+				data: {
+					doc: req.controllerData.category
 				}
 			}
 		});
-	}
-	else{
+	} else {
 		var newcategory = applicationController.removeEmptyObjectValues(req.body);
 		newcategory.name = applicationController.makeNiceName(newcategory.title);
 		newcategory.author = req.user._id;
 
-	    applicationController.createModel({
-		    model:Category,
-		    newdoc:newcategory,
-		    res:res,
-	        req:req,
-		    successredirect:'/p-admin/category/edit/',
-		    appendid:true
+		applicationController.createModel({
+			model: Category,
+			newdoc: newcategory,
+			res: res,
+			req: req,
+			successredirect: '/p-admin/category/edit/',
+			appendid: true
 		});
 	}
 };
 
-var loadCategories = function(req,res,next){
+var loadCategories = function(req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -46,36 +45,34 @@ var loadCategories = function(req,res,next){
 		// population = 'categories collections authors primaryauthor',
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
-	if(req.query.search===undefined || req.query.search.length<1){
-		query={};
-	}
-	else{
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
+	if(req.query.search === undefined || req.query.search.length < 1) {
+		query = {};
+	} else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-				}, {
+      }, {
 				'name': searchRegEx,
-			}]
+      }]
 		};
 	}
 
 	applicationController.searchModel({
-		model:Category,
-		query:query,
-		sort:sort,
-		limit:limit,
-		offset:offset,
+		model: Category,
+		query: query,
+		sort: sort,
+		limit: limit,
+		offset: offset,
 		// population:population,
-		callback:function(err,documents){
-			if(err){
+		callback: function(err, documents) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else{
+			} else {
 				req.controllerData.categories = documents;
 				next();
 			}
@@ -83,25 +80,24 @@ var loadCategories = function(req,res,next){
 	});
 };
 
-var loadCategory = function(req,res,next){
+var loadCategory = function(req, res, next) {
 	var params = req.params,
 		docid = params.id;
-		console.log("docid",docid);
+	console.log("docid", docid);
 
-	req.controllerData = (req.controllerData)?req.controllerData:{};
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	applicationController.loadModel({
-		docid:docid,
-		model:Category,
-		callback:function(err,doc){
-			if(err){
+		docid: docid,
+		model: Category,
+		callback: function(err, doc) {
+			if(err) {
 				applicationController.handleDocumentQueryErrorResponse({
-					err:err,
-					res:res,
-					req:req
+					err: err,
+					res: res,
+					req: req
 				});
-			}
-			else{
+			} else {
 				req.controllerData.category = doc;
 				next();
 			}
@@ -110,22 +106,21 @@ var loadCategory = function(req,res,next){
 };
 
 
-var searchResults = function(req,res,next){
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'search/index',
-			themefileext:appSettings.templatefileextension
+var searchResults = function(req, res, next) {
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function(err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"Category Search Results"
+						title: "Category Search Results"
 					},
-					categories:req.controllerData.categories,
+					categories: req.controllerData.categories,
 					user: applicationController.removePrivateInfo(req.user)
 				}
 			});
@@ -133,18 +128,18 @@ var searchResults = function(req,res,next){
 	);
 };
 
-var controller = function(resources){
+var controller = function(resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
 	Category = mongoose.model('Category');
 
-	return{
-		loadCategories:loadCategories,
-		loadCategory:loadCategory,
-		create:create,
-		searchResults:searchResults
+	return {
+		loadCategories: loadCategories,
+		loadCategory: loadCategory,
+		create: create,
+		searchResults: searchResults
 	};
 };
 
