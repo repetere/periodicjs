@@ -100,12 +100,12 @@ module.exports = function(grunt) {
 						finallocation = finallocation.replace("_src", "");
 						finallocation = finallocation.replace("resources", "");
 						finallocation = path.resolve(finallocation);
-						console.log("dest", dest, "src", src, "finallocation", finallocation);
+						// console.log("dest", dest, "src", src, "finallocation", finallocation);
 						return finallocation;
 					}
         }],
 				options: {
-					// transform: ['coffeeify']
+					transform: ['uglifyify']
 				}
 			}
 		},

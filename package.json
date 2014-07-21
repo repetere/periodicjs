@@ -75,7 +75,8 @@
 		"grunt-newer": "^0.7.0",
 		"grunt-simple-mocha": "0.4.0",
 		"jsdoc": "3.3.0-alpha5",
-		"mocha": "1.9.0"
+		"mocha": "1.9.0",
+		"uglifyify": "^2.5.0"
 	},
 	"keywords": [
     "content management framework",
