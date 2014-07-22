@@ -171,7 +171,7 @@ module.exports = function(grunt) {
 		watch: {
 			scripts: {
 				files: ["<%= jshint.all %>"],
-				tasks: ['lint', 'packagejs', 'beautify', 'minjs', 'doc', 'css', 'test', 'css', 'copypublic'],
+				tasks: ['lint', 'packagejs', 'beautify', 'minjs', 'css', 'test', 'css', 'copypublic'],
 				options: {
 					interrupt: true
 				}
@@ -193,11 +193,11 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
 	grunt.registerTask('lint', 'newer:jshint:all');
-	grunt.registerTask('beautify', 'newer:jsbeautifier');
-	grunt.registerTask('test', 'newer:simplemocha');
+	grunt.registerTask('beautify', 'newer:jsbeautifier:files');
+	grunt.registerTask('test', 'newer:simplemocha:all');
 	grunt.registerTask('packagejs', 'newer:browserify');
-	grunt.registerTask('copypublic', 'newer:copy');
-	grunt.registerTask('minjs', 'newer:uglify');
+	grunt.registerTask('copypublic', 'newer:copy:main');
+	grunt.registerTask('minjs', 'newer:uglify:all');
 	grunt.registerTask('css', 'newer:less');
-	grunt.registerTask('doc', 'newer:jsdoc');
+	grunt.registerTask('doc', 'newer:jsdoc:dist');
 };
