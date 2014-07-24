@@ -41,10 +41,6 @@ var userSchema = new Schema({
 		type: Boolean,
 		"default": false
 	},
-	usertype: {
-		type: String,
-		"default": "regular"
-	},
 	location: {
 		city: String,
 		country: String,
@@ -65,7 +61,7 @@ var userSchema = new Schema({
 		type: Date,
 		"default": Date.now
 	},
-	acounttype: {
+	accounttype: {
 		type: String,
 		"default": "basic"
 	},
