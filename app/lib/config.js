@@ -24,7 +24,7 @@ var fs = require('fs'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var config = function() {
+var config = function () {
 	var appEnvironment = argv.e,
 		appPort = argv.p,
 		configurationFile,
@@ -35,7 +35,7 @@ var config = function() {
 		configurationDefaultFileJSON,
 		config = {};
 
-	var readJSONFile = function(filename) {
+	var readJSONFile = function (filename) {
 		return JSON.parse(fs.readFileSync(filename));
 	};
 
@@ -43,16 +43,16 @@ var config = function() {
 	 * gets the configuration information
 	 * @return { string } file path for config file
 	 */
-	this.settings = function() {
+	this.settings = function () {
 		return config;
 	};
 
-	this.setConfig = function(name, value) {
+	this.setConfig = function (name, value) {
 		this[name] = value;
 	}.bind(this);
 
 
-	this.setSetting = function(name, value) {
+	this.setSetting = function (name, value) {
 		config[name] = value;
 	}.bind(this);
 
@@ -60,7 +60,7 @@ var config = function() {
 	 * generate file path for config files
 	 * @return { string } file path for config file
 	 */
-	this.getConfigFilePath = function(config) {
+	this.getConfigFilePath = function (config) {
 		var directory = path.resolve(__dirname, '../../content/config/environment/'),
 			file = config + '.json';
 		return path.join(directory, file);
@@ -70,7 +70,7 @@ var config = function() {
 	 * loads app configuration
 	 * @throws {Error} If missing config file
 	 */
-	this.init = function() {
+	this.init = function () {
 		/** load user config file: content/config/config.json */
 		configurationOverrideFileJSON = readJSONFile(configurationOverrideFile);
 
@@ -88,7 +88,7 @@ var config = function() {
 
 		/** override environment data with user config */
 		config = extend(config, configurationDefaultFileJSON);
-		if(fs.existsSync(configurationFile)) {
+		if (fs.existsSync(configurationFile)) {
 			configurationFileJSON = readJSONFile(configurationFile);
 			config = extend(config, configurationFileJSON);
 		}
@@ -97,10 +97,10 @@ var config = function() {
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
 
-		if(config.theme) {
+		if (config.theme) {
 			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
 		}
-		if(config.debug) {
+		if (config.debug) {
 			console.log(config);
 		}
 	}.bind(this);

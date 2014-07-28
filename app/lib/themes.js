@@ -24,16 +24,16 @@ var fs = require('fs'),
  * @todo to do later
  */
 
-var themes = function(appsettings) {
+var themes = function (appsettings) {
 	var extensionsConfig = {},
 		extensionsFiles = [];
 };
 
-themes.getThemeRouteFilePath = function(themeName) {
+themes.getThemeRouteFilePath = function (themeName) {
 	return path.join(path.resolve(__dirname, '../../content/themes/', themeName), 'routes.js');
 };
 
-themes.getThemePeriodicConfFilePath = function(themeName) {
+themes.getThemePeriodicConfFilePath = function (themeName) {
 	return path.join(path.resolve(__dirname, '../../content/themes/', themeName), 'periodicjs.theme.json');
 };
 

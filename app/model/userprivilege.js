@@ -24,9 +24,9 @@ var userprivilegeSchema = new Schema({
 	random: Number
 });
 
-userprivilegeSchema.pre('save', function(next, done) {
+userprivilegeSchema.pre('save', function (next, done) {
 	var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	if(this.name !== undefined && this.name.length < 4) {
+	if (this.name !== undefined && this.name.length < 4) {
 		done(new Error('User privilege title is too short'));
 	}
 	// else if(this.name !== undefined && badname.test(this.name) ){
@@ -37,17 +37,17 @@ userprivilegeSchema.pre('save', function(next, done) {
 	}
 });
 
-userprivilegeSchema.post('init', function(doc) {
+userprivilegeSchema.post('init', function (doc) {
 	console.log("model - userprivilege.js - " + doc._id + ' has been initialized from the db');
 });
-userprivilegeSchema.post('validate', function(doc) {
+userprivilegeSchema.post('validate', function (doc) {
 	console.log("model - userprivilege.js - " + doc._id + ' has been validated (but not saved yet)');
 });
-userprivilegeSchema.post('save', function(doc) {
+userprivilegeSchema.post('save', function (doc) {
 	// this.db.models.Item.emit('created', this);
 	console.log("model - userprivilege.js - " + doc._id + ' has been saved');
 });
-userprivilegeSchema.post('remove', function(doc) {
+userprivilegeSchema.post('remove', function (doc) {
 	console.log("model - userprivilege.js - " + doc._id + ' has been removed');
 });
 

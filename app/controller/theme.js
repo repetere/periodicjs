@@ -12,7 +12,7 @@ var path = require('path'),
 	logger,
 	User, Category, Item, Tag, Asset, Collection, Contenttype;
 
-var customLayout = function(options) {
+var customLayout = function (options) {
 	var req = options.req,
 		res = options.res,
 		next = options.next,
@@ -29,36 +29,37 @@ var customLayout = function(options) {
 	Contenttype = mongoose.model('Contenttype');
 
 	function getModelFromName(modelname) {
-		switch(modelname) {
-			case 'Category':
-				return Category;
-			case 'Item':
-				return Item;
-			case 'Tag':
-				return Tag;
-			case 'User':
-				return User;
-			case 'Asset':
-				return Asset;
-			case 'Collection':
-				return Collection;
-			case 'Contenttype':
-				return Contenttype;
+		switch (modelname) {
+		case 'Category':
+			return Category;
+		case 'Item':
+			return Item;
+		case 'Tag':
+			return Tag;
+		case 'User':
+			return User;
+		case 'Asset':
+			return Asset;
+		case 'Collection':
+			return Collection;
+		case 'Contenttype':
+			return Contenttype;
 		}
 	}
 
 	function getTitleNameQuerySearch(searchterm) {
 		var searchRegEx = new RegExp(applicationController.stripTags(searchterm), "gi");
 
-		if(searchterm === undefined || searchterm.length < 1) {
+		if (searchterm === undefined || searchterm.length < 1) {
 			return {};
-		} else {
+		}
+		else {
 			return {
 				$or: [{
 					title: searchRegEx,
-        }, {
+				}, {
 					'name': searchRegEx,
-        }]
+				}]
 			};
 		}
 
@@ -66,7 +67,7 @@ var customLayout = function(options) {
 
 	function getAsyncCallback(functiondata) {
 		var querydata = (functiondata.search.customquery) ? functiondata.search.customquery : getTitleNameQuerySearch(functiondata.search.query);
-		return function(cb) {
+		return function (cb) {
 			console.log("functiondata.search.query", functiondata.search.query);
 			applicationController.searchModel({
 				model: getModelFromName(functiondata.model),
@@ -80,24 +81,26 @@ var customLayout = function(options) {
 			});
 		};
 	}
-	for(var x in layoutdata) {
+	for (var x in layoutdata) {
 		parallelTask[x] = getAsyncCallback(layoutdata[x]);
 	}
 	// an example using an object instead of an array
 	async.parallel(
 		parallelTask,
-		function(err, results) {
-			if(err) {
+		function (err, results) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
-				if(next) {
+			}
+			else {
+				if (next) {
 					req.controllerData.layoutdata = results;
 					next();
-				} else {
+				}
+				else {
 					var viewpath = options.viewpath,
 						extname = options.extname;
 
@@ -106,7 +109,7 @@ var customLayout = function(options) {
 							extname: extname,
 							themefileext: appSettings.templatefileextension
 						},
-						function(err, templatepath) {
+						function (err, templatepath) {
 							applicationController.handleDocumentQueryRender({
 								res: res,
 								req: req,
@@ -129,29 +132,29 @@ var customLayout = function(options) {
 		});
 };
 
-var install_logErrorOutput = function(options) {
+var install_logErrorOutput = function (options) {
 	var logfile = options.logfile,
 		logdata = options.logdata + '\r\n ';
 	logger.error(logdata);
-	fs.appendFile(logfile, logdata + '====!!ERROR!!====', function(err) {
-		if(err) {
+	fs.appendFile(logfile, logdata + '====!!ERROR!!====', function (err) {
+		if (err) {
 			logger.error(err);
 		}
-		if(options.cli) {
+		if (options.cli) {
 			throw new Error(logdata);
 		}
 	});
 };
 
-var install_logOutput = function(options) {
+var install_logOutput = function (options) {
 	var logfile = options.logfile,
 		logdata = options.logdata + '\r\n',
 		callback = options.callback;
 
-	fs.appendFile(logfile, logdata, function(err) {
-		if(err) {
+	fs.appendFile(logfile, logdata, function (err) {
+		if (err) {
 			logger.error(err);
-			if(callback) {
+			if (callback) {
 				callback(err);
 			}
 			//try and write message to end console
@@ -159,43 +162,46 @@ var install_logOutput = function(options) {
 				logfile: logfile,
 				logdata: err.message
 			});
-		} else {
-			if(callback) {
+		}
+		else {
+			if (callback) {
 				callback(null);
 			}
 		}
 	});
 };
 
-var updateConfigTheme = function(options) {
+var updateConfigTheme = function (options) {
 	var themename = options.themename,
 		res = options.res,
 		req = options.req,
 		next = options.next,
 		confFilePath = path.join(process.cwd(), 'content/config/config.json');
 
-	fs.readJson(confFilePath, function(err, configFileJson) {
-		if(err) {
+	fs.readJson(confFilePath, function (err, configFileJson) {
+		if (err) {
 			applicationController.handleDocumentQueryErrorResponse({
 				err: err,
 				res: res,
 				req: req
 			});
-		} else {
+		}
+		else {
 			configFileJson.theme = themename;
 
 			fs.outputJson(
 				confFilePath,
 				configFileJson,
-				function(err) {
-					if(err) {
+				function (err) {
+					if (err) {
 						applicationController.handleDocumentQueryErrorResponse({
 							err: err,
 							res: res,
 							req: req,
 							redirecturl: '/p-admin/themes'
 						});
-					} else {
+					}
+					else {
 						applicationController.handleDocumentQueryRender({
 							req: req,
 							res: res,
@@ -207,7 +213,7 @@ var updateConfigTheme = function(options) {
 									msg: 'theme enabled'
 								}
 							},
-							callback: function() {
+							callback: function () {
 								applicationController.restart_app();
 							}
 						});
@@ -218,34 +224,36 @@ var updateConfigTheme = function(options) {
 	});
 };
 
-var getThemeConfig = function(options) {
+var getThemeConfig = function (options) {
 	var themeConfigFile = path.join(process.cwd(), 'content/themes', options.themename, 'periodicjs.theme.json');
 	fs.readJson(themeConfigFile, options.callback);
 };
 
-var enable = function(req, res, next) {
+var enable = function (req, res, next) {
 	var themename = req.params.id,
 		currentTheme = appSettings.theme;
 
 	getThemeConfig({
 		themename: themename,
-		callback: function(err, themedata) {
-			if(err) {
+		callback: function (err, themedata) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				try {
-					if(!semver.lte(
+					if (!semver.lte(
 						themedata.periodicCompatibility, appSettings.version)) {
 						applicationController.handleDocumentQueryErrorResponse({
 							err: new Error('This theme requires periodic version: ' + themedata.periodicCompatibility + ' not: ' + appSettings.version),
 							res: res,
 							req: req
 						});
-					} else {
+					}
+					else {
 						updateConfigTheme({
 							themename: themename,
 							req: req,
@@ -253,7 +261,8 @@ var enable = function(req, res, next) {
 							next: next
 						});
 					}
-				} catch(e) {
+				}
+				catch (e) {
 					applicationController.handleDocumentQueryErrorResponse({
 						err: e,
 						res: res,
@@ -265,34 +274,36 @@ var enable = function(req, res, next) {
 	});
 };
 
-var install_removeThemeFromConf = function(options) {
+var install_removeThemeFromConf = function (options) {
 	var extname = options.extname,
 		logfile = options.logfile,
 		confFilePath = path.join(process.cwd(), 'content/config/config.json');
 
-	fs.readJson(confFilePath, function(err, configFileJson) {
-		if(err) {
+	fs.readJson(confFilePath, function (err, configFileJson) {
+		if (err) {
 			install_logErrorOutput({
 				logfile: logfile,
 				logdata: err.message
 			});
-		} else {
+		}
+		else {
 			configFileJson.theme = '';
 
 			fs.outputJson(
 				confFilePath,
 				configFileJson,
-				function(err) {
-					if(err) {
+				function (err) {
+					if (err) {
 						install_logErrorOutput({
 							logfile: logfile,
 							logdata: err.message
 						});
-					} else {
+					}
+					else {
 						install_logOutput({
 							logfile: logfile,
 							logdata: extname + ' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
-							callback: function(err) {}
+							callback: function (err) {}
 						});
 					}
 				}
@@ -301,16 +312,17 @@ var install_removeThemeFromConf = function(options) {
 	});
 };
 
-var uninstall_removeFiles = function(options) {
+var uninstall_removeFiles = function (options) {
 	var themedir = options.themedir,
 		repourl = options.repourl,
 		themename = options.themename,
 		logfile = options.logfile;
 
-	fs.remove(path.resolve(themedir, themename), function(err) {
-		if(err) {
+	fs.remove(path.resolve(themedir, themename), function (err) {
+		if (err) {
 			logger.error(err);
-		} else {
+		}
+		else {
 			// install_removeThemeFromConf({
 			// 	logfile : logfile,
 			// 	themename: themename
@@ -318,13 +330,14 @@ var uninstall_removeFiles = function(options) {
 			install_logOutput({
 				logfile: logfile,
 				logdata: themename + ' removed, application restarting \r\n  ====##REMOVED-END##====',
-				callback: function(err) {}
+				callback: function (err) {}
 			});
 
-			fs.remove(path.resolve(__dirname, '../../public/themes/', themename), function(err) {
-				if(err) {
+			fs.remove(path.resolve(__dirname, '../../public/themes/', themename), function (err) {
+				if (err) {
 					logger.error(err);
-				} else {
+				}
+				else {
 					logger.info("removed theme public dir files");
 				}
 			});
@@ -332,7 +345,7 @@ var uninstall_removeFiles = function(options) {
 	});
 };
 
-var remove = function(req, res, next) {
+var remove = function (req, res, next) {
 	var themename = req.params.id,
 		timestamp = (new Date()).getTime(),
 		logdir = path.resolve(__dirname, '../../content/themes/log/'),
@@ -346,24 +359,26 @@ var remove = function(req, res, next) {
 		},
 		themedir = path.join(process.cwd(), 'content/themes');
 
-	if(themename === appSettings.theme) {
+	if (themename === appSettings.theme) {
 		applicationController.handleDocumentQueryErrorResponse({
 			err: new Error('Cannot delete active theme'),
 			res: res,
 			req: req
 		});
-	} else {
+	}
+	else {
 		install_logOutput({
 			logfile: logfile,
 			logdata: myData.data.message,
-			callback: function(err) {
-				if(err) {
+			callback: function (err) {
+				if (err) {
 					applicationController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
 						req: req
 					});
-				} else {
+				}
+				else {
 					applicationController.handleDocumentQueryRender({
 						res: res,
 						req: req,
@@ -387,7 +402,7 @@ var remove = function(req, res, next) {
 	}
 };
 
-var remove_getOutputLog = function(req, res, next) {
+var remove_getOutputLog = function (req, res, next) {
 	var logdir = path.resolve(__dirname, '../../content/themes/log/'),
 		themename = (req.query.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
 		logfile = path.join(logdir, 'remove-theme.' + req.user._id + '.' + themename + '.' + req.params.date + '.log'),
@@ -406,7 +421,7 @@ var remove_getOutputLog = function(req, res, next) {
 	readStream.pipe(res);
 };
 
-var install_getOutputLog = function(req, res, next) {
+var install_getOutputLog = function (req, res, next) {
 	var logdir = path.resolve(__dirname, '../../content/themes/log/'),
 		logfile = path.join(logdir, 'install-theme.' + req.user._id + '.' + applicationController.makeNiceName(req.params.theme) + '.' + req.params.date + '.log'),
 		stat = fs.statSync(logfile),
@@ -424,7 +439,7 @@ var install_getOutputLog = function(req, res, next) {
 	readStream.pipe(res);
 };
 
-var upload_getOutputLog = function(req, res, next) {
+var upload_getOutputLog = function (req, res, next) {
 	var logdir = path.resolve(__dirname, '../../content/themes/log/'),
 		logfile = path.join(logdir, 'install-theme.' + req.user._id + '.' + req.params.theme + '.' + req.params.date + '.log'),
 		stat = fs.statSync(logfile),
@@ -438,33 +453,35 @@ var upload_getOutputLog = function(req, res, next) {
 	readStream.pipe(res);
 };
 
-var remove_clilog = function(options) {
-	fs.remove(options.logfile, function(err) {
-		if(err) {
+var remove_clilog = function (options) {
+	fs.remove(options.logfile, function (err) {
+		if (err) {
 			install_logErrorOutput({
 				logfile: options.logfile,
 				logdata: err.message,
 				cli: options.cli
 			});
-		} else {
+		}
+		else {
 			logger.info(options.themename + ' log removed \r\n  ====##END##====');
 		}
 	});
 };
 
-var cleanup_log = function(req, res, next) {
+var cleanup_log = function (req, res, next) {
 	var logdir = path.resolve(__dirname, '../../content/themes/log/'),
 		themename = (req.query.makenice) ? req.params.theme : applicationController.makeNiceName(req.params.theme),
 		logfile = path.join(logdir, req.query.mode + '-theme.' + req.user._id + '.' + themename + '.' + req.params.date + '.log');
 
-	fs.remove(logfile, function(err) {
-		if(err) {
+	fs.remove(logfile, function (err) {
+		if (err) {
 			applicationController.handleDocumentQueryErrorResponse({
 				err: err,
 				res: res,
 				req: req
 			});
-		} else {
+		}
+		else {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -479,25 +496,25 @@ var cleanup_log = function(req, res, next) {
 	});
 };
 
-var install_themePublicDir = function(options) {
+var install_themePublicDir = function (options) {
 	var logfile = options.logfile,
 		themename = options.themename,
 		themedir = path.resolve(__dirname, '../../content/themes/', themename, 'public'),
 		themepublicdir = path.resolve(__dirname, '../../public/themes/', themename);
 	// console.log("extname",extname);
-	fs.readdir(themedir, function(err, files) {
+	fs.readdir(themedir, function (err, files) {
 		// console.log("files",files);
-		if(err) {
+		if (err) {
 			install_logOutput({
 				logfile: logfile,
 				logdata: 'No Public Directory to Copy',
-				callback: function(err) {
+				callback: function (err) {
 					install_logOutput({
 						logfile: logfile,
 						logdata: themename + ' installed, application restarting \r\n  ====##END##====',
-						callback: function(err) {}
+						callback: function (err) {}
 					});
-					if(options.cli) {
+					if (options.cli) {
 						logger.info(themename + ' installed \r\n  ====##END##====');
 						remove_clilog({
 							logfile: logfile,
@@ -507,34 +524,37 @@ var install_themePublicDir = function(options) {
 					}
 				}
 			});
-		} else {
+		}
+		else {
 			//make destination dir
-			fs.mkdirs(themepublicdir, function(err) {
-				if(err) {
+			fs.mkdirs(themepublicdir, function (err) {
+				if (err) {
 					install_logErrorOutput({
 						logfile: logfile,
 						logdata: err.message,
 						cli: options.cli
 					});
-				} else {
-					fs.copy(themedir, themepublicdir, function(err) {
-						if(err) {
+				}
+				else {
+					fs.copy(themedir, themepublicdir, function (err) {
+						if (err) {
 							install_logErrorOutput({
 								logfile: logfile,
 								logdata: err.message,
 								cli: options.cli
 							});
-						} else {
+						}
+						else {
 							install_logOutput({
 								logfile: logfile,
 								logdata: 'Copied public files',
-								callback: function(err) {
+								callback: function (err) {
 									install_logOutput({
 										logfile: logfile,
 										logdata: themename + ' installed, application restarting \r\n  ====##END##====',
-										callback: function(err) {}
+										callback: function (err) {}
 									});
-									if(options.cli) {
+									if (options.cli) {
 										logger.info(themename + ' installed \r\n  ====##END##====');
 										remove_clilog({
 											logfile: logfile,
@@ -552,7 +572,7 @@ var install_themePublicDir = function(options) {
 	});
 };
 
-var install_viaDownload = function(options) {
+var install_viaDownload = function (options) {
 	// console.log("options",options);
 	var themedir = options.themedir,
 		repourl = options.repourl,
@@ -562,38 +582,39 @@ var install_viaDownload = function(options) {
 		download = require('download'),
 		dlsteam;
 	// console.log("downloadtothemedir",downloadtothemedir);
-	fs.ensureDir(downloadtothemedir, function(err) {
-		if(err) {
+	fs.ensureDir(downloadtothemedir, function (err) {
+		if (err) {
 			install_logErrorOutput({
 				logfile: logfile,
 				logdata: err.message,
 				cli: true
 			});
-		} else {
+		}
+		else {
 			dlsteam = download(repourl, downloadtothemedir, {
 				extract: true,
 				strip: 1
 			});
-			dlsteam.on("response", function(res) {
+			dlsteam.on("response", function (res) {
 				install_logOutput({
 					logfile: logfile,
 					logdata: reponame + ' starting download'
 				});
 			});
-			dlsteam.on("data", function() {
+			dlsteam.on("data", function () {
 				install_logOutput({
 					logfile: logfile,
 					logdata: 'downloading data'
 				});
 				logger.info('downloading data');
 			});
-			dlsteam.on("error", function(err) {
+			dlsteam.on("error", function (err) {
 				install_logErrorOutput({
 					logfile: logfile,
 					logdata: err.message
 				});
 			});
-			dlsteam.on("close", function(err) {
+			dlsteam.on("close", function (err) {
 				install_logOutput({
 					logfile: logfile,
 					logdata: reponame + ' downloaded'
@@ -608,7 +629,7 @@ var install_viaDownload = function(options) {
 	});
 };
 
-var move_upload = function(options) {
+var move_upload = function (options) {
 	// console.log("options",options);
 	var logfile = options.logfile,
 		themename = options.themename;
@@ -618,24 +639,26 @@ var move_upload = function(options) {
 		.src(options.uploadedfile.path)
 		.dest(options.themedir)
 		.use(Decompress.zip());
-	decompress.decompress(function(err, files) {
-		if(err) {
+	decompress.decompress(function (err, files) {
+		if (err) {
 			install_logErrorOutput({
 				logfile: logfile,
 				logdata: err.message
 			});
-		} else {
+		}
+		else {
 			install_logOutput({
 				logfile: logfile,
 				logdata: 'unzipped directory'
 			});
-			fs.remove(options.uploadedfile.path, function(err, filedir) {
-				if(err) {
+			fs.remove(options.uploadedfile.path, function (err, filedir) {
+				if (err) {
 					install_logErrorOutput({
 						logfile: logfile,
 						logdata: err.message
 					});
-				} else {
+				}
+				else {
 					install_logOutput({
 						logfile: logfile,
 						logdata: 'removed zip file'
@@ -650,7 +673,7 @@ var move_upload = function(options) {
 	});
 };
 
-var upload_install = function(req, res, next) {
+var upload_install = function (req, res, next) {
 	var uploadedFile = applicationController.removeEmptyObjectValues(req.controllerData.fileData),
 		timestamp = (new Date()).getTime(),
 		themename = path.basename(uploadedFile.filename, path.extname(uploadedFile.filename)),
@@ -661,14 +684,15 @@ var upload_install = function(req, res, next) {
 	install_logOutput({
 		logfile: logfile,
 		logdata: "installing uploaded theme",
-		callback: function(err) {
-			if(err) {
+		callback: function (err) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				applicationController.handleDocumentQueryRender({
 					res: res,
 					req: req,
@@ -696,23 +720,23 @@ var upload_install = function(req, res, next) {
 };
 
 var themeFunctions = {
-	getlogfile: function(options) {
+	getlogfile: function (options) {
 		return path.join(options.logdir, 'install-theme.' + options.userid + '.' + applicationController.makeNiceName(options.reponame) + '.' + options.timestamp + '.log');
 	},
-	getrepourl: function(options) {
-		return(options.repoversion === 'latest' || !options.repoversion) ?
+	getrepourl: function (options) {
+		return (options.repoversion === 'latest' || !options.repoversion) ?
 			'https://github.com/' + options.reponame + '/archive/master.tar.gz' :
 			'https://github.com/' + options.reponame + '/tarball/' + options.repoversion;
 	},
-	getlogdir: function(options) {
+	getlogdir: function (options) {
 		return path.resolve(__dirname, '../../content/themes/log/');
 	},
-	getthemedir: function(options) {
+	getthemedir: function (options) {
 		return path.join(process.cwd(), 'content/themes');
 	}
 };
 
-var install = function(req, res, next) {
+var install = function (req, res, next) {
 	var repoversion = req.query.version,
 		reponame = req.query.name,
 		repourl = themeFunctions.getrepourl({
@@ -732,14 +756,15 @@ var install = function(req, res, next) {
 	install_logOutput({
 		logfile: logfile,
 		logdata: "beginning theme install: " + reponame,
-		callback: function(err) {
-			if(err) {
+		callback: function (err) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				applicationController.handleDocumentQueryRender({
 					res: res,
 					req: req,
@@ -763,10 +788,10 @@ var install = function(req, res, next) {
 	});
 };
 
-var cli = function(argv) {
+var cli = function (argv) {
 	//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
 
-	if(argv.install) {
+	if (argv.install) {
 		console.log("installing via cli", argv);
 		var repoversion = argv.version,
 			reponame = argv.name,
@@ -787,10 +812,11 @@ var cli = function(argv) {
 		install_logOutput({
 			logfile: logfile,
 			logdata: "beginning theme install: " + reponame,
-			callback: function(err) {
-				if(err) {
+			callback: function (err) {
+				if (err) {
 					throw new Error(err);
-				} else {
+				}
+				else {
 					install_viaDownload({
 						themedir: themedir,
 						repourl: repourl,
@@ -801,14 +827,15 @@ var cli = function(argv) {
 				}
 			}
 		});
-	} else {
+	}
+	else {
 		console.log(argv);
 		console.log(themeFunctions.getlogfile(argv));
 		process.exit(0);
 	}
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

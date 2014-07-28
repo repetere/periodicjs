@@ -9,12 +9,12 @@ var path = require('path'),
 	logger,
 	Item, Collection, User, Contenttype, Category, Tag;
 
-var results = function(req, res, next) {
+var results = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -31,12 +31,12 @@ var results = function(req, res, next) {
 	);
 };
 
-var index = function(req, res, next) {
+var index = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'browse/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -54,7 +54,7 @@ var index = function(req, res, next) {
 	);
 };
 
-var browse = function(req, res, next) {
+var browse = function (req, res, next) {
 	var query = {},
 		searchdocuments,
 		params = req.params,
@@ -65,65 +65,67 @@ var browse = function(req, res, next) {
 		population = 'tags categories authors contenttypes primaryasset primaryauthor';
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	if(params.entitytype) {
-		switch(params.entitytype) {
-			case 'authors':
-				query = {
-					$or: [{
-						'primaryauthor': {
-							$in: req.controllerData.filteridarray
-						}
-          }, {
-						'authors': {
-							$in: req.controllerData.filteridarray
-						}
-          }]
-				};
-				break;
-			case 'categories':
-				query = {
-					'categories': {
+	if (params.entitytype) {
+		switch (params.entitytype) {
+		case 'authors':
+			query = {
+				$or: [{
+					'primaryauthor': {
 						$in: req.controllerData.filteridarray
 					}
-				};
-				break;
-			case 'tags':
-				query = {
-					'tags': {
+				}, {
+					'authors': {
 						$in: req.controllerData.filteridarray
 					}
-				};
-				break;
-			case 'contenttypes':
-				query = {
-					'contenttypes': {
-						$in: req.controllerData.filteridarray
-					}
-				};
-				break;
-			default:
-				next(new Error("Invalid Entity Type"));
-				break;
+				}]
+			};
+			break;
+		case 'categories':
+			query = {
+				'categories': {
+					$in: req.controllerData.filteridarray
+				}
+			};
+			break;
+		case 'tags':
+			query = {
+				'tags': {
+					$in: req.controllerData.filteridarray
+				}
+			};
+			break;
+		case 'contenttypes':
+			query = {
+				'contenttypes': {
+					$in: req.controllerData.filteridarray
+				}
+			};
+			break;
+		default:
+			next(new Error("Invalid Entity Type"));
+			break;
 		}
-	} else {
+	}
+	else {
 		var searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
-		if(req.query.search === undefined || req.query.search.length < 1) {
+		if (req.query.search === undefined || req.query.search.length < 1) {
 			query = {};
-		} else {
+		}
+		else {
 			query = {
 				$or: [{
 					title: searchRegEx,
-        }, {
+				}, {
 					'name': searchRegEx,
-        }, {
+				}, {
 					'content': searchRegEx,
-        }]
+				}]
 			};
 		}
 	}
 
 	async.parallel({
-		searchCollections: function(callback) {
+		searchCollections: function (callback) {
 			applicationController.searchModel({
 				model: Collection,
 				query: query,
@@ -135,7 +137,7 @@ var browse = function(req, res, next) {
 				callback: callback
 			});
 		},
-		searchDocuments: function(callback) {
+		searchDocuments: function (callback) {
 			applicationController.searchModel({
 				model: Item,
 				query: query,
@@ -147,10 +149,11 @@ var browse = function(req, res, next) {
 				callback: callback
 			});
 		}
-	}, function(err, results) {
-		if(err) {
+	}, function (err, results) {
+		if (err) {
 			next(err);
-		} else {
+		}
+		else {
 			searchdocuments = results.searchDocuments.concat(results.searchCollections);
 			req.controllerData.searchdocuments = searchdocuments.sort(applicationController.sortObject("desc", "createdat"));
 			next();
@@ -158,20 +161,22 @@ var browse = function(req, res, next) {
 	});
 };
 
-var queryFilters = function(options, callback) {
+var queryFilters = function (options, callback) {
 	var model = options.model,
 		namesarray = options.namesarray,
 		nameval = options.nameval,
 		query = {};
-	if(namesarray.length < 1) {
+	if (namesarray.length < 1) {
 		query = {};
-	} else if(nameval && nameval === "username") {
+	}
+	else if (nameval && nameval === "username") {
 		query = {
 			'username': {
 				$in: namesarray
 			}
 		};
-	} else {
+	}
+	else {
 		query = {
 			'name': {
 				$in: namesarray
@@ -181,15 +186,16 @@ var queryFilters = function(options, callback) {
 	model.find(query, '_id name username', callback);
 };
 
-var browsefilter = function(req, res, next) {
+var browsefilter = function (req, res, next) {
 	var params = req.params,
 		namesarray = (params.entityitems) ? params.entityitems.split(',') : [],
 		filterIdArray = [],
-		defaultResponseFunction = function(err, filterdocs, req, next) {
-			if(err) {
+		defaultResponseFunction = function (err, filterdocs, req, next) {
+			if (err) {
 				next(err);
-			} else {
-				for(var x in filterdocs) {
+			}
+			else {
+				for (var x in filterdocs) {
 					filterIdArray.push(filterdocs[x]._id);
 				}
 				req.controllerData.filteridarray = filterIdArray;
@@ -198,56 +204,56 @@ var browsefilter = function(req, res, next) {
 		};
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	switch(params.entitytype) {
-		case 'authors':
-			queryFilters({
-				model: User,
-				nameval: 'username',
-				namesarray: namesarray
-			}, function(err, filterdocs) {
-				defaultResponseFunction(err, filterdocs, req, next);
-			});
-			break;
-		case 'categories':
-			queryFilters({
-				model: Category,
-				nameval: 'name',
-				namesarray: namesarray
-			}, function(err, filterdocs) {
-				defaultResponseFunction(err, filterdocs, req, next);
-			});
-			break;
-		case 'tags':
-			queryFilters({
-				model: Tag,
-				nameval: 'name',
-				namesarray: namesarray
-			}, function(err, filterdocs) {
-				defaultResponseFunction(err, filterdocs, req, next);
-			});
-			break;
-		case 'contenttypes':
-			queryFilters({
-				model: Contenttype,
-				nameval: 'name',
-				namesarray: namesarray
-			}, function(err, filterdocs) {
-				defaultResponseFunction(err, filterdocs, req, next);
-			});
-			break;
-		default:
-			next(new Error("Invalid Entity Type"));
-			break;
+	switch (params.entitytype) {
+	case 'authors':
+		queryFilters({
+			model: User,
+			nameval: 'username',
+			namesarray: namesarray
+		}, function (err, filterdocs) {
+			defaultResponseFunction(err, filterdocs, req, next);
+		});
+		break;
+	case 'categories':
+		queryFilters({
+			model: Category,
+			nameval: 'name',
+			namesarray: namesarray
+		}, function (err, filterdocs) {
+			defaultResponseFunction(err, filterdocs, req, next);
+		});
+		break;
+	case 'tags':
+		queryFilters({
+			model: Tag,
+			nameval: 'name',
+			namesarray: namesarray
+		}, function (err, filterdocs) {
+			defaultResponseFunction(err, filterdocs, req, next);
+		});
+		break;
+	case 'contenttypes':
+		queryFilters({
+			model: Contenttype,
+			nameval: 'name',
+			namesarray: namesarray
+		}, function (err, filterdocs) {
+			defaultResponseFunction(err, filterdocs, req, next);
+		});
+		break;
+	default:
+		next(new Error("Invalid Entity Type"));
+		break;
 	}
 };
 
-var browsetags = function(req, res, next) {
+var browsetags = function (req, res, next) {
 	var params = req.params,
 		offset = req.query.offset,
 		query = {},
 		sort = req.query.sort,
 		limit = req.query.limit,
-		searchFunction = function(options, callback) {
+		searchFunction = function (options, callback) {
 			var model = options.model,
 				selection = options.selection;
 			applicationController.searchModel({
@@ -257,10 +263,11 @@ var browsetags = function(req, res, next) {
 				limit: limit,
 				offset: offset,
 				selection: selection,
-				callback: function(err, tags) {
-					if(err) {
+				callback: function (err, tags) {
+					if (err) {
 						next(err);
-					} else {
+					}
+					else {
 						req.controllerData.browsetags = tags;
 						next();
 					}
@@ -268,38 +275,38 @@ var browsetags = function(req, res, next) {
 			});
 		};
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	switch(params.entitytype) {
-		case 'authors':
-			searchFunction({
-				model: User,
-				selection: 'firstname lastname username _id'
-			});
-			break;
-		case 'categories':
-			searchFunction({
-				model: Category,
-				selection: 'name title _id'
-			});
-			break;
-		case 'tags':
-			searchFunction({
-				model: Tag,
-				selection: 'name title _id'
-			});
-			break;
-		case 'contenttypes':
-			searchFunction({
-				model: Contenttype,
-				selection: 'name title _id'
-			});
-			break;
-		default:
-			next(new Error("Invalid Entity Type"));
-			break;
+	switch (params.entitytype) {
+	case 'authors':
+		searchFunction({
+			model: User,
+			selection: 'firstname lastname username _id'
+		});
+		break;
+	case 'categories':
+		searchFunction({
+			model: Category,
+			selection: 'name title _id'
+		});
+		break;
+	case 'tags':
+		searchFunction({
+			model: Tag,
+			selection: 'name title _id'
+		});
+		break;
+	case 'contenttypes':
+		searchFunction({
+			model: Contenttype,
+			selection: 'name title _id'
+		});
+		break;
+	default:
+		next(new Error("Invalid Entity Type"));
+		break;
 	}
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

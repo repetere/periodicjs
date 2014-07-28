@@ -8,13 +8,13 @@ var path = require('path'),
 	mongoose,
 	logger;
 
-var index = function(req, res, next) {
+var index = function (req, res, next) {
 	var recentitems = req.controllerData.items || {};
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'home/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -30,12 +30,12 @@ var index = function(req, res, next) {
 		}
 	);
 };
-var default_view = function(req, res, next) {
+var default_view = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'home/default',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -50,7 +50,7 @@ var default_view = function(req, res, next) {
 		}
 	);
 };
-var get_installoutputlog = function(req, res, next) {
+var get_installoutputlog = function (req, res, next) {
 	var logfile = path.resolve(process.cwd(), 'logs/install-periodicjs.log'),
 		stat = fs.statSync(logfile),
 		readStream = fs.createReadStream(logfile);
@@ -61,13 +61,13 @@ var get_installoutputlog = function(req, res, next) {
 	});
 	readStream.pipe(res);
 };
-var error404 = function(req, res, next) {
+var error404 = function (req, res, next) {
 	res.status(404);
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'home/error404',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -84,7 +84,7 @@ var error404 = function(req, res, next) {
 	);
 };
 
-var catch404 = function(req, res, next) {
+var catch404 = function (req, res, next) {
 	var err = new Error("Page not found");
 	// next(err);
 
@@ -117,7 +117,7 @@ var catch404 = function(req, res, next) {
 	//   }
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

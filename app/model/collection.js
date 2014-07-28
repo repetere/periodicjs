@@ -24,7 +24,7 @@ var collectionSchema = new Schema({
 	authors: [{
 		type: ObjectId,
 		ref: "User"
-  }],
+	}],
 	primaryasset: {
 		type: ObjectId,
 		ref: "Asset"
@@ -32,7 +32,7 @@ var collectionSchema = new Schema({
 	assets: [{
 		type: ObjectId,
 		ref: "Asset"
-  }],
+	}],
 	primaryauthor: {
 		type: ObjectId,
 		ref: "User"
@@ -57,25 +57,25 @@ var collectionSchema = new Schema({
 			type: ObjectId,
 			ref: "Item"
 		}
-  }],
+	}],
 	contenttypes: [{
 		type: ObjectId,
 		ref: "Contenttype"
-  }],
+	}],
 	tags: [{
 		type: ObjectId,
 		ref: "Tag"
-  }],
+	}],
 	categories: [{
 		type: ObjectId,
 		ref: "Category"
-  }],
+	}],
 	attributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
 
-collectionSchema.pre('save', function(next, done) {
+collectionSchema.pre('save', function (next, done) {
 	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	// if(this.name !== undefined && this.name.length <4){
 	//     done(new Error('title is too short'));
@@ -85,21 +85,21 @@ collectionSchema.pre('save', function(next, done) {
 	next();
 });
 
-collectionSchema.post('init', function(doc) {
+collectionSchema.post('init', function (doc) {
 	console.log("model - collection.js - " + doc._id + ' has been initialized from the db');
 });
-collectionSchema.post('validate', function(doc) {
+collectionSchema.post('validate', function (doc) {
 	console.log("model - collection.js - " + doc._id + ' has been validated (but not saved yet)');
 });
-collectionSchema.post('save', function(doc) {
+collectionSchema.post('save', function (doc) {
 	// this.db.models.Item.emit('created', this);
 	console.log("model - collection.js - " + doc._id + ' has been saved');
 });
-collectionSchema.post('remove', function(doc) {
+collectionSchema.post('remove', function (doc) {
 	console.log("model - collection.js - " + doc._id + ' has been removed');
 });
 
-collectionSchema.statics.getRandomWorkout = function(options, callback) {
+collectionSchema.statics.getRandomWorkout = function (options, callback) {
 	var self = this;
 	// queryHelper.getRandomDocument({model:self},callback);
 };

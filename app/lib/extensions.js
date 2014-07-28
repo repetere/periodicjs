@@ -25,11 +25,11 @@ var fs = require('fs'),
  */
 var extensionFilePath = path.join(path.resolve(__dirname, '../../content/extensions/'), 'extensions.json');
 
-var extensions = function(appsettings) {
+var extensions = function (appsettings) {
 	var extensionsConfig = {},
 		extensionsFiles = [];
 
-	var readJSONFile = function(filename) {
+	var readJSONFile = function (filename) {
 		return JSON.parse(fs.readFileSync(filename));
 	};
 
@@ -37,28 +37,28 @@ var extensions = function(appsettings) {
 	 * gets the configuration information
 	 * @return { string } file path for config file
 	 */
-	this.settings = function() {
+	this.settings = function () {
 		return extensionsConfig;
 	};
 
-	this.files = function() {
+	this.files = function () {
 		return extensionsFiles;
 	};
 
-	this.savePluginConfig = function(name, value) {
+	this.savePluginConfig = function (name, value) {
 		this[name] = value;
 	}.bind(this);
 
-	this.getExtensionFilePath = function(extensionName) {
+	this.getExtensionFilePath = function (extensionName) {
 		return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'index.js');
 	};
 
-	this.getExtensionPeriodicConfFilePath = function(extensionName) {
+	this.getExtensionPeriodicConfFilePath = function (extensionName) {
 		return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'periodicjs.ext.json');
 	};
 
-	this.loadExtensions = function(obj) {
-		extensionsFiles.forEach(function(file) {
+	this.loadExtensions = function (obj) {
+		extensionsFiles.forEach(function (file) {
 			require(file)(obj);
 		});
 	}.bind(this);
@@ -67,20 +67,21 @@ var extensions = function(appsettings) {
 	 * loads app configuration
 	 * @throws {Error} If missing config file
 	 */
-	this.init = function(appsettings) {
+	this.init = function (appsettings) {
 		// /** load pluginfile: content/plugin/extensions.json */
 		extensionsConfig = readJSONFile(extensionFilePath);
 
-		extensionsConfig.extensions.forEach(function(val, index, arr) {
+		extensionsConfig.extensions.forEach(function (val, index, arr) {
 			// if(val.installed){
 			// 	// console.log(this.getExtensionPeriodicConfFilePath(val.name));
 			// 	val.periodicConfig = readJSONFile(this.getExtensionPeriodicConfFilePath(val.name));
 			// }
 			try {
-				if(semver.lte(val.periodicCompatibility, appsettings.version) && val.enabled) {
+				if (semver.lte(val.periodicCompatibility, appsettings.version) && val.enabled) {
 					extensionsFiles.push(this.getExtensionFilePath(val.name));
 				}
-			} catch(e) {
+			}
+			catch (e) {
 				throw new Error('Invalid Extension Configuration');
 			}
 		}.bind(this));
@@ -91,14 +92,16 @@ var extensions = function(appsettings) {
 
 extensions.getExtensionConfFilePath = extensionFilePath;
 
-extensions.readJSONFileAsync = function(filename, callback) {
-	fs.readFile(filename, function(err, data) {
-		if(err) {
+extensions.readJSONFileAsync = function (filename, callback) {
+	fs.readFile(filename, function (err, data) {
+		if (err) {
 			callback(err, null);
-		} else {
+		}
+		else {
 			try {
 				callback(null, JSON.parse(data));
-			} catch(e) {
+			}
+			catch (e) {
 				callback(e, null);
 			}
 		}
@@ -106,15 +109,15 @@ extensions.readJSONFileAsync = function(filename, callback) {
 	return JSON.parse(fs.readFileSync(filename));
 };
 
-extensions.getExtensionFilePath = function(extensionName) {
+extensions.getExtensionFilePath = function (extensionName) {
 	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'index.js');
 };
 
-extensions.getExtensionPackageJsonFilePath = function(extensionName) {
+extensions.getExtensionPackageJsonFilePath = function (extensionName) {
 	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'package.json');
 };
 
-extensions.getExtensionPeriodicConfFilePath = function(extensionName) {
+extensions.getExtensionPeriodicConfFilePath = function (extensionName) {
 	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'periodicjs.ext.json');
 };
 

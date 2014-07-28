@@ -12,7 +12,7 @@ var path = require('path'),
 	MediaAsset,
 	logger;
 
-var upload = function(req, res, next) {
+var upload = function (req, res, next) {
 	var form = new formidable.IncomingForm(),
 		files = [],
 		returnFile,
@@ -22,21 +22,22 @@ var upload = function(req, res, next) {
 		uploadDirectory = '/public/uploads/files/' + d.getUTCFullYear() + '/' + d.getUTCMonth() + '/' + d.getUTCDate(),
 		fullUploadDir = path.join(process.cwd(), uploadDirectory);
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	fs.ensureDir(fullUploadDir, function(err) {
-		if(err) {
+	fs.ensureDir(fullUploadDir, function (err) {
+		if (err) {
 			applicationController.handleDocumentQueryErrorResponse({
 				err: err,
 				res: res,
 				req: req
 			});
-		} else {
+		}
+		else {
 			// http://stackoverflow.com/questions/20553575/how-to-cancel-user-upload-in-formidable-node-js
 			form.keepExtensions = true;
 			form.uploadDir = fullUploadDir;
-			form.parse(req, function(err, fields, files) {
+			form.parse(req, function (err, fields, files) {
 				// console.log(err,fields,files);
 			});
-			form.on('error', function(err) {
+			form.on('error', function (err) {
 				logger.error(err);
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
@@ -44,21 +45,22 @@ var upload = function(req, res, next) {
 					req: req
 				});
 			});
-			form.on('file', function(field, file) {
+			form.on('file', function (field, file) {
 				returnFile = file;
 				files.push(file);
 			});
-			form.on('end', function() {
+			form.on('end', function () {
 				var newfilename = req.user._id.toString() + '-' + applicationController.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
 					newfilepath = path.join(fullUploadDir, newfilename);
-				fs.rename(returnFile.path, newfilepath, function(err) {
-					if(err) {
+				fs.rename(returnFile.path, newfilepath, function (err) {
+					if (err) {
 						applicationController.handleDocumentQueryErrorResponse({
 							err: err,
 							res: res,
 							req: req
 						});
-					} else {
+					}
+					else {
 						returnFileObj.attributes = {};
 						returnFileObj.size = returnFile.size;
 						returnFileObj.filename = returnFile.name;
@@ -79,21 +81,22 @@ var upload = function(req, res, next) {
 	});
 };
 
-var createassetfile = function(req, res, next) {
+var createassetfile = function (req, res, next) {
 	var newasset = applicationController.removeEmptyObjectValues(req.controllerData.fileData);
 	newasset.name = applicationController.makeNiceName(newasset.fileurl);
 	newasset.author = req.user._id;
 	applicationController.loadModel({
 		model: MediaAsset,
 		docid: newasset.name,
-		callback: function(err, assetdoc) {
-			if(err) {
+		callback: function (err, assetdoc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else if(assetdoc) {
+			}
+			else if (assetdoc) {
 				console.log("assetdoc", assetdoc);
 				applicationController.handleDocumentQueryRender({
 					req: req,
@@ -105,7 +108,8 @@ var createassetfile = function(req, res, next) {
 						}
 					}
 				});
-			} else {
+			}
+			else {
 				applicationController.createModel({
 					model: MediaAsset,
 					newdoc: newasset,
@@ -119,14 +123,14 @@ var createassetfile = function(req, res, next) {
 	});
 };
 
-var remove = function(req, res, next) {
+var remove = function (req, res, next) {
 	var asset = req.controllerData.asset;
-	if(asset.locationtype === 'local') {
+	if (asset.locationtype === 'local') {
 		async.parallel({
-			deletefile: function(callback) {
+			deletefile: function (callback) {
 				fs.remove(path.join(process.cwd(), asset.attributes.periodicPath), callback);
 			},
-			removeasset: function(callback) {
+			removeasset: function (callback) {
 				applicationController.deleteModel({
 					model: MediaAsset,
 					deleteid: asset._id,
@@ -135,14 +139,15 @@ var remove = function(req, res, next) {
 					callback: callback
 				});
 			}
-		}, function(err, results) {
-			if(err) {
+		}, function (err, results) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				applicationController.handleDocumentQueryRender({
 					req: req,
 					res: res,
@@ -158,7 +163,7 @@ var remove = function(req, res, next) {
 	console.log("asset", asset);
 };
 
-var loadAssets = function(req, res, next) {
+var loadAssets = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -168,15 +173,16 @@ var loadAssets = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -187,14 +193,15 @@ var loadAssets = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		population: population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				// console.log(documents);
 				req.controllerData.assets = documents;
 				next();
@@ -203,7 +210,7 @@ var loadAssets = function(req, res, next) {
 	});
 };
 
-var loadAsset = function(req, res, next) {
+var loadAsset = function (req, res, next) {
 	var params = req.params,
 		population = 'author',
 		docid = params.id;
@@ -214,14 +221,15 @@ var loadAsset = function(req, res, next) {
 		docid: docid,
 		model: MediaAsset,
 		population: population,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.asset = doc;
 				next();
 			}
@@ -229,14 +237,14 @@ var loadAsset = function(req, res, next) {
 	});
 };
 
-var searchResults = function(req, res, next) {
+var searchResults = function (req, res, next) {
 	applicationController.getViewTemplate({
 		res: res,
 		req: req,
 		templatetype: 'search-results',
 		themepath: appSettings.themepath,
 		themefileext: appSettings.templatefileextension,
-		callback: function(templatepath) {
+		callback: function (templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -253,7 +261,7 @@ var searchResults = function(req, res, next) {
 	});
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

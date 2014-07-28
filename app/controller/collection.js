@@ -12,12 +12,12 @@ var path = require('path'),
 	Collection,
 	logger;
 
-var show = function(req, res, next) {
+var show = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'collection/show',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -34,12 +34,12 @@ var show = function(req, res, next) {
 	);
 };
 
-var index = function(req, res, next) {
+var index = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'collection/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -56,13 +56,13 @@ var index = function(req, res, next) {
 	);
 };
 
-var create = function(req, res, next) {
+var create = function (req, res, next) {
 	var newcollection = applicationController.removeEmptyObjectValues(req.body);
 	newcollection.name = applicationController.makeNiceName(newcollection.title);
 	newcollection.itemauthorname = req.user.username;
 	newcollection.primaryauthor = req.user._id;
 	newcollection.authors = [req.user._id];
-	if(newcollection.date && newcollection.time) {
+	if (newcollection.date && newcollection.time) {
 		newcollection.publishat = new Date(moment(newcollection.date + ' ' + newcollection.time).format());
 	}
 
@@ -76,18 +76,18 @@ var create = function(req, res, next) {
 	});
 };
 
-var update = function(req, res, next) {
+var update = function (req, res, next) {
 	var updatecollection = applicationController.removeEmptyObjectValues(req.body);
 	updatecollection.name = applicationController.makeNiceName(updatecollection.title);
-	if(updatecollection.items && updatecollection.items.length > 0) {
-		for(var x in updatecollection.items) {
+	if (updatecollection.items && updatecollection.items.length > 0) {
+		for (var x in updatecollection.items) {
 			updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
 		}
 	}
-	if(!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length > 0) {
+	if (!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length > 0) {
 		updatecollection.primaryasset = updatecollection.assets[0];
 	}
-	if(updatecollection.date && updatecollection.time) {
+	if (updatecollection.date && updatecollection.time) {
 		updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
 	}
 
@@ -104,7 +104,7 @@ var update = function(req, res, next) {
 	});
 };
 
-var append = function(req, res, next) {
+var append = function (req, res, next) {
 	var newitemtoadd = applicationController.removeEmptyObjectValues(req.body);
 	delete newitemtoadd._csrf;
 	var objectToModify = newitemtoadd; //{"items":newitemtoadd};
@@ -123,7 +123,7 @@ var append = function(req, res, next) {
 	});
 };
 
-var loadCollection = function(req, res, next) {
+var loadCollection = function (req, res, next) {
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor items',
 		docid = params.id;
@@ -136,29 +136,31 @@ var loadCollection = function(req, res, next) {
 		docid: docid,
 		model: Collection,
 		population: population,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				Collection.populate(doc, {
 					path: "items.item",
 					model: "Item",
 					select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
-				}, function(err, populatedcollection) {
-					if(err) {
+				}, function (err, populatedcollection) {
+					if (err) {
 						applicationController.handleDocumentQueryErrorResponse({
 							err: err,
 							res: res,
 							req: req
 						});
-					} else {
+					}
+					else {
 						// console.log("doc",populatedcollection);
 						async.parallel({
-							tags: function(callback) {
+							tags: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.tags",
 										model: "Tag",
@@ -166,7 +168,7 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							},
-							categories: function(callback) {
+							categories: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.categories",
 										model: "Category",
@@ -174,7 +176,7 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							},
-							authors: function(callback) {
+							authors: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.authors",
 										model: "User",
@@ -182,7 +184,7 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							},
-							primaryauthor: function(callback) {
+							primaryauthor: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.primaryauthor",
 										model: "User",
@@ -190,7 +192,7 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							},
-							contenttypes: function(callback) {
+							contenttypes: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.contenttypes",
 										model: "Contenttype",
@@ -198,7 +200,7 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							},
-							assets: function(callback) {
+							assets: function (callback) {
 								Collection.populate(populatedcollection, {
 										path: "items.item.assets",
 										model: "Asset",
@@ -206,19 +208,21 @@ var loadCollection = function(req, res, next) {
 									},
 									callback);
 							}
-						}, function(err, results) {
-							if(err) {
+						}, function (err, results) {
+							if (err) {
 								applicationController.handleDocumentQueryErrorResponse({
 									err: err,
 									res: res,
 									req: req
 								});
-							} else if(populatedcollection) {
+							}
+							else if (populatedcollection) {
 								var mergedCollectionData = merge(populatedcollection, results.tags);
 								req.controllerData.collection = mergedCollectionData;
 								// req.controllerData.collectionData = results;
 								next();
-							} else {
+							}
+							else {
 								applicationController.handleDocumentQueryErrorResponse({
 									err: new Error("invalid collection request"),
 									res: res,
@@ -234,7 +238,7 @@ var loadCollection = function(req, res, next) {
 	});
 };
 
-var loadCollections = function(req, res, next) {
+var loadCollections = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -244,15 +248,16 @@ var loadCollections = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -263,14 +268,15 @@ var loadCollections = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		population: population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				// console.log(documents);
 				req.controllerData.collections = documents;
 				next();
@@ -279,8 +285,8 @@ var loadCollections = function(req, res, next) {
 	});
 };
 
-var cli = function(argv) {
-	if(argv.search) {
+var cli = function (argv) {
+	if (argv.search) {
 		// var Collection = mongoose.model('Collection');
 		// Collection.find({}).limit(2).exec(function(err,items){ 
 		// 	if(err){ console.error(err); } else{ console.info(items); }
@@ -293,15 +299,16 @@ var cli = function(argv) {
 			population = 'tags categories authors contenttypes primaryauthor items.item',
 			searchRegEx = new RegExp(applicationController.stripTags(argv.search), "gi");
 
-		if(argv.search === undefined || argv.search.length < 1) {
+		if (argv.search === undefined || argv.search.length < 1) {
 			query = {};
-		} else {
+		}
+		else {
 			query = {
 				$or: [{
 					title: searchRegEx,
-        }, {
+				}, {
 					'name': searchRegEx,
-        }]
+				}]
 			};
 		}
 		// Collection.find(query).limit(5).populate(population).exec(function(err,docs){
@@ -323,25 +330,27 @@ var cli = function(argv) {
 			limit: limit,
 			offset: offset,
 			population: population,
-			callback: function(err, docs) {
+			callback: function (err, docs) {
 				console.log("in model search cb");
-				if(err) {
+				if (err) {
 					console.log(err);
 					process.exit(0);
-				} else {
+				}
+				else {
 					console.log("got docs");
 					console.info(docs);
 					process.exit(0);
 				}
 			}
 		});
-	} else {
+	}
+	else {
 		logger.silly("invalid task");
 		process.exit(0);
 	}
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

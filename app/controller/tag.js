@@ -8,8 +8,8 @@ var path = require('path'),
 	Tag,
 	logger;
 
-var create = function(req, res, next) {
-	if(req.controllerData.tag) {
+var create = function (req, res, next) {
+	if (req.controllerData.tag) {
 		applicationController.handleDocumentQueryRender({
 			req: req,
 			res: res,
@@ -20,7 +20,8 @@ var create = function(req, res, next) {
 				}
 			}
 		});
-	} else {
+	}
+	else {
 		var newtag = applicationController.removeEmptyObjectValues(req.body);
 		newtag.name = applicationController.makeNiceName(newtag.title);
 		newtag.author = req.user._id;
@@ -36,7 +37,7 @@ var create = function(req, res, next) {
 	}
 };
 
-var loadTags = function(req, res, next) {
+var loadTags = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -46,15 +47,16 @@ var loadTags = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -65,14 +67,15 @@ var loadTags = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		// population:population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.tags = documents;
 				next();
 			}
@@ -80,7 +83,7 @@ var loadTags = function(req, res, next) {
 	});
 };
 
-var loadTag = function(req, res, next) {
+var loadTag = function (req, res, next) {
 	var params = req.params,
 		docid = params.id;
 	console.log("docid", docid);
@@ -90,14 +93,15 @@ var loadTag = function(req, res, next) {
 	applicationController.loadModel({
 		docid: docid,
 		model: Tag,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.tag = doc;
 				next();
 			}
@@ -106,12 +110,12 @@ var loadTag = function(req, res, next) {
 };
 
 
-var searchResults = function(req, res, next) {
+var searchResults = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -128,7 +132,7 @@ var searchResults = function(req, res, next) {
 	);
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

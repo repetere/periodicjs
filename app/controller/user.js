@@ -8,12 +8,12 @@ var path = require('path'),
 	User,
 	logger;
 
-var show = function(req, res, next) {
+var show = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'author/show',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -30,21 +30,22 @@ var show = function(req, res, next) {
 	);
 };
 
-var index = function(req, res, next) {
+var index = function (req, res, next) {
 	console.log('index list');
 	User.find({
 		title: /title/
-	}).exec(function(err, items) {
+	}).exec(function (err, items) {
 		console.log("model search");
-		if(err) {
+		if (err) {
 			res.send(err);
-		} else {
+		}
+		else {
 			res.send(items);
 		}
 	});
 };
 
-var loadUser = function(req, res, next) {
+var loadUser = function (req, res, next) {
 	var params = req.params,
 		population = 'userassets coverimages userasset coverimage extensionattributes',
 		docid = params.id;
@@ -55,17 +56,19 @@ var loadUser = function(req, res, next) {
 		docid: docid,
 		model: User,
 		searchusername: true,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else if(doc) {
+			}
+			else if (doc) {
 				req.controllerData.user = doc;
 				next();
-			} else {
+			}
+			else {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: new Error("invalid user request"),
 					res: res,
@@ -76,7 +79,7 @@ var loadUser = function(req, res, next) {
 	});
 };
 
-var loadUsers = function(req, res, next) {
+var loadUsers = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -86,15 +89,16 @@ var loadUsers = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -105,14 +109,15 @@ var loadUsers = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		// population:population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.users = documents;
 				next();
 			}
@@ -120,12 +125,12 @@ var loadUsers = function(req, res, next) {
 	});
 };
 
-var searchResults = function(req, res, next) {
+var searchResults = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -142,7 +147,7 @@ var searchResults = function(req, res, next) {
 	);
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

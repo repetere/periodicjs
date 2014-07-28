@@ -9,12 +9,12 @@ var path = require('path'),
 	Item,
 	logger;
 
-var show = function(req, res, next) {
+var show = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'item/show',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -31,12 +31,12 @@ var show = function(req, res, next) {
 	);
 };
 
-var index = function(req, res, next) {
+var index = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'item/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -53,13 +53,13 @@ var index = function(req, res, next) {
 	);
 };
 
-var create = function(req, res, next) {
+var create = function (req, res, next) {
 	var newitem = applicationController.removeEmptyObjectValues(req.body);
 	newitem.name = applicationController.makeNiceName(newitem.title);
 	newitem.itemauthorname = req.user.username;
 	newitem.primaryauthor = req.user._id;
 	newitem.authors = [req.user._id];
-	if(newitem.date && newitem.time) {
+	if (newitem.date && newitem.time) {
 		newitem.publishat = new Date(moment(newitem.date + ' ' + newitem.time).format());
 	}
 
@@ -74,14 +74,14 @@ var create = function(req, res, next) {
 	});
 };
 
-var update = function(req, res, next) {
+var update = function (req, res, next) {
 	var updateitem = applicationController.removeEmptyObjectValues(req.body);
 
 	updateitem.name = applicationController.makeNiceName(updateitem.title);
-	if(!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
+	if (!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
 		updateitem.primaryasset = updateitem.assets[0];
 	}
-	if(updateitem.date && updateitem.time) {
+	if (updateitem.date && updateitem.time) {
 		updateitem.publishat = new Date(moment(updateitem.date + ' ' + updateitem.time).format());
 	}
 
@@ -98,7 +98,7 @@ var update = function(req, res, next) {
 	});
 };
 
-var loadItem = function(req, res, next) {
+var loadItem = function (req, res, next) {
 	var params = req.params,
 		population = 'contenttypes primaryauthor authors',
 		docid = params.id;
@@ -109,17 +109,19 @@ var loadItem = function(req, res, next) {
 		docid: docid,
 		population: population,
 		model: Item,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else if(doc) {
+			}
+			else if (doc) {
 				req.controllerData.item = doc;
 				next();
-			} else {
+			}
+			else {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: new Error("invalid document request"),
 					res: res,
@@ -130,7 +132,7 @@ var loadItem = function(req, res, next) {
 	});
 };
 
-var loadFullItem = function(req, res, next) {
+var loadFullItem = function (req, res, next) {
 	var params = req.params,
 		docid = params.id;
 
@@ -140,14 +142,15 @@ var loadFullItem = function(req, res, next) {
 		docid: docid,
 		model: Item,
 		population: 'tags collections contenttypes categories assets primaryasset authors primaryauthor',
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.item = doc;
 				next();
 			}
@@ -155,7 +158,7 @@ var loadFullItem = function(req, res, next) {
 	});
 };
 
-var loadItems = function(req, res, next) {
+var loadItems = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -165,15 +168,16 @@ var loadItems = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -184,14 +188,15 @@ var loadItems = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		population: population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.items = documents;
 				next();
 			}
@@ -199,7 +204,7 @@ var loadItems = function(req, res, next) {
 	});
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

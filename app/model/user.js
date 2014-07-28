@@ -72,7 +72,7 @@ var userSchema = new Schema({
 	userassets: [{
 		type: ObjectId,
 		ref: "Asset"
-  }],
+	}],
 	userasset: {
 		type: ObjectId,
 		ref: "Asset"
@@ -80,7 +80,7 @@ var userSchema = new Schema({
 	coverimages: [{
 		type: ObjectId,
 		ref: "Asset"
-  }],
+	}],
 	coverimage: {
 		type: ObjectId,
 		ref: "Asset"
@@ -88,7 +88,7 @@ var userSchema = new Schema({
 	userroles: [{
 		type: ObjectId,
 		ref: "Userrole"
-  }],
+	}],
 	apikey: String,
 	twitterAccessToken: String,
 	twitterAccessTokenSecret: String,
@@ -105,16 +105,18 @@ var userSchema = new Schema({
 	random: Number
 });
 
-userSchema.pre('save', function(next, done) {
+userSchema.pre('save', function (next, done) {
 	this._wasNew = this.isNew;
 	this.random = Math.random();
 
 	var badusername = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	if(this.password !== undefined && this.password.length < 8) {
+	if (this.password !== undefined && this.password.length < 8) {
 		done(new Error('Password is too short'));
-	} else if(this.username !== undefined && this.username.length < 4) {
+	}
+	else if (this.username !== undefined && this.username.length < 4) {
 		done(new Error('Username is too short'));
-	} else if(this.email === undefined || this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+	}
+	else if (this.email === undefined || this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
 		done(new Error('Invalid email'));
 	}
 	// else if (this.username !== undefined && badusername.test(this.username)) {
@@ -125,31 +127,32 @@ userSchema.pre('save', function(next, done) {
 	}
 });
 
-userSchema.post('init', function(doc) {
+userSchema.post('init', function (doc) {
 	logger.info("model - user.js - " + doc._id + ' has been initialized from the db');
 });
-userSchema.post('validate', function(doc) {
+userSchema.post('validate', function (doc) {
 	logger.info("model - user.js - " + doc._id + ' has been validated (but not saved yet)');
 });
-userSchema.post('save', function(doc) {
+userSchema.post('save', function (doc) {
 	logger.info("model - user.js - " + doc._id + ' has been saved');
 });
-userSchema.pre('remove', function(doc) {
+userSchema.pre('remove', function (doc) {
 	console.log('==================deleted============');
 	logger.info("model - user.js - " + doc._id + ' has been removed');
 });
 
 // Password verification
-userSchema.methods.comparePassword = function(candidatePassword, cb) {
+userSchema.methods.comparePassword = function (candidatePassword, cb) {
 	var bcrypt = require('bcrypt');
-	if(this.password) {
-		bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-			if(err) {
+	if (this.password) {
+		bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+			if (err) {
 				return cb(err);
 			}
 			cb(null, isMatch);
 		});
-	} else {
+	}
+	else {
 		logger.info("user has no pw");
 		return cb(null, false);
 	}
@@ -157,78 +160,82 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
 
 // Remember Me implementation helper method
-userSchema.methods.generateRandomToken = function() {
+userSchema.methods.generateRandomToken = function () {
 	var user = this,
 		chars = "_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
 		token = new Date().getTime() + '_';
-	for(var x = 0; x < 16; x++) {
+	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);
 		token += chars.charAt(i);
 	}
 	return token;
 };
-userSchema.statics.generateRandomTokenStatic = function() {
+userSchema.statics.generateRandomTokenStatic = function () {
 	var user = this,
 		chars = "_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
 		token = new Date().getTime() + '_';
-	for(var x = 0; x < 16; x++) {
+	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);
 		token += chars.charAt(i);
 	}
 	return token;
 };
 
-userSchema.statics.validApiKey = function(userid, apikey, callback) {
+userSchema.statics.validApiKey = function (userid, apikey, callback) {
 	var User = mongoose.model('User');
 	User.find({
 		_id: userid,
 		apikey: apikey
-	}, function(err, user) {
-		if(err) {
+	}, function (err, user) {
+		if (err) {
 			logger.error(err);
 			callback(err, false);
-		} else if(user) {
+		}
+		else if (user) {
 			callback(false, user);
-		} else {
+		}
+		else {
 			logger.silly("model - user.js - invalid apikey");
 			callback(new Error("invalid apikey"), false);
 		}
 	});
 };
 
-userSchema.statics.hasPrivilege = function(user, privilege) {
+userSchema.statics.hasPrivilege = function (user, privilege) {
 	// console.log(" hasPrivilege user, privilege",user,privilege);
 	return user.accounttype === 'admin' || user.privileges[privilege];
 };
 
-userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
+userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	var bcrypt = require('bcrypt');
 	var application_controller = require('../controller/application');
 	var userdata = userdataparam;
 	// console.log(userdata);
-	if(userdata._csrf) {
+	if (userdata._csrf) {
 		delete userdata._csrf;
 	}
-	if(userdata.submit) {
+	if (userdata.submit) {
 		delete userdata.submit;
 	}
-	if(
+	if (
 		userdata.password === undefined || !userdata.password || userdata.password === '' || userdata.password === ' ') {
 		delete userdata.password;
 		delete userdata.passwordconfirm;
-		if(callback) {
+		if (callback) {
 			callback(new Error("missing password"), userdata);
 		}
-	} else if(userdata.password.length < 6) {
-		if(callback) {
+	}
+	else if (userdata.password.length < 6) {
+		if (callback) {
 			callback(new Error("password is too short - min 6 characters"), userdata);
 		}
-	} else {
+	}
+	else {
 		delete userdata.passwordconfirm;
-		bcrypt.genSalt(10, function(err, salt) {
-			bcrypt.hash(userdata.password, salt, function(err, hash) {
+		bcrypt.genSalt(10, function (err, salt) {
+			bcrypt.hash(userdata.password, salt, function (err, hash) {
 				userdata.password = hash;
-				if(userdata.username && !userdata.email) {
+				if (userdata.username && !userdata.email) {
 					userdata.email = userdata.username;
 					delete userdata.username;
 				}
@@ -237,14 +244,15 @@ userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
 				console.log(__dirname, userdata);
 
 				var newUser = new User(userdata);
-				newUser.save(function(err, user) {
-					if(err) {
+				newUser.save(function (err, user) {
+					if (err) {
 						logger.error(err);
-						if(callback) {
+						if (callback) {
 							callback(err, userdata);
 						}
-					} else {
-						if(callback) {
+					}
+					else {
+						if (callback) {
 							callback(false, user);
 						}
 					}
@@ -255,7 +263,7 @@ userSchema.statics.fastRegisterUser = function(userdataparam, callback) {
 	}
 };
 
-var sendEmail = function(options, callback) {
+var sendEmail = function (options, callback) {
 	console.log("*********** FINISH ******* sending mail");
 	console.log("TODO: sending mail");
 	console.log("options", options);
@@ -306,7 +314,7 @@ var sendEmail = function(options, callback) {
             });
 */
 };
-userSchema.statics.sendAsyncWelcomeEmail = function(options, callback) {
+userSchema.statics.sendAsyncWelcomeEmail = function (options, callback) {
 	var emailOptions = {};
 	emailOptions.user = options;
 	// console.log("emailOptions.user",emailOptions.user,"options",options)

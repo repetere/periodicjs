@@ -81,14 +81,14 @@
 		"uglifyify": "^2.5.0"
 	},
 	"keywords": [
-    "content management framework",
-    "typeset",
-    "wysiwyg",
-    "ui manager",
-    "CMS",
-    "CDS",
-    "Content Delivery System",
-    "Content Management System",
-    "Periodic Decoupled Framework"
-  ]
+		"content management framework",
+		"typeset",
+		"wysiwyg",
+		"ui manager",
+		"CMS",
+		"CDS",
+		"Content Delivery System",
+		"Content Management System",
+		"Periodic Decoupled Framework"
+	]
 }

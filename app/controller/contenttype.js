@@ -8,8 +8,8 @@ var path = require('path'),
 	Contenttype,
 	logger;
 
-var create = function(req, res, next) {
-	if(req.controllerData.contenttype) {
+var create = function (req, res, next) {
+	if (req.controllerData.contenttype) {
 		applicationController.handleDocumentQueryRender({
 			req: req,
 			res: res,
@@ -20,7 +20,8 @@ var create = function(req, res, next) {
 				}
 			}
 		});
-	} else {
+	}
+	else {
 		var newcontenttype = applicationController.removeEmptyObjectValues(req.body);
 		newcontenttype.name = applicationController.makeNiceName(newcontenttype.title);
 		newcontenttype.author = req.user._id;
@@ -36,7 +37,7 @@ var create = function(req, res, next) {
 	}
 };
 
-var append = function(req, res, next) {
+var append = function (req, res, next) {
 	var newattribute = applicationController.removeEmptyObjectValues(req.body);
 	newattribute.name = applicationController.makeNiceAttribute(newattribute.title);
 	var objectToModify = {
@@ -56,7 +57,7 @@ var append = function(req, res, next) {
 	});
 };
 
-var removeitem = function(req, res, next) {
+var removeitem = function (req, res, next) {
 	var removeAttribute = applicationController.removeEmptyObjectValues(req.body),
 		objectToModify = {
 			"attributes": removeAttribute
@@ -78,7 +79,7 @@ var removeitem = function(req, res, next) {
 	});
 };
 
-var loadContenttypes = function(req, res, next) {
+var loadContenttypes = function (req, res, next) {
 	var params = req.params,
 		query,
 		offset = req.query.offset,
@@ -88,15 +89,16 @@ var loadContenttypes = function(req, res, next) {
 		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if(req.query.search === undefined || req.query.search.length < 1) {
+	if (req.query.search === undefined || req.query.search.length < 1) {
 		query = {};
-	} else {
+	}
+	else {
 		query = {
 			$or: [{
 				title: searchRegEx,
-      }, {
+			}, {
 				'name': searchRegEx,
-      }]
+			}]
 		};
 	}
 
@@ -107,14 +109,15 @@ var loadContenttypes = function(req, res, next) {
 		limit: limit,
 		offset: offset,
 		population: population,
-		callback: function(err, documents) {
-			if(err) {
+		callback: function (err, documents) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.contenttypes = documents;
 				next();
 			}
@@ -122,7 +125,7 @@ var loadContenttypes = function(req, res, next) {
 	});
 };
 
-var loadContenttype = function(req, res, next) {
+var loadContenttype = function (req, res, next) {
 	var params = req.params,
 		docid = params.id;
 	console.log("docid", docid);
@@ -132,14 +135,15 @@ var loadContenttype = function(req, res, next) {
 	applicationController.loadModel({
 		docid: docid,
 		model: Contenttype,
-		callback: function(err, doc) {
-			if(err) {
+		callback: function (err, doc) {
+			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
-			} else {
+			}
+			else {
 				req.controllerData.contenttype = doc;
 				next();
 			}
@@ -147,12 +151,12 @@ var loadContenttype = function(req, res, next) {
 	});
 };
 
-var searchResults = function(req, res, next) {
+var searchResults = function (req, res, next) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
-		function(err, templatepath) {
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
 				res: res,
 				req: req,
@@ -169,7 +173,7 @@ var searchResults = function(req, res, next) {
 	);
 };
 
-var controller = function(resources) {
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;

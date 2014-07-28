@@ -8,30 +8,12 @@
 var path = require('path'),
 	uglify = require('uglify-js');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	grunt.initConfig({
 		jsbeautifier: {
 			files: ["<%= jshint.all %>"],
 			options: {
-				js: {
-					braceStyle: "collapse",
-					breakChainedMethods: false,
-					// e4x: false,
-					// evalCode: false,
-					indentChar: " ",
-					// indentLevel: 0,
-					indentSize: 2,
-					indentWithTabs: true,
-					// jslintHappy: false,
-					keepArrayIndentation: true,
-					keepFunctionIndentation: true,
-					maxPreserveNewlines: 10,
-					preserveNewlines: true,
-					spaceBeforeConditional: false,
-					spaceInParen: false,
-					// unescapeStrings: false,
-					// wrapLineLength: 0
-				}
+				config: '.jsbeautify'
 			},
 		},
 		simplemocha: {
@@ -51,18 +33,18 @@ module.exports = function(grunt) {
 				jshintrc: '.jshintrc'
 			},
 			all: [
-        'Gruntfile.js',
-        'index.js',
-        'app/**/*.js',
-        '!app/doc/**/*.js',
-        'test/**/*.js',
-        'package.json',
-        'config/**/*.js',
-        'content/extensions/node_modules/**/index.js',
-        'content/extensions/node_modules/**/contoller/**/*.js',
-        'content/extensions/node_modules/**/resources/*.js',
-        '!content/extensions/node_modules/**/node_modules/**/*.js'
-      ]
+				'Gruntfile.js',
+				'index.js',
+				'app/**/*.js',
+				'!app/doc/**/*.js',
+				'test/**/*.js',
+				'package.json',
+				'config/**/*.js',
+				'content/extensions/node_modules/**/index.js',
+				'content/extensions/node_modules/**/contoller/**/*.js',
+				'content/extensions/node_modules/**/resources/*.js',
+				'!content/extensions/node_modules/**/node_modules/**/*.js'
+			]
 		},
 		jsdoc: {
 			dist: {
@@ -81,7 +63,7 @@ module.exports = function(grunt) {
 					src: ['**/resources/js/*_src.js'],
 					dest: 'content/extensions/node_modules',
 					// dest: 'public/extensions',
-					rename: function(dest, src) {
+					rename: function (dest, src) {
 						var finallocation = path.join(dest, src);
 						finallocation = finallocation.replace("_src", "_build");
 						finallocation = finallocation.replace("resources", "public");
@@ -89,7 +71,7 @@ module.exports = function(grunt) {
 						// console.log("dest", dest, "src", src, "finallocation", finallocation);
 						return finallocation;
 					}
-        }],
+				}],
 				options: {}
 			}
 		},
@@ -107,14 +89,14 @@ module.exports = function(grunt) {
 					src: ['**/public/js/*_build.js'],
 					dest: 'content/extensions/node_modules',
 					// dest: 'public/extensions',
-					rename: function(dest, src) {
+					rename: function (dest, src) {
 						var finallocation = path.join(dest, src);
 						finallocation = finallocation.replace("_build", ".min");
 						finallocation = path.resolve(finallocation);
 						// console.log("dest", dest, "src", src, "finallocation", finallocation);
 						return finallocation;
 					}
-        }]
+				}]
 			}
 		},
 		less: {
@@ -131,21 +113,19 @@ module.exports = function(grunt) {
 		},
 		copy: {
 			main: {
-				files: [
-					{
-						expand: true,
-						cwd: 'content/extensions/node_modules',
-						src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
-						dest: 'public/extensions/',
-						rename: function(dest, src) {
-							var finallocation = path.join(dest, src.replace("public", ""));
-							// finallocation = finallocation;
-							finallocation = path.resolve(finallocation);
-							// console.log("dest", dest, "src", src, "finallocation", finallocation);
-							return finallocation;
-						}
-          }
-        ]
+				files: [{
+					expand: true,
+					cwd: 'content/extensions/node_modules',
+					src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
+					dest: 'public/extensions/',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src.replace("public", ""));
+						// finallocation = finallocation;
+						finallocation = path.resolve(finallocation);
+						// console.log("dest", dest, "src", src, "finallocation", finallocation);
+						return finallocation;
+					}
+				}]
 			}
 		},
 		// cssmin: {
