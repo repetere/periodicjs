@@ -126,7 +126,7 @@ module.exports = function (grunt) {
 		},
 
 		/*
-				cssmin: {
+		cssmin: {
 			combine: {
 				files: {
 					'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
@@ -229,7 +229,6 @@ module.exports = function (grunt) {
 				}
 			}
 		},
-
 		casperjs: {
 			options: {
 				async: {
@@ -240,15 +239,14 @@ module.exports = function (grunt) {
 				src: ['test/intergration/**\/*.js']
 			}
 		},
-
 		*/
 		watch: {
-			scripts: {
-				files: ['<%= jshint.all %>'],
-				tasks: ['lint', 'packagejs', 'beautify', 'minjs', 'css', 'test', 'css', 'copypublic'],
-				options: {
-					interrupt: true
-				}
+			options: {
+				interrupt: true
+			},
+			lint: {
+				files: ['<%= jshint.all %>', 'content/extensions/node_modules/**/resources/**/*.js'],
+				tasks: ['newer:jshint', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:less', 'newer:simplemocha:all', 'newer:copy:main', 'newer:copy:main']
 			}
 		}
 	});
@@ -261,12 +259,4 @@ module.exports = function (grunt) {
 	}
 
 	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
-	grunt.registerTask('lint', 'newer:jshint:all');
-	grunt.registerTask('beautify', 'newer:jsbeautifier:files');
-	grunt.registerTask('test', 'newer:simplemocha:all');
-	grunt.registerTask('packagejs', 'newer:browserify');
-	grunt.registerTask('copypublic', 'newer:copy:main');
-	grunt.registerTask('minjs', 'newer:uglify:all');
-	grunt.registerTask('css', 'newer:less');
-	grunt.registerTask('doc', 'newer:jsdoc:dist');
 };
