@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-var mongoose = require('mongoose'),
+var mongoose = require("mongoose"),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
 	logger = console;
@@ -11,7 +11,7 @@ var userSchema = new Schema({
 		type: String,
 		index: {
 			unique: true,
-			sparse: false,
+			sparse: false
 		}
 	},
 	firstname: String,
@@ -20,7 +20,7 @@ var userSchema = new Schema({
 		type: String,
 		index: {
 			unique: true,
-			sparse: true,
+			sparse: true
 		}
 	},
 	password: String,
@@ -29,7 +29,7 @@ var userSchema = new Schema({
 	userid: {
 		type: Number,
 		index: {
-			sparse: true,
+			sparse: true
 		}
 	},
 	accesstoken: String,
@@ -49,7 +49,7 @@ var userSchema = new Schema({
 		loc: {
 			longitude: Number,
 			latitude: Number
-		},
+		}
 	},
 	roles: Schema.Types.Mixed,
 	privileges: Schema.Types.Mixed,
@@ -334,7 +334,7 @@ userSchema.statics.sendAsyncWelcomeEmail = function (options, callback) {
 		to: emailOptions.user.email, // list of receivers
 		bcc: "yaw.etse@gmail.com",
 		subject: emailOptions.emailSubject,
-		generateTextFromHTML: true, // plaintext body
+		generateTextFromHTML: true // plaintext body
 	};
 	sendEmail(emailOptions, callback);
 };

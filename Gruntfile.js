@@ -1,20 +1,20 @@
+'use strict';
 /*
  * manuscript
  * http://github.com/typesettin/manuscript
  *
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
-'use strict';
-var path = require('path'),
-	uglify = require('uglify-js');
+
+var path = require('path');
 
 module.exports = function (grunt) {
 	grunt.initConfig({
 		jsbeautifier: {
-			files: ["<%= jshint.all %>"],
+			files: ['<%= jshint.all %>'],
 			options: {
 				config: '.jsbeautify'
-			},
+			}
 		},
 		simplemocha: {
 			options: {
@@ -62,13 +62,11 @@ module.exports = function (grunt) {
 					cwd: 'content/extensions/node_modules',
 					src: ['**/resources/js/*_src.js'],
 					dest: 'content/extensions/node_modules',
-					// dest: 'public/extensions',
 					rename: function (dest, src) {
 						var finallocation = path.join(dest, src);
-						finallocation = finallocation.replace("_src", "_build");
-						finallocation = finallocation.replace("resources", "public");
+						finallocation = finallocation.replace('_src', '_build');
+						finallocation = finallocation.replace('resources', 'public');
 						finallocation = path.resolve(finallocation);
-						// console.log("dest", dest, "src", src, "finallocation", finallocation);
 						return finallocation;
 					}
 				}],
@@ -79,7 +77,7 @@ module.exports = function (grunt) {
 			options: {
 				sourceMap: true,
 				compress: {
-					drop_console: false,
+					drop_console: false
 				}
 			},
 			all: {
@@ -88,12 +86,10 @@ module.exports = function (grunt) {
 					cwd: 'content/extensions/node_modules',
 					src: ['**/public/js/*_build.js'],
 					dest: 'content/extensions/node_modules',
-					// dest: 'public/extensions',
 					rename: function (dest, src) {
 						var finallocation = path.join(dest, src);
-						finallocation = finallocation.replace("_build", ".min");
+						finallocation = finallocation.replace('_build', '.min');
 						finallocation = path.resolve(finallocation);
-						// console.log("dest", dest, "src", src, "finallocation", finallocation);
 						return finallocation;
 					}
 				}]
@@ -107,7 +103,7 @@ module.exports = function (grunt) {
 					compress: true
 				},
 				files: {
-					"public/styles/manuscript.css": ['client/stylesheets/**/*.less'],
+					'public/styles/manuscript.css': ['client/stylesheets/**/*.less']
 				}
 			}
 		},
@@ -119,7 +115,7 @@ module.exports = function (grunt) {
 					src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
 					dest: 'public/extensions/',
 					rename: function (dest, src) {
-						var finallocation = path.join(dest, src.replace("public", ""));
+						var finallocation = path.join(dest, src.replace('public', ''));
 						// finallocation = finallocation;
 						finallocation = path.resolve(finallocation);
 						// console.log("dest", dest, "src", src, "finallocation", finallocation);
@@ -128,29 +124,127 @@ module.exports = function (grunt) {
 				}]
 			}
 		},
-		// cssmin: {
-		// 	combine: {
-		// 		files: {
-		// 			'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
-		// 		}
-		// 	}
-		// },
-		// imagemin: {                          // Task
-		//   dynamic: {                         // Another target
-		//     options: {                       // Target options
-		//       optimizationLevel: 7
-		//     },
-		//     files: [{
-		//       expand: true,                  // Enable dynamic expansion
-		//       cwd: 'src/',                   // Src matches are relative to this path
-		//       src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
-		//       dest: 'dist/'                  // Destination path prefix
-		//     }]
-		//   }
-		// },
+
+		/*
+				cssmin: {
+			combine: {
+				files: {
+					'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
+				}
+			}
+		},
+		imagemin: {                          // Task
+		  dynamic: {                         // Another target
+		    options: {                       // Target options
+		      optimizationLevel: 7
+		    },
+		    files: [{
+		      expand: true,                  // Enable dynamic expansion
+		      cwd: 'src/',                   // Src matches are relative to this path
+		      src: ['**\/*.{png,jpg,gif}'],   // Actual patterns to match
+		      dest: 'dist/'                  // Destination path prefix
+		    }]
+		  }
+		},
+		copy: {
+			vendor_fonts: {
+				files: [
+					// includes files within path
+					{
+						expand: true,
+						cwd: 'app/vendor/',
+						src: ['**\/*'],
+						dest: 'dist/vendor/'
+					}, {
+						expand: true,
+						cwd: 'app/fonts/',
+						src: ['**\/*'],
+						dest: 'dist/fonts/'
+					}
+				]
+			},
+			spec: {
+				expand: true,
+				cwd: 'app/scripts',
+				nonull: true,
+				src: ['**\/*.js', '!bundle.js'],
+				dest: 'test/unit/',
+				filter: function (filepath) { //look in test/unit to see if spec already exists. Return TRUE to make new file	(files does not exist)
+					var dest = path.join(
+						grunt.config('copy.spec.dest'),
+						path.basename(filepath, '.js') + '_spec.js'
+					);
+					var doesFileExist = grunt.file.exists(dest);
+					return !(doesFileExist);
+				},
+				rename: function (dest, src) {
+					var src_spec = path.basename(src, '.js') + "_spec.js"
+					return dest + src_spec;
+				},
+				options: {
+					process: function (content, srcpath) { //between copy 
+						console.log("STARTING Replace", " ", srcpath);
+						var varName = path.basename(srcpath, '.js');
+						var require = "var " + varName + " = " + "require('" + '../../' + srcpath + "');";
+						return require;
+					}
+				}
+			}
+		},
+		plato: {
+			lint: {
+				options: {
+					jshint: grunt.file.readJSON('.jshintrc'),
+					dir: "reports",
+					title: grunt.file.readJSON('package.json').name,
+					complexity: {
+						minmi: true,
+						forin: true,
+						logicalor: false
+					}
+				},
+				files: {
+					'reports': ['app/scripts/**\/*.js']
+				}
+			},
+		},
+		mocha_istanbul: {
+			coverage: {
+				src: 'test/unit',
+				options: {
+					check: {
+						lines: 75,
+						statements: 75,
+						branches: 75,
+						functions: 75
+					},
+					mask: '*.js',
+					instrument: ['test'],
+					coverageFolder: "reports/coverage",
+					reporter: "html-cov",
+					ui: 'bdd',
+					root: 'app/scripts/',
+					print: 'summary',
+					excludes: ['node_modules', 'dist']
+				}
+			}
+		},
+
+		casperjs: {
+			options: {
+				async: {
+					parrallel: true
+				}
+			},
+			files: {
+				src: ['test/intergration/**\/*.js']
+			}
+		},
+
+		*/
 		watch: {
 			scripts: {
-				files: ["<%= jshint.all %>"],
+				files: ['<%= jshint.all %>'],
 				tasks: ['lint', 'packagejs', 'beautify', 'minjs', 'css', 'test', 'css', 'copypublic'],
 				options: {
 					interrupt: true
@@ -159,17 +253,12 @@ module.exports = function (grunt) {
 		}
 	});
 
-	grunt.loadNpmTasks('grunt-simple-mocha');
-	grunt.loadNpmTasks('grunt-jsbeautifier');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-browserify');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-jsdoc');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-newer');
+	// Loading dependencies
+	for (var key in grunt.file.readJSON('package.json').devDependencies) {
+		if (key.indexOf('grunt') === 0 && key !== 'grunt') {
+			grunt.loadNpmTasks(key);
+		}
+	}
 
 	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
 	grunt.registerTask('lint', 'newer:jshint:all');

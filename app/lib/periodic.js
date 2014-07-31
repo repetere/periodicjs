@@ -212,7 +212,7 @@ var init = {
 				});
 			}
 		});
-	},
+	}
 };
 
 console.time('Server Starting');

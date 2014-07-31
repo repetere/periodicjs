@@ -95,9 +95,9 @@ var loadUsers = function (req, res, next) {
 	else {
 		query = {
 			$or: [{
-				title: searchRegEx,
+				title: searchRegEx
 			}, {
-				'name': searchRegEx,
+				'name': searchRegEx
 			}]
 		};
 	}

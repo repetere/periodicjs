@@ -56,9 +56,9 @@ var customLayout = function (options) {
 		else {
 			return {
 				$or: [{
-					title: searchRegEx,
+					title: searchRegEx
 				}, {
-					'name': searchRegEx,
+					'name': searchRegEx
 				}]
 			};
 		}

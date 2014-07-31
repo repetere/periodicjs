@@ -1,7 +1,6 @@
 'use strict';
 
 var path = require('path'),
-	extend = require('util-extend'),
 	merge = require('utils-merge'),
 	fs = require('fs-extra');
 
@@ -541,7 +540,7 @@ var applicationController = function (resources) {
 				params: req.params,
 				baseurl: req.baseUrl,
 				originalurl: req.originalUrl,
-				parsed: req._parsedUrl,
+				parsed: req._parsedUrl
 			};
 
 			responseData.flash_messages = req.flash();
@@ -704,7 +703,7 @@ var applicationController = function (resources) {
 				Themes: {},
 				Extensions: {},
 				Settings: {},
-				User: {},
+				User: {}
 			}
 		};
 		for (var x in appSettings.extconf.extensions) {

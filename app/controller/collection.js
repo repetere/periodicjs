@@ -254,9 +254,9 @@ var loadCollections = function (req, res, next) {
 	else {
 		query = {
 			$or: [{
-				title: searchRegEx,
+				title: searchRegEx
 			}, {
-				'name': searchRegEx,
+				'name': searchRegEx
 			}]
 		};
 	}
@@ -305,9 +305,9 @@ var cli = function (argv) {
 		else {
 			query = {
 				$or: [{
-					title: searchRegEx,
+					title: searchRegEx
 				}, {
-					'name': searchRegEx,
+					'name': searchRegEx
 				}]
 			};
 		}
