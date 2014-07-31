@@ -103,7 +103,7 @@ module.exports = function (grunt) {
 					compress: true
 				},
 				files: {
-					'public/styles/manuscript.css': ['client/stylesheets/**/*.less']
+					'public/styles/default/periodic.css': ['public/styles/default/periodic.less']
 				}
 			}
 		},
@@ -112,7 +112,8 @@ module.exports = function (grunt) {
 				files: [{
 					expand: true,
 					cwd: 'content/extensions/node_modules',
-					src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
+					src: ['**/public/**/*.*', '!**/node_modules/**/*.*'],
+					// src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
 					dest: 'public/extensions/',
 					rename: function (dest, src) {
 						var finallocation = path.join(dest, src.replace('public', ''));
@@ -244,9 +245,13 @@ module.exports = function (grunt) {
 			options: {
 				interrupt: true
 			},
-			lint: {
+			css: {
+				files: ['public/stylesheets/**/*.less'],
+				tasks: ['newer:less']
+			},
+			js: {
 				files: ['<%= jshint.all %>', 'content/extensions/node_modules/**/resources/**/*.js'],
-				tasks: ['newer:jshint', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:less', 'newer:simplemocha:all', 'newer:copy:main', 'newer:copy:main']
+				tasks: ['newer:simplemocha:all', 'newer:jshint:all', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:copy:main']
 			}
 		}
 	});
