@@ -2134,7 +2134,7 @@ var letterpress = require('letterpressjs'),
 		disablenewtags: true,
 		createTagFunc:function(id,val,callback){			
 			if(id==='NEWTAG' || id==='SELECT'){
-				window.ribbonNotification.showRibbon( 'user does not exist',4000,'error');
+				window.ribbonNotification.showRibbon( 'privilege does not exist',4000,'error');
 			}
 			else if(id!=='SELECT'||id!=='NEWTAG'){
 				callback(id,val);
