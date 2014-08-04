@@ -32,7 +32,6 @@
  */
 var express = require('express'),
 	path = require('path'),
-	fs = require('fs'),
 	bodyParser = require('body-parser'),
 	methodOverride = require('method-override'),
 	cookieParser = require('cookie-parser'),
@@ -42,7 +41,6 @@ var express = require('express'),
 	compress = require('compression'),
 	flash = require('connect-flash'),
 	csrf = require('csurf'),
-	ejs = require('ejs'),
 	app = express(),
 	MongoStore = require('connect-mongo')(session),
 	expressAppLogger = require('morgan'),
@@ -121,7 +119,7 @@ var init = {
 			expressAppLogger.format('app', '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m');
 			if (appconfig.settings().status !== 'install') {
 				app.use(expressAppLogger({
-					format: "app"
+					format: 'app'
 				}));
 			}
 			else {
@@ -132,7 +130,7 @@ var init = {
 	useSessions: function () {
 		if (appconfig.settings().sessions.enabled) {
 			var express_session_config = {};
-			if (appconfig.settings().sessions.type === "mongo" && appconfig.settings().status !== 'install') {
+			if (appconfig.settings().sessions.type === 'mongo' && appconfig.settings().status !== 'install') {
 				express_session_config = {
 					secret: 'hjoiuu87go9hui',
 					maxAge: new Date(Date.now() + 3600000),
@@ -197,7 +195,7 @@ var init = {
 
 		//send client errors
 		//catch all errors
-		app.use(function (err, req, res, next) {
+		app.use(function (err, req, res) {
 			if (req.xhr) {
 				res.send(500, {
 					error: 'Something blew up!'
