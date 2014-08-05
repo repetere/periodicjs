@@ -8,7 +8,6 @@
 'use strict';
 
 var fs = require('fs'),
-	extend = require('util-extend'),
 	semver = require('semver'),
 	path = require('path');
 /**
@@ -70,8 +69,8 @@ var extensions = function (appsettings) {
 	this.init = function (appsettings) {
 		// /** load pluginfile: content/plugin/extensions.json */
 		extensionsConfig = readJSONFile(extensionFilePath);
-
-		extensionsConfig.extensions.forEach(function (val, index, arr) {
+		extensionsConfig.extensions.forEach(function (val) {
+			// extensionsConfig.extensions.forEach(function (val, index, arr) {
 			// if(val.installed){
 			// 	// console.log(this.getExtensionPeriodicConfFilePath(val.name));
 			// 	val.periodicConfig = readJSONFile(this.getExtensionPeriodicConfFilePath(val.name));

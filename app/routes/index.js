@@ -18,6 +18,7 @@ module.exports = function (periodic) {
 
 	periodic.settings.extconf = extensions.settings();
 	extensions.loadExtensions(periodic);
+	console.log(models);
 
 	if (periodic.settings.theme) {
 		var themeRoute = path.join(periodic.settings.themepath, 'routes.js');

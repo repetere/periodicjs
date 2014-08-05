@@ -51,8 +51,6 @@ var userSchema = new Schema({
 			latitude: Number
 		}
 	},
-	roles: Schema.Types.Mixed,
-	privileges: Schema.Types.Mixed,
 	createdat: {
 		type: Date,
 		"default": Date.now
