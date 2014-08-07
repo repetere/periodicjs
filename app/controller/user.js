@@ -54,6 +54,10 @@ var update = function (req, res) {
 	// 		updateuser.items[x] = JSON.parse(updateuser.items[x]);
 	// 	}
 	// }
+	// 760
+	if ((updateuser.activated || updateuser.accounttype || updateuser.userroles) && !User.hasPrivilege(req.user, 760)) {
+		err = new Error('EXT-UAC760: You don\'t have access to modify user access');
+	}
 	if (updateuser.password) {
 		if (updateuser.password !== updateuser.passwordconfirm) {
 			err = new Error('Passwords do not match');
