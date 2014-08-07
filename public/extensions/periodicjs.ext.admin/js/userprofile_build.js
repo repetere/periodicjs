@@ -2174,17 +2174,13 @@ updatemedia.handleMediaButtonClick = function(e){
 updatemedia.uploadFile = function(mediafilesresult,file,options){
 	var reader = new FileReader(),
 			client = new XMLHttpRequest(),
-			formData = new FormData();
-			if(options){
-				var posturl = options.posturl,
-						callback = options.callback;
-			}
-			else{
-				var posturl = "/mediaasset/new?format=json",
-					callback=function(data){
-						updatemedia(mediafilesresult,data);
-					};
-			}
+			formData = new FormData(),
+			posturl = (options && options.posturl) ? options.posturl : '/mediaasset/new?format=json',
+			callback = (options && options.callback) ? options.callback : function(data){
+				updatemedia(mediafilesresult,data);
+			};
+
+	console.log("posturl",posturl);
 
 	reader.onload = function(e) {
 		// console.log(e);
@@ -2279,14 +2275,20 @@ var deleteUser = function(e) {
 var uploadMediaFiles = function(e){
 	// fetch FileList object
 	var files = e.target.files || e.dataTransfer.files, 
-		f;
+		f,
+		updateuserpic = function(mediadoc){
+			console.log(mediadoc);
+			updatemedia(mediafilesresult,mediadoc);
+		};
 
 	// process all File objects
 	for (var i = 0; i <files.length; i++) {
 		f = files[i];
 		// ParseFile(f);
 		// uploadFile(f);
-		updatemedia.uploadFile(mediafilesresult,f);
+		updatemedia.uploadFile(mediafilesresult,f,{
+			callback:updateuserpic
+		});
 	}
 };
 
