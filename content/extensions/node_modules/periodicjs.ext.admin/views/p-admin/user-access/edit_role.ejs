@@ -1,0 +1,9 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<script type="text/javascript">
+	<%- locals.viewhelper.passObjToClient(userrole.privileges,"userroleprivileges") %>
+	</script>
+	<form class="_pea-form" method="post" action="/p-admin/useraccesscontrol/new">
+		<% include compose_userrole_form %>
+	</form>
+<% include ../../shared/footer %>
