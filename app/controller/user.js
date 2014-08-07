@@ -1,14 +1,13 @@
 'use strict';
 
-var path = require('path'),
-	appController = require('./application'),
+var appController = require('./application'),
 	applicationController,
 	appSettings,
 	mongoose,
 	User,
 	logger;
 
-var show = function (req, res, next) {
+var show = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'author/show',
 			themefileext: appSettings.templatefileextension
@@ -46,28 +45,58 @@ var index = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updateuser = applicationController.removeEmptyObjectValues(req.body);
+	var bcrypt = require('bcrypt'),
+		updateuser = applicationController.removeEmptyObjectValues(req.body),
+		err;
 	// updateuser.name = applicationController.makeNiceName(updateuser.title);
 	// if (updateuser.items && updateuser.items.length > 0) {
 	// 	for (var x in updateuser.items) {
 	// 		updateuser.items[x] = JSON.parse(updateuser.items[x]);
 	// 	}
 	// }
+	if (updateuser.password) {
+		if (updateuser.password !== updateuser.passwordconfirm) {
+			err = new Error('Passwords do not match');
+		}
+		else if (updateuser.password === undefined || updateuser.password.length < 8) {
+			err = new Error('Password is too short');
+		}
+		else {
+			var salt = bcrypt.genSaltSync(10),
+				hash = bcrypt.hashSync(updateuser.password, salt);
+			updateuser.password = hash;
+		}
+	}
+	if (updateuser.username && (updateuser.username === undefined || updateuser.username.length < 4)) {
+		err = new Error('Username is too short');
+	}
+	if (updateuser.email && (updateuser.email === undefined || updateuser.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null)) {
+		err = new Error('Invalid email');
+	}
 	if (!updateuser.primaryasset && updateuser.assets && updateuser.assets.length > 0) {
 		updateuser.primaryasset = updateuser.assets[0];
 	}
 
-	applicationController.updateModel({
-		model: User,
-		id: updateuser.docid,
-		updatedoc: updateuser,
-		// saverevision: true,
-		// population: 'contenttypes',
-		res: res,
-		req: req,
-		successredirect: '/p-admin/user/' + updateuser.username + '/edit/',
-		appendid: true
-	});
+	if (err) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err: err,
+			res: res,
+			req: req
+		});
+	}
+	else {
+		applicationController.updateModel({
+			model: User,
+			id: updateuser.docid,
+			updatedoc: updateuser,
+			// saverevision: true,
+			// population: 'contenttypes',
+			res: res,
+			req: req,
+			successredirect: '/p-admin/user/' + updateuser.username + '/edit/',
+			appendid: true
+		});
+	}
 };
 
 var loadUser = function (req, res, next) {
