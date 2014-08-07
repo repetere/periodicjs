@@ -105,7 +105,7 @@ var update = function (req, res) {
 
 var loadUser = function (req, res, next) {
 	var params = req.params,
-		population = 'userassets coverimages userasset coverimage extensionattributes userroles',
+		population = 'assets coverimages primaryasset coverimage extensionattributes userroles',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};

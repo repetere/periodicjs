@@ -67,11 +67,11 @@ var userSchema = new Schema({
 		type: String,
 		"default": "male"
 	},
-	userassets: [{
+	assets: [{
 		type: ObjectId,
 		ref: "Asset"
 	}],
-	userasset: {
+	primaryasset: {
 		type: ObjectId,
 		ref: "Asset"
 	},

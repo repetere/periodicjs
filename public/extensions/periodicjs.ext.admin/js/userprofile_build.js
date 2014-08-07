@@ -402,7 +402,7 @@ module.exports = letterpress;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.letterpress = letterpress;
 }
-},{"classie":3,"domhelper":5,"events":12,"superagent":8,"util":16,"util-extend":7}],3:[function(require,module,exports){
+},{"classie":3,"domhelper":5,"events":13,"superagent":8,"util":17,"util-extend":7}],3:[function(require,module,exports){
 /*
  * classie
  * http://github.amexpub.com/modules/classie
@@ -2124,9 +2124,108 @@ module.exports = function(arr, fn, initial){
 };
 },{}],11:[function(require,module,exports){
 'use strict';
+var request = require('superagent');
+
+var updatemedia = function( element, mediadoc ){
+	var updateMediaResultHtml = function(element,mediadoc){
+		element.appendChild(generateMediaHtml(mediadoc));
+	};
+
+	var generateMediaHtml = function(mediadoc){
+		var mediaHtml = document.createElement("div"),
+			htmlForInnerMedia='';
+		mediaHtml.setAttribute("class","_pea-col-span4 media-item-x");
+		mediaHtml.setAttribute("data-id",mediadoc._id);
+		htmlForInnerMedia+='<input style="display:none;" name="assets" type="checkbox" value="'+mediadoc._id+'" checked="checked"></input>';
+		if(mediadoc.assettype.match("image")){
+			htmlForInnerMedia+='<img class="_pea-col-span11" src="'+mediadoc.fileurl+'"/>';
+		}
+		else{
+			htmlForInnerMedia+='<div class="_pea-col-span11"> '+mediadoc.fileurl+'</div>';
+		}
+		htmlForInnerMedia+='<div class="mix-options _pea-text-right">';
+		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="make primary asset" class="_pea-button make-primary _pea-color-warn">*</a>';
+		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="remove asset" class="_pea-button remove-asset _pea-color-error">x</a>';
+		htmlForInnerMedia+='</div>';
+		mediaHtml.innerHTML = htmlForInnerMedia;
+		return mediaHtml;
+	};
+
+	updateMediaResultHtml(element, mediadoc);
+};
+
+updatemedia.handleMediaButtonClick = function(e){
+	var eTarget = e.target;
+	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("remove-asset")){
+		document.getElementById("media-files-result").removeChild(eTarget.parentElement.parentElement);
+	}
+	else if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("make-primary")){
+		document.getElementById("primaryasset-input").value = eTarget.getAttribute("data-assetid");
+		var mpbuttons = document.querySelectorAll("._pea-button.make-primary");
+		for(var x in mpbuttons){
+			if(typeof mpbuttons[x]==="object"){
+				mpbuttons[x].style.display="inline-block";
+			}
+		};
+		eTarget.style.display="none";
+	}
+};
+
+updatemedia.uploadFile = function(mediafilesresult,file,options){
+	var reader = new FileReader(),
+			client = new XMLHttpRequest(),
+			formData = new FormData();
+			if(options){
+				var posturl = options.posturl,
+						callback = options.callback;
+			}
+			else{
+				var posturl = "/mediaasset/new?format=json",
+					callback=function(data){
+						updatemedia(mediafilesresult,data);
+					};
+			}
+
+	reader.onload = function(e) {
+		// console.log(e);
+		// console.log(file);
+		formData.append("mediafile",file,file.name);
+
+		client.open("post", posturl, true);
+		client.setRequestHeader("x-csrf-token", document.querySelector('input[name=_csrf]').value );
+		client.send(formData);  /* Send to server */ 
+	}
+	reader.readAsDataURL(file);
+	client.onreadystatechange = function(){
+		if(client.readyState == 4){
+			try{
+				var res = JSON.parse(client.response);
+				if(res.result==='error'){
+					ribbonNotification.showRibbon( res.data.error,4000,'error');
+				}
+				else if(client.status !== 200){
+					ribbonNotification.showRibbon( client.status+": "+client.statusText,4000,'error');
+				}
+				else{
+					ribbonNotification.showRibbon("saved",4000,'success');
+					callback(res.data.doc);
+				}
+			}
+			catch(e){
+				ribbonNotification.showRibbon( e.message,4000,'error');
+				console.log(e);
+			}
+		}
+	}
+};
+
+module.exports =updatemedia;
+},{"superagent":8}],12:[function(require,module,exports){
+'use strict';
 
 var letterpress = require('letterpressjs'),
 	request = require('superagent'),
+	updatemedia = require('./updatemedia'),
 	roles_lp = new letterpress({
 		idSelector : '#padmin-userroles',
 		sourcedata: '/userroles/search.json',
@@ -2142,7 +2241,9 @@ var letterpress = require('letterpressjs'),
 			}
 		}
 	}),
-	deleteButton;
+	deleteButton,
+	mediafileinput,
+	mediafilesresult;
 
 var deleteUser = function(e) {
 	e.preventDefault();
@@ -2167,12 +2268,26 @@ var deleteUser = function(e) {
 				}
 				else{
 					window.ribbonNotification.showRibbon( res.body.data ,4000,'warn');
-					// var assetid = eTarget.getAttribute("assetid");
+					// var assetid = eTarget.getAttribute('assetid');
 					// var assettr = document.querySelector('[data-tr-assetid="'+assetid+'"]');
 					// removeTableRow(assettr);
 				}
 			}
 	});
+};
+
+var uploadMediaFiles = function(e){
+	// fetch FileList object
+	var files = e.target.files || e.dataTransfer.files, 
+		f;
+
+	// process all File objects
+	for (var i = 0; i <files.length; i++) {
+		f = files[i];
+		// ParseFile(f);
+		// uploadFile(f);
+		updatemedia.uploadFile(mediafilesresult,f);
+	}
 };
 
 window.addEventListener('load',function(){
@@ -2187,8 +2302,12 @@ window.addEventListener('load',function(){
 	if(deleteButton){
 		deleteButton.addEventListener('click',deleteUser,false);
 	}
+	mediafileinput = document.getElementById('padmin-mediafiles');
+	mediafilesresult = document.getElementById('media-files-result');
+	mediafileinput.addEventListener('change',uploadMediaFiles,false);
+	mediafilesresult.addEventListener('click',updatemedia.handleMediaButtonClick,false);
 });
-},{"letterpressjs":1,"superagent":8}],12:[function(require,module,exports){
+},{"./updatemedia":11,"letterpressjs":1,"superagent":8}],13:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2493,7 +2612,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -2518,7 +2637,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2583,14 +2702,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3180,4 +3299,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":15,"FWaASH":14,"inherits":13}]},{},[11]);
+},{"./support/isBuffer":16,"FWaASH":15,"inherits":14}]},{},[12]);
