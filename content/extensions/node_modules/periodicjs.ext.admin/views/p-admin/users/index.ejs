@@ -1,0 +1,72 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row _pea-form">
+			<div class="_pea-col-span6">
+				<a href="/p-admin/user/new" class="_pea-button _pea-color-info">Create New User</a>
+				<a href="/p-admin/userroles" class="_pea-button _pea-color-success">Edit User Access</a>
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<form class="_pea-form" method="get">
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
+				</form>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<table class="_pea-table _pea-form">
+						<thead>
+							<tr class="_pea-text-left">
+								<th>User</th>
+								<th>Activated</th>
+								<th>Account type</th>
+								<th>User Roles</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(users.length>0){
+									users.forEach(function(user){ %>
+										<tr>
+											<td> <a href="/p-admin/user/<%= user.username %>"> <%= user.username %> </a></td>
+											<td>
+													<a class="_pea-button _pea-text-small"><%= user.activated %></a>
+											</td>
+											<td>
+													<a class="_pea-button _pea-text-small"><%= user.accounttype %></a>
+											</td>
+											<td>
+												<%if(user.userroles && user.userroles && user.userroles.length>0){
+													user.userroles.forEach(function(userrole){%>
+														<span class="_pea-button _pea-text-small"><%= userrole.title %></span>
+													<%});
+												}%>
+											</td>
+											<td class="_pea-text-right">
+												<a href="/p-admin/user/<%= user.username%>" class="_pea-button _pea-color-success">edit</a>
+											</td>
+										</tr>
+										<%
+									});
+								}
+								else{ %>
+									<tr><td colspan="6" class="_pea-text-center">No Users!</td></tr>
+								<%} %>
+						</tbody>
+						<tfoot>
+							<tr class="_pea-text-left">
+								<th>User</th>
+								<th>Activated</th>
+								<th>Account type</th>
+								<th>User Roles</th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../../shared/footer %>

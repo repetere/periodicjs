@@ -1,0 +1,63 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row _pea-form">
+			<div class="_pea-col-span6">
+				<a href="/p-admin/userrole/new" class="_pea-button _pea-color-info">Create New User Role</a>
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<form class="_pea-form" method="get">
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
+				</form>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<table class="_pea-table _pea-form">
+						<thead>
+							<tr class="_pea-text-left">
+								<th class="_pea-col-span2">User Role</th>
+								<th class="_pea-col-span9">User Privileges</th>
+								<th class="_pea-col-span1"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(userroles.length>0){
+									userroles.forEach(function(userrole){ %>
+										<tr>
+											<td> <a href="/p-admin/userrole/<%= userrole.name %>"> <%= userrole.title %> </a>
+											</td>
+											<td>
+												<%
+												if(userrole && userrole.privileges && userrole.privileges.length>0){
+													userrole.privileges.forEach(function(userprivilege){%>
+														<span class="_pea-button _pea-text-small"><%= userprivilege.title %> (<%= userprivilege.userprivilegeid %>)</span>
+													<%});
+												}%>
+											</td>
+											<td class="_pea-text-right">
+												<a href="/p-admin/userrole/<%= userrole.name %>" class="_pea-button _pea-color-success">edit</a>
+											</td>
+										</tr>
+										<%
+									});
+								}
+								else{ %>
+									<tr><td colspan="6" class="_pea-text-center">No User roles!</td></tr>
+								<%} %>
+						</tbody>
+						<tfoot>
+							<tr class="_pea-text-left">
+								<th>User Role</th>
+								<th>User Privileges</th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../../shared/footer %>

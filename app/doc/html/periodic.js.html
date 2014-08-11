@@ -59,81 +59,203 @@
  */
 var express = require('express'),
 	path = require('path'),
+	fs = require('fs'),
 	bodyParser = require('body-parser'),
+	methodOverride = require('method-override'),
 	cookieParser = require('cookie-parser'),
 	favicon = require('serve-favicon'),
 	session = require('express-session'),
+	responseTime = require('response-time'),
+	compress = require('compression'),
+	flash = require('connect-flash'),
+	csrf = require('csurf'),
 	ejs = require('ejs'),
 	app = express(),
-	config = {"samplesettings":"probtrue"};
-
-//https://github.com/expressjs/csurf
-//https://github.com/expressjs/response-time
-//https://github.com/expressjs/compression
+	MongoStore = require('connect-mongo')(session),
+	expressAppLogger = require('morgan'),
+	appLog = require('../../content/config/logger'),
+	config = require('./config'),
+	appconfig,
+	logger,
+	database = require('../../content/config/database'),
+	db,
+	dburl,
+	mngse;
 //https://github.com/expressjs/timeout
-//https://github.com/expressjs/vhost
-//https://github.com/senchalabs/connect/blob/master/Readme.md#middleware
+//https://github.com/expressjs/vhost 
 
 var init = {
-	expressSettings : function(){
-
+	loadConfiguration: function() {
+		appconfig = new config();
+		app.set('port', appconfig.settings().application.port);
+		app.set('env', appconfig.settings().application.environment);
+		db = database[app.get('env')];
+		dburl = db.url;
+		mngse = db.mongoose;
 	},
-	staticCaching : function(){
-
+	useLogger: function() {
+		logger = new appLog(app.get('env'));
+		process.on('uncaughtException', function(err) {
+			logger.error(err.stack);
+			logger.error(err.message);
+		});
 	},
-	userAuth : function(){
-
+	viewSettings: function() {
+		app.set('view engine', 'ejs');
+		app.set('views', path.resolve(__dirname, '../views'));
+		app.engine('html', require('ejs').renderFile);
+		app.engine('ejs', require('ejs').renderFile);
 	},
-	pageCaching : function(){
-
+	expressSettings: function() {
+		app.use(responseTime(5));
+		app.use(flash());
+		app.use(bodyParser.urlencoded({
+			extended: true
+		}));
+		app.use(bodyParser.json());
+		app.use(methodOverride());
+		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
+		app.use(favicon(path.resolve(__dirname, '../../public/favicon.png')));
 	},
-	useLocals : function(){
-
+	staticCaching: function() {
+		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {
+			maxAge: 86400000
+		};
+		app.use(express.static(path.resolve(__dirname, '../../public'), expressStaticOptions));
 	},
-	useCSRF : function(){
-
+	pageCompression: function() {
+		if(appconfig.settings().expressCompression) {
+			app.use(compress());
+		}
 	},
-	logErrors : function(){
+	appLogging: function() {
+		if(appconfig.settings().debug) {
+			expressAppLogger.token('colorstatus', function(req, res) {
+				var color = 32; // green
+				var status = res.statusCode;
 
+				if(status >= 500) {
+					color = 31;
+				} // red
+				else if(status >= 400) {
+					color = 33;
+				} // yellow
+				else if(status >= 300) {
+					color = 36;
+				} // cyan
+				return '\x1b[' + color + 'm' + status + '\x1b[90m';
+			});
+			expressAppLogger.format('app', '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m');
+			if(appconfig.settings().status !== 'install') {
+				app.use(expressAppLogger({
+					format: "app"
+				}));
+			} else {
+				app.use(expressAppLogger());
+			}
+		}
 	},
-	applicationRouting : function(){
+	useSessions: function() {
+		if(appconfig.settings().sessions.enabled) {
+			var express_session_config = {};
+			if(appconfig.settings().sessions.type === "mongo" && appconfig.settings().status !== 'install') {
+				express_session_config = {
+					secret: 'hjoiuu87go9hui',
+					maxAge: new Date(Date.now() + 3600000),
+					store: new MongoStore({
+						url: database[app.get('env')].url
+					})
+				};
+			} else {
+				express_session_config = {
+					secret: 'hjoiuu87go9hui',
+					maxAge: new Date(Date.now() + 3600000)
+				};
+			}
 
+			app.use(session(express_session_config));
+			if(appconfig.settings().crsf) {
+				app.use(csrf());
+			}
+		}
 	},
-	serverStatus : function(){
+	useLocals: function() {
+		app.locals = require('./staticviewhelper');
+		app.use(function(req, res, next) {
+			app.locals.token = (appconfig.settings().crsf) ? req.csrfToken() : '';
+			next();
+		});
+		app.use(function(req, res, next) {
+			app.locals.isLoggedIn = function() {
+				return req.user;
+			};
+			next();
+		});
+	},
+	applicationRouting: function() {
+		var periodicObj = {
+			express: express,
+			app: app,
+			logger: logger,
+			settings: appconfig.settings(),
+			db: db,
+			mongoose: mngse
+		};
+		if(appconfig.settings().status === 'install') {
+			require('../../content/extensions/node_modules/periodicjs.ext.install/index')(periodicObj);
+		} else {
+			require('../routes/index')(periodicObj);
+		}
+	},
+	serverStatus: function() {
+		logger.info('Express server listening on port ' + app.get('port'));
+		logger.info('Running in environment: ' + app.get('env'));
+	},
+	catchErrors: function() {
+		//log errors
+		app.use(function(err, req, res, next) {
+			logger.error(err.message);
+			logger.error(err.stack);
+			next(err);
+		});
 
+		//send client errors
+		//catch all errors
+		app.use(function(err, req, res, next) {
+			if(req.xhr) {
+				res.send(500, {
+					error: 'Something blew up!'
+				});
+			} else {
+				res.status(500);
+				// if(appconfig.settings().theme)
+				res.render('home/error500', {
+					message: err.message,
+					error: err
+				});
+			}
+		});
 	},
 };
 
-app.set('view engine', 'ejs');
-app.set('views', path.resolve(__dirname,'../views'));
-app.use(bodyParser());
-app.use(cookieParser('optional secret string'));
-app.use(favicon( path.resolve(__dirname,'../../public/favicon.ico') ) );
-app.engine('html', require('ejs').renderFile);
-app.engine('ejs', require('ejs').renderFile);
-app.use(express.static(path.resolve(__dirname,'../../public')));
-app.locals.title = "test title";
-app.locals.testFunction = function(paramvar){
-	return 'adding to test func - '+paramvar;
-};
-//use compression
-// app.use(express.compress());
-
-require('./periodic-express-settings')(app);
-console.log(app.get('addedplugin'));
-
-app.use(function(req,res,next){
-	console.log('%s %s',req.method,req.url);
-	next();
-});
-
-app.get('*',function(req,res){
-	console.log("got it");
-	res.render('home/index',{randomdata:'twerkin'});
-});
+console.time('Server Starting');
+init.loadConfiguration();
+init.useLogger();
+init.viewSettings();
+init.expressSettings();
+init.staticCaching();
+init.pageCompression();
+init.appLogging();
+init.useSessions();
+init.useLocals();
+init.applicationRouting();
+init.serverStatus();
+init.catchErrors();
+console.timeEnd('Server Starting');
 
 module.exports.app = app;
-module.exports.port = 8080;</code></pre>
+module.exports.port = app.get('port');
+</code></pre>
         </article>
     </section>
 
@@ -149,7 +271,7 @@ module.exports.port = 8080;</code></pre>
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat May 31 2014 15:24:28 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Jul 22 2014 13:56:43 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>

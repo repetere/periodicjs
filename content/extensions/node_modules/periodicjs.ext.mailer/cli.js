@@ -4,7 +4,7 @@ var path = require('path'),
 	async = require('async'),
 	merge = require('utils-merge'),
 	appController = require('../../../../app/controller/application'),
-	// Post,
+	// Item,
 	// Collection,
 	mongoose,
 	logger,
@@ -16,7 +16,7 @@ var extscript = function(resources){
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	// Post = mongoose.model('Post');
+	// Item = mongoose.model('Item');
 	// Collection = mongoose.model('Collection');
 	var cli = function(argv){
 		console.log("sample extension",argv);

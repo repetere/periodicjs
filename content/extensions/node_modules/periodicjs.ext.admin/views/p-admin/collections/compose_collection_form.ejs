@@ -14,38 +14,38 @@
 				<div id="collection-item-documents" class="_pea-row _pea-container-forminput">
 					<table class="_pea-table _pea-form">
 					<tbody id="collection-table-items">
-					<%if(collection && collection.posts){ %>
-						<% collection.posts.forEach(function(docresult){%>
-							<tr id="tr-docid-<%= docresult.post._id%>">
+					<%if(collection && collection.items){ %>
+						<% collection.items.forEach(function(docresult){%>
+							<tr id="tr-docid-<%= docresult.item._id%>">
 								<td class="_pea-col-span9">
-									<input style="display:none;"  name="posts" type="checkbox" value='{"order":<%=docresult.order%>,"post":"<%=docresult.post._id%>"}' checked="checked"></input>
-									<%= docresult.post.title %>
+									<input style="display:none;"  name="items" type="checkbox" value='{"order":<%=docresult.order%>,"item":"<%=docresult.item._id%>"}' checked="checked"></input>
+									<%= docresult.item.title %>
 									<div><small>
 										<%
-										if(docresult.post.tags){
+										if(docresult.item.tags){
 											%>
 											<strong>tags:</strong> <%
-											for(var i in docresult.post.tags){
+											for(var i in docresult.item.tags){
 												%> 
-												<%=docresult.post.tags[i].title %>, 
+												<%=docresult.item.tags[i].title %>, 
 												<%
 											}
 										}
-										if(docresult.post.categories){
+										if(docresult.item.categories){
 											%>
 											<strong>categories:</strong> <%
-											for(var i in docresult.post.categories){
+											for(var i in docresult.item.categories){
 												%> 
-												<%=docresult.post.categories[i].title %>, 
+												<%=docresult.item.categories[i].title %>, 
 												<%
 											}
 										}
-										if(docresult.post.contenttypes){
+										if(docresult.item.contenttypes){
 											%>
 											<strong>contenttypes:</strong> <%
-											for(var i in docresult.post.contenttypes){
+											for(var i in docresult.item.contenttypes){
 												%> 
-												<%=docresult.post.contenttypes[i].title %>, 
+												<%=docresult.item.contenttypes[i].title %>, 
 												<%
 											}
 										}
@@ -53,7 +53,7 @@
 									</small></div>
 								</td>
 								<td class="_pea-col-span3 _pea-text-right">
-									<a data-docid="<%= docresult.post._id%>" class="_pea-button remove-doc-to-collection _pea-color-error">x</a>
+									<a data-docid="<%= docresult.item._id%>" class="_pea-button remove-doc-to-collection _pea-color-error">x</a>
 								</td>
 							</tr>
 						<%})%>
@@ -74,6 +74,9 @@
 		<div class="_pea-col-span3 _pea-pull-right">
 			<% include ../../shared/content_options %>
 			<% include ../../shared/content_taxonmy %>
+			<% if(genericdoc){%>
+				<% include ../../shared/content_delete %>
+			<%}%>
 		</div>
 	</div>
 </div>

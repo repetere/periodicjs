@@ -1,138 +1,267 @@
+'use strict';
 /*
  * manuscript
  * http://github.com/typesettin/manuscript
  *
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
-'use strict';
 
-module.exports = function(grunt) {
-  grunt.initConfig({
-    jsbeautifier: {
-      files: ["<%= jshint.all %>"],
-      options: {
-        "indent_size": 2,
-        "indent_char": " ",
-        "indent_level": 0,
-        "indent_with_tabs": false,
-        "preserve_newlines": true,
-        "max_preserve_newlines": 10,
-        "brace_style": "collapse",
-        "keep_array_indentation": false,
-        "keep_function_indentation": false,
-        "space_before_conditional": true,
-        "eval_code": false,
-        "indent_case": false,
-        "unescape_strings": false,
-        "space_after_anon_function": true
-      }
-    },
-    simplemocha: {
-      options: {
-        globals: ['should','navigator'],
-        timeout: 3000,
-        ignoreLeaks: false,
-        ui: 'bdd',
-        reporter: 'spec'
-      },
-      all: {
-        src: 'test/**/*.js'
-      }
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        'index.js',
-        'app/**/*.js','!app/doc/**/*.js',
-        'test/**/*.js',
-        'content/extensions/node_modules/periodicjs.ext.install/controller/*.js'
-      ]
-    },
-    jsdoc : {
-        dist : {
-            src: ['app/lib/*.js', 'test/*.js'],
-            options: {
-                destination: 'app/doc/html',
-                configure: 'app/config/jsdoc.json'
-            }
-        }
-    },
-    browserify: {
-      dist: {
-        files: {
-          'public/scripts/index.js': ['client/scripts/**/*.js'],
-        },
-        options: {
-          // transform: ['coffeeify']
-        }
-      }
-    },
-    uglify: {
-      my_target: {
-        options: {
-          sourceMap: true,
-          sourceMapName: 'public/scripts/index-sourcemap.map'
-        },
-        files: {
-          'public/scripts/index.min.js': ['public/scripts/index.js']
-        }
-      }
-    },
-    less: {
-      development: {
-        options: {
-          paths: ["client/stylesheets"],
-          yuicompress: true
-        },
-        files: {
-          "public/styles/manuscript.css": ['client/stylesheets/**/*.less'],
-        }
-      }
-    },
-    cssmin: {
-      combine: {
-        files: {
-          'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
-        }
-      }
-    },
-    watch: {
-      scripts: {
-        // files: '**/*.js',
-        files: [
-          'Gruntfile.js',
-          'package.json',
-          'config/**/*.js',
-          'index.js',
-          'app/**/*.js',
-          'test/**/*.js',
-          'content/extensions/node_modules/periodicjs.ext.install/controller/*.js',
-        ],
-        tasks: ['lint','browserify',/*'doc',*/ 'test','less'],
-        options: {
-          interrupt: true
-        }
-      }
-      // files: "./assets/stylesheets/less/*",
-      // tasks: ["less"]
-    }
-  });
+var path = require('path');
 
-  grunt.loadNpmTasks('grunt-simple-mocha');
-  grunt.loadNpmTasks('grunt-jsbeautifier');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
+module.exports = function (grunt) {
+	grunt.initConfig({
+		jsbeautifier: {
+			files: ['<%= jshint.all %>'],
+			options: {
+				config: '.jsbeautify'
+			}
+		},
+		simplemocha: {
+			options: {
+				globals: ['should', 'navigator'],
+				timeout: 3000,
+				ignoreLeaks: false,
+				ui: 'bdd',
+				reporter: 'spec'
+			},
+			all: {
+				src: 'test/**/*.js'
+			}
+		},
+		jshint: {
+			options: {
+				jshintrc: '.jshintrc'
+			},
+			all: [
+				'Gruntfile.js',
+				'index.js',
+				'app/**/*.js',
+				'!app/doc/**/*.js',
+				'test/**/*.js',
+				'package.json',
+				'config/**/*.js',
+				'content/extensions/node_modules/**/index.js',
+				'content/extensions/node_modules/**/contoller/**/*.js',
+				'content/extensions/node_modules/**/resources/*.js',
+				'!content/extensions/node_modules/**/node_modules/**/*.js'
+			]
+		},
+		jsdoc: {
+			dist: {
+				src: ['app/lib/*.js', 'test/*.js'],
+				options: {
+					destination: 'app/doc/html',
+					configure: 'app/config/jsdoc.json'
+				}
+			}
+		},
+		browserify: {
+			dist: {
+				files: [{
+					expand: true,
+					cwd: 'content/extensions/node_modules',
+					src: ['**/resources/js/*_src.js'],
+					dest: 'content/extensions/node_modules',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src);
+						finallocation = finallocation.replace('_src', '_build');
+						finallocation = finallocation.replace('resources', 'public');
+						finallocation = path.resolve(finallocation);
+						return finallocation;
+					}
+				}],
+				options: {}
+			}
+		},
+		uglify: {
+			options: {
+				sourceMap: true,
+				compress: {
+					drop_console: false
+				}
+			},
+			all: {
+				files: [{
+					expand: true,
+					cwd: 'content/extensions/node_modules',
+					src: ['**/public/js/*_build.js'],
+					dest: 'content/extensions/node_modules',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src);
+						finallocation = finallocation.replace('_build', '.min');
+						finallocation = path.resolve(finallocation);
+						return finallocation;
+					}
+				}]
+			}
+		},
+		less: {
+			development: {
+				options: {
+					sourceMap: true,
+					yuicompress: true,
+					compress: true
+				},
+				files: {
+					'public/styles/default/periodic.css': ['public/styles/default/periodic.less']
+				}
+			}
+		},
+		copy: {
+			main: {
+				files: [{
+					expand: true,
+					cwd: 'content/extensions/node_modules',
+					src: ['**/public/**/*.*', '!**/node_modules/**/*.*'],
+					// src: ['**/public/**/*.*', '!**/public/**/*_build.js', '!**/node_modules/**/*.*'],
+					dest: 'public/extensions/',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src.replace('public', ''));
+						// finallocation = finallocation;
+						finallocation = path.resolve(finallocation);
+						// console.log("dest", dest, "src", src, "finallocation", finallocation);
+						return finallocation;
+					}
+				}]
+			}
+		},
 
-  grunt.registerTask('default', ['lint','browserify','doc','cssmin','uglify', 'test','less']);
-  grunt.registerTask('lint', 'jshint');
-  grunt.registerTask('doc','jsdoc');
-  grunt.registerTask('test', 'simplemocha');
+		/*
+		cssmin: {
+			combine: {
+				files: {
+					'public/styles/manuscript.min.css': ['public/styles/manuscript.css']
+				}
+			}
+		},
+		imagemin: {                          // Task
+		  dynamic: {                         // Another target
+		    options: {                       // Target options
+		      optimizationLevel: 7
+		    },
+		    files: [{
+		      expand: true,                  // Enable dynamic expansion
+		      cwd: 'src/',                   // Src matches are relative to this path
+		      src: ['**\/*.{png,jpg,gif}'],   // Actual patterns to match
+		      dest: 'dist/'                  // Destination path prefix
+		    }]
+		  }
+		},
+		copy: {
+			vendor_fonts: {
+				files: [
+					// includes files within path
+					{
+						expand: true,
+						cwd: 'app/vendor/',
+						src: ['**\/*'],
+						dest: 'dist/vendor/'
+					}, {
+						expand: true,
+						cwd: 'app/fonts/',
+						src: ['**\/*'],
+						dest: 'dist/fonts/'
+					}
+				]
+			},
+			spec: {
+				expand: true,
+				cwd: 'app/scripts',
+				nonull: true,
+				src: ['**\/*.js', '!bundle.js'],
+				dest: 'test/unit/',
+				filter: function (filepath) { //look in test/unit to see if spec already exists. Return TRUE to make new file	(files does not exist)
+					var dest = path.join(
+						grunt.config('copy.spec.dest'),
+						path.basename(filepath, '.js') + '_spec.js'
+					);
+					var doesFileExist = grunt.file.exists(dest);
+					return !(doesFileExist);
+				},
+				rename: function (dest, src) {
+					var src_spec = path.basename(src, '.js') + "_spec.js"
+					return dest + src_spec;
+				},
+				options: {
+					process: function (content, srcpath) { //between copy 
+						console.log("STARTING Replace", " ", srcpath);
+						var varName = path.basename(srcpath, '.js');
+						var require = "var " + varName + " = " + "require('" + '../../' + srcpath + "');";
+						return require;
+					}
+				}
+			}
+		},
+		plato: {
+			lint: {
+				options: {
+					jshint: grunt.file.readJSON('.jshintrc'),
+					dir: "reports",
+					title: grunt.file.readJSON('package.json').name,
+					complexity: {
+						minmi: true,
+						forin: true,
+						logicalor: false
+					}
+				},
+				files: {
+					'reports': ['app/scripts/**\/*.js']
+				}
+			},
+		},
+		mocha_istanbul: {
+			coverage: {
+				src: 'test/unit',
+				options: {
+					check: {
+						lines: 75,
+						statements: 75,
+						branches: 75,
+						functions: 75
+					},
+					mask: '*.js',
+					instrument: ['test'],
+					coverageFolder: "reports/coverage",
+					reporter: "html-cov",
+					ui: 'bdd',
+					root: 'app/scripts/',
+					print: 'summary',
+					excludes: ['node_modules', 'dist']
+				}
+			}
+		},
+		casperjs: {
+			options: {
+				async: {
+					parrallel: true
+				}
+			},
+			files: {
+				src: ['test/intergration/**\/*.js']
+			}
+		},
+		*/
+		watch: {
+			options: {
+				interrupt: true
+			},
+			css: {
+				files: ['public/stylesheets/**/*.less'],
+				tasks: ['newer:less']
+			},
+			js: {
+				files: ['<%= jshint.all %>', 'content/extensions/node_modules/**/resources/**/*.js'],
+				tasks: ['newer:simplemocha:all', 'newer:jshint:all', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:copy:main']
+			}
+		}
+	});
+
+	// Loading dependencies
+	for (var key in grunt.file.readJSON('package.json').devDependencies) {
+		if (key.indexOf('grunt') === 0 && key !== 'grunt') {
+			grunt.loadNpmTasks(key);
+		}
+	}
+
+	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
 };

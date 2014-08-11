@@ -1,0 +1,185 @@
+<input type="hidden" name="_csrf" value=<%= locals.token %> >
+<div class="_pea-container">
+	<div class="_pea-row">
+		<div class="_pea-col-span10 _pea-col-nofloat">
+			<% 
+				var genericdoc = (userprofile)? userprofile : {}; 
+			%>
+			
+			<h2>
+				<% if(genericdoc.username){%>Edit<%}else{%>New<%} %> User
+				<%if(genericdoc.username){%>
+					<button id="delete-user" data-href="/p-admin/user/<%= genericdoc._id %>/delete" class="_pea-pull-right _pea-button _pea-color-error">delete</button>
+				<%}%>
+			</h2>
+			<%if(genericdoc){%>
+				<input type="hidden" name="docid" value="<%= genericdoc._id %>">
+			<%}%>
+			<div class="_pea-document">
+				<div class="_pea-row">
+					<div class="_pea-row">
+						<h2>Account Information</h2>         
+					  <div class="_pea-col-span8">
+							<div class="_pea-row _pea-container-forminput">
+								<div>
+									<small>Name</small>
+								</div>
+								<input type="text" name="firstname" placeholder="first name" value="<%- genericdoc.firstname %>" class="_pea-col-span6"/>
+								<input type="text" name="lastname" placeholder="last name" value="<%- genericdoc.lastname %>" class="_pea-col-span5 _pea-pull-right" style="margin-left:1em;"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<small>Website</small>
+								<input type="text" name="url" placeholder="http://mywebsite.com" value="<%- genericdoc.url %>"  class="_pea-col-span12" />
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<small>Bio</small>
+								<input type="text" name="description" placeholder="no profile"  class="_pea-col-span12" value="<%- genericdoc.description %>"/>
+							</div>
+							<!-- <div class="_pea-row _pea-container-forminput">
+								<small>Location</small>
+								<input type="password" name="password" placeholder="password"  class="_pea-col-span12"/>
+							</div> -->
+							<div class="_pea-row _pea-container-forminput" style="margin-bottom:1.5em">
+								<small>Gender</small>
+								<% var docgender = [{
+									"value":"male",
+									"label":"Male"
+									},{
+									"value":"female",
+									"label":"Female"
+									}]; %>
+								<select name="gender" class="_pea-col-span12">
+									<% docgender.forEach(function(gender){
+										%>
+											<option <% if(genericdoc && typeof genericdoc.gender==='string' && genericdoc.gender === gender.value ){%> selected="selected"
+											<%}%> value="<%= gender.value %>"><%= gender.label %></option>
+										<%
+										}); %>
+								</select>
+							</div>
+					  </div><!--/col--> 
+						<div class="_pea-col-span4  _pea-text-center" style="padding-left:1em;">
+						<%
+						if(genericdoc.primaryasset){
+							if(genericdoc.primaryasset.assettype && genericdoc.primaryasset.assettype.match("image")){
+								%><img class="_pea-col-span12" src="<%=genericdoc.primaryasset.fileurl%>"/><%
+							} 
+							else{%>
+								<div class="_pea-col-span12"> <%=genericdoc.primaryasset.fileurl%></div>
+							<% } 
+						}
+						else{%>
+					    <img src="/favicon.png" alt="" style="width:60%" class="_pea-text-small">
+						<%}%>
+					    <!-- <img src="/favicon.png" alt="" class="center-block img-circle img-responsive"> -->
+					    <% mediaassettitle ='' %>
+		    			<% include ../../shared/media_asset %>
+					  </div><!--/col-->  
+					</div>
+					<div class="_pea-row _pea-form">
+						<div class="_pea-col-span6">
+							<h2>Account Settings</h2>
+							<div class="_pea-row _pea-container-forminput">
+								<small>Email</small>
+								<input type="email" name="email" placeholder="Your email address" value="<%- genericdoc.email %>" class="_pea-col-span12"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<small>Username</small>
+								<input type="text" name="username" placeholder="username"  value="<%- genericdoc.username %>" class="_pea-col-span12" />
+							</div>
+							<div class="_pea-row _pea-container-forminput">
+								<small>Password</small>
+								<input type="password" name="password" placeholder="password"  class="_pea-col-span12"/>
+							</div>
+							<div class="_pea-row _pea-container-forminput" style="margin-bottom:1.5em">
+								<small>Confirm password</small>
+								<input type="password" title="confirm your password" name="passwordconfirm" placeholder="confirm password" class="_pea-col-span12" />
+							</div>
+						</div>
+						<div class="_pea-col-span6" style="padding-left:1em">
+							<h2>Account Access</h2>
+							<% if(user.privileges['760'] || user.accounttype==='admin'){%>
+								<div class="_pea-row _pea-container-forminput">
+									<div class="_pea-col-span12" >
+										<small>User Roles</small>
+										<input type="text" id="padmin-userroles" name="userroles" placeholder=""  class="_pea-col-span12"/>
+									</div>
+									<div class="_pea-col-span12">
+										<small>Account Type</small>
+										<% var docaccounttype = [{
+											"value":"basic",
+											"label":"basic"
+											},{
+											"value":"admin",
+											"label":"admin"
+											},{
+											"value":"invalid",
+											"label":"invalid"
+											}]; %>
+										<select name="accounttype" class="_pea-col-span12">
+											<% docaccounttype.forEach(function(accounttype){
+												%>
+													<option <% if(genericdoc && typeof genericdoc.accounttype==='string' && genericdoc.accounttype === accounttype.value ){%> selected="selected"
+													<%}%> value="<%= accounttype.value %>"><%= accounttype.label %></option>
+												<%
+												}); %>
+										</select>
+									</div>
+									<div class="_pea-col-span12">
+										<small>Activated</small>
+										<% var docactivated = [{
+											"value":true,
+											"label":"true"
+											},{
+											"value":false,
+											"label":"false"
+											}]; %>
+										<select name="activated" class="_pea-col-span12">
+											<% docactivated.forEach(function(activated){
+												%>
+													<option <% if(genericdoc && genericdoc.activated === activated.value ){%> selected="selected"
+													<%}%> value="<%= activated.value %>"><%= activated.label %></option>
+												<%
+												}); %>
+										</select>
+									</div>
+								</div>
+							<%}
+							else{ %>
+								<div class="_pea-row _pea-container-forminput">
+									<div class="_pea-col-span12" >
+										<small>Account Type</small>
+										<input type="text" disabled="disabled" value="<%- genericdoc.accounttype %>" class="_pea-col-span12"/>
+									</div>
+								</div>
+								<div class="_pea-row _pea-container-forminput">
+									<div class="_pea-col-span12" >
+										<small>Activated</small>
+										<input type="text" disabled="disabled" value="<%- genericdoc.activated %>" class="_pea-col-span12"/>
+									</div>
+								</div>
+								<div class="_pea-row _pea-container-forminput">
+									<div class="_pea-col-span12" >
+										<small>User Roles</small>
+										<%
+										var userroletextvalue ="";
+										if(genericdoc.userroles && genericdoc.userroles.length >0){
+											genericdoc.userroles.forEach(function(userrole){ 
+												userroletextvalue+="#"+userrole.title+" ";
+											});
+										}%>
+
+										<input type="text" disabled="disabled" value="<%- userroletextvalue %>" class="_pea-col-span12"/>
+									</div>
+								</div>
+							<%} %>
+						</div>
+					</div>
+					<div class="_pea-row _pea-container-forminput _pea-text-center no-margin">
+						<input type="submit" name="save_button" value="<% if(genericdoc.username){%>Update<%}else{%>Save<%}%>" class="_pea-button _pea-color-info _pea-col-span2 _pea-col-nofloat"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
