@@ -1,6 +1,7 @@
 'use strict';
 
 var config = require('./config'),
+	path = require('path'),
 	database = require('../../content/config/database'),
 	appLog = require('../../content/config/logger'),
 	logger,
@@ -55,7 +56,7 @@ var cli = function (argv) {
 		}
 		else if (argv.extension) {
 			try {
-				var cliExtension = require('../../content/extensions/node_modules/periodicjs.ext.' + argv.extension + '/cli')(periodicResources);
+				var cliExtension = require(path.resolve(process.cwd(),'./node_modules/periodicjs.ext.' + argv.extension + '/cli'))(periodicResources);
 				cliExtension.cli(argv);
 			}
 			catch (e) {
@@ -65,7 +66,7 @@ var cli = function (argv) {
 			}
 		}
 		else {
-			logger.error("no valid arguments", argv);
+			logger.error('no valid arguments', argv);
 			process.exit(0);
 		}
 		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
@@ -78,7 +79,7 @@ var cli = function (argv) {
 		loadConfig();
 		useLogger();
 		setupMongoDB();
-		mongoose.connection.on("open", function () {
+		mongoose.connection.on('open', function () {
 			setResources();
 			loadScript(argv);
 		});

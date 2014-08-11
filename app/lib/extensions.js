@@ -7,7 +7,7 @@
 
 'use strict';
 
-var fs = require('fs'),
+var fs = require('fs-extra'),
 	semver = require('semver'),
 	path = require('path');
 /**
@@ -24,13 +24,9 @@ var fs = require('fs'),
  */
 var extensionFilePath = path.join(path.resolve(__dirname, '../../content/extensions/'), 'extensions.json');
 
-var extensions = function (appsettings) {
+var Extensions = function (appsettings) {
 	var extensionsConfig = {},
 		extensionsFiles = [];
-
-	var readJSONFile = function (filename) {
-		return JSON.parse(fs.readFileSync(filename));
-	};
 
 	/** 
 	 * gets the configuration information
@@ -49,11 +45,11 @@ var extensions = function (appsettings) {
 	}.bind(this);
 
 	this.getExtensionFilePath = function (extensionName) {
-		return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'index.js');
+		return path.join(path.resolve(process.cwd(), './node_modules/', extensionName), 'index.js');
 	};
 
 	this.getExtensionPeriodicConfFilePath = function (extensionName) {
-		return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'periodicjs.ext.json');
+		return path.join(path.resolve(process.cwd(), './node_modules/', extensionName), 'periodicjs.ext.json');
 	};
 
 	this.loadExtensions = function (obj) {
@@ -68,7 +64,7 @@ var extensions = function (appsettings) {
 	 */
 	this.init = function (appsettings) {
 		// /** load pluginfile: content/plugin/extensions.json */
-		extensionsConfig = readJSONFile(extensionFilePath);
+		extensionsConfig = fs.readJSONSync(extensionFilePath);
 		extensionsConfig.extensions.forEach(function (val) {
 			// extensionsConfig.extensions.forEach(function (val, index, arr) {
 			// if(val.installed){
@@ -89,35 +85,69 @@ var extensions = function (appsettings) {
 	this.init(appsettings);
 };
 
-extensions.getExtensionConfFilePath = extensionFilePath;
+Extensions.prototype.getExtensionConfFilePath = function(){
+	return extensionFilePath;
+};
 
-extensions.readJSONFileAsync = function (filename, callback) {
-	fs.readFile(filename, function (err, data) {
+// extensions.readJSONFileAsync = function (filename, callback) {
+// 	fs.readFile(filename, function (err, data) {
+// 		if (err) {
+// 			callback(err, null);
+// 		}
+// 		else {
+// 			try {
+// 				callback(null, JSON.parse(data));
+// 			}
+// 			catch (e) {
+// 				callback(e, null);
+// 			}
+// 		}
+// 	});
+// 	return JSON.parse(fs.readFileSync(filename));
+// };
+
+Extensions.prototype.getExtensionFilePath = function (extensionName) {
+	return path.join(path.resolve(process.cwd(), './node_modules/', extensionName), 'index.js');
+};
+
+Extensions.prototype.getExtensionPackageJsonFilePath = function (extensionName) {
+	return path.join(path.resolve(process.cwd(), './node_modules/', extensionName), 'package.json');
+};
+
+Extensions.prototype.getExtensionPeriodicConfFilePath = function (extensionName) {
+	return path.join(path.resolve(process.cwd(), './node_modules/', extensionName), 'periodicjs.ext.json');
+};
+
+Extensions.prototype.installPublicDirectory = function (options,callback) {
+	var extname = options.extname,
+		extdir = path.resolve(process.cwd(), './node_modules/', extname, 'public'),
+		extpublicdir = path.resolve(process.cwd(), './public/extensions/', extname);
+	// console.log("extname",extname);
+	// fs.readdir(extdir, function (err, files) {
+	fs.readdir(extdir, function (err) {
+		// console.log("files",files);
 		if (err) {
-			callback(err, null);
+			callback(err,null);
 		}
 		else {
-			try {
-				callback(null, JSON.parse(data));
-			}
-			catch (e) {
-				callback(e, null);
-			}
+			//make destination dir
+			fs.mkdirs(extpublicdir, function (err) {
+				if (err) {
+					callback(err,null);
+				}
+				else {
+					fs.copy(extdir, extpublicdir, function (err) {
+						if (err) {
+							callback(err,null);
+						}
+						else {
+							callback(null,'Copied public files');
+						}
+					});
+				}
+			});
 		}
 	});
-	return JSON.parse(fs.readFileSync(filename));
 };
 
-extensions.getExtensionFilePath = function (extensionName) {
-	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'index.js');
-};
-
-extensions.getExtensionPackageJsonFilePath = function (extensionName) {
-	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'package.json');
-};
-
-extensions.getExtensionPeriodicConfFilePath = function (extensionName) {
-	return path.join(path.resolve(__dirname, '../../content/extensions/node_modules/', extensionName), 'periodicjs.ext.json');
-};
-
-module.exports = extensions;
+module.exports = Extensions;

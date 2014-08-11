@@ -23,7 +23,7 @@ var applicationController = function (resources) {
 	this.run_cmd = function (cmd, args, callBack) {
 		var spawn = require('child_process').spawn;
 		var child = spawn(cmd, args);
-		var resp = "";
+		var resp = '';
 
 		child.stdout.on('data', function (buffer) {
 			resp += buffer.toString();
@@ -35,14 +35,14 @@ var applicationController = function (resources) {
 	};
 
 	this.async_run_cmd = function (cmd, args, asynccallback, callback) {
-		logger.silly("cmd", cmd);
-		logger.silly("args", args);
+		logger.silly('cmd', cmd);
+		logger.silly('args', args);
 		var spawn = require('child_process').spawn;
 		var child = spawn(cmd, args);
-		var resp = "";
+		// var resp = '';
 
 		child.stdout.on('error', function (err) {
-			console.log("got error callback");
+			console.log('got error callback');
 			callback(err, null);
 		});
 		child.stdout.on('data', function (buffer) {
@@ -52,7 +52,7 @@ var applicationController = function (resources) {
 			asynccallback(buffer.toString());
 		});
 		//  child.stdout.on('end', function() {
-		// console.log("got stdout end callback");
+		// console.log('got stdout end callback');
 		// callback(null,"command run: "+cmd+" "+args);
 		//  });
 		//  child.stderr.on('end', function() {
@@ -60,8 +60,8 @@ var applicationController = function (resources) {
 		// callback(null,"command run: "+cmd+" "+args);
 		//  });
 		child.on('exit', function () {
-			logger.silly("got exit callback");
-			callback(null, "command run: " + cmd + " " + args);
+			logger.silly('got exit callback');
+			callback(null, 'command run: ' + cmd + ' ' + args);
 		}); //run_cmd( "ls", ["-l"], function(text) { console.log (text) });
 	};
 
@@ -69,7 +69,7 @@ var applicationController = function (resources) {
 		var d = new Date(),
 			restartfile = path.join(process.cwd(), '/content/extensions/restart.json');
 
-		logger.silly("application restarted");
+		logger.silly('application restarted');
 		fs.outputFile(restartfile, 'restart log ' + d + '- \r\n ', function (err) {
 			if (err) {
 				logger.error(err);
@@ -85,9 +85,9 @@ var applicationController = function (resources) {
 
 		var getExtensionView = function (viewname, callback) {
 			if (extname) {
-				var exttemplatefile = path.join(path.resolve(__dirname, '../../content/extensions/node_modules', extname), 'views', viewname + '.' + themefileext);
+				var exttemplatefile = path.join(path.resolve(process.cwd(), './node_modules', extname), 'views', viewname + '.' + themefileext);
 				// console.log("exttemplatefile",exttemplatefile);
-				fs.open(exttemplatefile, 'r', function (err, file) {
+				fs.open(exttemplatefile, 'r', function (err) {
 					if (err) {
 						callback(err, viewname, null);
 					}
@@ -105,7 +105,7 @@ var applicationController = function (resources) {
 			if (theme) {
 				var themetemplatefile = path.join(path.resolve(__dirname, '../../content/themes'), themename, 'views', viewname + '.' + themefileext);
 				// console.log("themetemplatefile",themetemplatefile);
-				fs.open(themetemplatefile, 'r', function (err, file) {
+				fs.open(themetemplatefile, 'r', function (err) {
 					if (err) {
 						callback(err, viewname, null);
 					}
@@ -138,7 +138,7 @@ var applicationController = function (resources) {
 
 	this.getPluginViewTemplate = function (options) {
 		var callback = options.callback,
-			templatePath = options.templatePath || '', // user/login
+			// templatePath = options.templatePath || '', // user/login
 			pluginname = options.pluginname, //periodicjs.plugin.login
 			themepath = options.themepath || '',
 			viewname = options.viewname,
@@ -151,9 +151,9 @@ var applicationController = function (resources) {
 			plugintemplatefile = path.join(process.cwd(), 'content/extensions/node_modules', pluginname, 'views', viewname + '.' + themefileext);
 		// console.log("themetemplatefile",themetemplatefile);
 		// console.log("plugintemplatefile",plugintemplatefile);
-		fs.open(themetemplatefile, 'r', function (err, file) {
+		fs.open(themetemplatefile, 'r', function (err) {
 			if (err) {
-				fs.open(plugintemplatefile, 'r', function (err, pluginfile) {
+				fs.open(plugintemplatefile, 'r', function (err) {
 					if (err) {
 						this.handleDocumentQueryErrorResponse({
 							err: err,
@@ -191,9 +191,9 @@ var applicationController = function (resources) {
 
 
 		function singleTemplateFileCheck(templatefile, defaultfile, callback) {
-			fs.open(templatefile, 'r', function (err, file) {
+			fs.open(templatefile, 'r', function (err) {
 				if (err) {
-					fs.open(defaultfile, 'r', function (err, pluginfile) {
+					fs.open(defaultfile, 'r', function (err) {
 						if (err) {
 							self.handleDocumentQueryErrorResponse({
 								err: err,
@@ -330,7 +330,7 @@ var applicationController = function (resources) {
 			req = options.req,
 			res = options.res,
 			successredirect = options.successredirect,
-			failredirect = options.failredirect,
+			// failredirect = options.failredirect,
 			appendid = options.appendid,
 			responseData = {};
 
@@ -346,20 +346,20 @@ var applicationController = function (resources) {
 				});
 			}
 			else {
-				if (req.query.format === "json" || req.params.ext === "json") {
-					req.flash("success", "Saved");
-					responseData.result = "success";
+				if (req.query.format === 'json' || req.params.ext === 'json') {
+					req.flash('success', 'Saved');
+					responseData.result = 'success';
 					responseData.data = {};
 					responseData.data.flash_messages = req.flash();
 					responseData.data.doc = saveddoc;
 					res.send(responseData);
 				}
 				else if (appendid) {
-					req.flash("success", "Saved");
+					req.flash('success', 'Saved');
 					res.redirect(successredirect + saveddoc._id);
 				}
 				else {
-					req.flash("success", "Saved");
+					req.flash('success', 'Saved');
 					res.redirect(successredirect);
 				}
 			}
@@ -379,19 +379,19 @@ var applicationController = function (resources) {
 			updateOperation;
 
 		if (options.removeFromArray) {
-			logger.silly("removing array in doc");
+			logger.silly('removing array in doc');
 			updateOperation = {
 				$pull: updatedoc
 			};
 		}
 		else if (options.appendArray) {
-			logger.silly("appending array in doc");
+			logger.silly('appending array in doc');
 			updateOperation = {
 				$push: updatedoc
 			};
 		}
 		else {
-			logger.silly("updating entire doc");
+			logger.silly('updating entire doc');
 			updateOperation = {
 				$set: updatedoc
 			};
@@ -407,9 +407,9 @@ var applicationController = function (resources) {
 				});
 			}
 			else {
-				if (req.query.format === "json" || req.params.ext === "json") {
-					req.flash("success", "Saved");
-					responseData.result = "success";
+				if (req.query.format === 'json' || req.params.ext === 'json') {
+					req.flash('success', 'Saved');
+					responseData.result = 'success';
 					responseData.data = {};
 					responseData.data.flash_messages = req.flash();
 					if (options.population) {
@@ -434,11 +434,11 @@ var applicationController = function (resources) {
 					}
 				}
 				else if (appendid) {
-					req.flash("success", "Saved");
+					req.flash('success', 'Saved');
 					res.redirect(successredirect + saveddoc._id);
 				}
 				else {
-					req.flash("success", "Saved");
+					req.flash('success', 'Saved');
 					res.redirect(successredirect);
 				}
 				//save revision
@@ -456,13 +456,13 @@ var applicationController = function (resources) {
 					model.findByIdAndUpdate(
 						id, {
 							$push: {
-								"changes": {
+								'changes': {
 									changeset: updatedoc
 								}
 							}
 						},
 						// {safe: true, upsert: true},
-						function (err, changesetdoc) {
+						function (err) {
 							if (err) {
 								logger.error(err);
 							}
@@ -492,8 +492,8 @@ var applicationController = function (resources) {
 	this.deleteModel = function (options) {
 		var model = options.model,
 			deleteid = options.deleteid,
-			req = options.req,
-			res = options.res,
+			// req = options.req,
+			// res = options.res,
 			callback = options.callback;
 
 		model.remove({
@@ -544,7 +544,7 @@ var applicationController = function (resources) {
 			};
 
 			responseData.flash_messages = req.flash();
-			if (req.query.format === "json" || req.params.ext === "json") {
+			if (req.query.format === 'json' || req.params.ext === 'json') {
 				res.send(responseData);
 			}
 			else if (req.query.callback) {
@@ -568,17 +568,17 @@ var applicationController = function (resources) {
 			redirecturl = options.redirecturl,
 			req = options.req,
 			res = options.res,
-			callback = options.callback,
-			errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
+			callback = options.callback;//,
+			// errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
 
 		res.status(400);
 
 		logger.error(err.stack);
 		logger.error(errormessage, req.url);
-		if (req.query.format === "json") {
+		if (req.query.format === 'json') {
 			res.send({
-				"result": "error",
-				"data": {
+				'result': 'error',
+				'data': {
 					error: errormessage
 				}
 			});
@@ -606,7 +606,7 @@ var applicationController = function (resources) {
 							renderView: templatepath,
 							responseData: {
 								pagedata: {
-									title: "Not Found"
+									title: 'Not Found'
 								},
 								user: req.user,
 								url: req.url
@@ -620,7 +620,7 @@ var applicationController = function (resources) {
 
 	this.removeEmptyObjectValues = function (obj) {
 		for (var property in obj) {
-			if (typeof obj[property] === "object") {
+			if (typeof obj[property] === 'object') {
 				this.removeEmptyObjectValues(obj[property]);
 			}
 			else {
@@ -670,7 +670,7 @@ var applicationController = function (resources) {
 
 	this.sortObject = function (dir, field) {
 		var comparefunction;
-		if (dir === "desc") {
+		if (dir === 'desc') {
 			comparefunction = function (a, b) {
 				if (a[field] < b[field]) {
 					return 1;
@@ -706,6 +706,7 @@ var applicationController = function (resources) {
 				User: {}
 			}
 		};
+		logger.silly(options);
 		for (var x in appSettings.extconf.extensions) {
 			if (appSettings.extconf.extensions[x].enabled === true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']) {
 				var extmenudata = appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'];

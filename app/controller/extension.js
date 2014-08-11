@@ -195,10 +195,12 @@ var install_updateExtConf = function (options) {
 				// console.log('currentExtensionsConf',currentExtensionsConf);
 				async.parallel({
 					packfile: function (callback) {
-						Extensions.readJSONFileAsync(extpackfile, callback);
+						fs.readJson(extpackfile, callback);
+						// Extensions.readJSONFileAsync(extpackfile, callback);
 					},
 					conffile: function (callback) {
-						Extensions.readJSONFileAsync(extconffile, callback);
+						fs.readJson(extconffile, callback);
+						// Extensions.readJSONFileAsync(extconffile, callback);
 					}
 				}, function (err, results) {
 					if (err) {

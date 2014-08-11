@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "0.6.0",
+	"version": "1.0.0",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
@@ -16,6 +16,7 @@
 		"url": "git://github.com/typesettin/periodicjs.git"
 	},
 	"scripts": {
+		"nd": "nodemon --watch app --watch content/extensions/restart.json index.js ",
 		"startdev": "pm2 start content/config/process/development-dev.json",
 		"start_devtest": "pm2 start content/config/process/development-test.json",
 		"start_devclient": "pm2 start content/config/process/development-client.json",
@@ -58,7 +59,15 @@
 		"serve-favicon": "2.0.0",
 		"util-extend": "1.0.1",
 		"utils-merge": "1.0.0",
-		"winston": "0.7.3"
+		"winston": "0.7.3",
+		"periodicjs.ext.install":"1.0.0",
+		"periodicjs.ext.default_routes":"1.0.0",
+		"periodicjs.ext.mailer":"1.0.0",
+		"periodicjs.ext.login":"1.0.0",
+		"periodicjs.ext.user_access_control":"1.0.0",
+		"periodicjs.ext.scheduled_content":"1.0.0",
+		"periodicjs.ext.admin":"1.0.0",
+		"periodicjs.ext.dbseed":"1.0.0"
 	},
 	"devDependencies": {
 		"browserify": "4.2.1",
