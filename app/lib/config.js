@@ -7,7 +7,7 @@
 
 'use strict';
 
-var fs = require('fs'),
+var fs = require('fs-extra'),
 	extend = require('util-extend'),
 	path = require('path'),
 	argv = require('optimist').argv;
@@ -27,6 +27,7 @@ var fs = require('fs'),
 var config = function () {
 	var appEnvironment = argv.e,
 		appPort = argv.p,
+		packagejsonFileJSON,
 		configurationFile,
 		configurationOverrideFile = path.join(path.resolve(__dirname, '../../content/config/'), 'config.json'),
 		configurationDefaultFile,
@@ -34,10 +35,6 @@ var config = function () {
 		configurationOverrideFileJSON,
 		configurationDefaultFileJSON,
 		config = {};
-
-	var readJSONFile = function (filename) {
-		return JSON.parse(fs.readFileSync(filename));
-	};
 
 	/** 
 	 * gets the configuration information
@@ -71,12 +68,15 @@ var config = function () {
 	 * @throws {Error} If missing config file
 	 */
 	this.init = function () {
+		/** get info from package.json */
+		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+
 		/** load user config file: content/config/config.json */
-		configurationOverrideFileJSON = readJSONFile(configurationOverrideFile);
+		configurationOverrideFileJSON = fs.readJSONSync(configurationOverrideFile);
 
 		/** set path of default config: content/config/environment/default.json */
 		configurationDefaultFile = this.getConfigFilePath('default');
-		configurationDefaultFileJSON = readJSONFile(configurationDefaultFile);
+		configurationDefaultFileJSON = fs.readJSONSync(configurationDefaultFile);
 
 		/** if no command line argument, use environment from user config file */
 		appEnvironment = (argv.e) ?
@@ -89,10 +89,11 @@ var config = function () {
 		/** override environment data with user config */
 		config = extend(config, configurationDefaultFileJSON);
 		if (fs.existsSync(configurationFile)) {
-			configurationFileJSON = readJSONFile(configurationFile);
+			configurationFileJSON = fs.readJSONSync(configurationFile);
 			config = extend(config, configurationFileJSON);
 		}
 		config = extend(config, configurationOverrideFileJSON);
+		config.version = packagejsonFileJSON.version;
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
