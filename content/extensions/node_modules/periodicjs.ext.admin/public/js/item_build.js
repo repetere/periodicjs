@@ -2271,7 +2271,7 @@ window.addEventListener('load',function(e){
 		cnt_lp.setPreloadDataObject(window.itemcontenttypes);
 	}
 	window.ajaxFormEventListers('._pea-ajax-form');
-	wysihtml5Editor = new wysihtml5.Editor('wysihtml5-textarea', { 
+	wysihtml5Editor = new window.wysihtml5.Editor('wysihtml5-textarea', { 
 		// id of textarea element
 		toolbar:      'wysihtml5-toolbar', // id of toolbar element
 		parserRules:  window.wysihtml5ParserRules // defined in parser rules set 
@@ -2281,7 +2281,6 @@ window.addEventListener('load',function(e){
 	mediafileinput.addEventListener('change',uploadMediaFiles,false);
 	mediafilesresult.addEventListener('click',updatemedia.handleMediaButtonClick,false);	
 	deleteButton = document.getElementById('delete-item');
-	window.ajaxFormEventListers('._pea-ajax-form');
 	if(deleteButton){
 		deleteButton.addEventListener('click',deleteItem,false);
 	}

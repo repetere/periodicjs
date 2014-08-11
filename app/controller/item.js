@@ -126,7 +126,7 @@ var remove = function (req, res) {
 					applicationController.handleDocumentQueryRender({
 						req: req,
 						res: res,
-						redirecturl: '/p-admin/users',
+						redirecturl: '/p-admin/items',
 						responseData: {
 							result: 'success',
 							data: 'deleted'

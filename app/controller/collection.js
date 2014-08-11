@@ -1,7 +1,6 @@
 'use strict';
 
-var path = require('path'),
-	async = require('async'),
+var async = require('async'),
 	moment = require('moment'),
 	merge = require('utils-merge'),
 	appController = require('./application'),
@@ -12,7 +11,7 @@ var path = require('path'),
 	Collection,
 	logger;
 
-var show = function (req, res, next) {
+var show = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'collection/show',
 			themefileext: appSettings.templatefileextension
@@ -34,7 +33,7 @@ var show = function (req, res, next) {
 	);
 };
 
-var index = function (req, res, next) {
+var index = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'collection/index',
 			themefileext: appSettings.templatefileextension
@@ -56,7 +55,7 @@ var index = function (req, res, next) {
 	);
 };
 
-var create = function (req, res, next) {
+var create = function (req, res) {
 	var newcollection = applicationController.removeEmptyObjectValues(req.body);
 	newcollection.name = applicationController.makeNiceName(newcollection.title);
 	newcollection.itemauthorname = req.user.username;
@@ -76,7 +75,7 @@ var create = function (req, res, next) {
 	});
 };
 
-var update = function (req, res, next) {
+var update = function (req, res) {
 	var updatecollection = applicationController.removeEmptyObjectValues(req.body);
 	updatecollection.name = applicationController.makeNiceName(updatecollection.title);
 	if (updatecollection.items && updatecollection.items.length > 0) {
@@ -104,12 +103,12 @@ var update = function (req, res, next) {
 	});
 };
 
-var append = function (req, res, next) {
+var append = function (req, res) {
 	var newitemtoadd = applicationController.removeEmptyObjectValues(req.body);
 	delete newitemtoadd._csrf;
 	var objectToModify = newitemtoadd; //{"items":newitemtoadd};
 
-	logger.silly("objectToModify", objectToModify);
+	logger.silly('objectToModify', objectToModify);
 	applicationController.updateModel({
 		model: Collection,
 		id: req.controllerData.collection._id,
@@ -121,6 +120,47 @@ var append = function (req, res, next) {
 		successredirect: '/p-admin/collection/edit/',
 		appendid: true
 	});
+};
+
+var remove = function (req, res) {
+	var removecollection = req.controllerData.collection,
+		User = mongoose.model('User');
+
+	if (!User.hasPrivilege(req.user, 710)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		applicationController.deleteModel({
+			model: Collection,
+			deleteid: removecollection._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/collections',
+						responseData: {
+							result: 'success',
+							data: 'deleted'
+						}
+					});
+				}
+			}
+		});
+	}
 };
 
 var loadCollection = function (req, res, next) {
@@ -362,6 +402,7 @@ var controller = function (resources) {
 		show: show,
 		index: index,
 		create: create,
+		remove: remove,
 		update: update,
 		append: append,
 		cli: cli,
