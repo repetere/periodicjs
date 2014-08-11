@@ -67,6 +67,12 @@ var create = function (req, res) {
 			successredirect: '/p-admin/user/',
 			appendid: true
 		});
+
+		// getTransport(function(err,transport){
+		// 	var emailMessage = 'new user account created';
+		// 	emailMessage.generateTextFromHTML = true;
+		// 	transport.sendMail(emailMessage,function(err,response){});
+		// });
 	}
 };
 

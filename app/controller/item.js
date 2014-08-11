@@ -97,6 +97,47 @@ var update = function (req, res) {
 	});
 };
 
+var remove = function (req, res) {
+	var removeitem = req.controllerData.item,
+		User = mongoose.model('User');
+
+	if (!User.hasPrivilege(req.user, 710)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		applicationController.deleteModel({
+			model: Item,
+			deleteid: removeitem._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/users',
+						responseData: {
+							result: 'success',
+							data: 'deleted'
+						}
+					});
+				}
+			}
+		});
+	}
+};
+
 var loadItem = function (req, res, next) {
 	var params = req.params,
 		population = 'contenttypes primaryauthor authors',
@@ -122,7 +163,7 @@ var loadItem = function (req, res, next) {
 			}
 			else {
 				applicationController.handleDocumentQueryErrorResponse({
-					err: new Error("invalid document request"),
+					err: new Error('invalid document request'),
 					res: res,
 					req: req
 				});
@@ -214,6 +255,7 @@ var controller = function (resources) {
 		index: index,
 		create: create,
 		update: update,
+		remove: remove,
 		loadItem: loadItem,
 		loadFullItem: loadFullItem,
 		loadItems: loadItems

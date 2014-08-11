@@ -6,19 +6,19 @@ var path = require('path'),
 
 module.exports = function (periodic) {
 	// express,app,logger,config/settings,db
-	var models = require('../../content/config/model')({
-			mongoose: periodic.db.mongoose,
-			dburl: periodic.db.url,
-			debug: periodic.settings.debug,
-			periodic: periodic
-		}),
-		homeController = require('../controller/home')(periodic),
+	require('../../content/config/model')({
+		mongoose: periodic.db.mongoose,
+		dburl: periodic.db.url,
+		debug: periodic.settings.debug,
+		periodic: periodic
+	});
+	var homeController = require('../controller/home')(periodic),
 		appRouter = periodic.express.Router(),
 		extensions = new ExtentionLoader(periodic.settings);
 
 	periodic.settings.extconf = extensions.settings();
 	extensions.loadExtensions(periodic);
-	console.log(models);
+	// periodic.logger.silly(models);
 
 	if (periodic.settings.theme) {
 		var themeRoute = path.join(periodic.settings.themepath, 'routes.js');
