@@ -505,7 +505,7 @@ var applicationController = function (resources) {
 		var periodicsettings = options.periodicsettings,
 			callback = options.callback;
 		try {
-			var ExtentionLoader = require('../lib/extensions'),
+			var ExtentionLoader = require('periodicjs.core.extensions'),
 				extensions = new ExtentionLoader(periodicsettings);
 			callback(null, extensions.settings().extensions);
 		}

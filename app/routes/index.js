@@ -2,7 +2,7 @@
 
 var path = require('path'),
 	fs = require('fs'),
-	ExtentionLoader = require('../lib/extensions');
+	ExtentionLoader = require('periodicjs.core.extensions');
 
 module.exports = function (periodic) {
 	// express,app,logger,config/settings,db

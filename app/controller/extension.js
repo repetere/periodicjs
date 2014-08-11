@@ -2,22 +2,17 @@
 
 var path = require('path'),
 	fs = require('fs-extra'),
-	npm = require("npm"),
-	semver = require("semver"),
-	async = require("async"),
+	npm = require('npm'),
+	semver = require('semver'),
+	// async = require('async'),
 	appController = require('./application'),
-	Extensions = require('../lib/extensions'),
+	Extensions = require('periodicjs.core.extensions'),
 	Decompress = require('decompress'),
 	applicationController,
 	appSettings,
 	mongoose,
 	logger;
 
-var updateRunningExtensions = function (options) {
-	if (appSettings.extconf) {
-		appSettings.extconf.extensions = options.extensions;
-	}
-};
 var getCurrentExt = function (options) {
 	var extname = options.extname,
 		currentExtensions = appSettings.extconf.extensions,
@@ -92,217 +87,14 @@ var install_logOutput = function (options) {
 	});
 };
 
-var install_updateExtConfFile = function (options) {
-	var currentExtConfSettings = {},
-		currentExtensions = options.currentExtensions,
-		logfile = options.logfile,
-		extToAdd = options.extToAdd;
-	currentExtConfSettings.extensions = [];
-	// console.log('------------','extension to add',extToAdd);
-
-	if (!extToAdd.name) {
-		install_logErrorOutput({
-			logfile: logfile,
-			logdata: "extension conf doesn't have a valid name",
-			cli: options.cli
-		});
-	}
-	else if (!semver.valid(extToAdd.version)) {
-		install_logErrorOutput({
-			logfile: logfile,
-			logdata: "extension conf doesn't have a valid semver",
-			cli: options.cli
-		});
-	}
-	else if (!semver.valid(extToAdd.periodicConfig.periodicCompatibility)) {
-		install_logErrorOutput({
-			logfile: logfile,
-			logdata: "extension conf doesn't have a valid periodic semver",
-			cli: options.cli
-		});
-	}
-	else {
-		var alreadyInConf = false,
-			extIndex;
-		for (var x in currentExtensions) {
-			if (currentExtensions[x].name === extToAdd.name) {
-				alreadyInConf = true;
-				extIndex = x;
-			}
-		}
-		if (alreadyInConf) {
-			currentExtensions[x] = extToAdd;
-		}
-		else {
-			currentExtensions.push(extToAdd);
-		}
-		currentExtConfSettings.extensions = currentExtensions;
-
-		fs.outputJson(Extensions.getExtensionConfFilePath, currentExtConfSettings, function (err) {
-			if (err) {
-				install_logErrorOutput({
-					logfile: logfile,
-					logdata: err.message,
-					cli: options.cli
-				});
-			}
-			else {
-				//updated running extensions:
-				updateRunningExtensions({
-					extensions: currentExtConfSettings.extensions
-				});
-				install_logOutput({
-					logfile: logfile,
-					logdata: extToAdd.name + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
-					callback: function (err) {}
-				});
-				if (options.cli) {
-					logger.info(extToAdd.name + ' installed, extensions.conf updated \r\n  ====##END##====');
-					remove_clilog({
-						logfile: logfile,
-						extname: extToAdd.name
-					});
-					process.exit(0);
-				}
-			}
-		});
-		// console.log('------------',Extensions.getExtensionConfFilePath,'------------','updated ext currentExtConfSettings',currentExtConfSettings);
-	}
-};
-
-var install_updateExtConf = function (options) {
-	var logfile = options.logfile,
-		extname = options.extname,
-		extpackfile = Extensions.getExtensionPackageJsonFilePath(extname),
-		extconffile = Extensions.getExtensionPeriodicConfFilePath(extname),
-		extpackfileJSON = {},
-		currentExtensionsConf;
-
-	// console.log("cli",options.cli);
-
-	applicationController.loadExtensions({
-		periodicsettings: appSettings,
-		callback: function (err, extensions) {
-			if (err) {
-				install_logErrorOutput({
-					logfile: logfile,
-					logdata: err.message,
-					cli: options.cli
-				});
-			}
-			else {
-				currentExtensionsConf = extensions;
-				// console.log('currentExtensionsConf',currentExtensionsConf);
-				async.parallel({
-					packfile: function (callback) {
-						fs.readJson(extpackfile, callback);
-						// Extensions.readJSONFileAsync(extpackfile, callback);
-					},
-					conffile: function (callback) {
-						fs.readJson(extconffile, callback);
-						// Extensions.readJSONFileAsync(extconffile, callback);
-					}
-				}, function (err, results) {
-					if (err) {
-						install_logErrorOutput({
-							logfile: logfile,
-							logdata: err.message,
-							cli: options.cli
-						});
-					}
-					else {
-						extpackfileJSON = {
-							"name": results.packfile.name,
-							"version": results.packfile.version,
-							"periodicCompatibility": results.conffile.periodicCompatibility,
-							"installed": true,
-							"enabled": false,
-							"periodicConfig": results.conffile
-						};
-
-						install_updateExtConfFile({
-							currentExtensions: currentExtensionsConf,
-							extToAdd: extpackfileJSON,
-							logfile: logfile,
-							cli: options.cli
-						});
-					}
-				});
-			}
-		}
-	});
-};
-
-var install_extPublicDir = function (options) {
-	var logfile = options.logfile,
-		extname = options.extname,
-		extdir = path.resolve(__dirname, '../../content/extensions/node_modules/', extname, 'public'),
-		extpublicdir = path.resolve(__dirname, '../../public/extensions/', extname);
-	// console.log("extname",extname);
-	fs.readdir(extdir, function (err, files) {
-		// console.log("files",files);
-		if (err) {
-			install_logOutput({
-				logfile: logfile,
-				logdata: 'No Public Directory to Copy',
-				callback: function (err) {
-					install_updateExtConf({
-						logfile: options.logfile,
-						extname: options.extname,
-						cli: options.cli
-					});
-				}
-			});
-		}
-		else {
-			//make destination dir
-			fs.mkdirs(extpublicdir, function (err) {
-				if (err) {
-					install_logErrorOutput({
-						logfile: logfile,
-						logdata: err.message,
-						cli: options.cli
-					});
-				}
-				else {
-					fs.copy(extdir, extpublicdir, function (err) {
-						if (err) {
-							install_logErrorOutput({
-								logfile: logfile,
-								logdata: err.message,
-								cli: options.cli
-							});
-						}
-						else {
-							install_logOutput({
-								logfile: logfile,
-								logdata: 'Copied public files',
-								callback: function (err) {
-									install_updateExtConf({
-										logfile: options.logfile,
-										extname: options.extname,
-										cli: options.cli
-									});
-								}
-							});
-						}
-					});
-				}
-			});
-		}
-	});
-};
-
-var install_viaNPM = function (options) {
-	var extdir = options.extdir,
-		cli = options.cli,
+var install_viaNPM = function (options){
+	var cli = options.cli,
 		repourl = options.repourl,
 		reponame = options.reponame,
 		logfile = options.logfile;
 	npm.load({
-			"strict-ssl": false,
-			"production": true,
-			prefix: extdir
+			'strict-ssl': false,
+			'production': true
 		},
 		function (err) {
 			if (err) {
@@ -327,23 +119,24 @@ var install_viaNPM = function (options) {
 							logdata: data,
 							callback: function (err) {
 								if (!err) {
-									install_extPublicDir({
+									var extToAddname = reponame.split('/')[1];
+									install_logOutput({
 										logfile: logfile,
-										extname: reponame.split('/')[1],
-										cli: cli
-									});
+										logdata: extToAddname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
+										callback: function () {}
+									});	
 								}
 							}
 						});
 					}
 					// command succeeded, and data might have some info
 				});
-				npm.on("log", function (message) {
+				npm.on('log', function (message) {
 					install_logOutput({
 						logfile: logfile,
 						logdata: message,
 						cli: cli,
-						callback: function (err) {}
+						callback: function () {}
 					});
 				});
 			}
@@ -447,24 +240,23 @@ var move_upload = function (options) {
 	});
 };
 
-var extFunctions = {
-	getlogfile: function (options) {
-		return path.join(options.logdir, 'install-ext.' + options.userid + '.' + applicationController.makeNiceName(options.reponame) + '.' + options.timestamp + '.log');
-	},
-	getrepourl: function (options) {
-		return (options.repoversion === 'latest' || !options.repoversion) ?
-			'https://github.com/' + options.reponame + '/archive/master.tar.gz' :
-			'https://github.com/' + options.reponame + '/tarball/' + options.repoversion;
-	},
-	getlogdir: function (options) {
-		return path.resolve(__dirname, '../../content/extensions/log/');
-	},
-	getextdir: function (options) {
-		return path.join(process.cwd(), 'content/extensions/node_modules');
-	}
+var extFunctions = {};
+extFunctions.getlogfile =  function (options) {
+	return path.join(options.logdir, 'install-ext.' + options.userid + '.' + applicationController.makeNiceName(options.reponame) + '.' + options.timestamp + '.log');
+};
+extFunctions.getrepourl = function (options) {
+	return (options.repoversion === 'latest' || !options.repoversion) ?
+		'https://github.com/' + options.reponame + '/archive/master.tar.gz' :
+		'https://github.com/' + options.reponame + '/tarball/' + options.repoversion;
+};
+extFunctions.getlogdir = function () {
+	return path.resolve(process.cwd(), 'content/extensions/log/');
+};
+extFunctions.getextdir = function () {
+	return path.join(process.cwd(), './node_modules');
 };
 
-var install = function (req, res, next) {
+var install = function (req, res) {
 	var repoversion = req.query.version,
 		reponame = req.query.name,
 		repourl = extFunctions.getrepourl({
@@ -483,7 +275,7 @@ var install = function (req, res, next) {
 	//JSON.stringify(myData, null, 4)
 	install_logOutput({
 		logfile: logfile,
-		logdata: "beginning extension install: " + reponame,
+		logdata: 'beginning extension install: ' + reponame,
 		callback: function (err) {
 			if (err) {
 				applicationController.handleDocumentQueryErrorResponse({
@@ -497,7 +289,7 @@ var install = function (req, res, next) {
 					res: res,
 					req: req,
 					responseData: {
-						result: "success",
+						result: 'success',
 						data: {
 							url: repourl,
 							repo: applicationController.makeNiceName(reponame),
@@ -699,7 +491,7 @@ var uninstall_viaNPM = function (options) {
 		});
 };
 
-var cleanup_log = function (req, res, next) {
+var cleanup_log = function (req, res) {
 	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
 		logfile = path.join(logdir, req.query.mode + '-ext.' + req.user._id + '.' + applicationController.makeNiceName(req.params.extension) + '.' + req.params.date + '.log');
 
@@ -716,9 +508,9 @@ var cleanup_log = function (req, res, next) {
 				res: res,
 				req: req,
 				responseData: {
-					result: "success",
+					result: 'success',
 					data: {
-						msg: "removed log file"
+						msg: 'removed log file'
 					}
 				}
 			});
@@ -732,9 +524,9 @@ var remove = function (req, res, next) {
 		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
 		logfile = path.join(logdir, 'remove-ext.' + req.user._id + '.' + applicationController.makeNiceName(extname) + '.' + timestamp + '.log'),
 		myData = {
-			result: "start",
+			result: 'start',
 			data: {
-				message: "beginning extension removal: " + extname,
+				message: 'beginning extension removal: ' + extname,
 				time: timestamp
 			}
 		},
@@ -757,7 +549,7 @@ var remove = function (req, res, next) {
 					res: res,
 					req: req,
 					responseData: {
-						result: "success",
+						result: 'success',
 						data: {
 							repo: applicationController.makeNiceName(extname),
 							extname: extname,
@@ -811,7 +603,7 @@ var install_getOutputLog = function (req, res, next) {
 	readStream.pipe(res);
 };
 
-var upload_getOutputLog = function (req, res, next) {
+var upload_getOutputLog = function (req, res) {
 	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
 		logfile = path.join(logdir, 'install-ext.' + req.user._id + '.' + req.params.extension + '.' + req.params.date + '.log'),
 		stat = fs.statSync(logfile),
@@ -825,7 +617,7 @@ var upload_getOutputLog = function (req, res, next) {
 	readStream.pipe(res);
 };
 
-var disable = function (req, res, next) {
+var disable = function (req, res) {
 	var extname = req.params.id,
 		selectedExtObj = {
 			selectedExt: req.controllerData.extension,
@@ -853,7 +645,7 @@ var disable = function (req, res, next) {
 					res: res,
 					redirecturl: '/p-admin/extensions',
 					responseData: {
-						result: "success",
+						result: 'success',
 						data: {
 							ext: extname,
 							msg: 'extension disabled'
@@ -866,7 +658,7 @@ var disable = function (req, res, next) {
 	);
 };
 
-var enable = function (req, res, next) {
+var enable = function (req, res) {
 	var extname = req.params.id,
 		selectedExtObj = {
 			selectedExt: req.controllerData.extension,
