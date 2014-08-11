@@ -1,0 +1,14 @@
+<h2>Cleanup Options</h2>
+<div class="_pea-document">
+	<div class="_pea-text-center">
+		<a 
+			<% if(genericdocTitle === "Collection"){%>
+			data-href="/collection/<%= genericdoc._id %>/delete"
+			id="delete-collection"
+			<%}else{%>
+			data-href="/item/<%= genericdoc._id %>/delete"
+			id="delete-item"
+			<%}%> 
+			class="_pea-button _pea-color-error">Delete</a>
+	</div>
+</div>
