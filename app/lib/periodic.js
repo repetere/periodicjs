@@ -195,7 +195,7 @@ var init = {
 
 		//send client errors
 		//catch all errors
-		app.use(function (err, req, res) {
+		app.use(function (err, req, res, next) {
 			if (req.xhr) {
 				res.send(500, {
 					error: 'Something blew up!'

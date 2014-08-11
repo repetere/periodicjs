@@ -169,14 +169,34 @@ userSchema.methods.generateRandomToken = function () {
 	return token;
 };
 userSchema.statics.generateRandomTokenStatic = function () {
-	var user = this,
-		chars = "_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+	// var user = this,
+	var chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
 		token = new Date().getTime() + '_';
 	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);
 		token += chars.charAt(i);
 	}
 	return token;
+};
+
+userSchema.statics.checkValidation = function (options) {
+	var userdata = options.newuser;
+
+	if (userdata.username === undefined || userdata.username.length < 4) {
+		return new Error('Username is too short');
+	}
+	else if (userdata.email === undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+		return new Error('Invalid email');
+	}
+	else if (options.checkpassword && (userdata.password === undefined || userdata.password.length < 8)) {
+		return new Error('Password is too short');
+	}
+	else if (options.checkpassword && (userdata.password !== userdata.passwordconfirm)) {
+		return new Error('Passwords do not match');
+	}
+	else {
+		return null;
+	}
 };
 
 userSchema.statics.validApiKey = function (userid, apikey, callback) {

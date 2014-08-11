@@ -7,6 +7,21 @@ var appController = require('./application'),
 	User,
 	logger;
 
+var index = function (req, res) {
+	console.log('index list');
+	User.find({
+		title: /title/
+	}).exec(function (err, items) {
+		console.log('model search');
+		if (err) {
+			res.send(err);
+		}
+		else {
+			res.send(items);
+		}
+	});
+};
+
 var show = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'author/show',
@@ -29,32 +44,36 @@ var show = function (req, res) {
 	);
 };
 
-var index = function (req, res) {
-	console.log('index list');
-	User.find({
-		title: /title/
-	}).exec(function (err, items) {
-		console.log('model search');
-		if (err) {
-			res.send(err);
-		}
-		else {
-			res.send(items);
-		}
-	});
+var create = function (req, res) {
+	var newuser = applicationController.removeEmptyObjectValues(req.body),
+		err = User.checkValidation({
+			newuser: newuser,
+			checkpassword: true
+		});
+
+	if (err) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err: err,
+			res: res,
+			req: req
+		});
+	}
+	else {
+		applicationController.createModel({
+			model: User,
+			newdoc: newuser,
+			res: res,
+			req: req,
+			successredirect: '/p-admin/user/',
+			appendid: true
+		});
+	}
 };
 
 var update = function (req, res) {
 	var bcrypt = require('bcrypt'),
 		updateuser = applicationController.removeEmptyObjectValues(req.body),
 		err;
-	// updateuser.name = applicationController.makeNiceName(updateuser.title);
-	// if (updateuser.items && updateuser.items.length > 0) {
-	// 	for (var x in updateuser.items) {
-	// 		updateuser.items[x] = JSON.parse(updateuser.items[x]);
-	// 	}
-	// }
-	// 760
 	if ((updateuser.activated || updateuser.accounttype || updateuser.userroles) && !User.hasPrivilege(req.user, 760)) {
 		err = new Error('EXT-UAC760: You don\'t have access to modify user access');
 	}
@@ -99,6 +118,46 @@ var update = function (req, res) {
 			req: req,
 			successredirect: '/p-admin/user/' + updateuser.username + '/edit/',
 			appendid: true
+		});
+	}
+};
+
+var remove = function (req, res) {
+	var userprofile = req.controllerData.user;
+
+	if (!User.hasPrivilege(req.user, 950)) {
+		applicationController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC950: You don\'t have access to delete users'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		applicationController.deleteModel({
+			model: User,
+			deleteid: userprofile._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					applicationController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					applicationController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/users',
+						responseData: {
+							result: 'success',
+							data: 'deleted'
+						}
+					});
+				}
+			}
 		});
 	}
 };
@@ -215,7 +274,9 @@ var controller = function (resources) {
 	return {
 		show: show,
 		index: index,
+		create: create,
 		update: update,
+		remove: remove,
 		loadUser: loadUser,
 		loadUsers: loadUsers,
 		searchResults: searchResults

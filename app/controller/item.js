@@ -1,7 +1,6 @@
 'use strict';
 
-var path = require('path'),
-	moment = require('moment'),
+var moment = require('moment'),
 	appController = require('./application'),
 	applicationController,
 	appSettings,
@@ -9,7 +8,7 @@ var path = require('path'),
 	Item,
 	logger;
 
-var show = function (req, res, next) {
+var show = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'item/show',
 			themefileext: appSettings.templatefileextension
@@ -31,7 +30,7 @@ var show = function (req, res, next) {
 	);
 };
 
-var index = function (req, res, next) {
+var index = function (req, res) {
 	applicationController.getPluginViewDefaultTemplate({
 			viewname: 'item/index',
 			themefileext: appSettings.templatefileextension
@@ -53,7 +52,7 @@ var index = function (req, res, next) {
 	);
 };
 
-var create = function (req, res, next) {
+var create = function (req, res) {
 	var newitem = applicationController.removeEmptyObjectValues(req.body);
 	newitem.name = applicationController.makeNiceName(newitem.title);
 	newitem.itemauthorname = req.user.username;
@@ -74,7 +73,7 @@ var create = function (req, res, next) {
 	});
 };
 
-var update = function (req, res, next) {
+var update = function (req, res) {
 	var updateitem = applicationController.removeEmptyObjectValues(req.body);
 
 	updateitem.name = applicationController.makeNiceName(updateitem.title);
@@ -159,13 +158,12 @@ var loadFullItem = function (req, res, next) {
 };
 
 var loadItems = function (req, res, next) {
-	var params = req.params,
-		query,
+	var query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
 		population = 'tags categories authors contenttypes primaryasset primaryauthor',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {

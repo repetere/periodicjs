@@ -13,14 +13,14 @@
 							<li>
 								Settings
 								<ul class="_pea_menu-items-subnav _pea-right">
-									<li>Periodic Settings</li>
-									<li>Manage Users</li>
+									<li><a href="/p-admin/settings">Periodic Settings</a></li>
+									<li><a href="/p-admin/users">Manage Users</a></li>
 								</ul>
 							</li>
 							<li>
 								<%= user.username %>
 								<ul class="_pea_menu-items-subnav _pea-right">
-									<li>Edit Profile</li>
+									<li><a href="/p-admin/user/<%= user.username %>/edit">Edit Profile</a></li>
 									<li><a href="/auth/logout">Logout</a></li>
 								</ul>
 							</li>
