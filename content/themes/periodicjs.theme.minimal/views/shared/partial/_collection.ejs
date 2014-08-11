@@ -3,14 +3,14 @@
 	<% var metaauthor = collection.primaryauthor;
 		var metadate = collection.createdat; 
 		if(!fullcollection){%>
-	<% include _postmeta %>
+	<% include _itemmeta %>
 	<%}
 	if(request.params.pagenumber){
-		var fullpost=true;
-		var collectionpost=true;
+		var fullitem=true;
+		var collectionitem=true;
 		try{
-			var post = collection.posts[request.params.pagenumber-1].post;
-					%><% include _post %><%
+			var item = collection.items[request.params.pagenumber-1].item;
+					%><% include _item %><%
 		}
 		catch(e){%><%= e.message %><%}%>
 		<%
@@ -21,7 +21,7 @@
 		<%
 	}
 	if(fullcollection){%>
-		<% if(collection.posts && collection.posts.length>0){
+		<% if(collection.items && collection.items.length>0){
 			if(!request.params.pagenumber){
 				%>
 				<div><a href="/collection/<%= collection.name %>/page/1">read more &rarr;</a></div>
@@ -29,7 +29,7 @@
 			}
 			%>
 			<%- viewhelper.getPaginationHtml({
-					pagecount : collection.posts.length,
+					pagecount : collection.items.length,
 					urlbase : "/collection/"+collection.name+"/page",
 					pagenumber : request.params.pagenumber
 				}) %>

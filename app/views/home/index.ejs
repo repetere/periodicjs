@@ -4,24 +4,24 @@
 		<div class="_pea-row ">
 			<% 
 			if(layoutdata.docs && layoutdata.docs.length>0){
-				var fullpost=false;
-				var collectionpost=false;
-				layoutdata.docs.forEach(function(post,index){
+				var fullitem=false;
+				var collectionitem=false;
+				layoutdata.docs.forEach(function(item,index){
 					if(index ===0){%>
 						<div class="_pea-col-span12 _pea-callout">
-							<% include ../shared/partial/_post %>
+							<% include ../shared/partial/_item %>
 						</div>
 					<%}
 					else{%>
 						<div class="_pea-col-span4 _pea-grid">
-							<% include ../shared/partial/_post %>
+							<% include ../shared/partial/_item %>
 						</div>
 					<%}
 					%>
 				<%});
 			}
 			else{%>
-				no posts
+				no items
 			<%}%>
 		</div>
 		<div class="_pea-row ">

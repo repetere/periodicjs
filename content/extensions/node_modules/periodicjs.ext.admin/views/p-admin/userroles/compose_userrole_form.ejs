@@ -1,0 +1,40 @@
+<input type="hidden" name="_csrf" value=<%= locals.token %> >
+<div class="_pea-container">
+	<div class="_pea-row">
+		<div class="_pea-col-span10 _pea-col-nofloat">
+			<% 
+				var genericdoc = userrole; 
+				var genericdocTitle = "User Role"; 
+			%>
+			
+			<h2>
+				<% if(genericdoc){%>Edit<%}else{%>New<%} %> <%= genericdocTitle %>
+				<%if(genericdoc){%>
+					<button id="delete-userrole" data-href="/p-admin/userrole/<%= genericdoc._id %>/delete" class="_pea-pull-right _pea-button _pea-color-error">delete</button>
+				<%}%>
+			</h2>
+			<%if(genericdoc){%>
+				<input type="hidden" name="docid" value="<%= genericdoc._id %>">
+			<%}%>
+			<div class="_pea-document">
+				<div class="_pea-row">
+					<div class="_pea-row _pea-container-forminput">
+						<input class="_pea-col-span12 noFormSubmit" type="text" placeholder="Title" value="<% if(genericdoc && typeof genericdoc.title==='string'){%><%= genericdoc.title %><%}%>" name="title"/>
+					</div>
+					<div class="_pea-row _pea-container-forminput">
+						<input class="_pea-col-span12 noFormSubmit" type="text" placeholder="User Role ID" value="<% if(genericdoc && typeof genericdoc.userroleid==='number'){%><%= genericdoc.userroleid %><%}%>" name="userroleid"/>
+					</div>
+					<div class="_pea-row _pea-container-forminput">
+						<textarea id="wysihtml5-textarea" class="_pea-col-span12" name="description" placeholder="Description"><% if(genericdoc && typeof genericdoc.description==='string'){%><%= genericdoc.description %><%}%></textarea>
+					</div>
+					<div class="_pea-row _pea-container-forminput">
+						<input type="text" id="padmin-privileges" class="_pea-col-span12" placeholder="Privileges" name="privileges"/>
+					</div>
+					<div class="_pea-row _pea-container-forminput _pea-text-center no-margin">
+						<input type="submit" name="save_button" value="<% if(genericdoc){%>Update<%}else{%>Save<%}%>" class="_pea-button _pea-color-info _pea-col-span2 _pea-col-nofloat"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

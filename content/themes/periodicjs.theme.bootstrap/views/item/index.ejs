@@ -1,0 +1,23 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="container">
+		<% if(items && items.length>0){%>
+		<div class="row">
+		<%
+			items.forEach(function(item){%>
+        <div class="col-6 col-sm-6 col-lg-4">
+          <% include ../shared/partial/_item_micro %>
+        </div>
+			<%});%>
+		</div>
+		<%
+		}
+		else{%>
+			<div class="row">
+        <div class="jumbotron">
+          <h1>No Items!</h1>
+        </div>
+      </div>
+		<%}%>
+	</div>
+<% include ../shared/footer %>

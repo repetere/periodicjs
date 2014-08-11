@@ -10,8 +10,8 @@
     position: absolute;
 ">
 		    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-	    	<% if(collection.posts && collection.posts.length>0){
-					collection.posts.forEach(function(post,index){%>
+	    	<% if(collection.items && collection.items.length>0){
+					collection.items.forEach(function(item,index){%>
 				    <li data-target="#carousel-example-generic" data-slide-to="<%= (index+1)%>"></li>
 					<%});
 				}%>
@@ -24,14 +24,14 @@
 		    <div class="item active">
 		      <% var metaauthor = collection.primaryauthor;
 						var metadate = collection.createdat; %>
-					<% include _postmeta %>
+					<% include _itemmeta %>
 					<div class="content"><%= collection.content %></div>
 		    </div>
-		    <% if(collection.posts && collection.posts.length>0){
-				collection.posts.forEach(function(post,index){%>
+		    <% if(collection.items && collection.items.length>0){
+				collection.items.forEach(function(item,index){%>
 						<div class="item">
-							<h2><%= post.post.title %></h2>
-							<div class="content"><%- post.post.content %></div>
+							<h2><%= item.item.title %></h2>
+							<div class="content"><%- item.item.content %></div>
 							<hr>
 						</div>
 					<%});

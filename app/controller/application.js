@@ -1,16 +1,15 @@
 'use strict';
 
 var path = require('path'),
-    extend = require('util-extend'),
-    merge = require('utils-merge'),
-		fs = require('fs-extra');
+	merge = require('utils-merge'),
+	fs = require('fs-extra');
 
-var applicationController = function(resources){
+var applicationController = function (resources) {
 	var logger = resources.logger;
 	var theme = resources.settings.theme;
 	var appSettings = resources.settings;
 
-	this.isValidObjectID = function(str) {
+	this.isValidObjectID = function (str) {
 		// coerce to string so the function can be generically used to test both strings and native objectIds created by the driver
 		str = str + '';
 		var len = str.length,
@@ -21,26 +20,30 @@ var applicationController = function(resources){
 		return valid;
 	};
 
-	this.run_cmd = function(cmd, args, callBack ) {
-    var spawn = require('child_process').spawn;
-    var child = spawn(cmd, args);
-    var resp = "";
+	this.run_cmd = function (cmd, args, callBack) {
+		var spawn = require('child_process').spawn;
+		var child = spawn(cmd, args);
+		var resp = "";
 
-    child.stdout.on('data', function (buffer) { resp += buffer.toString(); });
-    child.stdout.on('end', function() { callBack (resp); });
-    //run_cmd( "ls", ["-l"], function(text) { console.log (text) });
+		child.stdout.on('data', function (buffer) {
+			resp += buffer.toString();
+		});
+		child.stdout.on('end', function () {
+			callBack(resp);
+		});
+		//run_cmd( "ls", ["-l"], function(text) { console.log (text) });
 	};
 
-	this.async_run_cmd = function(cmd, args, asynccallback ,callback ) {
-		logger.silly("cmd",cmd);
-		logger.silly("args",args);
-    var spawn = require('child_process').spawn;
-    var child = spawn(cmd, args);
-    var resp = "";
+	this.async_run_cmd = function (cmd, args, asynccallback, callback) {
+		logger.silly("cmd", cmd);
+		logger.silly("args", args);
+		var spawn = require('child_process').spawn;
+		var child = spawn(cmd, args);
+		var resp = "";
 
 		child.stdout.on('error', function (err) {
 			console.log("got error callback");
-			callback(err,null);
+			callback(err, null);
 		});
 		child.stdout.on('data', function (buffer) {
 			asynccallback(buffer.toString());
@@ -48,92 +51,92 @@ var applicationController = function(resources){
 		child.stderr.on('data', function (buffer) {
 			asynccallback(buffer.toString());
 		});
-   //  child.stdout.on('end', function() {
-			// console.log("got stdout end callback");
-			// callback(null,"command run: "+cmd+" "+args);
-   //  });
-   //  child.stderr.on('end', function() {
-			// console.log("got stderr end callback");
-			// callback(null,"command run: "+cmd+" "+args);
-   //  });
-    child.on('exit', function() {
+		//  child.stdout.on('end', function() {
+		// console.log("got stdout end callback");
+		// callback(null,"command run: "+cmd+" "+args);
+		//  });
+		//  child.stderr.on('end', function() {
+		// console.log("got stderr end callback");
+		// callback(null,"command run: "+cmd+" "+args);
+		//  });
+		child.on('exit', function () {
 			logger.silly("got exit callback");
-			callback(null,"command run: "+cmd+" "+args);
-    });//run_cmd( "ls", ["-l"], function(text) { console.log (text) });
+			callback(null, "command run: " + cmd + " " + args);
+		}); //run_cmd( "ls", ["-l"], function(text) { console.log (text) });
 	};
 
-	this.restart_app = function(){
+	this.restart_app = function () {
 		var d = new Date(),
-				restartfile=path.join(process.cwd(),'/content/extensions/restart.json');
+			restartfile = path.join(process.cwd(), '/content/extensions/restart.json');
 
 		logger.silly("application restarted");
-		fs.outputFile(restartfile,'restart log '+d+'- \r\n ',function(err){
-			if(err){
+		fs.outputFile(restartfile, 'restart log ' + d + '- \r\n ', function (err) {
+			if (err) {
 				logger.error(err);
 			}
 		});
 	};
 
-	this.getPluginViewDefaultTemplate = function(options,callback){
+	this.getPluginViewDefaultTemplate = function (options, callback) {
 		var extname = options.extname || '',
-				themename = theme,
-				viewname = options.viewname,
-				themefileext = options.themefileext;
+			themename = theme,
+			viewname = options.viewname,
+			themefileext = options.themefileext;
 
-		var getExtensionView = function(viewname,callback){
-			if(extname){
-				var exttemplatefile = path.join(path.resolve(__dirname,'../../content/extensions/node_modules',extname),'views',viewname+'.'+themefileext);
+		var getExtensionView = function (viewname, callback) {
+			if (extname) {
+				var exttemplatefile = path.join(path.resolve(__dirname, '../../content/extensions/node_modules', extname), 'views', viewname + '.' + themefileext);
 				// console.log("exttemplatefile",exttemplatefile);
-				fs.open(exttemplatefile,'r',function(err,file){
-					if(err){
-						callback(err,viewname,null);
+				fs.open(exttemplatefile, 'r', function (err, file) {
+					if (err) {
+						callback(err, viewname, null);
 					}
-					else{
-						callback(null,viewname,exttemplatefile);
+					else {
+						callback(null, viewname, exttemplatefile);
 					}
 				});
 			}
-			else{
-				callback(null,viewname,viewname);
+			else {
+				callback(null, viewname, viewname);
 			}
 		}.bind(this);
 
-		var getThemeView = function(viewname,callback){
-			if(theme){
-				var themetemplatefile = path.join(path.resolve(__dirname,'../../content/themes'),themename,'views',viewname+'.'+themefileext);
+		var getThemeView = function (viewname, callback) {
+			if (theme) {
+				var themetemplatefile = path.join(path.resolve(__dirname, '../../content/themes'), themename, 'views', viewname + '.' + themefileext);
 				// console.log("themetemplatefile",themetemplatefile);
-				fs.open(themetemplatefile,'r',function(err,file){
-					if(err){
-						callback(err,viewname,null);
+				fs.open(themetemplatefile, 'r', function (err, file) {
+					if (err) {
+						callback(err, viewname, null);
 					}
-					else{
-						callback(null,viewname,themetemplatefile);
+					else {
+						callback(null, viewname, themetemplatefile);
 					}
 				});
 			}
-			else{
-				callback(null,viewname,viewname);
+			else {
+				callback(null, viewname, viewname);
 			}
 		}.bind(this);
 
-		getThemeView(viewname,function(err,defaultview,themeview){
-			if(err){
-				getExtensionView(defaultview,function(err,defaultview,extname){
-					if(err){
-						callback(null,defaultview);
+		getThemeView(viewname, function (err, defaultview, themeview) {
+			if (err) {
+				getExtensionView(defaultview, function (err, defaultview, extname) {
+					if (err) {
+						callback(null, defaultview);
 					}
-					else{
-						callback(null,extname);
+					else {
+						callback(null, extname);
 					}
 				});
 			}
-			else{
-				callback(null,themeview);
+			else {
+				callback(null, themeview);
 			}
 		});
 	}.bind(this);
 
-	this.getPluginViewTemplate = function(options){
+	this.getPluginViewTemplate = function (options) {
 		var callback = options.callback,
 			templatePath = options.templatePath || '', // user/login
 			pluginname = options.pluginname, //periodicjs.plugin.login
@@ -144,29 +147,33 @@ var applicationController = function(resources){
 			res = options.res;
 
 		//theme path
-		var themetemplatefile = path.join(themepath,'views',viewname+'.'+themefileext),
-			plugintemplatefile = path.join(process.cwd(),'content/extensions/node_modules',pluginname,'views',viewname+'.'+themefileext);
+		var themetemplatefile = path.join(themepath, 'views', viewname + '.' + themefileext),
+			plugintemplatefile = path.join(process.cwd(), 'content/extensions/node_modules', pluginname, 'views', viewname + '.' + themefileext);
 		// console.log("themetemplatefile",themetemplatefile);
 		// console.log("plugintemplatefile",plugintemplatefile);
-		fs.open(themetemplatefile,'r',function(err,file){
-			if(err){
-				fs.open(plugintemplatefile,'r',function(err,pluginfile){
-					if(err){
-						this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+		fs.open(themetemplatefile, 'r', function (err, file) {
+			if (err) {
+				fs.open(plugintemplatefile, 'r', function (err, pluginfile) {
+					if (err) {
+						this.handleDocumentQueryErrorResponse({
+							err: err,
+							res: res,
+							req: req
+						});
 					}
-					else{
+					else {
 						callback(plugintemplatefile);
 
 					}
 				}.bind(this));
 			}
-			else{
+			else {
 				callback(themetemplatefile);
 			}
 		}.bind(this));
 	}.bind(this);
 
-	this.getViewTemplate = function(options){
+	this.getViewTemplate = function (options) {
 		var callback = options.callback,
 			templatetype = options.templatetype,
 			themepath = options.themepath,
@@ -183,70 +190,78 @@ var applicationController = function(resources){
 			self = this;
 
 
-		function singleTemplateFileCheck(templatefile,defaultfile,callback){
-			fs.open(templatefile,'r',function(err,file){
-				if(err){
-					fs.open(defaultfile,'r',function(err,pluginfile){
-						if(err){
-							self.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
+		function singleTemplateFileCheck(templatefile, defaultfile, callback) {
+			fs.open(templatefile, 'r', function (err, file) {
+				if (err) {
+					fs.open(defaultfile, 'r', function (err, pluginfile) {
+						if (err) {
+							self.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
 						}
-						else{
+						else {
 							callback(defaultfile);
 						}
 					});
 				}
-				else{
+				else {
 					callback(templatefile);
 				}
 			});
 		}
 
-		switch(templatetype){
-			case 'post-single':
-				templateFolder = path.join(themepath,'views/post/');
-				fs.readdir(templateFolder,function (err,files){
-					if(err){
-						this.handleDocumentQueryErrorResponse({err:err,res:res,req:req});
-					}
-					else{
-						templateFolderFiles = files;
-						for(var i =0; i<templateFolderFiles.length; i++){
-							templateFileBasename = path.basename(templateFolderFiles[i],'.'+themefileext);
-							if(templateFileBasename==='single-'+id){
-								callback(path.join(templateFolder,templateFileBasename));
-								break;
-							}
-							else{
-								callback(path.join(templateFolder,'single'));
-								break;
-							}
+		switch (templatetype) {
+		case 'post-single':
+			templateFolder = path.join(themepath, 'views/post/');
+			fs.readdir(templateFolder, function (err, files) {
+				if (err) {
+					this.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					templateFolderFiles = files;
+					for (var i = 0; i < templateFolderFiles.length; i++) {
+						templateFileBasename = path.basename(templateFolderFiles[i], '.' + themefileext);
+						if (templateFileBasename === 'single-' + id) {
+							callback(path.join(templateFolder, templateFileBasename));
+							break;
+						}
+						else {
+							callback(path.join(templateFolder, 'single'));
+							break;
 						}
 					}
-				}.bind(this));
-				break;
-			case 'search-results':
-				defaultFile = path.join(process.cwd(),'app/views/search','index.'+themefileext),
-				templateFile = path.join(themepath,'views','search/index.'+themefileext);
-				singleTemplateFileCheck(templateFile,defaultFile,callback);
-				break;
-			case 'home-index':
-				defaultFile = path.join(process.cwd(),'app/views/home','index.'+themefileext),
-				templateFile = path.join(themepath,'views','home/index.'+themefileext);
-				singleTemplateFileCheck(templateFile,defaultFile,callback);
-				break;
-			case 'home-404':
-				defaultFile = path.join(process.cwd(),'app/views/home','error404.'+themefileext);
-				templateFile = path.join(themepath,'views','home/error404.'+themefileext);
-				singleTemplateFileCheck(templateFile,defaultFile,callback);
-				break;
-			default:
-				callback(templatepath);
-				break;
+				}
+			}.bind(this));
+			break;
+		case 'search-results':
+			defaultFile = path.join(process.cwd(), 'app/views/search', 'index.' + themefileext),
+			templateFile = path.join(themepath, 'views', 'search/index.' + themefileext);
+			singleTemplateFileCheck(templateFile, defaultFile, callback);
+			break;
+		case 'home-index':
+			defaultFile = path.join(process.cwd(), 'app/views/home', 'index.' + themefileext),
+			templateFile = path.join(themepath, 'views', 'home/index.' + themefileext);
+			singleTemplateFileCheck(templateFile, defaultFile, callback);
+			break;
+		case 'home-404':
+			defaultFile = path.join(process.cwd(), 'app/views/home', 'error404.' + themefileext);
+			templateFile = path.join(themepath, 'views', 'home/error404.' + themefileext);
+			singleTemplateFileCheck(templateFile, defaultFile, callback);
+			break;
+		default:
+			callback(templatepath);
+			break;
 		}
 
 	}.bind(this);
 
-	this.loadModel = function(options) {
+	this.loadModel = function (options) {
 		var model = options.model,
 			docid = options.docid,
 			sort = options.sort,
@@ -258,18 +273,18 @@ var applicationController = function(resources){
 		if (this.isValidObjectID(docid)) {
 			query = {
 				$or: [{
-				name: docid
+					name: docid
 				}, {
-				_id: docid
+					_id: docid
 				}]
 			};
 		}
-		else if(options.searchusername){
+		else if (options.searchusername) {
 			query = {
 				$or: [{
-				name: docid
+					name: docid
 				}, {
-				username: docid
+					username: docid
 				}]
 			};
 		}
@@ -279,16 +294,16 @@ var applicationController = function(resources){
 			};
 		}
 
-		if(population){
+		if (population) {
 			model.findOne(query).sort(sort).select(selection).populate(population).exec(callback);
 		}
-		else{
+		else {
 			model.findOne(query).sort(sort).select(selection).exec(callback);
 		}
 	}.bind(this);
 
-	this.searchModel = function(options){
-		var	model = options.model,
+	this.searchModel = function (options) {
+		var model = options.model,
 			query = options.query,
 			sort = options.sort,
 			offset = options.offset,
@@ -297,19 +312,19 @@ var applicationController = function(resources){
 			callback = options.callback,
 			population = options.population;
 
-		sort = (sort)? sort : '-createdat';
-		offset = (offset)? offset : 0;
-		limit = (limit || limit >200)? limit : 30;
+		sort = (sort) ? sort : '-createdat';
+		offset = (offset) ? offset : 0;
+		limit = (limit || limit > 200) ? limit : 30;
 
-		if(population){
+		if (population) {
 			model.find(query).sort(sort).select(selection).limit(limit).skip(offset).populate(population).exec(callback);
 		}
-		else{
+		else {
 			model.find(query).sort(sort).select(selection).limit(limit).skip(offset).exec(callback);
 		}
 	};
 
-	this.createModel = function(options) {
+	this.createModel = function (options) {
 		var model = options.model,
 			newdoc = options.newdoc,
 			req = options.req,
@@ -317,36 +332,41 @@ var applicationController = function(resources){
 			successredirect = options.successredirect,
 			failredirect = options.failredirect,
 			appendid = options.appendid,
-			responseData={};
+			responseData = {};
 
-		model.create(newdoc,function(err,saveddoc){
+		model.create(newdoc, function (err, saveddoc) {
 			// console.log("createModel err",err);
 			// console.log("createModel saveddoc",saveddoc);
-			if(err){
-				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
+			if (err) {
+				this.handleDocumentQueryErrorResponse({
+					err: err,
+					errorflash: err.message,
+					res: res,
+					req: req
+				});
 			}
-			else{
-				if(req.query.format === "json" || req.params.ext === "json") {
-					req.flash("success","Saved");
-					responseData.result="success";
+			else {
+				if (req.query.format === "json" || req.params.ext === "json") {
+					req.flash("success", "Saved");
+					responseData.result = "success";
 					responseData.data = {};
 					responseData.data.flash_messages = req.flash();
 					responseData.data.doc = saveddoc;
 					res.send(responseData);
 				}
-				else if(appendid){
-					req.flash("success","Saved");
-					res.redirect(successredirect+saveddoc._id);
+				else if (appendid) {
+					req.flash("success", "Saved");
+					res.redirect(successredirect + saveddoc._id);
 				}
-				else{
-					req.flash("success","Saved");
+				else {
+					req.flash("success", "Saved");
 					res.redirect(successredirect);
 				}
 			}
 		}.bind(this));
 	}.bind(this);
 
-	this.updateModel = function(options) {
+	this.updateModel = function (options) {
 		var model = options.model,
 			id = options.id,
 			updatedoc = options.updatedoc,
@@ -355,71 +375,95 @@ var applicationController = function(resources){
 			successredirect = options.successredirect,
 			failredirect = options.failredirect,
 			appendid = options.appendid,
-			responseData={},
+			responseData = {},
 			updateOperation;
 
-			if(options.removeFromArray){
-				logger.silly("removing array in doc");
-				updateOperation = {$pull:updatedoc} ;
-			}
-			else if(options.appendArray){
-				logger.silly("appending array in doc");
-				updateOperation = {$push:updatedoc} ;
-			}
-			else{
-				logger.silly("updating entire doc");
-				updateOperation = {$set:updatedoc} ;
-			}
+		if (options.removeFromArray) {
+			logger.silly("removing array in doc");
+			updateOperation = {
+				$pull: updatedoc
+			};
+		}
+		else if (options.appendArray) {
+			logger.silly("appending array in doc");
+			updateOperation = {
+				$push: updatedoc
+			};
+		}
+		else {
+			logger.silly("updating entire doc");
+			updateOperation = {
+				$set: updatedoc
+			};
+		}
 
-		model.findByIdAndUpdate(id,updateOperation,function(err,saveddoc){
-			if(err){
-				this.handleDocumentQueryErrorResponse({err:err,errorflash:err.message,res:res,req:req});
+		model.findByIdAndUpdate(id, updateOperation, function (err, saveddoc) {
+			if (err) {
+				this.handleDocumentQueryErrorResponse({
+					err: err,
+					errorflash: err.message,
+					res: res,
+					req: req
+				});
 			}
-			else{
-				if(req.query.format === "json" || req.params.ext === "json") {
-					req.flash("success","Saved");
-					responseData.result="success";
+			else {
+				if (req.query.format === "json" || req.params.ext === "json") {
+					req.flash("success", "Saved");
+					responseData.result = "success";
 					responseData.data = {};
 					responseData.data.flash_messages = req.flash();
-					if(options.population){
-						model.findOne({_id:saveddoc._id}).populate(options.population).exec(function(err,popdoc){
-							if(err){
+					if (options.population) {
+						model.findOne({
+							_id: saveddoc._id
+						}).populate(options.population).exec(function (err, popdoc) {
+							if (err) {
 								responseData.data.docpopulationerror = err;
 								responseData.data.status = 'couldnt populate';
 								responseData.data.doc = saveddoc;
 								res.send(responseData);
 							}
-							else{
+							else {
 								responseData.data.doc = popdoc;
 								res.send(responseData);
 							}
 						});
 					}
-					else{
+					else {
 						responseData.data.doc = saveddoc;
 						res.send(responseData);
 					}
 				}
-				else if(appendid){
-					req.flash("success","Saved");
-					res.redirect(successredirect+saveddoc._id);
+				else if (appendid) {
+					req.flash("success", "Saved");
+					res.redirect(successredirect + saveddoc._id);
 				}
-				else{
-					req.flash("success","Saved");
+				else {
+					req.flash("success", "Saved");
 					res.redirect(successredirect);
 				}
 				//save revision
 				var changesetdata = updatedoc;
-				if(changesetdata.docid){delete changesetdata.docid;}
-				if(changesetdata._csrf){delete changesetdata._csrf;}
-				if(changesetdata.save_button){delete changesetdata.save_button;}
-				if(options.saverevision){
+				if (changesetdata.docid) {
+					delete changesetdata.docid;
+				}
+				if (changesetdata._csrf) {
+					delete changesetdata._csrf;
+				}
+				if (changesetdata.save_button) {
+					delete changesetdata.save_button;
+				}
+				if (options.saverevision) {
 					model.findByIdAndUpdate(
-						id,
-						{$push: {"changes": {changeset: updatedoc}}},
+						id, {
+							$push: {
+								"changes": {
+									changeset: updatedoc
+								}
+							}
+						},
 						// {safe: true, upsert: true},
-						function(err, changesetdoc) {
-							if(err){
+						function (err, changesetdoc) {
+							if (err) {
 								logger.error(err);
 							}
 						}
@@ -445,67 +489,82 @@ var applicationController = function(resources){
 		*/
 	}.bind(this);
 
-	this.deleteModel = function(options){
+	this.deleteModel = function (options) {
 		var model = options.model,
 			deleteid = options.deleteid,
 			req = options.req,
 			res = options.res,
 			callback = options.callback;
 
-		model.remove({_id:deleteid},callback);
+		model.remove({
+			_id: deleteid
+		}, callback);
 	}.bind(this);
 
-	this.loadExtensions = function(options){
+	this.loadExtensions = function (options) {
 		var periodicsettings = options.periodicsettings,
 			callback = options.callback;
-		try{
+		try {
 			var ExtentionLoader = require('../lib/extensions'),
 				extensions = new ExtentionLoader(periodicsettings);
-			callback(null,extensions.settings().extensions);
+			callback(null, extensions.settings().extensions);
 		}
-		catch(err){
-			callback(err,null);
+		catch (err) {
+			callback(err, null);
 		}
 	}.bind(this);
 
-	this.handleDocumentQueryRender = function(options){
+	this.handleDocumentQueryRender = function (options) {
 		var res = options.res,
-				req = options.req,
-				callback = options.callback,
-				responseData = options.responseData;
+			req = options.req,
+			redirecturl = options.redirecturl,
+			err = options.err,
+			callback = options.callback,
+			responseData = options.responseData;
 
-		responseData.periodic = responseData.periodic || {};
-		responseData.periodic.version = appSettings.version;
-		responseData.periodic.name = appSettings.name;
-		responseData.request = {
-			query : req.query,
-			params : req.params,
-			baseurl : req.baseUrl,
-			originalurl : req.originalUrl,
-			parsed : req._parsedUrl,
-		};
+		if (err) {
+			this.handleDocumentQueryErrorResponse({
+				res: res,
+				req: req,
+				err: err,
+				callback: callback,
+				redirecturl: redirecturl
+			});
+		}
+		else {
+			responseData.periodic = responseData.periodic || {};
+			responseData.periodic.version = appSettings.version;
+			responseData.periodic.name = appSettings.name;
+			responseData.request = {
+				query: req.query,
+				params: req.params,
+				baseurl: req.baseUrl,
+				originalurl: req.originalUrl,
+				parsed: req._parsedUrl
+			};
 
-		responseData.flash_messages = req.flash();
-		if(req.query.format === "json" || req.params.ext === "json") {
-			res.send(responseData);
+			responseData.flash_messages = req.flash();
+			if (req.query.format === "json" || req.params.ext === "json") {
+				res.send(responseData);
+			}
+			else if (req.query.callback) {
+				res.jsonp(responseData);
+			}
+			else if (options.redirecturl) {
+				res.redirect(options.redirecturl);
+			}
+			else {
+				res.render(options.renderView, responseData);
+			}
 		}
-		else if(req.query.callback) {
-			res.jsonp(responseData);
-		}
-		else if(options.redirecturl) {
-			res.redirect(options.redirecturl);
-		}
-		else{
-			res.render(options.renderView,responseData);
-		}
-		if(callback){
+		if (callback) {
 			callback();
 		}
-	};
+	}.bind(this);
 
-	this.handleDocumentQueryErrorResponse = function(options){
+	this.handleDocumentQueryErrorResponse = function (options) {
 		var err = options.err,
-			errormessage = (typeof options.err === 'string')? options.err : options.err.message,
+			errormessage = (typeof options.err === 'string') ? options.err : options.err.message,
 			redirecturl = options.redirecturl,
 			req = options.req,
 			res = options.res,
@@ -515,8 +574,8 @@ var applicationController = function(resources){
 		res.status(400);
 
 		logger.error(err.stack);
-		logger.error(errormessage,req.url);
-		if(req.query.format === "json") {
+		logger.error(errormessage, req.url);
+		if (req.query.format === "json") {
 			res.send({
 				"result": "error",
 				"data": {
@@ -525,33 +584,32 @@ var applicationController = function(resources){
 			});
 		}
 		else {
-			if(options.errorflash!==false){
+			if (options.errorflash !== false) {
 				req.flash('error', errormessage);
 			}
-			if(callback){
+			if (callback) {
 				callback();
 			}
-			else if(redirecturl){
+			else if (redirecturl) {
 				res.redirect(redirecturl);
 			}
-			else{
+			else {
 				var self = this;
-				self.getPluginViewDefaultTemplate(
-					{
-						viewname:'home/error404',
-						themefileext:appSettings.templatefileextension
+				self.getPluginViewDefaultTemplate({
+						viewname: 'home/error404',
+						themefileext: appSettings.templatefileextension
 					},
-					function(err,templatepath){
+					function (err, templatepath) {
 						self.handleDocumentQueryRender({
-							res:res,
-							req:req,
-							renderView:templatepath,
-							responseData:{
+							res: res,
+							req: req,
+							renderView: templatepath,
+							responseData: {
 								pagedata: {
-									title:"Not Found"
+									title: "Not Found"
 								},
-								user:req.user,
-								url:req.url
+								user: req.user,
+								url: req.url
 							}
 						});
 					}
@@ -560,31 +618,31 @@ var applicationController = function(resources){
 		}
 	}.bind(this);
 
-	this.removeEmptyObjectValues = function(obj) {
+	this.removeEmptyObjectValues = function (obj) {
 		for (var property in obj) {
 			if (typeof obj[property] === "object") {
 				this.removeEmptyObjectValues(obj[property]);
 			}
 			else {
 				if (obj[property] === '' || obj[property] === ' ' || obj[property] === null || obj[property] === undefined || Object.keys(obj).length === 0) {
-				delete obj[property];
+					delete obj[property];
 				}
 			}
 		}
 		return obj;
 	}.bind(this);
 
-	this.removePrivateInfo = function(obj) {
+	this.removePrivateInfo = function (obj) {
 		// console.log("removePrivateInfo obj",obj);
-		if(typeof obj ==='object'){
-			obj.password=null;
-			obj.apikey=null;
-			obj.random=null;
+		if (typeof obj === 'object') {
+			obj.password = null;
+			obj.apikey = null;
+			obj.random = null;
 		}
 		return obj;
 	}.bind(this);
 
-	this.stripTags = function(textinput) {
+	this.stripTags = function (textinput) {
 		if (textinput) {
 			return textinput.replace(/[^a-z0-9@._]/gi, '-').toLowerCase();
 		}
@@ -593,7 +651,7 @@ var applicationController = function(resources){
 		}
 	};
 
-	this.makeNiceName = function(username) {
+	this.makeNiceName = function (username) {
 		if (username) {
 			return username.replace(/[^a-z0-9]/gi, '-').toLowerCase();
 		}
@@ -601,7 +659,7 @@ var applicationController = function(resources){
 			return false;
 		}
 	};
-	this.makeNiceAttribute = function(username) {
+	this.makeNiceAttribute = function (username) {
 		if (username) {
 			return username.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 		}
@@ -610,25 +668,25 @@ var applicationController = function(resources){
 		}
 	};
 
-	this.sortObject = function(dir,field){
+	this.sortObject = function (dir, field) {
 		var comparefunction;
-		if(dir==="desc"){
-			comparefunction = function(a,b){
-				if(a[field] < b[field]){
+		if (dir === "desc") {
+			comparefunction = function (a, b) {
+				if (a[field] < b[field]) {
 					return 1;
 				}
-				if(a[field] > b[field]){
+				if (a[field] > b[field]) {
 					return -1;
 				}
 				return 0;
 			};
 		}
-		else{
-			comparefunction = function(a,b){
-				if(a[field] < b[field]){
+		else {
+			comparefunction = function (a, b) {
+				if (a[field] < b[field]) {
 					return -1;
 				}
-				if(a[field] > b[field]){
+				if (a[field] > b[field]) {
 					return 1;
 				}
 				return 0;
@@ -638,39 +696,39 @@ var applicationController = function(resources){
 		return comparefunction;
 	};
 
-	this.getAdminMenu = function(options){
+	this.getAdminMenu = function (options) {
 		var adminmenu = {
 			menu: {
-				Content : {},
-				Themes : {},
-				Extensions : {},
-				Settings : {},
-				User : {},
+				Content: {},
+				Themes: {},
+				Extensions: {},
+				Settings: {},
+				User: {}
 			}
-    };
-    for(var x in appSettings.extconf.extensions){
-			if( appSettings.extconf.extensions[x].enabled===true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']){
-					var extmenudata = appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'];
-					// console.log("before adminmenu",adminmenu);
-					if(extmenudata.menu.Content){
-						adminmenu.menu.Content = merge(extmenudata.menu.Content, adminmenu.menu.Content);
-					}
-					if(extmenudata.menu.Themes){
-						adminmenu.menu.Themes = merge(extmenudata.menu.Themes, adminmenu.menu.Themes);
-					}
-					if(extmenudata.menu.Extensions){
-						adminmenu.menu.Extensions = merge(extmenudata.menu.Extensions, adminmenu.menu.Extensions);
-					}
-					if(extmenudata.menu.Settings){
-						adminmenu.menu.Settings = merge(extmenudata.menu.Settings, adminmenu.menu.Settings);
-					}
-					if(extmenudata.menu.User){
-						adminmenu.menu.User = merge(extmenudata.menu.User, adminmenu.menu.User);
-					}
-					// console.log("after adminmenu",adminmenu);
-      }
-	  }
-	  return adminmenu;
+		};
+		for (var x in appSettings.extconf.extensions) {
+			if (appSettings.extconf.extensions[x].enabled === true && appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin']) {
+				var extmenudata = appSettings.extconf.extensions[x].periodicConfig['periodicjs.ext.admin'];
+				// console.log("before adminmenu",adminmenu);
+				if (extmenudata.menu.Content) {
+					adminmenu.menu.Content = merge(extmenudata.menu.Content, adminmenu.menu.Content);
+				}
+				if (extmenudata.menu.Themes) {
+					adminmenu.menu.Themes = merge(extmenudata.menu.Themes, adminmenu.menu.Themes);
+				}
+				if (extmenudata.menu.Extensions) {
+					adminmenu.menu.Extensions = merge(extmenudata.menu.Extensions, adminmenu.menu.Extensions);
+				}
+				if (extmenudata.menu.Settings) {
+					adminmenu.menu.Settings = merge(extmenudata.menu.Settings, adminmenu.menu.Settings);
+				}
+				if (extmenudata.menu.User) {
+					adminmenu.menu.User = merge(extmenudata.menu.User, adminmenu.menu.User);
+				}
+				// console.log("after adminmenu",adminmenu);
+			}
+		}
+		return adminmenu;
 	};
 };
 

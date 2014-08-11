@@ -1,0 +1,89 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row _pea-form">
+			<div class="_pea-col-span6">
+				<a href="/p-admin/item/new" class="_pea-button _pea-color-info">New Item</a>
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<form class="_pea-form" method="get">
+					<input type="text" placeholder="search" class="_pea-col-span10" name="search"/>
+					<input type="submit" name="searchbutton" value="search" class="_pea-col-span2"  />
+				</form>
+			</div>
+		</div>
+		<div class="_pea-row">
+			<div class="_pea-col-span12">
+				<div class="_pea-document">
+					<table class="_pea-table">
+						<thead>
+							<tr class="_pea-text-left">
+								<th>Title</th>
+								<th>Author</th>
+								<th>Categories</th>
+								<th>Tags</th>
+								<th>Type</th>
+								<th>Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(items.length>0){
+									items.forEach(function(item){ %>
+										<tr>
+											<td> <a href="/p-admin/item/edit/<%= item.name %>"> <%= item.title %> </a></td>
+											<td>
+													<%if(item.primaryauthor){%>
+														<%= item.primaryauthor.username %>
+													<%}%>
+											</td>
+											<td>
+												<%if(item.categories && item.categories.length>0){
+													item.categories.forEach(function(category){%>
+														<a href="/p-admin/items/categories/<%= category.name %>"><%= category.title %></a>,
+													<%});
+												}%>
+											</td>
+											<td>
+												<%if(item.tags && item.tags.length>0){
+													item.tags.forEach(function(tag){%>
+														<a href="/p-admin/items/tags/<%= tag.name %>"><%= tag.title %></a>,
+													<%});
+												}%>
+											</td>
+											<td>
+												<%if(item.contenttypes && item.contenttypes.length>0){
+													item.contenttypes.forEach(function(contenttype){%>
+														<a href="/p-admin/items/contenttype/<%= contenttype.name %>"><%= contenttype.title %></a>,
+													<%});
+												}%>
+											</td>
+											<td>
+												<% var disDate = new Date(item.createdat) %>
+												<%= (disDate.getFullYear()) %>/
+												<%= (disDate.getMonth()+1) %>/
+												<%= (disDate.getDate()) %>
+											</td>
+										</tr>
+										<%
+									});
+								}
+								else{ %>
+									<tr><td colspan="6" class="_pea-text-center">No Items!</td></tr>
+								<%} %>
+						</tbody>
+						<tfoot>
+							<tr class="_pea-text-left">
+								<th>Title</th>
+								<th>Author</th>
+								<th>Categories</th>
+								<th>Tags</th>
+								<th>Type</th>
+								<th>Date</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include ../../shared/footer %>

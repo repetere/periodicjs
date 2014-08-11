@@ -1,0 +1,12 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<script type="text/javascript">
+	<%- locals.viewhelper.passObjToClient(item.tags,"itemtags") %>
+	<%- locals.viewhelper.passObjToClient(item.categories,"itemcategories") %>
+	<%- locals.viewhelper.passObjToClient(item.authors,"itemauthors") %>
+	<%- locals.viewhelper.passObjToClient(item.contenttypes,"itemcontenttypes") %>
+	</script>
+	<form class="_pea-form _pea-ajax-form noFormSubmit" id="edit-item-form" name="edit-item-form" method="post" action="/item/edit" data-successfunction="updateContentTypes" onsubmit="return false;" enctype='multipart/form-data'>
+		<% include compose_item_form %>
+	</form>
+<% include ../../shared/footer %>

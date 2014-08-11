@@ -5,7 +5,9 @@
             "datadocument": {
                 "email": "testuser1@example.com",
                 "username": "testuser1",
-                "userasset":"not actual image"
+                "accounttype": "invalid",
+                "userasset":"not actual image",
+                "userroles":[900,500,300,600,100]
             }
         },
         {
@@ -14,12 +16,13 @@
                 "email": "staff@example.com",
                 "username": "staff",
                 "activated": false,
-                "usertype": "invalid",
-                "userasset":"-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-icon-12036-png"
+                "accounttype": "invalid",
+                "userasset":"-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-icon-12036-png",
+                "userroles":[200,300]
             }
         },
         {
-            "datatype": "post",
+            "datatype": "item",
             "datadocument": {
                 "status": "publish",
                 "title": "How Thumbsticks Came To Control The Modern World",
@@ -33,7 +36,7 @@
                         "image_file": "http://static.digg.com/images/1xTIDkq_2_www_large_thumb.jpeg"
                     }
                 },
-                "postauthorname": "staff",
+                "itemauthorname": "staff",
                 "primaryasset": "-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-periodic-solid-png",
                 "assets": [
                     "-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-periodic-solid-png",
@@ -57,7 +60,7 @@
             }
         },
         {
-            "datatype": "post",
+            "datatype": "item",
             "datadocument": {
                 "status": "publish",
                 "title": "This Is What Happened When I Drove My Mercedes To Pick Up Food Stamps",
@@ -85,7 +88,7 @@
             }
         },
         {
-            "datatype": "post",
+            "datatype": "item",
             "datadocument": {
                 "status": "publish",
                 "primaryauthor": "staff",
@@ -128,14 +131,14 @@
                 "contenttypes": [
                     "slideshow"
                 ],
-                "posts": [
+                "items": [
                     {
                         "order": 10,
-                        "post": "brazil-s-billion-dollar-gym-experiment"
+                        "item": "brazil-s-billion-dollar-gym-experiment"
                     },
                     {
                         "order": 10,
-                        "post": "this-is-what-happened-when-i-drove-my-mercedes-to-pick-up-food-stamps"
+                        "item": "this-is-what-happened-when-i-drove-my-mercedes-to-pick-up-food-stamps"
                     }
                 ],
                 "assets": [],
@@ -380,6 +383,316 @@
             "datatype": "tag",
             "datadocument": {
                 "title": "technology"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 110,
+                "title": "can view content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 120,
+                "title": "can view themes"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 130,
+                "title": "can view extensions"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 140,
+                "title": "can view settings"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 150,
+                "title": "can view users"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 160,
+                "title": "can view uac"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 310,
+                "title": "can add content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 320,
+                "title": "can add themes"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 330,
+                "title": "can add extensions"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 350,
+                "title": "can add users"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 360,
+                "title": "can add uac"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 710,
+                "title": "can modify content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 715,
+                "title": "can modify other content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 720,
+                "title": "can modify themes"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 730,
+                "title": "can modify extensions"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 740,
+                "title": "can modify settings"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 750,
+                "title": "can modify users"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 760,
+                "title": "can modify uac"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 910,
+                "title": "can delete content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 915,
+                "title": "can delete other content"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 920,
+                "title": "can delete themes"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 930,
+                "title": "can delete extensions"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 950,
+                "title": "can delete users"
+            }
+        },
+        {
+            "datatype": "userprivilege",
+            "datadocument": {
+                "userprivilegeid": 960,
+                "title": "can delete uac"
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 999,
+                "title": "super admin"
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 900,
+                "title": "admin",
+                "privileges":[
+                    110,120,130,140,150,160,
+                    310,320,330,350,360,
+                    710,715,720,730,740,750,760,
+                    910,915,920,930,950,960
+                ]
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 700,
+                "title": "developer",
+                "privileges":[
+                    110,120,130,140,150,160,
+                    310,320,330,350,360,
+                    710,715,720,730,740,
+                    910
+                ]
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 500,
+                "title": "editor",
+                "privileges":[
+                    110,120,130,140,150,160,
+                    310,320,330,350,360,
+                    710,715,
+                    910,915
+                ]
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 300,
+                "title": "writer",
+                "privileges":[
+                    110,
+                    310,
+                    710,
+                    910
+                ]
+            }
+        },
+        {
+            "datatype": "userrole",
+            "datadocument": {
+                "userroleid": 100,
+                "title": "user",
+                "privileges":[]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 999,
+                "title": "super admin",
+                "roles":[
+                    999,
+                    900,
+                    700,
+                    500,
+                    300,
+                    100
+                ]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 900,
+                "title": "admin",
+                "roles":[
+                    900,
+                    700,
+                    500,
+                    300,
+                    100
+                ]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 700,
+                "title": "developer",
+                "roles":[
+                    700,
+                    500,
+                    300,
+                    100
+                ]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 500,
+                "title": "editor",
+                "roles":[
+                    500,
+                    300,
+                    100
+                ]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 300,
+                "title": "writer",
+                "roles":[
+                    300,
+                    100
+                ]
+            }
+        },
+        {
+            "datatype": "usergroup",
+            "datadocument": {
+                "usergroupid": 100,
+                "title": "user",
+                "roles":[
+                    100
+                ]
             }
         }
     ]

@@ -1,0 +1,24 @@
+<input type="hidden" name="_csrf" value=<%= locals.token %> >
+<div class="_pea-container">
+	<div class="_pea-row">
+		<div class="_pea-col-span8">
+			<% 
+				var genericdoc = item; 
+				var genericdocTitle = "Document"; 
+			%>
+			
+			<% include ../../shared/compose_content %>
+			<% include ../../shared/media_asset %>
+			<% include ../../shared/content_attributes %>
+		</div>
+		<div class="_pea-col-span3 _pea-pull-right">
+			<% include ../../shared/content_options %>
+			<% include ../../shared/content_taxonmy %>
+			<% if(genericdoc){%>
+				<% include ../../shared/content_delete %>
+			<%}%>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-advanced.js"></script>
+<script type="text/javascript" src="<%= locals.themehelper.extensionPublicResourcePath('periodicjs.ext.admin','javascripts') %>wysihtml5-0.4.0pre.min.js"></script>

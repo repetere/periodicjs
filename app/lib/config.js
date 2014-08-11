@@ -7,7 +7,7 @@
 
 'use strict';
 
-var fs = require('fs'),
+var fs = require('fs-extra'),
 	extend = require('util-extend'),
 	path = require('path'),
 	argv = require('optimist').argv;
@@ -24,35 +24,32 @@ var fs = require('fs'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var config = function(){
+var config = function () {
 	var appEnvironment = argv.e,
 		appPort = argv.p,
+		packagejsonFileJSON,
 		configurationFile,
-		configurationOverrideFile = path.join(path.resolve(__dirname,'../../content/config/'), 'config.json' ) ,
+		configurationOverrideFile = path.join(path.resolve(__dirname, '../../content/config/'), 'config.json'),
 		configurationDefaultFile,
 		configurationFileJSON,
 		configurationOverrideFileJSON,
 		configurationDefaultFileJSON,
-		config ={};
-
-	var readJSONFile = function(filename) {
-		return JSON.parse(fs.readFileSync(filename));
-	};
+		config = {};
 
 	/** 
 	 * gets the configuration information
 	 * @return { string } file path for config file
 	 */
-	this.settings = function(){
+	this.settings = function () {
 		return config;
 	};
 
-	this.setConfig = function(name,value){
+	this.setConfig = function (name, value) {
 		this[name] = value;
 	}.bind(this);
 
 
-	this.setSetting = function(name,value){
+	this.setSetting = function (name, value) {
 		config[name] = value;
 	}.bind(this);
 
@@ -60,47 +57,51 @@ var config = function(){
 	 * generate file path for config files
 	 * @return { string } file path for config file
 	 */
-	this.getConfigFilePath = function(config){
-		var directory = path.resolve(__dirname,'../../content/config/environment/'),
-			file = config+'.json';
-		return  path.join(directory,file);
+	this.getConfigFilePath = function (config) {
+		var directory = path.resolve(__dirname, '../../content/config/environment/'),
+			file = config + '.json';
+		return path.join(directory, file);
 	};
 
 	/** 
 	 * loads app configuration
 	 * @throws {Error} If missing config file
 	 */
-	this.init = function(){
+	this.init = function () {
+		/** get info from package.json */
+		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+
 		/** load user config file: content/config/config.json */
-		configurationOverrideFileJSON = readJSONFile(configurationOverrideFile);
+		configurationOverrideFileJSON = fs.readJSONSync(configurationOverrideFile);
 
 		/** set path of default config: content/config/environment/default.json */
 		configurationDefaultFile = this.getConfigFilePath('default');
-		configurationDefaultFileJSON = readJSONFile(configurationDefaultFile);
+		configurationDefaultFileJSON = fs.readJSONSync(configurationDefaultFile);
 
 		/** if no command line argument, use environment from user config file */
 		appEnvironment = (argv.e) ?
 			argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
-				configurationOverrideFileJSON.application.environment : null;
+			configurationOverrideFileJSON.application.environment : null;
 
 		/** set & load file path for base environment config */
 		configurationFile = this.getConfigFilePath(appEnvironment);
 
 		/** override environment data with user config */
-		config = extend (config,configurationDefaultFileJSON);
-		if(fs.existsSync(configurationFile)){
-			configurationFileJSON = readJSONFile(configurationFile);
-			config = extend (config,configurationFileJSON);
+		config = extend(config, configurationDefaultFileJSON);
+		if (fs.existsSync(configurationFile)) {
+			configurationFileJSON = fs.readJSONSync(configurationFile);
+			config = extend(config, configurationFileJSON);
 		}
-		config = extend (config,configurationOverrideFileJSON);
+		config = extend(config, configurationOverrideFileJSON);
+		config.version = packagejsonFileJSON.version;
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
 
-		if(config.theme){
-			config.themepath = path.join(__dirname,'../../content/themes',config.theme);
+		if (config.theme) {
+			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
 		}
-		if(config.debug){
+		if (config.debug) {
 			console.log(config);
 		}
 	}.bind(this);

@@ -2,8 +2,9 @@
 
 var path = require('path'),
 		async = require('async'),
+		util = require('util'),
 		fs = require('fs-extra'),
-		npm = require("npm"),
+		npm = require('npm'),
 		mongoose = require('mongoose'),
 		appController = require(path.join(process.cwd(),'app/controller/application')),
 		logdir = path.resolve(process.cwd(),'logs/'),
@@ -193,7 +194,7 @@ var configurePeriodic = function(req,res,next,options){
 							ext_scheduledcontent=currentExtensionsConf.extensions[x];
 							ext_scheduledcontent.enabled=true;
 						}
-						if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.user_acces_control'){
+						if(currentExtensionsConf.extensions[x].name === 'periodicjs.ext.user_access_control'){
 							ext_useraccescontrol=currentExtensionsConf.extensions[x];
 							ext_useraccescontrol.enabled=true;
 						}
@@ -227,7 +228,7 @@ var configurePeriodic = function(req,res,next,options){
 						callback(new Error("Invalid extension installation: periodicjs.ext.scheduled_content"),null);
 					}
 					if(!ext_useraccescontrol){
-						callback(new Error("Invalid extension installation: periodicjs.ext.user_acces_control"),null);
+						callback(new Error("Invalid extension installation: periodicjs.ext.user_access_control"),null);
 					}
 
 					if(ext_install && ext_defaultroutes && ext_mailer && ext_login && ext_useraccescontrol && ext_scheduledcontent && ext_admin && ext_dbseed){
@@ -327,7 +328,15 @@ var configurePeriodic = function(req,res,next,options){
 				update_outputlog({
 					logdata : 'creating admin user'
 				});
-				User.fastRegisterUser(userdata,callback);
+				User.fastRegisterUser(userdata,function(err,userdata){
+					if(err){
+						callback(err,null);
+						mongoose.connection.close();
+					}
+					else{
+						callback(null,userdata);
+					}
+				});
 			}
 			else{
 				callback(null,"skipping admin user set up");
@@ -464,6 +473,8 @@ var update = function(req, res, next){
 			userdata = {
 				username: updatesettings.username,
 				email: updatesettings.email,
+				accounttype: 'admin',
+				activated: true,
 				password: updatesettings.password,
 				passwordconfirm: updatesettings.passwordconfirm
 			},

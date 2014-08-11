@@ -4,7 +4,6 @@
   "newcap": true,
   "eqeqeq": true,
   "eqnull": true,
-  "es5": true,
   "undef": true,
   "devel": true,
   "node": true,

@@ -1,8 +1,0 @@
-<h2><a href="/article/<%= post.name %>"><%= post.title %></a></h2>
-<%if(post.contenttypeattributes && post.contenttypeattributes.blog && post.contenttypeattributes.blog.summary){%>
-	<div class="_post-micro-content"><%- post.contenttypeattributes.blog.summary %></div>
-<%}
-else{%>
-	<div class="_post-micro-content"><%- post.content %></div>
-<%}%>
-<p><a class="btn btn-default btn-xs" href="/article/<%= post.name %>" role="button">View details »</a></p>

@@ -1,0 +1,9 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<script type="text/javascript">
+	<%- locals.viewhelper.passObjToClient(userprofile.userroles,"userprofileuseroles") %>
+	</script>
+	<form class="_pea-form _pea-ajax-form noFormSubmit" id="edit-user-form" name="edit-user-form" method="post" action="/p-admin/user/edit" onsubmit="return false;" enctype='multipart/form-data'>
+		<% include compose_user_form %>
+	</form>
+<% include ../../shared/footer %>

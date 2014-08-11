@@ -8,54 +8,52 @@ var path = require('path'),
 	mongoose,
 	logger;
 
-var index = function(req,res,next){
-	var recentposts = req.controllerData.posts || {};
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'home/index',
-			themefileext:appSettings.templatefileextension
+var index = function (req, res) {
+	var recentitems = req.controllerData.items || {};
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'home/index',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"homepage"
+						title: 'homepage'
 					},
-					posts: recentposts,
-					user:req.user
+					items: recentitems,
+					user: req.user
 				}
 			});
 		}
 	);
 };
-var default_view = function(req,res,next){
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'home/default',
-			themefileext:appSettings.templatefileextension
+var default_view = function (req, res) {
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'home/default',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"default"
+						title: 'default'
 					},
-					user:req.user
+					user: req.user
 				}
 			});
 		}
 	);
 };
-var get_installoutputlog = function(req,res,next){
-	var logfile = path.resolve(process.cwd(),'logs/install-periodicjs.log'),
-			stat = fs.statSync(logfile),
-			readStream = fs.createReadStream(logfile);
+var get_installoutputlog = function (req, res) {
+	var logfile = path.resolve(process.cwd(), 'logs/install-periodicjs.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
 
 	res.writeHead(200, {
 		'Content-Type': ' text/plain',
@@ -63,70 +61,74 @@ var get_installoutputlog = function(req,res,next){
 	});
 	readStream.pipe(res);
 };
-var error404 = function(req,res,next){
+var error404 = function (req, res) {
 	res.status(404);
-	applicationController.getPluginViewDefaultTemplate(
-		{
-			viewname:'home/error404',
-			themefileext:appSettings.templatefileextension
+	applicationController.getPluginViewDefaultTemplate({
+			viewname: 'home/error404',
+			themefileext: appSettings.templatefileextension
 		},
-		function(err,templatepath){
+		function (err, templatepath) {
 			applicationController.handleDocumentQueryRender({
-				res:res,
-				req:req,
-				renderView:templatepath,
-				responseData:{
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
 					pagedata: {
-						title:"Not Found"
+						title: 'Not Found'
 					},
-					user:req.user,
-					url:req.url
+					user: req.user,
+					url: req.url
 				}
 			});
 		}
 	);
 };
 
-var catch404 = function(req, res, next){
-	var err = new Error("Page not found");
+var catch404 = function (req, res) {
+	var err = new Error('Page not found');
 	// next(err);
 
-	applicationController.handleDocumentQueryErrorResponse({err:err,req:req,res:res,errorflash:err.message+", "+req.url});
-  //   if (err) {
-		// res.status(404);
+	applicationController.handleDocumentQueryErrorResponse({
+		err: err,
+		req: req,
+		res: res,
+		errorflash: err.message + ', ' + req.url
+	});
+	//   if (err) {
+	// res.status(404);
 
-		// // respond with html page
-		// if (req.accepts('html')) {
-		// 	error404(req, res, next);
-		// 	return;
-		// }
-		// else if (req.accepts('json')) {
-		// 	// respond with json
-		//     res.send({ error: 'Not found' });
-		//     return;
-		// }
-		// else{
-		// 	// default to plain-text. send()
-		// 	res.type('txt').send('Not found');
-		// }
-  //   }
-  //   else{
-		// next(err);
-  //   }
+	// // respond with html page
+	// if (req.accepts('html')) {
+	// 	error404(req, res, next);
+	// 	return;
+	// }
+	// else if (req.accepts('json')) {
+	// 	// respond with json
+	//     res.send({ error: 'Not found' });
+	//     return;
+	// }
+	// else{
+	// 	// default to plain-text. send()
+	// 	res.type('txt').send('Not found');
+	// }
+	//   }
+	//   else{
+	// next(err);
+	//   }
 };
 
-var controller = function(resources){
+var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
 
-	return{
-		index:index,
-		default_view:default_view,
-		get_installoutputlog:get_installoutputlog,
-		error404:error404,
-		catch404:catch404
+	return {
+		index: index,
+		default_view: default_view,
+		get_installoutputlog: get_installoutputlog,
+		error404: error404,
+		catch404: catch404
 	};
 };
 

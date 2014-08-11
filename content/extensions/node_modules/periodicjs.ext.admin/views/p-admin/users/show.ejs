@@ -1,0 +1,35 @@
+<% include ../../shared/header %>
+<% include ../../shared/nav %>
+	<div class="_pea-container">
+		<div class="_pea-row">
+			<div class="_pea-col-span10 _pea-col-nofloat">
+			  <div class="_pea-document">
+					<div class="_pea-row _pea-form">
+						<div class="_pea-col-span4  _pea-text-center">
+							<% if(userprofile.primaryasset && userprofile.primaryasset.assettype && userprofile.primaryasset.assettype.match("image")){%>
+									<img class="_pea-col-span11" src="<%=userprofile.primaryasset.fileurl%>"/>
+							<%} 
+								else{%>
+							   	<img src="/favicon.png" class="_pea-col-span11">
+							<%}%>
+					    <!-- <img src="/favicon.png" alt="" class="center-block img-circle img-responsive"> -->
+					  </div><!--/col-->           
+					  <div class="_pea-col-span8">
+					    <h2><%= userprofile.username %>
+					    	<% if(allow_edit){%>
+					    		<small>
+				    				<a href="/p-admin/user/<%= userprofile.username%>/edit" class="_pea-button _pea-color-success _pea-text-small _pea-pull-right">Edit Profile & Account</a>
+			    				</small>
+						    <%}%>
+					    </h2>
+					    <p><strong>Name: </strong> <%- userprofile.firstname %> <%- userprofile.lastname %></p>
+					    <p><strong>About: </strong> <%= userprofile.description %></p>
+					    <p><strong>URL: </strong> <%- userprofile.url %></p>
+					    <!-- <p><strong>Loc: </strong> <%- userprofile.city %>,<%- userprofile.state %> <%- userprofile.country %></p>-->
+					  </div><!--/col--> 
+					</div>
+			  </div><!--/panel-->
+			</div>
+			</div>
+	</div>
+<% include ../../shared/footer %>
