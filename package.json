@@ -53,7 +53,7 @@
 		"npm": "1.4.15",
 		"optimist": "0.6.1",
 		"passport": "~0.2.0",
-		"periodicjs.core.extensions": "^1.0.1",
+		"periodicjs.core.extensions": "1.0.5",
 		"periodicjs.ext.admin": "1.0.0",
 		"periodicjs.ext.dbseed": "1.0.0",
 		"periodicjs.ext.default_routes": "1.0.0",

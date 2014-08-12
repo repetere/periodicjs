@@ -7,6 +7,7 @@ var path = require('path'),
 	// async = require('async'),
 	appController = require('./application'),
 	Extensions = require('periodicjs.core.extensions'),
+	ExtensionEngine,
 	Decompress = require('decompress'),
 	applicationController,
 	appSettings,
@@ -123,7 +124,9 @@ var install_viaNPM = function (options) {
 									install_logOutput({
 										logfile: logfile,
 										logdata: extToAddname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
-										callback: function () {}
+										callback: function () {
+											applicationController.restart_app();
+										}
 									});
 								}
 							}
@@ -708,7 +711,7 @@ var enable = function (req, res) {
 				appSettings.extconf.extensions[numX].enabled = true;
 
 				fs.outputJson(
-					Extensions.getExtensionConfFilePath,
+					ExtensionEngine.getExtensionConfFilePath(),
 					appSettings.extconf,
 					function (err) {
 						if (err) {
@@ -725,7 +728,7 @@ var enable = function (req, res) {
 								res: res,
 								redirecturl: '/p-admin/extensions',
 								responseData: {
-									result: "success",
+									result: 'success',
 									data: {
 										ext: extname,
 										msg: 'extension enabled'
@@ -761,6 +764,7 @@ var controller = function (resources) {
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
+	ExtensionEngine = new Extensions(appSettings);
 
 	return {
 		install: install,

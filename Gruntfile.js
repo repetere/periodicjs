@@ -59,9 +59,9 @@ module.exports = function (grunt) {
 			dist: {
 				files: [{
 					expand: true,
-					cwd: 'content/extensions/node_modules',
-					src: ['**/resources/js/*_src.js'],
-					dest: 'content/extensions/node_modules',
+					cwd: 'node_modules',
+					src: ['periodicjs*/resources/js/*_src.js'],
+					dest: 'node_modules',
 					rename: function (dest, src) {
 						var finallocation = path.join(dest, src);
 						finallocation = finallocation.replace('_src', '_build');
