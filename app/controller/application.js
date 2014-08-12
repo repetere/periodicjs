@@ -568,8 +568,8 @@ var applicationController = function (resources) {
 			redirecturl = options.redirecturl,
 			req = options.req,
 			res = options.res,
-			callback = options.callback;//,
-			// errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
+			callback = options.callback; //,
+		// errorFlashMessage = (options.errorflash) ? options.errorflash : errormessage;
 
 		res.status(400);
 

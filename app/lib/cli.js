@@ -56,7 +56,7 @@ var cli = function (argv) {
 		}
 		else if (argv.extension) {
 			try {
-				var cliExtension = require(path.resolve(process.cwd(),'./node_modules/periodicjs.ext.' + argv.extension + '/cli'))(periodicResources);
+				var cliExtension = require(path.resolve(process.cwd(), './node_modules/periodicjs.ext.' + argv.extension + '/cli'))(periodicResources);
 				cliExtension.cli(argv);
 			}
 			catch (e) {

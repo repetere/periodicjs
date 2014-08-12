@@ -87,7 +87,7 @@ var install_logOutput = function (options) {
 	});
 };
 
-var install_viaNPM = function (options){
+var install_viaNPM = function (options) {
 	var cli = options.cli,
 		repourl = options.repourl,
 		reponame = options.reponame,
@@ -124,7 +124,7 @@ var install_viaNPM = function (options){
 										logfile: logfile,
 										logdata: extToAddname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
 										callback: function () {}
-									});	
+									});
 								}
 							}
 						});
@@ -173,9 +173,10 @@ var upload_npminstall = function (options) {
 							logdata: data,
 							callback: function (err) {
 								if (!err) {
-									install_extPublicDir({
+									install_logOutput({
 										logfile: logfile,
-										extname: extname
+										logdata: extname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
+										callback: function () {}
 									});
 								}
 							}
@@ -241,7 +242,7 @@ var move_upload = function (options) {
 };
 
 var extFunctions = {};
-extFunctions.getlogfile =  function (options) {
+extFunctions.getlogfile = function (options) {
 	return path.join(options.logdir, 'install-ext.' + options.userid + '.' + applicationController.makeNiceName(options.reponame) + '.' + options.timestamp + '.log');
 };
 extFunctions.getrepourl = function (options) {
