@@ -3,13 +3,15 @@
 var path = require('path'),
 	fs = require('fs-extra'),
 	npm = require('npm'),
-	semver = require('semver'),
-	// async = require('async'),
 	appController = require('./application'),
 	Extensions = require('periodicjs.core.extensions'),
-	ExtensionEngine,
+	CoreExtension,
+	CoreUtilities = require('periodicjs.core.utilities'),
+	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
 	Decompress = require('decompress'),
 	applicationController,
+	CoreController,
+	extFunctions,
 	appSettings,
 	mongoose,
 	logger;
@@ -222,22 +224,6 @@ var move_upload = function (options) {
 	});
 };
 
-var extFunctions = {};
-extFunctions.getlogfile = function (options) {
-	return path.join(options.logdir, 'install-ext.' + options.userid + '.' + applicationController.makeNiceName(options.reponame) + '.' + options.timestamp + '.log');
-};
-extFunctions.getrepourl = function (options) {
-	return (options.repoversion === 'latest' || !options.repoversion) ?
-		'https://github.com/' + options.reponame + '/archive/master.tar.gz' :
-		'https://github.com/' + options.reponame + '/tarball/' + options.repoversion;
-};
-extFunctions.getlogdir = function () {
-	return path.resolve(process.cwd(), 'content/extensions/log/');
-};
-extFunctions.getextdir = function () {
-	return path.join(process.cwd(), './node_modules');
-};
-
 var install = function (req, res) {
 	var repoversion = req.query.version,
 		reponame = req.query.name,
@@ -380,60 +366,6 @@ var upload_install = function (req, res, next) {
 	});
 };
 
-var uninstall_viaNPM = function (options) {
-	var extdir = options.extdir,
-		repourl = options.repourl,
-		extname = options.extname,
-		logfile = options.logfile;
-	npm.load({
-			"strict-ssl": false,
-			"production": true,
-			prefix: extdir
-		},
-		function (err) {
-			if (err) {
-				install_logErrorOutput({
-					logfile: logfile,
-					logdata: err.message
-				});
-			}
-			else {
-				npm.commands.uninstall([extname], function (err, data) {
-					if (err) {
-						install_logErrorOutput({
-							logfile: logfile,
-							logdata: err.message
-						});
-					}
-					else {
-						install_logOutput({
-							logfile: logfile,
-							logdata: data,
-							callback: function (err) {
-								if (!err) {
-									install_logOutput({
-										logfile: logfile,
-										logdata: extname + ' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
-										callback: function (err) {}
-									});
-									applicationController.restart_app();
-								}
-							}
-						});
-					}
-					// command succeeded, and data might have some info
-				});
-				npm.on("log", function (message) {
-					install_logOutput({
-						logfile: logfile,
-						logdata: message,
-						callback: function (err) {}
-					});
-				});
-			}
-		});
-};
-
 var cleanup_log = function (req, res) {
 	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
 		logfile = path.join(logdir, req.query.mode + '-ext.' + req.user._id + '.' + applicationController.makeNiceName(req.params.extension) + '.' + req.params.date + '.log');
@@ -461,108 +393,119 @@ var cleanup_log = function (req, res) {
 	});
 };
 
-var remove = function (req, res, next) {
+var getOutputLog = function (options) {
+	var res = options.res,
+		req = options.req,
+		extlogname = options.extlogname,
+		logprefix = options.logprefix,
+		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
+		logfile = path.join(logdir, logprefix + req.user._id + '.' + extlogname + '.' + req.params.date + '.log'),
+		stat = fs.statSync(logfile),
+		readStream = fs.createReadStream(logfile);
+
+	res.writeHead(200, {
+		'Content-Type': ' text/plain',
+		'Content-Length': stat.size
+	});
+
+	// We replaced all the event handlers with a simple call to readStream.pipe()
+	// http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
+	// http://visionmedia.github.io/superagent/#request-timeouts
+	// http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
+	readStream.pipe(res);
+};
+
+var remove_getOutputLog = function (req, res) {
+	getOutputLog({
+		res: res,
+		req: req,
+		extlogname: CoreUtilities.makeNiceName(req.params.extension),
+		logprefix: 'remove-ext.'
+	});
+};
+
+var install_getOutputLog = function (req, res) {
+	getOutputLog({
+		res: res,
+		req: req,
+		extlogname: CoreUtilities.makeNiceName(req.params.extension),
+		logprefix: 'install-ext.'
+	});
+};
+
+var upload_getOutputLog = function (req, res) {
+	getOutputLog({
+		res: res,
+		req: req,
+		extlogname: req.params.extension,
+		logprefix: 'install-ext.'
+	});
+};
+
+var remove = function (req, res) {
 	var extname = req.params.id,
 		timestamp = (new Date()).getTime(),
-		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
-		logfile = path.join(logdir, 'remove-ext.' + req.user._id + '.' + applicationController.makeNiceName(extname) + '.' + timestamp + '.log'),
-		myData = {
-			result: 'start',
-			data: {
-				message: 'beginning extension removal: ' + extname,
-				time: timestamp
-			}
-		},
-		extdir = path.join(process.cwd(), 'content/extensions/node_modules');
-	//JSON.stringify(myData, null, 4)
-	//JSON.stringify(myData, null, 4)
+		logdir = path.resolve(process.cwd(), 'content/extensions/log/'),
+		logfile = extFunctions.getlogfile({
+			logdir: logdir,
+			installprefix: 'remove-ext.',
+			userid: req.user._id,
+			extfilename: CoreUtilities.makeNiceName(extname),
+			timestamp: timestamp
+		});
+
 	install_logOutput({
 		logfile: logfile,
-		logdata: myData.data.message,
+		logdata: 'beginning extension removal: ' + extname,
 		callback: function (err) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					res: res,
 					req: req,
 					responseData: {
 						result: 'success',
 						data: {
-							repo: applicationController.makeNiceName(extname),
+							repo: CoreUtilities.makeNiceName(extname),
 							extname: extname,
 							time: timestamp
 						}
 					}
 				});
-				uninstall_viaNPM({
-					extdir: extdir,
-					logfile: logfile,
+				CoreExtension.uninstall_viaNPM({
 					extname: extname
+				}, function (err, data) {
+					if (err) {
+						install_logErrorOutput({
+							logfile: logfile,
+							logdata: err.message
+						});
+					}
+					else {
+						install_logOutput({
+							logfile: logfile,
+							logdata: extname + ' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
+							callback: function () {
+								logger.silly(data);
+							}
+						});
+						CoreUtilities.restart_app();
+					}
 				});
 			}
 		}
 	});
 };
 
-var remove_getOutputLog = function (req, res, next) {
-	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
-		logfile = path.join(logdir, 'remove-ext.' + req.user._id + '.' + applicationController.makeNiceName(req.params.extension) + '.' + req.params.date + '.log'),
-		stat = fs.statSync(logfile),
-		readStream = fs.createReadStream(logfile);
-
-	res.writeHead(200, {
-		'Content-Type': ' text/plain',
-		'Content-Length': stat.size
-	});
-
-	// We replaced all the event handlers with a simple call to readStream.pipe()
-	// http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
-	// http://visionmedia.github.io/superagent/#request-timeouts
-	// http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
-	readStream.pipe(res);
-};
-
-var install_getOutputLog = function (req, res, next) {
-	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
-		logfile = path.join(logdir, 'install-ext.' + req.user._id + '.' + applicationController.makeNiceName(req.params.extension) + '.' + req.params.date + '.log'),
-		stat = fs.statSync(logfile),
-		readStream = fs.createReadStream(logfile);
-
-	res.writeHead(200, {
-		'Content-Type': ' text/plain',
-		'Content-Length': stat.size
-	});
-
-	// We replaced all the event handlers with a simple call to readStream.pipe()
-	// http://nodejs.org/api/fs.html#fs_fs_writefile_filename_data_options_callback
-	// http://visionmedia.github.io/superagent/#request-timeouts
-	// http://stackoverflow.com/questions/10046039/nodejs-send-file-in-response
-	readStream.pipe(res);
-};
-
-var upload_getOutputLog = function (req, res) {
-	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
-		logfile = path.join(logdir, 'install-ext.' + req.user._id + '.' + req.params.extension + '.' + req.params.date + '.log'),
-		stat = fs.statSync(logfile),
-		readStream = fs.createReadStream(logfile);
-
-	res.writeHead(200, {
-		'Content-Type': ' text/plain',
-		'Content-Length': stat.size
-	});
-
-	readStream.pipe(res);
-};
-
 var disable = function (req, res) {
 	var extname = req.params.id;
-	ExtensionEngine.disableExtension({
+	CoreExtension.disableExtension({
 			extension: req.controllerData.extension,
 			extensionx: req.controllerData.extensionx,
 			appSettings: appSettings
@@ -597,7 +540,7 @@ var disable = function (req, res) {
 var enable = function (req, res) {
 	var extname = req.params.id;
 
-	ExtensionEngine.enableExtension({
+	CoreExtension.enableExtension({
 			extension: req.controllerData.extension,
 			extensionx: req.controllerData.extensionx,
 			appSettings: appSettings,
@@ -635,18 +578,20 @@ var controller = function (resources) {
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	applicationController = new appController(resources);
-	ExtensionEngine = new Extensions(appSettings);
+	CoreController = new CoreControllerHelper(resources);
+	CoreExtension = new Extensions(appSettings);
+	extFunctions = CoreExtension.extFunctions();
 
 	return {
 		install: install,
 		install_getOutputLog: install_getOutputLog,
-		remove_getOutputLog: remove_getOutputLog,
 		cleanup_log: cleanup_log,
-		remove: remove,
-		disable: disable,
 		enable: enable,
 		upload_install: upload_install,
 		upload_getOutputLog: upload_getOutputLog,
+		remove: remove,
+		remove_getOutputLog: remove_getOutputLog,
+		disable: disable,
 		cli: cli
 	};
 };
