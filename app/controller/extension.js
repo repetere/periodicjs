@@ -5,8 +5,9 @@ var path = require('path'),
 	npm = require('npm'),
 	appController = require('./application'),
 	Extensions = require('periodicjs.core.extensions'),
+	Utilities = require('periodicjs.core.utilities'),
 	CoreExtension,
-	CoreUtilities = require('periodicjs.core.utilities'),
+	CoreUtilities,
 	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
 	Decompress = require('decompress'),
 	applicationController,
@@ -14,7 +15,8 @@ var path = require('path'),
 	extFunctions,
 	appSettings,
 	mongoose,
-	logger;
+	logger,
+	restartfile = path.join(process.cwd(), '/content/extensions/restart.json');
 
 var install_logErrorOutput = function (options) {
 	var logfile = options.logfile,
@@ -495,7 +497,9 @@ var remove = function (req, res) {
 								logger.silly(data);
 							}
 						});
-						CoreUtilities.restart_app();
+						CoreUtilities.restart_app({
+							restartfile: restartfile
+						});
 					}
 				});
 			}
@@ -532,7 +536,9 @@ var disable = function (req, res) {
 						}
 					}
 				});
-				applicationController.restart_app();
+				CoreUtilities.restart_app({
+					restartfile: restartfile
+				});
 			}
 		});
 };
@@ -568,7 +574,9 @@ var enable = function (req, res) {
 						}
 					}
 				});
-				applicationController.restart_app();
+				CoreUtilities.restart_app({
+					restartfile: restartfile
+				});
 			}
 		});
 };
@@ -580,6 +588,7 @@ var controller = function (resources) {
 	applicationController = new appController(resources);
 	CoreController = new CoreControllerHelper(resources);
 	CoreExtension = new Extensions(appSettings);
+	CoreUtilities = new Utilities(resources);
 	extFunctions = CoreExtension.extFunctions();
 
 	return {
