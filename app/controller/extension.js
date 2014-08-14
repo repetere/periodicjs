@@ -3,14 +3,14 @@
 var path = require('path'),
 	fs = require('fs-extra'),
 	npm = require('npm'),
-	appController = require('./application'),
+	// appController = require('./application'),
 	Extensions = require('periodicjs.core.extensions'),
 	Utilities = require('periodicjs.core.utilities'),
 	CoreExtension,
 	CoreUtilities,
 	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
 	Decompress = require('decompress'),
-	applicationController,
+	// applicationController,
 	CoreController,
 	extFunctions,
 	appSettings,
@@ -28,21 +28,6 @@ var install_logErrorOutput = function (options) {
 		}
 		if (options.cli) {
 			process.exit(0);
-		}
-	});
-};
-
-var remove_clilog = function (options) {
-	fs.remove(options.logfile, function (err) {
-		if (err) {
-			install_logErrorOutput({
-				logfile: options.logfile,
-				logdata: err.message,
-				cli: options.cli
-			});
-		}
-		else {
-			logger.info(options.extname + ' log removed \r\n  ====##END##====');
 		}
 	});
 };
@@ -107,7 +92,9 @@ var install_viaNPM = function (options) {
 										logfile: logfile,
 										logdata: extToAddname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
 										callback: function () {
-											applicationController.restart_app();
+											CoreUtilities.restart_app({
+												restartfile: restartfile
+											});
 										}
 									});
 								}
@@ -133,8 +120,8 @@ var upload_npminstall = function (options) {
 		logfile = options.logfile,
 		extname = options.extname;
 	npm.load({
-			"strict-ssl": false,
-			"production": true,
+			'strict-ssl': false,
+			'production': true,
 			prefix: path.join(extdir, extname)
 		},
 		function (err) {
@@ -161,7 +148,11 @@ var upload_npminstall = function (options) {
 									install_logOutput({
 										logfile: logfile,
 										logdata: extname + ' installed, extensions.conf updated, application restarting \r\n  ====##END##====',
-										callback: function () {}
+										callback: function () {
+											CoreUtilities.restart_app({
+												restartfile: restartfile
+											});
+										}
 									});
 								}
 							}
@@ -169,11 +160,11 @@ var upload_npminstall = function (options) {
 					}
 					// command succeeded, and data might have some info
 				});
-				npm.on("log", function (message) {
+				npm.on('log', function (message) {
 					install_logOutput({
 						logfile: logfile,
 						logdata: message,
-						callback: function (err) {}
+						callback: function () {}
 					});
 				});
 			}
@@ -181,12 +172,9 @@ var upload_npminstall = function (options) {
 };
 
 var move_upload = function (options) {
-	// console.log("options",options);
 	var logfile = options.logfile,
 		extname = options.extname,
 		extdir = options.extdir;
-	// fs.rename(returnFile.path,newfilepath,function(err){
-	// });
 	var decompress = new Decompress()
 		.src(options.uploadedfile.path)
 		.dest(extdir)
@@ -199,6 +187,7 @@ var move_upload = function (options) {
 			});
 		}
 		else {
+			logger.silly('files', files);
 			install_logOutput({
 				logfile: logfile,
 				logdata: 'unzipped directory'
@@ -211,6 +200,7 @@ var move_upload = function (options) {
 					});
 				}
 				else {
+					logger.silly('filedir', filedir);
 					install_logOutput({
 						logfile: logfile,
 						logdata: 'removed zip file'
@@ -248,21 +238,21 @@ var install = function (req, res) {
 		logdata: 'beginning extension install: ' + reponame,
 		callback: function (err) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					res: res,
 					req: req,
 					responseData: {
 						result: 'success',
 						data: {
 							url: repourl,
-							repo: applicationController.makeNiceName(reponame),
+							repo: CoreUtilities.makeNiceName(reponame),
 							time: timestamp
 						}
 					}
@@ -322,8 +312,8 @@ var cli = function (argv) {
 		process.exit(0);
 	}
 };
-var upload_install = function (req, res, next) {
-	var uploadedFile = applicationController.removeEmptyObjectValues(req.controllerData.fileData),
+var upload_install = function (req, res) {
+	var uploadedFile = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData),
 		timestamp = (new Date()).getTime(),
 		extname = path.basename(uploadedFile.filename, path.extname(uploadedFile.filename)),
 		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
@@ -332,21 +322,21 @@ var upload_install = function (req, res, next) {
 
 	install_logOutput({
 		logfile: logfile,
-		logdata: "beginning extension install: " + extname,
+		logdata: 'beginning extension install: ' + extname,
 		callback: function (err) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					res: res,
 					req: req,
 					responseData: {
-						result: "success",
+						result: 'success',
 						data: {
 							doc: {
 								logfile: logfile,
@@ -370,18 +360,18 @@ var upload_install = function (req, res, next) {
 
 var cleanup_log = function (req, res) {
 	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
-		logfile = path.join(logdir, req.query.mode + '-ext.' + req.user._id + '.' + applicationController.makeNiceName(req.params.extension) + '.' + req.params.date + '.log');
+		logfile = path.join(logdir, req.query.mode + '-ext.' + req.user._id + '.' + CoreUtilities.makeNiceName(req.params.extension) + '.' + req.params.date + '.log');
 
 	fs.remove(logfile, function (err) {
 		if (err) {
-			applicationController.handleDocumentQueryErrorResponse({
+			CoreController.handleDocumentQueryErrorResponse({
 				err: err,
 				res: res,
 				req: req
 			});
 		}
 		else {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				responseData: {
@@ -446,13 +436,14 @@ var upload_getOutputLog = function (req, res) {
 
 var remove = function (req, res) {
 	var extname = req.params.id,
+		extfilename = CoreUtilities.makeNiceName(extname),
 		timestamp = (new Date()).getTime(),
 		logdir = path.resolve(process.cwd(), 'content/extensions/log/'),
 		logfile = extFunctions.getlogfile({
 			logdir: logdir,
 			installprefix: 'remove-ext.',
 			userid: req.user._id,
-			extfilename: CoreUtilities.makeNiceName(extname),
+			extfilename: extfilename,
 			timestamp: timestamp
 		});
 
@@ -516,7 +507,7 @@ var disable = function (req, res) {
 		},
 		function (err, status) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req,
@@ -524,7 +515,7 @@ var disable = function (req, res) {
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					req: req,
 					res: res,
 					redirecturl: '/p-admin/extensions',
@@ -554,7 +545,7 @@ var enable = function (req, res) {
 		},
 		function (err, status) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req,
@@ -562,7 +553,7 @@ var enable = function (req, res) {
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					req: req,
 					res: res,
 					redirecturl: '/p-admin/extensions',
@@ -585,7 +576,7 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	// applicationController = new appController(resources);
 	CoreController = new CoreControllerHelper(resources);
 	CoreExtension = new Extensions(appSettings);
 	CoreUtilities = new Utilities(resources);
