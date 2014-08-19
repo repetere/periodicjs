@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "0.6.0",
+	"version": "1.0.0",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
@@ -16,6 +16,7 @@
 		"url": "git://github.com/typesettin/periodicjs.git"
 	},
 	"scripts": {
+		"nd": "nodemon --watch app --watch content/extensions/restart.json index.js ",
 		"startdev": "pm2 start content/config/process/development-dev.json",
 		"start_devtest": "pm2 start content/config/process/development-test.json",
 		"start_devclient": "pm2 start content/config/process/development-client.json",
@@ -52,6 +53,10 @@
 		"npm": "1.4.15",
 		"optimist": "0.6.1",
 		"passport": "~0.2.0",
+		"periodicjs.core.controllerhelper": "1.1.1",
+		"periodicjs.core.extensions": "1.4.2",
+		"periodicjs.core.mailer": "1.2.0",
+		"periodicjs.core.utilities": "1.1.2",
 		"prompt": "0.2.13",
 		"response-time": "2.0.0",
 		"semver": "2.3.0",

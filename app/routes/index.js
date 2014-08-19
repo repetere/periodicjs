@@ -2,7 +2,7 @@
 
 var path = require('path'),
 	fs = require('fs'),
-	ExtentionLoader = require('../lib/extensions');
+	Extensions = require('periodicjs.core.extensions');
 
 module.exports = function (periodic) {
 	// express,app,logger,config/settings,db
@@ -14,10 +14,10 @@ module.exports = function (periodic) {
 	});
 	var homeController = require('../controller/home')(periodic),
 		appRouter = periodic.express.Router(),
-		extensions = new ExtentionLoader(periodic.settings);
+		ExtensionCore = new Extensions(periodic.settings);
 
-	periodic.settings.extconf = extensions.settings();
-	extensions.loadExtensions(periodic);
+	periodic.settings.extconf = ExtensionCore.settings();
+	ExtensionCore.loadExtensions(periodic);
 	// periodic.logger.silly(models);
 
 	if (periodic.settings.theme) {

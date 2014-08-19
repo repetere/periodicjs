@@ -1,43 +1,44 @@
 'use strict';
 
-var path = require('path'),
-	appController = require('./application'),
-	async = require('async'),
-	applicationController,
+var async = require('async'),
+	Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	logger,
 	Item, Collection, User, Contenttype, Category, Tag;
 
-var results = function (req, res, next) {
-	applicationController.getPluginViewDefaultTemplate({
+var results = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: "Search Results"
+						title: 'Search Results'
 					},
 					docs: req.controllerData.searchdocuments,
-					user: applicationController.removePrivateInfo(req.user)
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
 	);
 };
 
-var index = function (req, res, next) {
-	applicationController.getPluginViewDefaultTemplate({
+var index = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'browse/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -102,12 +103,12 @@ var browse = function (req, res, next) {
 			};
 			break;
 		default:
-			next(new Error("Invalid Entity Type"));
+			next(new Error('Invalid Entity Type'));
 			break;
 		}
 	}
 	else {
-		var searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		var searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 		if (req.query.search === undefined || req.query.search.length < 1) {
 			query = {};
 		}
@@ -126,7 +127,7 @@ var browse = function (req, res, next) {
 
 	async.parallel({
 		searchCollections: function (callback) {
-			applicationController.searchModel({
+			CoreController.searchModel({
 				model: Collection,
 				query: query,
 				sort: sort,
@@ -138,7 +139,7 @@ var browse = function (req, res, next) {
 			});
 		},
 		searchDocuments: function (callback) {
-			applicationController.searchModel({
+			CoreController.searchModel({
 				model: Item,
 				query: query,
 				sort: sort,
@@ -155,7 +156,7 @@ var browse = function (req, res, next) {
 		}
 		else {
 			searchdocuments = results.searchDocuments.concat(results.searchCollections);
-			req.controllerData.searchdocuments = searchdocuments.sort(applicationController.sortObject("desc", "createdat"));
+			req.controllerData.searchdocuments = searchdocuments.sort(CoreUtilities.sortObject('desc', 'createdat'));
 			next();
 		}
 	});
@@ -169,7 +170,7 @@ var queryFilters = function (options, callback) {
 	if (namesarray.length < 1) {
 		query = {};
 	}
-	else if (nameval && nameval === "username") {
+	else if (nameval && nameval === 'username') {
 		query = {
 			'username': {
 				$in: namesarray
@@ -242,7 +243,7 @@ var browsefilter = function (req, res, next) {
 		});
 		break;
 	default:
-		next(new Error("Invalid Entity Type"));
+		next(new Error('Invalid Entity Type'));
 		break;
 	}
 };
@@ -253,10 +254,12 @@ var browsetags = function (req, res, next) {
 		query = {},
 		sort = req.query.sort,
 		limit = req.query.limit,
-		searchFunction = function (options, callback) {
+		searchFunction = function (options
+			//, callback
+		) {
 			var model = options.model,
 				selection = options.selection;
-			applicationController.searchModel({
+			CoreController.searchModel({
 				model: model,
 				query: query,
 				sort: sort,
@@ -301,7 +304,7 @@ var browsetags = function (req, res, next) {
 		});
 		break;
 	default:
-		next(new Error("Invalid Entity Type"));
+		next(new Error('Invalid Entity Type'));
 		break;
 	}
 };
@@ -310,7 +313,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	Category = mongoose.model('Category');
 	Collection = mongoose.model('Collection');
 	Contenttype = mongoose.model('Contenttype');

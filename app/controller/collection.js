@@ -3,8 +3,10 @@
 var async = require('async'),
 	moment = require('moment'),
 	merge = require('utils-merge'),
-	appController = require('./application'),
-	applicationController,
+	Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	Item,
@@ -12,12 +14,12 @@ var async = require('async'),
 	logger;
 
 var show = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'collection/show',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -34,12 +36,12 @@ var show = function (req, res) {
 };
 
 var index = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'collection/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -56,8 +58,8 @@ var index = function (req, res) {
 };
 
 var create = function (req, res) {
-	var newcollection = applicationController.removeEmptyObjectValues(req.body);
-	newcollection.name = applicationController.makeNiceName(newcollection.title);
+	var newcollection = CoreUtilities.removeEmptyObjectValues(req.body);
+	newcollection.name = CoreUtilities.makeNiceName(newcollection.title);
 	newcollection.itemauthorname = req.user.username;
 	newcollection.primaryauthor = req.user._id;
 	newcollection.authors = [req.user._id];
@@ -65,7 +67,7 @@ var create = function (req, res) {
 		newcollection.publishat = new Date(moment(newcollection.date + ' ' + newcollection.time).format());
 	}
 
-	applicationController.createModel({
+	CoreController.createModel({
 		model: Collection,
 		newdoc: newcollection,
 		res: res,
@@ -76,8 +78,8 @@ var create = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updatecollection = applicationController.removeEmptyObjectValues(req.body);
-	updatecollection.name = applicationController.makeNiceName(updatecollection.title);
+	var updatecollection = CoreUtilities.removeEmptyObjectValues(req.body);
+	updatecollection.name = CoreUtilities.makeNiceName(updatecollection.title);
 	if (updatecollection.items && updatecollection.items.length > 0) {
 		for (var x in updatecollection.items) {
 			updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
@@ -90,7 +92,7 @@ var update = function (req, res) {
 		updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
 	}
 
-	applicationController.updateModel({
+	CoreController.updateModel({
 		model: Collection,
 		id: updatecollection.docid,
 		updatedoc: updatecollection,
@@ -104,12 +106,12 @@ var update = function (req, res) {
 };
 
 var append = function (req, res) {
-	var newitemtoadd = applicationController.removeEmptyObjectValues(req.body);
+	var newitemtoadd = CoreUtilities.removeEmptyObjectValues(req.body);
 	delete newitemtoadd._csrf;
-	var objectToModify = newitemtoadd; //{"items":newitemtoadd};
+	var objectToModify = newitemtoadd; //{'items':newitemtoadd};
 
 	logger.silly('objectToModify', objectToModify);
-	applicationController.updateModel({
+	CoreController.updateModel({
 		model: Collection,
 		id: req.controllerData.collection._id,
 		updatedoc: objectToModify,
@@ -127,28 +129,28 @@ var remove = function (req, res) {
 		User = mongoose.model('User');
 
 	if (!User.hasPrivilege(req.user, 710)) {
-		applicationController.handleDocumentQueryErrorResponse({
+		CoreController.handleDocumentQueryErrorResponse({
 			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
 			res: res,
 			req: req
 		});
 	}
 	else {
-		applicationController.deleteModel({
+		CoreController.deleteModel({
 			model: Collection,
 			deleteid: removecollection._id,
 			req: req,
 			res: res,
 			callback: function (err) {
 				if (err) {
-					applicationController.handleDocumentQueryErrorResponse({
+					CoreController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
 						req: req
 					});
 				}
 				else {
-					applicationController.handleDocumentQueryRender({
+					CoreController.handleDocumentQueryRender({
 						req: req,
 						res: res,
 						redirecturl: '/p-admin/collections',
@@ -167,18 +169,18 @@ var loadCollection = function (req, res, next) {
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor items',
 		docid = params.id;
-	// console.log("params",params);
+	// console.log('params',params);
 
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: Collection,
 		population: population,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -186,71 +188,71 @@ var loadCollection = function (req, res, next) {
 			}
 			else {
 				Collection.populate(doc, {
-					path: "items.item",
-					model: "Item",
-					select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+					path: 'items.item',
+					model: 'Item',
+					select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 				}, function (err, populatedcollection) {
 					if (err) {
-						applicationController.handleDocumentQueryErrorResponse({
+						CoreController.handleDocumentQueryErrorResponse({
 							err: err,
 							res: res,
 							req: req
 						});
 					}
 					else {
-						// console.log("doc",populatedcollection);
+						// console.log('doc',populatedcollection);
 						async.parallel({
 							tags: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.tags",
-										model: "Tag",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.tags',
+										model: 'Tag',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
 							categories: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.categories",
-										model: "Category",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.categories',
+										model: 'Category',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
 							authors: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.authors",
-										model: "User",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.authors',
+										model: 'User',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
 							primaryauthor: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.primaryauthor",
-										model: "User",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.primaryauthor',
+										model: 'User',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
 							contenttypes: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.contenttypes",
-										model: "Contenttype",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.contenttypes',
+										model: 'Contenttype',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
 							assets: function (callback) {
 								Collection.populate(populatedcollection, {
-										path: "items.item.assets",
-										model: "Asset",
-										select: "title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname"
+										path: 'items.item.assets',
+										model: 'Asset',
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							}
 						}, function (err, results) {
 							if (err) {
-								applicationController.handleDocumentQueryErrorResponse({
+								CoreController.handleDocumentQueryErrorResponse({
 									err: err,
 									res: res,
 									req: req
@@ -263,13 +265,13 @@ var loadCollection = function (req, res, next) {
 								next();
 							}
 							else {
-								applicationController.handleDocumentQueryErrorResponse({
-									err: new Error("invalid collection request"),
+								CoreController.handleDocumentQueryErrorResponse({
+									err: new Error('invalid collection request'),
 									res: res,
 									req: req
 								});
 							}
-							// console.log("results",results.tags.items[0].item);
+							// console.log('results',results.tags.items[0].item);
 						});
 					}
 				});
@@ -279,13 +281,12 @@ var loadCollection = function (req, res, next) {
 };
 
 var loadCollections = function (req, res, next) {
-	var params = req.params,
-		query,
+	var query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
 		population = 'tags categories authors contenttypes primaryauthor items.item',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -301,7 +302,7 @@ var loadCollections = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: Collection,
 		query: query,
 		sort: sort,
@@ -310,7 +311,7 @@ var loadCollections = function (req, res, next) {
 		population: population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -337,7 +338,7 @@ var cli = function (argv) {
 			sort = argv.sort,
 			limit = argv.limit,
 			population = 'tags categories authors contenttypes primaryauthor items.item',
-			searchRegEx = new RegExp(applicationController.stripTags(argv.search), "gi");
+			searchRegEx = new RegExp(CoreUtilities.stripTags(argv.search), 'gi');
 
 		if (argv.search === undefined || argv.search.length < 1) {
 			query = {};
@@ -352,18 +353,18 @@ var cli = function (argv) {
 			};
 		}
 		// Collection.find(query).limit(5).populate(population).exec(function(err,docs){
-		// 		console.log("in model search cb");
+		// 		console.log('in model search cb');
 		// 		if(err){
 		// 			console.log(err);
 		// 			process.exit(0);
 		// 		}
 		// 		else{
-		// 			console.log("got docs");
+		// 			console.log('got docs');
 		// 			console.info(docs);
 		// 			process.exit(0);
 		// 		}
 		// 	});
-		applicationController.searchModel({
+		CoreController.searchModel({
 			model: Collection,
 			query: query,
 			sort: sort,
@@ -371,13 +372,13 @@ var cli = function (argv) {
 			offset: offset,
 			population: population,
 			callback: function (err, docs) {
-				console.log("in model search cb");
+				console.log('in model search cb');
 				if (err) {
 					console.log(err);
 					process.exit(0);
 				}
 				else {
-					console.log("got docs");
+					console.log('got docs');
 					console.info(docs);
 					process.exit(0);
 				}
@@ -385,7 +386,7 @@ var cli = function (argv) {
 		});
 	}
 	else {
-		logger.silly("invalid task");
+		logger.silly('invalid task');
 		process.exit(0);
 	}
 };
@@ -394,7 +395,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	Item = mongoose.model('Item');
 	Collection = mongoose.model('Collection');
 

@@ -175,7 +175,7 @@ var init = {
 			mongoose: mngse
 		};
 		if (appconfig.settings().status === 'install') {
-			require('../../content/extensions/node_modules/periodicjs.ext.install/index')(periodicObj);
+			require('periodicjs.ext.install')(periodicObj);
 		}
 		else {
 			require('../routes/index')(periodicObj);

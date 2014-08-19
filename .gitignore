@@ -39,9 +39,3 @@ build/Release
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
 public/uploads/files
-!content/extensions/node_modules/*
-content/extensions/node_modules/periodicjs.ext.admin/node_modules
-content/extensions/node_modules/periodicjs.ext.dbseed/node_modules
-content/extensions/node_modules/periodicjs.ext.default_routes/node_modules
-content/extensions/node_modules/periodicjs.ext.login/node_modules
-content/extensions/node_modules/periodicjs.ext.mailer/node_modules

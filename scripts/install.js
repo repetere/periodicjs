@@ -9,7 +9,8 @@
 
 var fs = require('fs-extra'),
 		path = require('path'),
-		prompt = require('prompt'),
+		commandprompt = require('prompt'),
+		npm = require('npm'),
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
@@ -22,61 +23,93 @@ var fs = require('fs-extra'),
 	    }
 	  };
 
-fs.open(originallocation,'r',function(err,file){
-	if(err){
-		console.log("Installed Periodicjs");
-		process.exit(0);
+npm.load({
+	'strict-ssl': false,
+	'production': true,
+},function (err) {
+	if (err) {
+		console.error(err);
 	}
-	else{
-		console.log('\u0007');
-		prompt.start();
-		prompt.get(schema, function (err, result) {
-		  if(err){
+	else {
+		npm.commands.install([
+			'periodicjs.ext.admin@1.0.3',
+			'periodicjs.ext.dbseed@1.0.4',
+			'periodicjs.ext.default_routes@1.0.3',
+			'periodicjs.ext.install@1.0.3',
+			'periodicjs.ext.login@1.1.10',
+			'periodicjs.ext.mailer@1.3.1',
+			'periodicjs.ext.scheduled_content@1.0.1',
+			'periodicjs.ext.user_access_control@1.0.2',
+			],
+		function (err 
+			//,data
+			) {
+			if (err) {
 				console.error(err);
-				process.exit(0);
 			}
-			else{
-				if(result.auto_clean_up.match(/y/gi)){
-					// console.log("move",originallocation);
-					// console.log("to",newlocation);
+			else {
+				// console.log(data);
 
-					fs.ensureDir(newlocation,function(err){
-						if(err){
-							console.error(err);
-							process.exit(0);
-						}
-						else{
-							fs.copy(
-								originallocation,
-								newlocation,
-								function(err){
-								if(err){
-									console.error(err);
-									console.log(err.stack);
-									process.exit(0);
-								}
-								else{
-									fs.remove(originalnodemoduleslocation, function(err){
+				fs.open(originallocation,'r',function(err){
+					if(err){
+						console.log('Installed Periodicjs');
+						process.exit(0);
+					}
+					else{
+						console.log('\u0007');
+						commandprompt.start();
+						commandprompt.get(schema, function (err, result) {
+						  if(err){
+								console.error(err);
+								process.exit(0);
+							}
+							else{
+								if(result.auto_clean_up.match(/y/gi)){
+
+									fs.ensureDir(newlocation,function(err){
 										if(err){
 											console.error(err);
-											console.log(err.stack);
 											process.exit(0);
 										}
-										else{	
-											console.log("Installed Periodicjs");
-											process.exit(0);
+										else{
+											fs.copy(
+												originallocation,
+												newlocation,
+												function(err){
+												if(err){
+													console.error(err);
+													console.log(err.stack);
+													process.exit(0);
+												}
+												else{
+													fs.remove(originalnodemoduleslocation, function(err){
+														if(err){
+															console.error(err);
+															console.log(err.stack);
+															process.exit(0);
+														}
+														else{	
+															console.log('Installed Periodicjs');
+															process.exit(0);
+														}
+													});
+												}
+											});
 										}
 									});
 								}
-							});
-						}
-					});
-				}
-				else{
-					console.log("Installed Periodicjs");
-					process.exit(0);
-				}
+								else{
+									console.log('Installed Periodicjs');
+									process.exit(0);
+								}
+							}
+						});
+					}
+				});
 			}
+		});	
+		npm.on('log', function (message) {
+			console.log(message);
 		});
 	}
 });
