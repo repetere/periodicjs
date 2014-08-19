@@ -32,7 +32,7 @@ npm.load({
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.0.2',
+			'periodicjs.ext.admin@1.0.3',
 			'periodicjs.ext.dbseed@1.0.2',
 			'periodicjs.ext.default_routes@1.0.3',
 			'periodicjs.ext.install@1.0.0',
