@@ -56,7 +56,7 @@
 		"periodicjs.core.controllerhelper": "1.1.1",
 		"periodicjs.core.extensions": "1.4.2",
 		"periodicjs.core.mailer": "1.2.0",
-		"periodicjs.core.utilities": "1.1.1",
+		"periodicjs.core.utilities": "1.1.2",
 		"prompt": "0.2.13",
 		"response-time": "2.0.0",
 		"semver": "2.3.0",
