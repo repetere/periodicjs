@@ -41,12 +41,14 @@ npm.load({
 			'periodicjs.ext.scheduled_content@1.0.1',
 			'periodicjs.ext.user_access_control@1.0.2',
 			],
-		function (err, data) {
+		function (err 
+			//,data
+			) {
 			if (err) {
 				console.error(err);
 			}
 			else {
-				console.log(data);
+				// console.log(data);
 
 				fs.open(originallocation,'r',function(err){
 					if(err){
