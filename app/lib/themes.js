@@ -7,10 +7,8 @@
 
 'use strict';
 
-var fs = require('fs'),
-	extend = require('util-extend'),
-	semver = require('semver'),
-	path = require('path');
+var path = require('path'),
+	logger;
 /**
  * A module that represents a theme manager.
  * @{@link https://github.com/typesettin/periodic}
@@ -25,8 +23,7 @@ var fs = require('fs'),
  */
 
 var themes = function (appsettings) {
-	var extensionsConfig = {},
-		extensionsFiles = [];
+	logger = appsettings.logger;
 };
 
 themes.getThemeRouteFilePath = function (themeName) {

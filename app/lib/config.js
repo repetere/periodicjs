@@ -79,9 +79,14 @@ var config = function () {
 		configurationDefaultFileJSON = fs.readJSONSync(configurationDefaultFile);
 
 		/** if no command line argument, use environment from user config file */
-		appEnvironment = (argv.e) ?
-			argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
-			configurationOverrideFileJSON.application.environment : null;
+		if (process.env.NODE_ENV) {
+			appEnvironment = process.env.NODE_ENV;
+		}
+		else {
+			appEnvironment = (argv.e) ?
+				argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
+				configurationOverrideFileJSON.application.environment : null;
+		}
 
 		/** set & load file path for base environment config */
 		configurationFile = this.getConfigFilePath(appEnvironment);

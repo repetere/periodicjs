@@ -1,21 +1,23 @@
 'use strict';
 
 var path = require('path'),
-	appController = require('./application'),
 	fs = require('fs-extra'),
-	applicationController,
+	Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	logger;
 
 var index = function (req, res) {
 	var recentitems = req.controllerData.items || {};
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'home/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -31,12 +33,12 @@ var index = function (req, res) {
 	);
 };
 var default_view = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'home/default',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -63,12 +65,12 @@ var get_installoutputlog = function (req, res) {
 };
 var error404 = function (req, res) {
 	res.status(404);
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'home/error404',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -88,40 +90,20 @@ var catch404 = function (req, res) {
 	var err = new Error('Page not found');
 	// next(err);
 
-	applicationController.handleDocumentQueryErrorResponse({
+	CoreController.handleDocumentQueryErrorResponse({
 		err: err,
 		req: req,
 		res: res,
 		errorflash: err.message + ', ' + req.url
 	});
-	//   if (err) {
-	// res.status(404);
-
-	// // respond with html page
-	// if (req.accepts('html')) {
-	// 	error404(req, res, next);
-	// 	return;
-	// }
-	// else if (req.accepts('json')) {
-	// 	// respond with json
-	//     res.send({ error: 'Not found' });
-	//     return;
-	// }
-	// else{
-	// 	// default to plain-text. send()
-	// 	res.type('txt').send('Not found');
-	// }
-	//   }
-	//   else{
-	// next(err);
-	//   }
 };
 
 var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 
 	return {
 		index: index,

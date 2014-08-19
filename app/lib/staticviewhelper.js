@@ -19,7 +19,7 @@ module.exports = {
 				switch (typeof scripts) {
 				case 'array':
 				case 'object':
-					var scriptHtml = "";
+					var scriptHtml = '';
 					for (var x in scripts) {
 						scriptHtml += scriptTag(scripts[x]);
 					}
@@ -32,7 +32,7 @@ module.exports = {
 			}
 		},
 		passObjToClient: function (obj, nameOfClientObj) {
-			return "var " + nameOfClientObj + " = " + (JSON.stringify(obj));
+			return 'var ' + nameOfClientObj + ' = ' + (JSON.stringify(obj));
 		},
 		getPaginationHtml: function (options) {
 			var pagecount = options.pagecount,
@@ -44,7 +44,7 @@ module.exports = {
 			for (var x = 0; x < pagecount; x++) {
 				paginationHtml += ' <a href="' + urlbase + '/' + (x + 1) + '" class="_pea-button';
 				if (currentpage === x) {
-					paginationHtml += " _pea-color-info ";
+					paginationHtml += ' _pea-color-info ';
 				}
 				paginationHtml += '">' + (x + 1) + '</a>';
 			}

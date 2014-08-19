@@ -1,20 +1,21 @@
 'use strict';
 
-var path = require('path'),
-	appController = require('./application'),
-	applicationController,
+var CoreControllerHelper = require('periodicjs.core.controllerhelper'),
+	Utilities = require('periodicjs.core.utilities'),
+	CoreController,
+	CoreUtilities,
 	appSettings,
 	mongoose,
 	Contenttype,
 	logger;
 
-var create = function (req, res, next) {
+var create = function (req, res) {
 	if (req.controllerData.contenttype) {
-		applicationController.handleDocumentQueryRender({
+		CoreController.handleDocumentQueryRender({
 			req: req,
 			res: res,
 			responseData: {
-				result: "success",
+				result: 'success',
 				data: {
 					doc: req.controllerData.contenttype
 				}
@@ -22,11 +23,11 @@ var create = function (req, res, next) {
 		});
 	}
 	else {
-		var newcontenttype = applicationController.removeEmptyObjectValues(req.body);
-		newcontenttype.name = applicationController.makeNiceName(newcontenttype.title);
+		var newcontenttype = CoreUtilities.removeEmptyObjectValues(req.body);
+		newcontenttype.name = CoreUtilities.makeNiceName(newcontenttype.title);
 		newcontenttype.author = req.user._id;
 
-		applicationController.createModel({
+		CoreController.createModel({
 			model: Contenttype,
 			newdoc: newcontenttype,
 			res: res,
@@ -37,14 +38,14 @@ var create = function (req, res, next) {
 	}
 };
 
-var append = function (req, res, next) {
-	var newattribute = applicationController.removeEmptyObjectValues(req.body);
-	newattribute.name = applicationController.makeNiceAttribute(newattribute.title);
+var append = function (req, res) {
+	var newattribute = CoreUtilities.removeEmptyObjectValues(req.body);
+	newattribute.name = CoreUtilities.makeNiceAttribute(newattribute.title);
 	var objectToModify = {
-		"attributes": newattribute
+		'attributes': newattribute
 	};
 
-	applicationController.updateModel({
+	CoreController.updateModel({
 		model: Contenttype,
 		id: req.controllerData.contenttype._id,
 		updatedoc: objectToModify,
@@ -57,16 +58,16 @@ var append = function (req, res, next) {
 	});
 };
 
-var removeitem = function (req, res, next) {
-	var removeAttribute = applicationController.removeEmptyObjectValues(req.body),
+var removeitem = function (req, res) {
+	var removeAttribute = CoreUtilities.removeEmptyObjectValues(req.body),
 		objectToModify = {
-			"attributes": removeAttribute
+			'attributes': removeAttribute
 		};
 
 	delete removeAttribute._csrf;
 	console.log(removeAttribute);
 
-	applicationController.updateModel({
+	CoreController.updateModel({
 		model: Contenttype,
 		id: req.controllerData.contenttype._id,
 		updatedoc: objectToModify,
@@ -80,13 +81,12 @@ var removeitem = function (req, res, next) {
 };
 
 var loadContenttypes = function (req, res, next) {
-	var params = req.params,
-		query,
+	var query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
 		population = 'author',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -102,7 +102,7 @@ var loadContenttypes = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: Contenttype,
 		query: query,
 		sort: sort,
@@ -111,7 +111,7 @@ var loadContenttypes = function (req, res, next) {
 		population: population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -128,16 +128,16 @@ var loadContenttypes = function (req, res, next) {
 var loadContenttype = function (req, res, next) {
 	var params = req.params,
 		docid = params.id;
-	console.log("docid", docid);
+	console.log('docid', docid);
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: Contenttype,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -151,22 +151,22 @@ var loadContenttype = function (req, res, next) {
 	});
 };
 
-var searchResults = function (req, res, next) {
-	applicationController.getPluginViewDefaultTemplate({
+var searchResults = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: "Content Type Search Results"
+						title: 'Content Type Search Results'
 					},
 					contenttypes: req.controllerData.contenttypes,
-					user: applicationController.removePrivateInfo(req.user)
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
@@ -177,7 +177,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new CoreControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	Contenttype = mongoose.model('Contenttype');
 
 	return {

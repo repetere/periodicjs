@@ -3,10 +3,11 @@
 var path = require('path'),
 	async = require('async'),
 	fs = require('fs-extra'),
-	util = require('util'),
 	formidable = require('formidable'),
-	appController = require('./application'),
-	applicationController,
+	Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	MediaAsset,
@@ -17,14 +18,14 @@ var upload = function (req, res, next) {
 		files = [],
 		returnFile,
 		returnFileObj = {},
-		fields = [],
+		// fields = [],
 		d = new Date(),
 		uploadDirectory = '/public/uploads/files/' + d.getUTCFullYear() + '/' + d.getUTCMonth() + '/' + d.getUTCDate(),
 		fullUploadDir = path.join(process.cwd(), uploadDirectory);
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	fs.ensureDir(fullUploadDir, function (err) {
 		if (err) {
-			applicationController.handleDocumentQueryErrorResponse({
+			CoreController.handleDocumentQueryErrorResponse({
 				err: err,
 				res: res,
 				req: req
@@ -34,12 +35,12 @@ var upload = function (req, res, next) {
 			// http://stackoverflow.com/questions/20553575/how-to-cancel-user-upload-in-formidable-node-js
 			form.keepExtensions = true;
 			form.uploadDir = fullUploadDir;
-			form.parse(req, function (err, fields, files) {
-				// console.log(err,fields,files);
-			});
+			// form.parse(req, function (err, fields, files) {
+			// 	// console.log(err,fields,files);
+			// });
 			form.on('error', function (err) {
 				logger.error(err);
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -50,11 +51,11 @@ var upload = function (req, res, next) {
 				files.push(file);
 			});
 			form.on('end', function () {
-				var newfilename = req.user._id.toString() + '-' + applicationController.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
+				var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
 					newfilepath = path.join(fullUploadDir, newfilename);
 				fs.rename(returnFile.path, newfilepath, function (err) {
 					if (err) {
-						applicationController.handleDocumentQueryErrorResponse({
+						CoreController.handleDocumentQueryErrorResponse({
 							err: err,
 							res: res,
 							req: req
@@ -71,7 +72,7 @@ var upload = function (req, res, next) {
 						returnFileObj.attributes.periodicPath = path.join(uploadDirectory, newfilename);
 						returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
 						returnFileObj.attributes.periodicFilename = newfilename;
-						// console.log("returnFileObj",returnFileObj);
+						// console.log('returnFileObj',returnFileObj);
 						req.controllerData.fileData = returnFileObj;
 						next();
 					}
@@ -81,28 +82,28 @@ var upload = function (req, res, next) {
 	});
 };
 
-var createassetfile = function (req, res, next) {
-	var newasset = applicationController.removeEmptyObjectValues(req.controllerData.fileData);
-	newasset.name = applicationController.makeNiceName(newasset.fileurl);
+var createassetfile = function (req, res) {
+	var newasset = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData);
+	newasset.name = CoreUtilities.makeNiceName(newasset.fileurl);
 	newasset.author = req.user._id;
-	applicationController.loadModel({
+	CoreController.loadModel({
 		model: MediaAsset,
 		docid: newasset.name,
 		callback: function (err, assetdoc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
 			else if (assetdoc) {
-				console.log("assetdoc", assetdoc);
-				applicationController.handleDocumentQueryRender({
+				// console.log('assetdoc', assetdoc);
+				CoreController.handleDocumentQueryRender({
 					req: req,
 					res: res,
 					responseData: {
-						result: "success",
+						result: 'success',
 						data: {
 							doc: assetdoc
 						}
@@ -110,7 +111,7 @@ var createassetfile = function (req, res, next) {
 				});
 			}
 			else {
-				applicationController.createModel({
+				CoreController.createModel({
 					model: MediaAsset,
 					newdoc: newasset,
 					res: res,
@@ -123,7 +124,7 @@ var createassetfile = function (req, res, next) {
 	});
 };
 
-var remove = function (req, res, next) {
+var remove = function (req, res) {
 	var asset = req.controllerData.asset;
 	if (asset.locationtype === 'local') {
 		async.parallel({
@@ -131,7 +132,7 @@ var remove = function (req, res, next) {
 				fs.remove(path.join(process.cwd(), asset.attributes.periodicPath), callback);
 			},
 			removeasset: function (callback) {
-				applicationController.deleteModel({
+				CoreController.deleteModel({
 					model: MediaAsset,
 					deleteid: asset._id,
 					req: req,
@@ -139,38 +140,39 @@ var remove = function (req, res, next) {
 					callback: callback
 				});
 			}
-		}, function (err, results) {
+		}, function (err
+			//, results
+		) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
 			else {
-				applicationController.handleDocumentQueryRender({
+				CoreController.handleDocumentQueryRender({
 					req: req,
 					res: res,
 					redirecturl: '/p-admin/assets',
 					responseData: {
-						result: "success",
-						data: "deleted"
+						result: 'success',
+						data: 'deleted'
 					}
 				});
 			}
 		});
 	}
-	console.log("asset", asset);
+	console.log('asset', asset);
 };
 
 var loadAssets = function (req, res, next) {
-	var params = req.params,
-		query,
+	var query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
 		population = 'author',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -186,7 +188,7 @@ var loadAssets = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: MediaAsset,
 		query: query,
 		sort: sort,
@@ -195,7 +197,7 @@ var loadAssets = function (req, res, next) {
 		population: population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -217,13 +219,13 @@ var loadAsset = function (req, res, next) {
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: MediaAsset,
 		population: population,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -237,35 +239,34 @@ var loadAsset = function (req, res, next) {
 	});
 };
 
-var searchResults = function (req, res, next) {
-	applicationController.getViewTemplate({
-		res: res,
-		req: req,
-		templatetype: 'search-results',
-		themepath: appSettings.themepath,
-		themefileext: appSettings.templatefileextension,
-		callback: function (templatepath) {
-			applicationController.handleDocumentQueryRender({
+var searchResults = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: "Search Results"
+						title: 'Search Results'
 					},
-					categories: req.controllerData.assets,
-					user: applicationController.removePrivateInfo(req.user)
+					assets: req.controllerData.assets,
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
-	});
+	);
 };
 
 var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	MediaAsset = mongoose.model('Asset');
 	// Collection = mongoose.model('Collection');
 
