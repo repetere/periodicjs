@@ -1,20 +1,22 @@
 'use strict';
 
 var moment = require('moment'),
-	appController = require('./application'),
-	applicationController,
+	Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	Item,
 	logger;
 
 var show = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'item/show',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -31,12 +33,12 @@ var show = function (req, res) {
 };
 
 var index = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'item/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -53,8 +55,8 @@ var index = function (req, res) {
 };
 
 var create = function (req, res) {
-	var newitem = applicationController.removeEmptyObjectValues(req.body);
-	newitem.name = applicationController.makeNiceName(newitem.title);
+	var newitem = CoreUtilities.removeEmptyObjectValues(req.body);
+	newitem.name = CoreUtilities.makeNiceName(newitem.title);
 	newitem.itemauthorname = req.user.username;
 	newitem.primaryauthor = req.user._id;
 	newitem.authors = [req.user._id];
@@ -63,7 +65,7 @@ var create = function (req, res) {
 	}
 
 	// console.log(newitem);
-	applicationController.createModel({
+	CoreController.createModel({
 		model: Item,
 		newdoc: newitem,
 		res: res,
@@ -74,9 +76,9 @@ var create = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updateitem = applicationController.removeEmptyObjectValues(req.body);
+	var updateitem = CoreUtilities.removeEmptyObjectValues(req.body);
 
-	updateitem.name = applicationController.makeNiceName(updateitem.title);
+	updateitem.name = CoreUtilities.makeNiceName(updateitem.title);
 	if (!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
 		updateitem.primaryasset = updateitem.assets[0];
 	}
@@ -84,7 +86,7 @@ var update = function (req, res) {
 		updateitem.publishat = new Date(moment(updateitem.date + ' ' + updateitem.time).format());
 	}
 
-	applicationController.updateModel({
+	CoreController.updateModel({
 		model: Item,
 		id: updateitem.docid,
 		updatedoc: updateitem,
@@ -102,28 +104,28 @@ var remove = function (req, res) {
 		User = mongoose.model('User');
 
 	if (!User.hasPrivilege(req.user, 710)) {
-		applicationController.handleDocumentQueryErrorResponse({
+		CoreController.handleDocumentQueryErrorResponse({
 			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
 			res: res,
 			req: req
 		});
 	}
 	else {
-		applicationController.deleteModel({
+		CoreController.deleteModel({
 			model: Item,
 			deleteid: removeitem._id,
 			req: req,
 			res: res,
 			callback: function (err) {
 				if (err) {
-					applicationController.handleDocumentQueryErrorResponse({
+					CoreController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
 						req: req
 					});
 				}
 				else {
-					applicationController.handleDocumentQueryRender({
+					CoreController.handleDocumentQueryRender({
 						req: req,
 						res: res,
 						redirecturl: '/p-admin/items',
@@ -145,13 +147,13 @@ var loadItem = function (req, res, next) {
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		population: population,
 		model: Item,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -162,7 +164,7 @@ var loadItem = function (req, res, next) {
 				next();
 			}
 			else {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: new Error('invalid document request'),
 					res: res,
 					req: req
@@ -178,13 +180,13 @@ var loadFullItem = function (req, res, next) {
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: Item,
 		population: 'tags collections contenttypes categories assets primaryasset authors primaryauthor',
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -204,7 +206,7 @@ var loadItems = function (req, res, next) {
 		sort = req.query.sort,
 		limit = req.query.limit,
 		population = 'tags categories authors contenttypes primaryasset primaryauthor',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), 'gi');
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -220,7 +222,7 @@ var loadItems = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: Item,
 		query: query,
 		sort: sort,
@@ -229,7 +231,7 @@ var loadItems = function (req, res, next) {
 		population: population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -247,7 +249,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	Item = mongoose.model('Item');
 
 	return {

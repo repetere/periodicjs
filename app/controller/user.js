@@ -1,7 +1,9 @@
 'use strict';
 
-var appController = require('./application'),
-	applicationController,
+var Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	User,
@@ -23,12 +25,12 @@ var index = function (req, res) {
 };
 
 var show = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'author/show',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -36,8 +38,8 @@ var show = function (req, res) {
 					pagedata: {
 						title: req.controllerData.user.username
 					},
-					author: applicationController.removePrivateInfo(req.controllerData.user),
-					user: applicationController.removePrivateInfo(req.user)
+					author: CoreUtilities.removePrivateInfo(req.controllerData.user),
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
@@ -45,21 +47,21 @@ var show = function (req, res) {
 };
 
 var create = function (req, res) {
-	var newuser = applicationController.removeEmptyObjectValues(req.body),
+	var newuser = CoreUtilities.removeEmptyObjectValues(req.body),
 		err = User.checkValidation({
 			newuser: newuser,
 			checkpassword: true
 		});
 
 	if (err) {
-		applicationController.handleDocumentQueryErrorResponse({
+		CoreController.handleDocumentQueryErrorResponse({
 			err: err,
 			res: res,
 			req: req
 		});
 	}
 	else {
-		applicationController.createModel({
+		CoreController.createModel({
 			model: User,
 			newdoc: newuser,
 			res: res,
@@ -78,7 +80,7 @@ var create = function (req, res) {
 
 var update = function (req, res) {
 	var bcrypt = require('bcrypt'),
-		updateuser = applicationController.removeEmptyObjectValues(req.body),
+		updateuser = CoreUtilities.removeEmptyObjectValues(req.body),
 		err;
 	if ((updateuser.activated || updateuser.accounttype || updateuser.userroles) && !User.hasPrivilege(req.user, 760)) {
 		err = new Error('EXT-UAC760: You don\'t have access to modify user access');
@@ -107,14 +109,14 @@ var update = function (req, res) {
 	}
 
 	if (err) {
-		applicationController.handleDocumentQueryErrorResponse({
+		CoreController.handleDocumentQueryErrorResponse({
 			err: err,
 			res: res,
 			req: req
 		});
 	}
 	else {
-		applicationController.updateModel({
+		CoreController.updateModel({
 			model: User,
 			id: updateuser.docid,
 			updatedoc: updateuser,
@@ -132,28 +134,28 @@ var remove = function (req, res) {
 	var userprofile = req.controllerData.user;
 
 	if (!User.hasPrivilege(req.user, 950)) {
-		applicationController.handleDocumentQueryErrorResponse({
+		CoreController.handleDocumentQueryErrorResponse({
 			err: new Error('EXT-UAC950: You don\'t have access to delete users'),
 			res: res,
 			req: req
 		});
 	}
 	else {
-		applicationController.deleteModel({
+		CoreController.deleteModel({
 			model: User,
 			deleteid: userprofile._id,
 			req: req,
 			res: res,
 			callback: function (err) {
 				if (err) {
-					applicationController.handleDocumentQueryErrorResponse({
+					CoreController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
 						req: req
 					});
 				}
 				else {
-					applicationController.handleDocumentQueryRender({
+					CoreController.handleDocumentQueryRender({
 						req: req,
 						res: res,
 						redirecturl: '/p-admin/users',
@@ -175,14 +177,14 @@ var loadUser = function (req, res, next) {
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: User,
 		population: population,
 		searchusername: true,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -193,7 +195,7 @@ var loadUser = function (req, res, next) {
 				next();
 			}
 			else {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: new Error('invalid user request'),
 					res: res,
 					req: req
@@ -209,7 +211,7 @@ var loadUsers = function (req, res, next) {
 		sort = req.query.sort,
 		limit = req.query.limit,
 		// population = 'contenttypes collections authors primaryauthor',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), 'gi');
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -225,7 +227,7 @@ var loadUsers = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: User,
 		query: query,
 		sort: sort,
@@ -234,7 +236,7 @@ var loadUsers = function (req, res, next) {
 		// population:population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -249,12 +251,12 @@ var loadUsers = function (req, res, next) {
 };
 
 var searchResults = function (req, res) {
-	applicationController.getPluginViewDefaultTemplate({
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
@@ -263,7 +265,7 @@ var searchResults = function (req, res) {
 						title: 'User Search Results'
 					},
 					users: req.controllerData.users,
-					user: applicationController.removePrivateInfo(req.user)
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
@@ -274,9 +276,9 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
 	User = mongoose.model('User');
-
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	return {
 		show: show,
 		index: index,

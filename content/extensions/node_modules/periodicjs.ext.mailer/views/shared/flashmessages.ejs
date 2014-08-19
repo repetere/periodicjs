@@ -1,9 +1,0 @@
-<div class="pull-right">
-		<% if(locals.isLoggedIn()){
-			%>(<%= user.email %> / <%= user.username %> - <a href="/auth/logout">logout</a>)<%
-		} 
-		else{
-			%>(<a href="/auth/login">login</a>)<%
-		} %>
-		</div>
-<%- JSON.stringify(flash_messages) %>

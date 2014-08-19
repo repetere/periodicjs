@@ -1,20 +1,21 @@
 'use strict';
 
-var path = require('path'),
-	appController = require('./application'),
-	applicationController,
+var Utilities = require('periodicjs.core.utilities'),
+	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreUtilities,
+	CoreController,
 	appSettings,
 	mongoose,
 	Tag,
 	logger;
 
-var create = function (req, res, next) {
+var create = function (req, res) {
 	if (req.controllerData.tag) {
-		applicationController.handleDocumentQueryRender({
+		CoreController.handleDocumentQueryRender({
 			req: req,
 			res: res,
 			responseData: {
-				result: "success",
+				result: 'success',
 				data: {
 					doc: req.controllerData.tag
 				}
@@ -22,11 +23,11 @@ var create = function (req, res, next) {
 		});
 	}
 	else {
-		var newtag = applicationController.removeEmptyObjectValues(req.body);
-		newtag.name = applicationController.makeNiceName(newtag.title);
+		var newtag = CoreUtilities.removeEmptyObjectValues(req.body);
+		newtag.name = CoreUtilities.makeNiceName(newtag.title);
 		newtag.author = req.user._id;
 
-		applicationController.createModel({
+		CoreController.createModel({
 			model: Tag,
 			newdoc: newtag,
 			res: res,
@@ -38,13 +39,12 @@ var create = function (req, res, next) {
 };
 
 var loadTags = function (req, res, next) {
-	var params = req.params,
-		query,
+	var query,
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
 		// population = 'tags collections authors primaryauthor',
-		searchRegEx = new RegExp(applicationController.stripTags(req.query.search), "gi");
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 	if (req.query.search === undefined || req.query.search.length < 1) {
@@ -60,7 +60,7 @@ var loadTags = function (req, res, next) {
 		};
 	}
 
-	applicationController.searchModel({
+	CoreController.searchModel({
 		model: Tag,
 		query: query,
 		sort: sort,
@@ -69,7 +69,7 @@ var loadTags = function (req, res, next) {
 		// population:population,
 		callback: function (err, documents) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -86,16 +86,15 @@ var loadTags = function (req, res, next) {
 var loadTag = function (req, res, next) {
 	var params = req.params,
 		docid = params.id;
-	console.log("docid", docid);
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	applicationController.loadModel({
+	CoreController.loadModel({
 		docid: docid,
 		model: Tag,
 		callback: function (err, doc) {
 			if (err) {
-				applicationController.handleDocumentQueryErrorResponse({
+				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
@@ -110,22 +109,22 @@ var loadTag = function (req, res, next) {
 };
 
 
-var searchResults = function (req, res, next) {
-	applicationController.getPluginViewDefaultTemplate({
+var searchResults = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
-			applicationController.handleDocumentQueryRender({
+			CoreController.handleDocumentQueryRender({
 				res: res,
 				req: req,
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: "Tag Search Results"
+						title: 'Tag Search Results'
 					},
 					tags: req.controllerData.tags,
-					user: applicationController.removePrivateInfo(req.user)
+					user: CoreUtilities.removePrivateInfo(req.user)
 				}
 			});
 		}
@@ -136,7 +135,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	applicationController = new appController(resources);
+	CoreController = new ControllerHelper(resources);
+	CoreUtilities = new Utilities(resources);
 	Tag = mongoose.model('Tag');
 
 	return {

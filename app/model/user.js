@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var mongoose = require("mongoose"),
+var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
 	logger = console;
@@ -35,11 +35,11 @@ var userSchema = new Schema({
 	accesstoken: String,
 	description: {
 		type: String,
-		"default": "No profile"
+		'default': 'No profile'
 	},
 	activated: {
 		type: Boolean,
-		"default": false
+		'default': false
 	},
 	location: {
 		city: String,
@@ -53,39 +53,39 @@ var userSchema = new Schema({
 	},
 	createdat: {
 		type: Date,
-		"default": Date.now
+		'default': Date.now
 	},
 	updatedat: {
 		type: Date,
-		"default": Date.now
+		'default': Date.now
 	},
 	accounttype: {
 		type: String,
-		"default": "basic"
+		'default': 'basic'
 	},
 	gender: {
 		type: String,
-		"default": "male"
+		'default': 'male'
 	},
 	assets: [{
 		type: ObjectId,
-		ref: "Asset"
+		ref: 'Asset'
 	}],
 	primaryasset: {
 		type: ObjectId,
-		ref: "Asset"
+		ref: 'Asset'
 	},
 	coverimages: [{
 		type: ObjectId,
-		ref: "Asset"
+		ref: 'Asset'
 	}],
 	coverimage: {
 		type: ObjectId,
-		ref: "Asset"
+		ref: 'Asset'
 	},
 	userroles: [{
 		type: ObjectId,
-		ref: "Userrole"
+		ref: 'Userrole'
 	}],
 	apikey: String,
 	twitterAccessToken: String,
@@ -126,17 +126,17 @@ userSchema.pre('save', function (next, done) {
 });
 
 userSchema.post('init', function (doc) {
-	logger.info("model - user.js - " + doc._id + ' has been initialized from the db');
+	logger.info('model - user.js - ' + doc._id + ' has been initialized from the db');
 });
 userSchema.post('validate', function (doc) {
-	logger.info("model - user.js - " + doc._id + ' has been validated (but not saved yet)');
+	logger.info('model - user.js - ' + doc._id + ' has been validated (but not saved yet)');
 });
 userSchema.post('save', function (doc) {
-	logger.info("model - user.js - " + doc._id + ' has been saved');
+	logger.info('model - user.js - ' + doc._id + ' has been saved');
 });
 userSchema.pre('remove', function (doc) {
 	console.log('==================deleted============');
-	logger.info("model - user.js - " + doc._id + ' has been removed');
+	logger.info('model - user.js - ' + doc._id + ' has been removed');
 });
 
 // Password verification
@@ -151,7 +151,7 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
 		});
 	}
 	else {
-		logger.info("user has no pw");
+		logger.info('user has no pw');
 		return cb(null, false);
 	}
 };
@@ -160,7 +160,7 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
 // Remember Me implementation helper method
 userSchema.methods.generateRandomToken = function () {
 	var user = this,
-		chars = "_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+		chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
 		token = new Date().getTime() + '_';
 	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);
@@ -213,20 +213,19 @@ userSchema.statics.validApiKey = function (userid, apikey, callback) {
 			callback(false, user);
 		}
 		else {
-			logger.silly("model - user.js - invalid apikey");
-			callback(new Error("invalid apikey"), false);
+			logger.silly('model - user.js - invalid apikey');
+			callback(new Error('invalid apikey'), false);
 		}
 	});
 };
 
 userSchema.statics.hasPrivilege = function (user, privilege) {
-	// console.log(" hasPrivilege user, privilege",user,privilege);
+	// console.log(' hasPrivilege user, privilege',user,privilege);
 	return user.accounttype === 'admin' || user.privileges[privilege];
 };
 
 userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	var bcrypt = require('bcrypt');
-	var application_controller = require('../controller/application');
 	var userdata = userdataparam;
 	// console.log(userdata);
 	if (userdata._csrf) {
@@ -240,12 +239,12 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 		delete userdata.password;
 		delete userdata.passwordconfirm;
 		if (callback) {
-			callback(new Error("missing password"), userdata);
+			callback(new Error('missing password'), userdata);
 		}
 	}
 	else if (userdata.password.length < 6) {
 		if (callback) {
-			callback(new Error("password is too short - min 6 characters"), userdata);
+			callback(new Error('password is too short - min 6 characters'), userdata);
 		}
 	}
 	else {
@@ -281,47 +280,49 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	}
 };
 
-var sendEmail = function (options, callback) {
-	console.log("*********** FINISH ******* sending mail");
-	console.log("TODO: sending mail");
-	console.log("options", options);
-	// console.log("options.emailTemplateFilename",options.emailTemplateFilename)
+var sendEmail = function (options
+	//, callback
+	) {
+	console.log('*********** FINISH ******* sending mail');
+	console.log('TODO: sending mail');
+	console.log('options', options);
+	// console.log('options.emailTemplateFilename',options.emailTemplateFilename)
 
 	/*
     var appconfig = require('../config/environment'),
-        nodemailer = require("nodemailer"),
+        nodemailer = require('nodemailer'),
         smtpTransport = appconfig.environment.email.messenger.transport,
         emailAddresses = appconfig.environment.email.addresses,
-        ejs = require("ejs"),
+        ejs = require('ejs'),
         fs = require('fs'),
         str = fs.readFile(
             options.emailTemplateFilename,
             'utf8',
             function(err, ejsTemplateData) {
-                // console.log("err",err,"ejsTemplateData",ejsTemplateData)
+                // console.log('err',err,'ejsTemplateData',ejsTemplateData)
 
                 if (err) {
                     callback(err);
                 } else {
                     var emailHtml = ejs.render(ejsTemplateData, options.emailHtml),
-                        emailSubject = (appconfig.environment.name !== "production") ? options.emailSubject + " [" + appconfig.environment.name + "]" : options.emailSubject,
+                        emailSubject = (appconfig.environment.name !== 'production') ? options.emailSubject + ' [' + appconfig.environment.name + ']' : options.emailSubject,
                         mailOptions = options.mailOptions;
                     mailOptions.subject = emailSubject;
                     mailOptions.html = emailHtml;
-                    mailOptions.from = emailAddresses.general.name + " <" + emailAddresses.general.email + ">";
-                    // console.log(emailAddresses.general.name + " <" + emailAddresses.general.email + ">")
-                    // console.log("about to send mail")
+                    mailOptions.from = emailAddresses.general.name + ' <' + emailAddresses.general.email + '>';
+                    // console.log(emailAddresses.general.name + ' <' + emailAddresses.general.email + '>')
+                    // console.log('about to send mail')
 
                     smtpTransport.sendMail(mailOptions, function(err, response) {
-                        // console.log("err",err,"response",response)
+                        // console.log('err',err,'response',response)
                         if (err) {
-                            logger.error("model - user.js - couldn't send email");
+                            logger.error('model - user.js - couldn't send email');
                             logger.error(err);
                             if (callback) {
                                 callback(err, null);
                             }
                         } else {
-                            logger.verbose("Message sent: " + response.message);
+                            logger.verbose('Message sent: ' + response.message);
                             if (callback) {
                                 callback(null, response);
                             }
@@ -335,22 +336,22 @@ var sendEmail = function (options, callback) {
 userSchema.statics.sendAsyncWelcomeEmail = function (options, callback) {
 	var emailOptions = {};
 	emailOptions.user = options;
-	// console.log("emailOptions.user",emailOptions.user,"options",options)
+	// console.log('emailOptions.user',emailOptions.user,'options',options)
 
-	emailOptions.emailSubject = "welcome to Repetere";
+	emailOptions.emailSubject = 'welcome to Repetere';
 	emailOptions.emailTemplateFilename = './views/email/welcome.ejs';
 	emailOptions.emailHtml = {
 		user: emailOptions.user,
 		follower: emailOptions.follower,
 		email: {
 			subject: emailOptions.emailSubject,
-			customCss: ""
+			customCss: ''
 		},
 		filename: emailOptions.emailTemplateFilename
 	};
 	emailOptions.mailOptions = {
 		to: emailOptions.user.email, // list of receivers
-		bcc: "yaw.etse@gmail.com",
+		bcc: 'yaw.etse@gmail.com',
 		subject: emailOptions.emailSubject,
 		generateTextFromHTML: true // plaintext body
 	};
