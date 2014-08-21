@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
@@ -24,7 +24,8 @@
 		"start_prodclient": "pm2 start content/config/process/production-client.json",
 		"start": "pm2 start content/config/process/development.json",
 		"stop": "pm2 delete periodicjs",
-		"restart": "pm2 reload periodicjs",
+		"reload": "pm2 reload periodicjs",
+		"list": "pm2 list periodicjs",
 		"test": "mocha -R spec --recursive",
 		"postinstall": "node scripts/install.js"
 	},

@@ -3190,6 +3190,7 @@ var hideConsoleOutputClick = function(e){
 var installedTableClick = function(e){
 	var eTarget = e.target;
 
+	console.log("eTarget",eTarget);
 	if(eTarget.getAttribute("class") && eTarget.getAttribute("class").match("enable-ext-button")){
 		request
 			.get(eTarget.getAttribute("data-href"))

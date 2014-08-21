@@ -280,82 +280,65 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	}
 };
 
-var sendEmail = function (options
-	//, callback
-	) {
-	console.log('*********** FINISH ******* sending mail');
-	console.log('TODO: sending mail');
-	console.log('options', options);
-	// console.log('options.emailTemplateFilename',options.emailTemplateFilename)
+var sendUserEmail = function (options, callback) {
+	var mailtransport = options.mailtransport,
+		user = options.user,
+		mailoptions = {};
+
+	mailoptions.to = (options.to) ? options.to : user.email;
+	mailoptions.cc = options.cc;
+	mailoptions.bcc = options.bcc;
+	mailoptions.replyTo = options.replyTo;
+	mailoptions.subject = options.subject;
+	if (options.generatetextemail) {
+		mailoptions.generateTextFromHTML = true;
+	}
+	mailoptions.html = options.html;
+	mailoptions.text = options.text;
+
+	mailtransport.sendMail(mailoptions, callback);
 
 	/*
-    var appconfig = require('../config/environment'),
-        nodemailer = require('nodemailer'),
-        smtpTransport = appconfig.environment.email.messenger.transport,
-        emailAddresses = appconfig.environment.email.addresses,
-        ejs = require('ejs'),
-        fs = require('fs'),
-        str = fs.readFile(
-            options.emailTemplateFilename,
-            'utf8',
-            function(err, ejsTemplateData) {
-                // console.log('err',err,'ejsTemplateData',ejsTemplateData)
-
-                if (err) {
-                    callback(err);
-                } else {
-                    var emailHtml = ejs.render(ejsTemplateData, options.emailHtml),
-                        emailSubject = (appconfig.environment.name !== 'production') ? options.emailSubject + ' [' + appconfig.environment.name + ']' : options.emailSubject,
-                        mailOptions = options.mailOptions;
-                    mailOptions.subject = emailSubject;
-                    mailOptions.html = emailHtml;
-                    mailOptions.from = emailAddresses.general.name + ' <' + emailAddresses.general.email + '>';
-                    // console.log(emailAddresses.general.name + ' <' + emailAddresses.general.email + '>')
-                    // console.log('about to send mail')
-
-                    smtpTransport.sendMail(mailOptions, function(err, response) {
-                        // console.log('err',err,'response',response)
-                        if (err) {
-                            logger.error('model - user.js - couldn't send email');
-                            logger.error(err);
-                            if (callback) {
-                                callback(err, null);
-                            }
-                        } else {
-                            logger.verbose('Message sent: ' + response.message);
-                            if (callback) {
-                                callback(null, response);
-                            }
-                        }
-                    });
-                }
-
-            });
-*/
+to - Comma separated list or an array of recipients e-mail addresses that will appear on the To: field
+cc - Comma separated list or an array of recipients e-mail addresses that will appear on the Cc: field
+bcc - Comma separated list or an array of recipients e-mail addresses that will appear on the Bcc: field
+replyTo - An e-mail address that will appear on the Reply-To: field
+inReplyTo - The message-id this message is replying
+references - Message-id list (an array or space separated string)
+subject - The subject of the e-mail
+text - The plaintext version of the message as an Unicode string, Buffer, Stream or an object {path: '...'}
+html - The HTML version of the message as an Unicode string, Buffer, Stream or an object {path: '...'}
+headers - An object of additional header fields {"X-Key-Name": "key value"}
+attachments - An array of attachment objects (see below for details)
+alternatives - An array of alternative text contents (in addition to text and html parts) (see below for details)
+envelope - optional SMTP envelope, if auto generated envelope is not suitable (see below for details)
+messageId - optional Message-Id value, random value will be generated if not set
+date - optional Date value, current UTC string will be used if not set
+encoding - optional transfer encoding for the textual parts (defaults to 'quoted-printable')
+	*/
 };
-userSchema.statics.sendAsyncWelcomeEmail = function (options, callback) {
-	var emailOptions = {};
-	emailOptions.user = options;
-	// console.log('emailOptions.user',emailOptions.user,'options',options)
 
-	emailOptions.emailSubject = 'welcome to Repetere';
-	emailOptions.emailTemplateFilename = './views/email/welcome.ejs';
-	emailOptions.emailHtml = {
-		user: emailOptions.user,
-		follower: emailOptions.follower,
-		email: {
-			subject: emailOptions.emailSubject,
-			customCss: ''
-		},
-		filename: emailOptions.emailTemplateFilename
-	};
-	emailOptions.mailOptions = {
-		to: emailOptions.user.email, // list of receivers
-		bcc: 'yaw.etse@gmail.com',
-		subject: emailOptions.emailSubject,
-		generateTextFromHTML: true // plaintext body
-	};
-	sendEmail(emailOptions, callback);
+userSchema.statics.sendWelcomeUserEmail = function (options, callback) {
+	var ejs = require('ejs'),
+		welcomeemailoptions = options;
+	welcomeemailoptions.subject = (options.subject) ? options.subject : 'New User Registration';
+	welcomeemailoptions.generatetextemail = true;
+	welcomeemailoptions.html = ejs.render(options.emailtemplate, welcomeemailoptions);
+	// console.log('welcomeemailoptions', welcomeemailoptions);
+	sendUserEmail(welcomeemailoptions, callback);
 };
+
+userSchema.statics.UserEmail = function (options, callback) {
+	sendUserEmail(options, callback);
+};
+
+
+userSchema.statics.getWelcomeEmailTemplate = function (options, callback) {
+	var fs = require('fs-extra'),
+		templatefile = options.templatefile;
+	fs.readFile(templatefile, 'utf8', callback);
+};
+
+
 
 exports = module.exports = userSchema;
