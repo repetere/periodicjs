@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "1.1.10",
+	"version": "1.2.0",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
@@ -55,7 +55,7 @@
 		"optimist": "0.6.1",
 		"passport": "~0.2.0",
 		"periodicjs.core.controllerhelper": "1.1.1",
-		"periodicjs.core.extensions": "1.4.2",
+		"periodicjs.core.extensions": "1.5.0",
 		"periodicjs.core.mailer": "1.2.0",
 		"periodicjs.core.utilities": "1.1.2",
 		"prompt": "0.2.13",
