@@ -45,7 +45,7 @@
     },
     {
       "name": "periodicjs.ext.mailer",
-      "version": "1.5.2",
+      "version": "1.5.22",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
