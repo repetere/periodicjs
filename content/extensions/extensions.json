@@ -1,3 +1,146 @@
 {
-  "extensions": []
+  "extensions": [
+    {
+      "name": "periodicjs.ext.install",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": true,
+      "date": "2014-09-08T20:03:16.677Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.install",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": []
+      }
+    },
+    {
+      "name": "periodicjs.ext.user_access_control",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T19:56:00.056Z",
+      "periodicConfig": {
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [
+          {
+            "extname": "periodicjs.ext.login",
+            "version": "~1.5.0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "periodicjs.ext.scheduled_content",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T19:56:59.828Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.scheduled_content",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": []
+      }
+    },
+    {
+      "name": "periodicjs.ext.mailer",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T19:57:19.555Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.mailer",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [],
+        "periodicjs.ext.admin": {
+          "menu": {
+            "Extensions": {
+              "Mailer": "<a href=\"/p-admin/mailer/\">Mail Settings</a>"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "periodicjs.ext.login",
+      "version": "1.5.21",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T20:02:03.258Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.login",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [
+          {
+            "extname": "periodicjs.ext.mailer",
+            "version": "~1.5.2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "periodicjs.ext.admin",
+      "version": "1.5.21",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T20:02:12.986Z",
+      "periodicConfig": {
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [
+          {
+            "extname": "periodicjs.ext.mailer",
+            "version": "1.5.2"
+          },
+          {
+            "extname": "periodicjs.ext.login",
+            "version": "1.5.2"
+          },
+          {
+            "extname": "periodicjs.ext.scheduled_content",
+            "version": "1.5.2"
+          },
+          {
+            "extname": "periodicjs.ext.user_access_control",
+            "version": "1.5.2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "periodicjs.ext.dbseed",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T20:02:59.165Z",
+      "periodicConfig": {
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [],
+        "periodicjs.ext.admin": {
+          "menu": {
+            "Extensions": {
+              "seed admin": "<a href=\"/p-admin/dbseed\">DB Seed Content</a>"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "periodicjs.ext.default_routes",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T20:03:42.966Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.default_routes",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": []
+      }
+    }
+  ]
 }
