@@ -26,20 +26,21 @@ var fs = require('fs-extra'),
 npm.load({
 	'strict-ssl': false,
 	'production': true,
+	'skip-install-periodic-ext': true,
 },function (err) {
 	if (err) {
 		console.error(err);
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.0.5',
-			'periodicjs.ext.dbseed@1.0.4',
-			'periodicjs.ext.default_routes@1.0.3',
-			'periodicjs.ext.install@1.0.5',
-			'periodicjs.ext.login@1.1.11',
-			'periodicjs.ext.mailer@1.3.1',
-			'periodicjs.ext.scheduled_content@1.0.2',
-			'periodicjs.ext.user_access_control@1.0.3',
+			'periodicjs.ext.admin@1.5.21',
+			'periodicjs.ext.dbseed@1.5.2',
+			'periodicjs.ext.default_routes@1.5.2',
+			'periodicjs.ext.install@1.5.2',
+			'periodicjs.ext.login@1.5.21',
+			'periodicjs.ext.mailer@1.5.2',
+			'periodicjs.ext.scheduled_content@1.5.2',
+			'periodicjs.ext.user_access_control@1.5.2',
 			],
 		function (err 
 			//,data
