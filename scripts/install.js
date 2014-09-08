@@ -38,7 +38,7 @@ npm.load({
 			'periodicjs.ext.default_routes@1.5.2',
 			'periodicjs.ext.install@1.5.2',
 			'periodicjs.ext.login@1.5.21',
-			'periodicjs.ext.mailer@1.5.2',
+			'periodicjs.ext.mailer@1.5.21',
 			'periodicjs.ext.scheduled_content@1.5.2',
 			'periodicjs.ext.user_access_control@1.5.2',
 			],
