@@ -12,7 +12,7 @@
     "pid_file"          : "processes/development-child.pid",
     "merge_logs"        : "true",
     "one_launch_only"   : "true",
-    "exec_mode"         : "cluster_mode",
+    "exec_mode"         : "fork_mode",
     "env": {
       "NODE_ENV": "development"
     }
