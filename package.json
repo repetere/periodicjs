@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "1.2.6",
+	"version": "1.2.61",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
