@@ -11,6 +11,7 @@ var fs = require('fs-extra'),
 		path = require('path'),
 		commandprompt = require('prompt'),
 		npm = require('npm'),
+		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string',
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
@@ -23,10 +24,44 @@ var fs = require('fs-extra'),
 	    }
 	  };
 
+var moveInstalledPeriodic = function(){
+	fs.ensureDir(newlocation,function(err){
+		if(err){
+			console.error(err);
+			process.exit(0);
+		}
+		else{
+			fs.copy(
+				originallocation,
+				newlocation,
+				function(err){
+				if(err){
+					console.error(err);
+					console.log(err.stack);
+					process.exit(0);
+				}
+				else{
+					fs.remove(originalnodemoduleslocation, function(err){
+						if(err){
+							console.error(err);
+							console.log(err.stack);
+							process.exit(0);
+						}
+						else{	
+							console.log('Installed Periodicjs');
+							process.exit(0);
+						}
+					});
+				}
+			});
+		}
+	});
+};
 npm.load({
 	'strict-ssl': false,
 	'production': true,
 	'skip-install-periodic-ext': true,
+	'upgrade-install-periodic-ext' : upgradeinstall
 },function (err) {
 	if (err) {
 		console.error(err);
@@ -56,6 +91,9 @@ npm.load({
 						console.log('Installed Periodicjs');
 						process.exit(0);
 					}
+					else if(upgradeinstall){
+						moveInstalledPeriodic();
+					}
 					else{
 						console.log('\u0007');
 						commandprompt.start();
@@ -66,38 +104,7 @@ npm.load({
 							}
 							else{
 								if(result.auto_clean_up.match(/y/gi)){
-
-									fs.ensureDir(newlocation,function(err){
-										if(err){
-											console.error(err);
-											process.exit(0);
-										}
-										else{
-											fs.copy(
-												originallocation,
-												newlocation,
-												function(err){
-												if(err){
-													console.error(err);
-													console.log(err.stack);
-													process.exit(0);
-												}
-												else{
-													fs.remove(originalnodemoduleslocation, function(err){
-														if(err){
-															console.error(err);
-															console.log(err.stack);
-															process.exit(0);
-														}
-														else{	
-															console.log('Installed Periodicjs');
-															process.exit(0);
-														}
-													});
-												}
-											});
-										}
-									});
+									moveInstalledPeriodic();
 								}
 								else{
 									console.log('Installed Periodicjs');
