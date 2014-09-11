@@ -14,31 +14,14 @@
       }
     },
     {
-      "name": "periodicjs.ext.user_access_control",
+      "name": "periodicjs.ext.default_routes",
       "version": "1.5.2",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
-      "date": "2014-09-08T19:56:00.056Z",
+      "date": "2014-09-08T20:03:42.966Z",
       "periodicConfig": {
-        "periodicCompatibility": "1.2.0",
-        "periodicDependencies": [
-          {
-            "extname": "periodicjs.ext.login",
-            "version": "~1.5.0"
-          }
-        ]
-      }
-    },
-    {
-      "name": "periodicjs.ext.scheduled_content",
-      "version": "1.5.2",
-      "periodicCompatibility": "1.2.0",
-      "installed": true,
-      "enabled": false,
-      "date": "2014-09-08T19:56:59.828Z",
-      "periodicConfig": {
-        "name": "periodicjs.ext.scheduled_content",
+        "name": "periodicjs.ext.default_routes",
         "periodicCompatibility": "1.2.0",
         "periodicDependencies": []
       }
@@ -79,6 +62,36 @@
             "version": "~1.5.2"
           }
         ]
+      }
+    },
+    {
+      "name": "periodicjs.ext.user_access_control",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T19:56:00.056Z",
+      "periodicConfig": {
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": [
+          {
+            "extname": "periodicjs.ext.login",
+            "version": "~1.5.0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "periodicjs.ext.scheduled_content",
+      "version": "1.5.2",
+      "periodicCompatibility": "1.2.0",
+      "installed": true,
+      "enabled": false,
+      "date": "2014-09-08T19:56:59.828Z",
+      "periodicConfig": {
+        "name": "periodicjs.ext.scheduled_content",
+        "periodicCompatibility": "1.2.0",
+        "periodicDependencies": []
       }
     },
     {
@@ -127,19 +140,6 @@
             }
           }
         }
-      }
-    },
-    {
-      "name": "periodicjs.ext.default_routes",
-      "version": "1.5.2",
-      "periodicCompatibility": "1.2.0",
-      "installed": true,
-      "enabled": false,
-      "date": "2014-09-08T20:03:42.966Z",
-      "periodicConfig": {
-        "name": "periodicjs.ext.default_routes",
-        "periodicCompatibility": "1.2.0",
-        "periodicDependencies": []
       }
     }
   ]
