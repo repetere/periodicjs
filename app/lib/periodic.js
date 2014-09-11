@@ -41,6 +41,8 @@ var express = require('express'),
 	compress = require('compression'),
 	flash = require('connect-flash'),
 	csrf = require('csurf'),
+	request = require('superagent'),
+	semver = require('semver'),
 	app = express(),
 	MongoStore = require('connect-mongo')(session),
 	expressAppLogger = require('morgan'),
@@ -184,6 +186,32 @@ var init = {
 	serverStatus: function () {
 		logger.info('Express server listening on port ' + app.get('port'));
 		logger.info('Running in environment: ' + app.get('env'));
+		request
+			.get('https://registry.npmjs.org/periodicjs')
+			.set('Accept', 'application/json')
+			.end(function (err, res) {
+				if (res && res.error) {
+					logger.warn(res.error);
+				}
+				if (err) {
+					logger.warn('Could not check latest version of Periodic - ',err);
+				}
+				else {
+					var latestPeriodicVersion = res.body['dist-tags'].latest;
+					if(semver.gte(appconfig.settings().version,latestPeriodicVersion)){
+						logger.info('Your instance of Periodicjs '+appconfig.settings().version+' is up to date with the current version '+latestPeriodicVersion);
+					}
+					else{
+						console.log('\u0007');
+						logger.warn('====================================================');
+						logger.warn('|                                                  |');
+						logger.warn('| Your instance of Periodic is out of date.        |');
+						logger.warn('| Your Version: '+appconfig.settings().version+', Current Version: '+latestPeriodicVersion+'      |');
+						logger.warn('|                                                  |');
+						logger.warn('====================================================');
+					}
+				}
+			});
 	},
 	catchErrors: function () {
 		//log errors
