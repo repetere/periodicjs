@@ -17,6 +17,8 @@ var createNewUser = function (options) {
 	var userdata = options.userdata,
 		req = options.req,
 		res = options.res,
+		redirecturl = (options.redirecturl) ? options.redirecturl : '/user/new',
+		redirectloginurl = (options.redirectloginurl) ? options.redirectloginurl : '/auth/login',
 		userError;
 	if (userdata.password === undefined || !userdata.password || userdata.password === '' || userdata.password === ' ' || userdata.passwordconfirm === undefined || !userdata.passwordconfirm || userdata.passwordconfirm === '' || userdata.passwordconfirm === ' ') {
 		delete userdata.password;
@@ -28,7 +30,7 @@ var createNewUser = function (options) {
 			res: res,
 			req: req,
 			errorflash: userError.message,
-			redirecturl: '/user/new'
+			redirecturl: redirecturl
 		});
 	}
 	else if (userdata.passwordconfirm !== userdata.password) {
@@ -41,7 +43,7 @@ var createNewUser = function (options) {
 			res: res,
 			req: req,
 			errorflash: userError.message,
-			redirecturl: '/user/new'
+			redirecturl: redirecturl
 		});
 	}
 	else if (userdata.email === undefined || !userdata.email || userdata.username === undefined || !userdata.username) {
@@ -51,7 +53,7 @@ var createNewUser = function (options) {
 			res: res,
 			req: req,
 			errorflash: userError.message,
-			redirecturl: '/user/new'
+			redirecturl: redirecturl
 		});
 	}
 	else {
@@ -87,7 +89,7 @@ var createNewUser = function (options) {
 					res: res,
 					req: req,
 					errorflash: userError.message,
-					redirecturl: '/user/new'
+					redirecturl: redirecturl
 				});
 			}
 			else if (user) {
@@ -97,7 +99,7 @@ var createNewUser = function (options) {
 					res: res,
 					req: req,
 					errorflash: userError.message,
-					redirecturl: '/user/new'
+					redirecturl: redirecturl
 				});
 			}
 			else {
@@ -110,33 +112,39 @@ var createNewUser = function (options) {
 							res: res,
 							req: req,
 							errorflash: userError.message,
-							redirecturl: '/user/new'
+							redirecturl: redirecturl
 						});
 					}
 					else {
-						req.logIn(returnedUser, function (err) {
-							logger.verbose('controller - auth.js - got user');
+						if(options.skiplogin){
+							return res.redirect('/p-admin/users/');
+						}
+						else{
+							req.logIn(returnedUser, function (err) {
+								logger.verbose('controller - auth.js - got user');
 
-							if (err) {
-								userError = err;
-								CoreController.handleDocumentQueryErrorResponse({
-									err: userError,
-									res: res,
-									req: req,
-									errorflash: userError.message,
-									redirecturl: '/auth/login'
-								});
-							}
-							else {
-								logger.silly('controller - auth.js - ' + req.session.return_url);
-								if (req.session.return_url) {
-									return res.redirect(req.session.return_url);
+								if (err) {
+									userError = err;
+									CoreController.handleDocumentQueryErrorResponse({
+										err: userError,
+										res: res,
+										req: req,
+										errorflash: userError.message,
+										redirecturl: redirectloginurl
+									});
 								}
 								else {
-									return res.redirect('/');
+									logger.silly('controller - auth.js - ' + req.session.return_url);
+									if (req.session.return_url) {
+										return res.redirect(req.session.return_url);
+									}
+									else {
+										return res.redirect('/');
+									}
 								}
-							}
-						});
+							});
+						}
+
 						if (options.callback) {
 							options.callback(userdata);
 						}

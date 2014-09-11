@@ -1,11 +1,13 @@
 'use strict';
 
-var Utilities = require('periodicjs.core.utilities'),
+var path = require('path'),
+	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
 	mongoose,
+  userHelper,
 	User,
 	logger;
 
@@ -61,20 +63,14 @@ var create = function (req, res) {
 		});
 	}
 	else {
-		CoreController.createModel({
-			model: User,
-			newdoc: newuser,
-			res: res,
-			req: req,
-			successredirect: '/p-admin/user/',
-			appendid: true
-		});
-
-		// getTransport(function(err,transport){
-		// 	var emailMessage = 'new user account created';
-		// 	emailMessage.generateTextFromHTML = true;
-		// 	transport.sendMail(emailMessage,function(err,response){});
-		// });
+		userHelper.createNewUser({
+        userdata:newuser,
+        User:User,
+        res:res,
+        req:req,
+        skiplogin:true,
+        applicationController:CoreController
+    });
 	}
 };
 
@@ -279,6 +275,8 @@ var controller = function (resources) {
 	User = mongoose.model('User');
 	CoreController = new ControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
+  userHelper = require(path.join(process.cwd(),'app/controller/helpers/user'))(resources);
+
 	return {
 		show: show,
 		index: index,
