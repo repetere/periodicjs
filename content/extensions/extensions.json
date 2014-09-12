@@ -96,7 +96,7 @@
     },
     {
       "name": "periodicjs.ext.admin",
-      "version": "1.5.21",
+      "version": "1.5.32",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -125,7 +125,7 @@
     },
     {
       "name": "periodicjs.ext.dbseed",
-      "version": "1.5.2",
+      "version": "1.5.23",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
