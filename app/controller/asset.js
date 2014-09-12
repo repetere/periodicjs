@@ -35,9 +35,9 @@ var upload = function (req, res, next) {
 			// http://stackoverflow.com/questions/20553575/how-to-cancel-user-upload-in-formidable-node-js
 			form.keepExtensions = true;
 			form.uploadDir = fullUploadDir;
-			// form.parse(req, function (err, fields, files) {
-			// 	// console.log(err,fields,files);
-			// });
+			form.parse(req, function (err, fields, files) {
+				logger.silly(err, fields, files);
+			});
 			form.on('error', function (err) {
 				logger.error(err);
 				CoreController.handleDocumentQueryErrorResponse({
