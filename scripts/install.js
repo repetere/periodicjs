@@ -169,7 +169,7 @@ npm.load({
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.5.32',
+			'periodicjs.ext.admin@1.5.35',
 			'periodicjs.ext.dbseed@1.5.23',
 			'periodicjs.ext.default_routes@1.5.2',
 			'periodicjs.ext.install@1.5.2',

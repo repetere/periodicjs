@@ -38,6 +38,47 @@ var create = function (req, res) {
 	}
 };
 
+var remove = function (req, res) {
+	var removecontenttype = req.controllerData.contenttype,
+		User = mongoose.model('User');
+
+	if (!User.hasPrivilege(req.user, 710)) {
+		CoreController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		CoreController.deleteModel({
+			model: Contenttype,
+			deleteid: removecontenttype._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					CoreController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					CoreController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/contenttypes',
+						responseData: {
+							result: 'success',
+							data: removecontenttype
+						}
+					});
+				}
+			}
+		});
+	}
+};
+
 var append = function (req, res) {
 	var newattribute = CoreUtilities.removeEmptyObjectValues(req.body);
 	newattribute.name = CoreUtilities.makeNiceAttribute(newattribute.title);
@@ -185,6 +226,7 @@ var controller = function (resources) {
 		loadContenttypes: loadContenttypes,
 		loadContenttype: loadContenttype,
 		create: create,
+		remove: remove,
 		append: append,
 		removeitem: removeitem,
 		searchResults: searchResults
