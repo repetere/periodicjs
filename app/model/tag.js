@@ -11,28 +11,34 @@ var tagSchema = new Schema({
 		type: String,
 		unique: true
 	},
-	description: String,
+	dek: String,
+	content: String,
 	author: {
 		type: ObjectId,
-		ref: "User"
+		ref: 'User'
 	},
 	primaryasset: {
 		type: ObjectId,
-		ref: "Asset"
+		ref: 'Asset'
 	},
 	createdat: {
 		type: Date,
-		"default": Date.now
+		'default': Date.now
 	},
 	updatedat: {
 		type: Date,
-		"default": Date.now
+		'default': Date.now
 	},
-	children: [{
+	contenttypes: [{
 		type: ObjectId,
-		ref: "Tag"
+		ref: 'Contenttype'
+	}],
+	parent: [{
+		type: ObjectId,
+		ref: 'Tag'
 	}], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
 	attributes: Schema.Types.Mixed,
+	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
@@ -51,22 +57,22 @@ tagSchema.pre('save', function (next, done) {
 });
 
 tagSchema.post('init', function (doc) {
-	console.log("model - tag.js - " + doc._id + ' has been initialized from the db');
+	console.log('model - tag.js - ' + doc._id + ' has been initialized from the db');
 });
 tagSchema.post('validate', function (doc) {
-	console.log("model - tag.js - " + doc._id + ' has been validated (but not saved yet)');
+	console.log('model - tag.js - ' + doc._id + ' has been validated (but not saved yet)');
 });
 tagSchema.post('save', function (doc) {
 	// this.db.models.Item.emit('created', this);
-	console.log("model - tag.js - " + doc._id + ' has been saved');
+	console.log('model - tag.js - ' + doc._id + ' has been saved');
 });
 tagSchema.post('remove', function (doc) {
-	console.log("model - tag.js - " + doc._id + ' has been removed');
+	console.log('model - tag.js - ' + doc._id + ' has been removed');
 });
 
-tagSchema.statics.getRandomWorkout = function (options, callback) {
-	var self = this;
-	// queryHelper.getRandomDocument({model:self},callback);
-};
+// tagSchema.statics.getRandomWorkout = function (options, callback) {
+// 	var self = this;
+// 	// queryHelper.getRandomDocument({model:self},callback);
+// };
 
 module.exports = tagSchema;

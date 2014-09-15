@@ -38,6 +38,75 @@ var create = function (req, res) {
 	}
 };
 
+var update = function (req, res) {
+	var updatetag = CoreUtilities.removeEmptyObjectValues(req.body);
+
+	updatetag.name = CoreUtilities.makeNiceName(updatetag.title);
+	
+	if(updatetag.parent && updatetag.parent.length >0 && updatetag.parent[0] === updatetag.docid){
+		updatetag.parent = [];
+	}
+	else if (updatetag.parent && updatetag.parent.length > 1) {
+		var temptag = updatetag.parent[0];
+		updatetag.parent = [];
+		updatetag.parent.push(temptag);
+	}
+
+	CoreController.updateModel({
+		model: Tag,
+		id: updatetag.docid,
+		updatedoc: updatetag,
+		saverevision: false,
+		population: 'contenttypes parent',
+		res: res,
+		req: req,
+		successredirect: '/p-admin/tag/edit/',
+		appendid: true
+	});
+};
+
+var remove = function (req, res) {
+	var removetag = req.controllerData.tag,
+		User = mongoose.model('User');
+
+	if (!User.hasPrivilege(req.user, 710)) {
+		CoreController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		CoreController.deleteModel({
+			model: Tag,
+			deleteid: removetag._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					CoreController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					CoreController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/tags',
+						responseData: {
+							result: 'success',
+							data: removetag
+						}
+					});
+				}
+			}
+		});
+	}
+};
+
+
 var loadTags = function (req, res, next) {
 	var query,
 		offset = req.query.offset,
@@ -66,7 +135,7 @@ var loadTags = function (req, res, next) {
 		sort: sort,
 		limit: limit,
 		offset: offset,
-		// population:population,
+		population:'contenttypes parent',
 		callback: function (err, documents) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -92,6 +161,7 @@ var loadTag = function (req, res, next) {
 	CoreController.loadModel({
 		docid: docid,
 		model: Tag,
+		population:'contenttypes parent',
 		callback: function (err, doc) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -143,6 +213,8 @@ var controller = function (resources) {
 		loadTags: loadTags,
 		loadTag: loadTag,
 		create: create,
+		update: update,
+		remove:remove,
 		searchResults: searchResults
 	};
 };

@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Customizable CMS platform",
-  "version": "1.4.65",
+  "version": "1.4.7",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
@@ -97,5 +97,37 @@
     "Content Delivery System",
     "Content Management System",
     "Periodic Decoupled Framework"
-  ]
+  ],
+  "contributors": [
+    {
+      "name": "Yaw Joseph Etse",
+      "email": "yaw.etse@gmail.com"
+    }
+  ],
+  "gitHead": "ec239f4c3466993bc1afddb98fd835840758d827",
+  "bugs": {
+    "url": "https://github.com/typesettin/periodicjs/issues"
+  },
+  "homepage": "https://github.com/typesettin/periodicjs",
+  "_id": "periodicjs@1.4.65",
+  "_shasum": "7e53aa760e10ada240a4a0dea1fb68192eef2c2c",
+  "_from": "periodicjs@latest",
+  "_npmVersion": "2.0.0-beta.0",
+  "_npmUser": {
+    "name": "yawetse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "yawetse",
+      "email": "yaw.etse@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "7e53aa760e10ada240a4a0dea1fb68192eef2c2c",
+    "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-1.4.65.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/periodicjs/-/periodicjs-1.4.65.tgz",
+  "readme": "ERROR: No README data found!"
 }

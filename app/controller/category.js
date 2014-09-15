@@ -38,6 +38,74 @@ var create = function (req, res) {
 	}
 };
 
+var update = function (req, res) {
+	var updatecategory = CoreUtilities.removeEmptyObjectValues(req.body);
+
+	updatecategory.name = CoreUtilities.makeNiceName(updatecategory.title);
+
+	if(updatecategory.parent && updatecategory.parent.length >0 && updatecategory.parent[0] === updatecategory.docid){
+		updatecategory.parent = [];
+	}
+	else if (updatecategory.parent && updatecategory.parent.length > 1) {
+		var temptag = updatecategory.parent[0];
+		updatecategory.parent = [];
+		updatecategory.parent.push(temptag);
+	}
+
+	CoreController.updateModel({
+		model: Category,
+		id: updatecategory.docid,
+		updatedoc: updatecategory,
+		saverevision: false,
+		population: 'contenttypes parent',
+		res: res,
+		req: req,
+		successredirect: '/p-admin/category/edit/',
+		appendid: true
+	});
+};
+
+var remove = function (req, res) {
+	var removecategory = req.controllerData.category,
+		User = mongoose.model('User');
+
+	if (!User.hasPrivilege(req.user, 710)) {
+		CoreController.handleDocumentQueryErrorResponse({
+			err: new Error('EXT-UAC710: You don\'t have access to modify content'),
+			res: res,
+			req: req
+		});
+	}
+	else {
+		CoreController.deleteModel({
+			model: Category,
+			deleteid: removecategory._id,
+			req: req,
+			res: res,
+			callback: function (err) {
+				if (err) {
+					CoreController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					CoreController.handleDocumentQueryRender({
+						req: req,
+						res: res,
+						redirecturl: '/p-admin/categories',
+						responseData: {
+							result: 'success',
+							data: removecategory
+						}
+					});
+				}
+			}
+		});
+	}
+};
+
 var loadCategories = function (req, res, next) {
 	var query,
 		offset = req.query.offset,
@@ -66,7 +134,7 @@ var loadCategories = function (req, res, next) {
 		sort: sort,
 		limit: limit,
 		offset: offset,
-		// population:population,
+		population:'contenttypes parent',
 		callback: function (err, documents) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -93,6 +161,7 @@ var loadCategory = function (req, res, next) {
 	CoreController.loadModel({
 		docid: docid,
 		model: Category,
+		population:'contenttypes parent',
 		callback: function (err, doc) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -144,6 +213,8 @@ var controller = function (resources) {
 		loadCategories: loadCategories,
 		loadCategory: loadCategory,
 		create: create,
+		update: update,
+		remove: remove,
 		searchResults: searchResults
 	};
 };
