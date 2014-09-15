@@ -124,6 +124,24 @@ var createassetfile = function (req, res) {
 	});
 };
 
+var update = function (req, res) {
+	var updateasset = CoreUtilities.removeEmptyObjectValues(req.body);
+
+	updateasset.name = CoreUtilities.makeNiceName(updateasset.title);
+
+	CoreController.updateModel({
+		model: MediaAsset,
+		id: updateasset.docid,
+		updatedoc: updateasset,
+		saverevision: false,
+		population: 'contenttypes parent',
+		res: res,
+		req: req,
+		successredirect: '/p-admin/mediaasset/edit/',
+		appendid: true
+	});
+};
+
 var remove = function (req, res) {
 	var asset = req.controllerData.asset;
 	if (asset.locationtype === 'local') {
@@ -157,7 +175,7 @@ var remove = function (req, res) {
 					redirecturl: '/p-admin/assets',
 					responseData: {
 						result: 'success',
-						data: 'deleted'
+						data: asset
 					}
 				});
 			}
@@ -171,7 +189,7 @@ var loadAssets = function (req, res, next) {
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		population = 'author',
+		population = 'author contenttypes',
 		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
@@ -214,7 +232,7 @@ var loadAssets = function (req, res, next) {
 
 var loadAsset = function (req, res, next) {
 	var params = req.params,
-		population = 'author',
+		population = 'author contenttypes',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
@@ -276,7 +294,7 @@ var controller = function (resources) {
 		remove: remove,
 		upload: upload,
 		createassetfile: createassetfile,
-		// update:update,
+		update:update,
 		// append:append,
 		loadAsset: loadAsset,
 		loadAssets: loadAssets,
