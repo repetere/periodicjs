@@ -96,7 +96,7 @@
     },
     {
       "name": "periodicjs.ext.admin",
-      "version": "1.5.6",
+      "version": "1.5.8",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,

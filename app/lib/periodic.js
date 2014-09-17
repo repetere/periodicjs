@@ -194,19 +194,19 @@ var init = {
 					logger.warn(res.error);
 				}
 				if (err) {
-					logger.warn('Could not check latest version of Periodic - ',err);
+					logger.warn('Could not check latest version of Periodic - ', err);
 				}
 				else {
 					var latestPeriodicVersion = res.body['dist-tags'].latest;
-					if(semver.gte(appconfig.settings().version,latestPeriodicVersion)){
-						logger.info('Your instance of Periodicjs '+appconfig.settings().version+' is up to date with the current version '+latestPeriodicVersion);
+					if (semver.gte(appconfig.settings().version, latestPeriodicVersion)) {
+						logger.info('Your instance of Periodicjs ' + appconfig.settings().version + ' is up to date with the current version ' + latestPeriodicVersion);
 					}
-					else{
+					else {
 						console.log('\u0007');
 						logger.warn('====================================================');
 						logger.warn('|                                                  |');
 						logger.warn('| Your instance of Periodic is out of date.        |');
-						logger.warn('| Your Version: '+appconfig.settings().version+', Current Version: '+latestPeriodicVersion+'      |');
+						logger.warn('| Your Version: ' + appconfig.settings().version + ', Current Version: ' + latestPeriodicVersion + '      |');
 						logger.warn('|                                                  |');
 						logger.warn('====================================================');
 					}

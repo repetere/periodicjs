@@ -2,6 +2,7 @@
 
 var Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	util = require('util'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -42,8 +43,8 @@ var update = function (req, res) {
 	var updatetag = CoreUtilities.removeEmptyObjectValues(req.body);
 
 	updatetag.name = CoreUtilities.makeNiceName(updatetag.title);
-	
-	if(updatetag.parent && updatetag.parent.length >0 && updatetag.parent[0] === updatetag.docid){
+
+	if (updatetag.parent && updatetag.parent.length > 0 && updatetag.parent[0] === updatetag.docid) {
 		updatetag.parent = [];
 	}
 	else if (updatetag.parent && updatetag.parent.length > 1) {
@@ -135,7 +136,7 @@ var loadTags = function (req, res, next) {
 		sort: sort,
 		limit: limit,
 		offset: offset,
-		population:'contenttypes parent',
+		population: 'contenttypes parent',
 		callback: function (err, documents) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -161,7 +162,7 @@ var loadTag = function (req, res, next) {
 	CoreController.loadModel({
 		docid: docid,
 		model: Tag,
-		population:'contenttypes parent',
+		population: 'contenttypes parent',
 		callback: function (err, doc) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -172,10 +173,56 @@ var loadTag = function (req, res, next) {
 			}
 			else {
 				req.controllerData.tag = doc;
+				// doc.getChildren(function (err, docwithchildren) {
+				// 	console.log('===============================================================');
+				// 	console.log('err', err);
+				// 	console.log('docwithchildren', docwithchildren);
+				// 	console.info(util.inspect(docwithchildren.childDocs[1]));
+				// });
 				next();
 			}
 		}
 	});
+};
+
+var loadChildren = function (req, res, next) {
+	var tag = req.controllerData.tag;
+	tag.getChildren(
+		function (err, tagwithchildren) {
+			if (err) {
+				CoreController.handleDocumentQueryErrorResponse({
+					err: err,
+					res: res,
+					req: req
+				});
+			}
+			else {
+				req.controllerData.tagwithchildren = tagwithchildren;
+				next();
+			}
+		});
+};
+
+var showChildren = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
+					pagedata: {
+						title: 'Tag Search Results'
+					},
+					children: req.controllerData.tagwithchildren,
+					user: CoreUtilities.removePrivateInfo(req.user)
+				}
+			});
+		}
+	);
 };
 
 
@@ -212,9 +259,11 @@ var controller = function (resources) {
 	return {
 		loadTags: loadTags,
 		loadTag: loadTag,
+		loadChildren: loadChildren,
+		showChildren: showChildren,
 		create: create,
 		update: update,
-		remove:remove,
+		remove: remove,
 		searchResults: searchResults
 	};
 };

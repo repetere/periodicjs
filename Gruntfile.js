@@ -103,7 +103,7 @@ module.exports = function (grunt) {
 					compress: true
 				},
 				files: {
-					'public/styles/default/periodic.css': ['public/styles/default/periodic.less']
+					'public/stylesheets/default/periodic.css': 'public/stylesheets/default/periodic.less'
 				}
 			}
 		},

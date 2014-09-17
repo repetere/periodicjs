@@ -294,7 +294,7 @@ var controller = function (resources) {
 		remove: remove,
 		upload: upload,
 		createassetfile: createassetfile,
-		update:update,
+		update: update,
 		// append:append,
 		loadAsset: loadAsset,
 		loadAssets: loadAssets,

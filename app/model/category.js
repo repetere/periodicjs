@@ -1,6 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+	async = require('async'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId;
 
@@ -45,33 +46,62 @@ var categorySchema = new Schema({
 	random: Number
 });
 
-// categorySchema.pre('save', function (next, done) {
-// 	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-// 	// if(this.name !== undefined && this.name.length <4){
-// 	//     done(new Error('title is too short'));
-// 	// } else if(this.name !== undefined && badname.test(this.name) ){
-// 	//     done(new Error('Invalid title'));
-// 	// }
-// 	next();
-// });
+categorySchema.methods.getChildren = function (getTagChildrenCallback) {
+	var currentTag = {
+			title: this.title,
+			name: this.name,
+			_id: this._id,
+			childDocs: this.childDocs
+		},
+		Category = mongoose.model('Category');
 
-categorySchema.post('init', function (doc) {
-	console.log('model - category.js - ' + doc._id + ' has been initialized from the db');
-});
-categorySchema.post('validate', function (doc) {
-	console.log('model - category.js - ' + doc._id + ' has been validated (but not saved yet)');
-});
-categorySchema.post('save', function (doc) {
-	// this.db.models.Item.emit('created', this);
-	console.log('model - category.js - ' + doc._id + ' has been saved');
-});
-categorySchema.post('remove', function (doc) {
-	console.log('model - category.js - ' + doc._id + ' has been removed');
-});
+	var getChildDocuments = function (documentobj, callbackGetChildDocuments) {
+		console.log('check for children for: ', documentobj.name);
+		var query = {
+			parent: {
+				$in: [documentobj._id]
+			}
+		};
 
-// categorySchema.statics.getRandomWorkout = function (options, callback) {
-// 	var self = this;
-// 	// queryHelper.getRandomDocument({model:self},callback);
-// };
+		Category.find(query).select('name title content').exec(function (err, children) {
+			if (err) {
+				callbackGetChildDocuments(err, null);
+			}
+			else {
+				documentobj.childDocs = children;
+				callbackGetChildDocuments(null, documentobj);
+			}
+		});
+	};
+
+	getChildDocuments(currentTag, function (err, updatedCurrentDoc) {
+		currentTag = updatedCurrentDoc;
+		if (currentTag.childDocs.length > 0) {
+			async.each(
+				currentTag.childDocs,
+				function (child, asynccallback) {
+					child.getChildren(function (err, updatedchild) {
+						for (var x in currentTag.childDocs) {
+							if (currentTag.childDocs[x].name === updatedchild.name) {
+								currentTag.childDocs[x] = updatedchild;
+							}
+						}
+						asynccallback(err);
+					});
+				},
+				function (err) {
+					if (err) {
+						getTagChildrenCallback(err, null);
+					}
+					else {
+						getTagChildrenCallback(null, currentTag);
+					}
+				});
+		}
+		else {
+			getTagChildrenCallback(err, currentTag);
+		}
+	});
+};
 
 module.exports = categorySchema;

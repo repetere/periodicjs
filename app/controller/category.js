@@ -43,7 +43,7 @@ var update = function (req, res) {
 
 	updatecategory.name = CoreUtilities.makeNiceName(updatecategory.title);
 
-	if(updatecategory.parent && updatecategory.parent.length >0 && updatecategory.parent[0] === updatecategory.docid){
+	if (updatecategory.parent && updatecategory.parent.length > 0 && updatecategory.parent[0] === updatecategory.docid) {
 		updatecategory.parent = [];
 	}
 	else if (updatecategory.parent && updatecategory.parent.length > 1) {
@@ -134,7 +134,7 @@ var loadCategories = function (req, res, next) {
 		sort: sort,
 		limit: limit,
 		offset: offset,
-		population:'contenttypes parent',
+		population: 'contenttypes parent',
 		callback: function (err, documents) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -161,7 +161,7 @@ var loadCategory = function (req, res, next) {
 	CoreController.loadModel({
 		docid: docid,
 		model: Category,
-		population:'contenttypes parent',
+		population: 'contenttypes parent',
 		callback: function (err, doc) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
@@ -178,6 +178,45 @@ var loadCategory = function (req, res, next) {
 	});
 };
 
+var loadChildren = function (req, res, next) {
+	var category = req.controllerData.category;
+	category.getChildren(
+		function (err, categorywithchildren) {
+			if (err) {
+				CoreController.handleDocumentQueryErrorResponse({
+					err: err,
+					res: res,
+					req: req
+				});
+			}
+			else {
+				req.controllerData.categorywithchildren = categorywithchildren;
+				next();
+			}
+		});
+};
+
+var showChildren = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'search/index',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
+					pagedata: {
+						title: 'Category Search Results'
+					},
+					children: req.controllerData.categorywithchildren,
+					user: CoreUtilities.removePrivateInfo(req.user)
+				}
+			});
+		}
+	);
+};
 
 var searchResults = function (req, res) {
 	CoreController.getPluginViewDefaultTemplate({
@@ -212,6 +251,8 @@ var controller = function (resources) {
 	return {
 		loadCategories: loadCategories,
 		loadCategory: loadCategory,
+		loadChildren: loadChildren,
+		showChildren: showChildren,
 		create: create,
 		update: update,
 		remove: remove,

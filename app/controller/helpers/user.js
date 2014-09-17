@@ -116,10 +116,10 @@ var createNewUser = function (options) {
 						});
 					}
 					else {
-						if(options.skiplogin){
+						if (options.skiplogin) {
 							return res.redirect('/p-admin/users/');
 						}
-						else{
+						else {
 							req.logIn(returnedUser, function (err) {
 								logger.verbose('controller - auth.js - got user');
 
