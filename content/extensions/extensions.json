@@ -48,7 +48,7 @@
     },
     {
       "name": "periodicjs.ext.login",
-      "version": "1.5.21",
+      "version": "1.5.3",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -96,7 +96,7 @@
     },
     {
       "name": "periodicjs.ext.admin",
-      "version": "1.5.8",
+      "version": "1.5.81",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -110,7 +110,7 @@
           },
           {
             "extname": "periodicjs.ext.login",
-            "version": "1.5.2"
+            "version": "1.5.3"
           },
           {
             "extname": "periodicjs.ext.scheduled_content",
