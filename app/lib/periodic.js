@@ -91,9 +91,9 @@ var init = {
 		app.use(favicon(path.resolve(__dirname, '../../public/favicon.png')));
 	},
 	staticCaching: function () {
-		var expressStaticOptions = (app.get('env') !== 'production') ? {} : {
+		var expressStaticOptions = (app.get('env') !== 'development' || appconfig.settings().overrideStaticCache === true ) ?  {
 			maxAge: 86400000
-		};
+		} : {};
 		app.use(express.static(path.resolve(__dirname, '../../public'), expressStaticOptions));
 	},
 	pageCompression: function () {

@@ -13,6 +13,7 @@ module.exports = function(options){
 		userroleSchema = require('../../app/model/userrole'),
 		userprivilegeSchema = require('../../app/model/userprivilege'),
 		usergroupSchema = require('../../app/model/usergroup'),
+		settingSchema = require('../../app/model/setting'),
 		logger = options.periodic.logger;
 
 	if(options.debug){
@@ -28,16 +29,17 @@ module.exports = function(options){
 	mongoose.model('Userrole',userroleSchema);
 	mongoose.model('Userprivilege',userprivilegeSchema);
 	mongoose.model('Usergroup',usergroupSchema);
+	mongoose.model('Setting',settingSchema);
 
 
 	mongoose.connection.on('error', function (err) {
-		logger.error("Cannot start application, Your MongoDB is not configured correctly, check db url connection string in your content/config/database.js file and that mongodb is running or you that you're using a valid connection string");
+		logger.error('Cannot start application, Your MongoDB is not configured correctly, check db url connection string in your content/config/database.js file and that mongodb is running or you that you\'re using a valid connection string');
 		logger.error(err.message);
 	});
 	if(options.periodic.app){
 		options.periodic.app.all('*',function(req,res,next){
 			if(mongoose.Connection.STATES.connected !== mongoose.connection.readyState){
-				next(new Error("mongodb is not connected, check db url connection string in your content/config/database.js file"));
+				next(new Error('mongodb is not connected, check db url connection string in your content/config/database.js file'));
 			}
 			else{
 				next();

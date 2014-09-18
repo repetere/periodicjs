@@ -15,7 +15,7 @@
     },
     {
       "name": "periodicjs.ext.default_routes",
-      "version": "1.5.2",
+      "version": "1.5.3",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -66,7 +66,7 @@
     },
     {
       "name": "periodicjs.ext.user_access_control",
-      "version": "1.5.2",
+      "version": "1.5.4",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -96,7 +96,7 @@
     },
     {
       "name": "periodicjs.ext.admin",
-      "version": "1.5.81",
+      "version": "1.7.0",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,
@@ -118,14 +118,14 @@
           },
           {
             "extname": "periodicjs.ext.user_access_control",
-            "version": "1.5.2"
+            "version": "1.5.4"
           }
         ]
       }
     },
     {
       "name": "periodicjs.ext.dbseed",
-      "version": "1.5.23",
+      "version": "1.5.3",
       "periodicCompatibility": "1.2.0",
       "installed": true,
       "enabled": false,

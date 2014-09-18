@@ -96,29 +96,31 @@ var itemSchema = new Schema({
 
 itemSchema.pre('save', function (next, done) {
 	this.random = Math.random();
-	var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	if (this.name !== undefined && this.name.length < 4) {
+	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('title is too short'));
 	}
-	else if (this.name !== undefined && badname.test(this.name)) {
-		done(new Error('Invalid title'));
+	// else if (this.name !== undefined && badname.test(this.name)) {
+	// 	done(new Error('Invalid title'));
+	// }
+	else{
+		next();
 	}
-	next();
 });
 
-itemSchema.post('init', function (doc) {
-	console.log('model - item.js - ' + doc._id + ' has been initialized from the db');
-});
-itemSchema.post('validate', function (doc) {
-	console.log('model - item.js - ' + doc._id + ' has been validated (but not saved yet)');
-});
-itemSchema.post('save', function (doc) {
-	// this.db.models.Item.emit('created', this);
-	console.log('model - item.js - ' + doc._id + ' has been saved');
-});
-itemSchema.post('remove', function (doc) {
-	console.log('model - item.js - ' + doc._id + ' has been removed');
-});
+// itemSchema.post('init', function (doc) {
+// 	console.log('model - item.js - ' + doc._id + ' has been initialized from the db');
+// });
+// itemSchema.post('validate', function (doc) {
+// 	console.log('model - item.js - ' + doc._id + ' has been validated (but not saved yet)');
+// });
+// itemSchema.post('save', function (doc) {
+// 	// this.db.models.Item.emit('created', this);
+// 	console.log('model - item.js - ' + doc._id + ' has been saved');
+// });
+// itemSchema.post('remove', function (doc) {
+// 	console.log('model - item.js - ' + doc._id + ' has been removed');
+// });
 
 // itemSchema.statics.getRandomWorkout = function (options, callback) {
 // 	var self = this;
