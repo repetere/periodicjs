@@ -580,7 +580,7 @@ var install_themePublicDir = function (options) {
 };
 
 var install_viaDownload = function (options) {
-	// console.log('options',options);
+	console.log('options',options.themedir);
 	var themedir = options.themedir,
 		repourl = options.repourl,
 		reponame = options.reponame,
@@ -762,7 +762,7 @@ var install = function (req, res) {
 			reponame: reponame,
 			timestamp: timestamp
 		}),
-		themedir = themeFunctions.getthemedir;
+		themedir = themeFunctions.getthemedir();
 	//JSON.stringify(myData, null, 4)
 	install_logOutput({
 		logfile: logfile,

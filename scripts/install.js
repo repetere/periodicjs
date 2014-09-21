@@ -149,7 +149,11 @@ var upgradePeriodic = function(){
 		mergedPeriodicExtJson = merge(currentPeriodicjsExtJson, updatedPeriodicjsExtJson);
 		fs.writeJSONSync(updatedExtensionJsonFile,mergedPeriodicExtJson);
 
-		fs.removeSync(path.join(originallocation,'content/config')); 
+		fs.removeSync(path.join(originallocation,'content/config/environment')); 
+		fs.removeSync(path.join(originallocation,'content/config/extensions')); 
+		fs.removeSync(path.join(originallocation,'content/config/process')); 
+		fs.removeSync(path.join(originallocation,'content/config/config.json')); 
+		fs.removeSync(path.join(originallocation,'content/config/database.js')); 
 		fs.removeSync(path.join(originallocation,'public/uploads/files')); 
 		// fs.removeSync(path.join(originallocation,'content/extensions/extensions.json'));  
 		fs.removeSync(path.join(originallocation,'processes'));  
@@ -170,7 +174,7 @@ npm.load({
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.7.1',
+			'periodicjs.ext.admin@1.7.2',
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
 			'periodicjs.ext.install@1.5.2',
