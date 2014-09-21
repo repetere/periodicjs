@@ -1,7 +1,7 @@
 {
 	"name": "periodicjs",
 	"description": "Customizable CMS platform",
-	"version": "1.7.1",
+	"version": "1.7.2",
 	"main": "index.js",
 	"engines": {
 		"node": ">=0.10.x"
@@ -79,7 +79,7 @@
 		"grunt-contrib-uglify": ">=0.4.0",
 		"grunt-contrib-watch": ">=0.4.1",
 		"grunt-jsbeautifier": ">=0.2.7",
-		"grunt-jsdoc": ">=0.5.6",
+		"grunt-jsdoc": "^0.6.0",
 		"grunt-newer": ">=0.7.0",
 		"grunt-simple-mocha": ">=0.4.0",
 		"jsdoc": "3.3.0-alpha5",
@@ -107,9 +107,9 @@
 		"url": "https://github.com/typesettin/periodicjs/issues"
 	},
 	"homepage": "https://github.com/typesettin/periodicjs",
-	"_id": "periodicjs@1.4.7",
-	"_shasum": "b3066467c375d7557a3ad96411b55160bf59283d",
-	"_from": "/Users/yawetse/Developer/github/typesettin/periodicjs",
+	"_id": "periodicjs@1.7.1",
+	"_shasum": "040ea8af0a82a992c629311cb9819256d80c814b",
+	"_from": "periodicjs@latest",
 	"_npmVersion": "2.0.0-beta.0",
 	"_npmUser": {
 		"name": "yawetse",
