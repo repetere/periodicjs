@@ -580,7 +580,6 @@ var install_themePublicDir = function (options) {
 };
 
 var install_viaDownload = function (options) {
-	console.log('options',options.themedir);
 	var themedir = options.themedir,
 		repourl = options.repourl,
 		reponame = options.reponame,

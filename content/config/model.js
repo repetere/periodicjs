@@ -45,12 +45,14 @@ module.exports = function(options){
 
 
 	mongoose.connection.on('error', function (err) {
+		console.log('\u0007');
 		logger.error('Cannot start application, Your MongoDB is not configured correctly, check db url connection string in your content/config/database.js file and that mongodb is running or you that you\'re using a valid connection string');
 		logger.error(err.message);
 	});
 	if(options.periodic.app){
 		options.periodic.app.all('*',function(req,res,next){
 			if(mongoose.Connection.STATES.connected !== mongoose.connection.readyState){
+				console.log('\u0007');
 				next(new Error('mongodb is not connected, check db url connection string in your content/config/database.js file'));
 			}
 			else{

@@ -71,6 +71,7 @@ var collectionSchema = new Schema({
 		ref: 'Category'
 	}],
 	attributes: Schema.Types.Mixed,
+	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
