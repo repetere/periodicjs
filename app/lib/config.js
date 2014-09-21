@@ -12,7 +12,7 @@ var fs = require('fs-extra'),
 	path = require('path'),
 	argv = require('optimist').argv;
 /**
- * A module that represents a platter.
+ * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
  * @author Yaw Joseph Etse
  * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
@@ -38,17 +38,29 @@ var config = function () {
 
 	/** 
 	 * gets the configuration information
-	 * @return { string } file path for config file
+	 * @return { object } current instance configuration
 	 */
 	this.settings = function () {
 		return config;
 	};
 
+	/** 
+	 * augments the configuration information
+	 * @augments {object} appends instance configuration
+	 * @param {string} name name of new configuration setting
+	 * @param {value} value value of new configuration setting
+	 */
 	this.setConfig = function (name, value) {
 		this[name] = value;
 	}.bind(this);
 
 
+	/** 
+	 * augments the configuration information
+	 * @augments {object} appends instance configuration
+	 * @param {string} name name of new configuration setting
+	 * @param {value} value value of new configuration setting
+	 */
 	this.setSetting = function (name, value) {
 		config[name] = value;
 	}.bind(this);
@@ -66,6 +78,7 @@ var config = function () {
 	/** 
 	 * loads app configuration
 	 * @throws {Error} If missing config file
+	 * @this {object} configuration instance
 	 */
 	this.init = function () {
 		/** get info from package.json */
@@ -103,9 +116,11 @@ var config = function () {
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
 
+		/** if theme is set in configuration, set filepath */
 		if (config.theme) {
 			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
 		}
+		/** if debug option is set output instance configuration */
 		if (config.debug) {
 			console.log(config);
 		}

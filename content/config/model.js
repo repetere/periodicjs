@@ -1,11 +1,21 @@
 'use strict';
-
+/**
+ * A module that loads configurations for express and periodic.
+ * @{@link https://github.com/typesettin/periodic}
+ * @author Yaw Joseph Etse
+ * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
+ * @license MIT
+ * @module model
+ * @exports	model
+ * @param {object} options periodic instance configuration object, that has references to mongo, logging, etc
+ */
 module.exports = function(options){
 	var mongoose = options.mongoose,
 		db = mongoose.connect(options.dburl),
 		userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
 		collectionSchema = require('../../app/model/collection.js'),
+		volumeSchema = require('../../app/model/volume.js'),
 		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
 		contenttypeSchema = require('../../app/model/contenttype.js'),
@@ -16,12 +26,14 @@ module.exports = function(options){
 		settingSchema = require('../../app/model/setting'),
 		logger = options.periodic.logger;
 
+	/** set mongoose debug settings */
 	if(options.debug){
 		mongoose.set('debug', true);
 	}
 	mongoose.model('User',userSchema);
 	mongoose.model('Item',itemSchema);
 	mongoose.model('Collection',collectionSchema);
+	mongoose.model('Volume',volumeSchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);
 	mongoose.model('Contenttype',contenttypeSchema);

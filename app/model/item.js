@@ -103,7 +103,7 @@ itemSchema.pre('save', function (next, done) {
 	// else if (this.name !== undefined && badname.test(this.name)) {
 	// 	done(new Error('Invalid title'));
 	// }
-	else{
+	else {
 		next();
 	}
 });

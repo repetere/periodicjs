@@ -48,9 +48,9 @@ module.exports = function (grunt) {
 		},
 		jsdoc: {
 			dist: {
-				src: ['app/lib/*.js', 'test/*.js'],
+				src: ['app/**/*.js', 'scripts/**/*.js', 'test/*.js', 'index.js'],
 				options: {
-					destination: 'app/doc/html',
+					destination: 'doc/html',
 					configure: 'app/config/jsdoc.json'
 				}
 			}
@@ -135,7 +135,7 @@ module.exports = function (grunt) {
 			},
 			js: {
 				files: ['<%= jshint.all %>', 'content/extensions/node_modules/periodicjs*/resources/**/*.js'],
-				tasks: ['newer:simplemocha:all', 'newer:jshint:all', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:copy:main']
+				tasks: ['newer:simplemocha:all', 'newer:jshint:all', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:copy:main', 'doc']
 			}
 		}
 	});
@@ -146,6 +146,7 @@ module.exports = function (grunt) {
 			grunt.loadNpmTasks(key);
 		}
 	}
+	grunt.registerTask('doc', 'jsdoc');
 
 	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
 };

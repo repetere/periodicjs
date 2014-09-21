@@ -214,7 +214,7 @@ var loadCollection = function (req, res, next) {
 								Collection.populate(populatedcollection, {
 										path: 'items.item.categories',
 										model: 'Category',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
 									},
 									callback);
 							},
@@ -222,7 +222,7 @@ var loadCollection = function (req, res, next) {
 								Collection.populate(populatedcollection, {
 										path: 'items.item.authors',
 										model: 'User',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+										// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
@@ -230,7 +230,7 @@ var loadCollection = function (req, res, next) {
 								Collection.populate(populatedcollection, {
 										path: 'items.item.primaryauthor',
 										model: 'User',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
@@ -238,7 +238,7 @@ var loadCollection = function (req, res, next) {
 								Collection.populate(populatedcollection, {
 										path: 'items.item.contenttypes',
 										model: 'Contenttype',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							},
@@ -246,7 +246,15 @@ var loadCollection = function (req, res, next) {
 								Collection.populate(populatedcollection, {
 										path: 'items.item.assets',
 										model: 'Asset',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+									},
+									callback);
+							},
+							primaryasset: function (callback) {
+								Collection.populate(populatedcollection, {
+										path: 'items.item.primaryasset',
+										model: 'Asset',
+										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 									},
 									callback);
 							}
@@ -259,7 +267,10 @@ var loadCollection = function (req, res, next) {
 								});
 							}
 							else if (populatedcollection) {
+								// console.log('results.assets', results.assets);
 								var mergedCollectionData = merge(populatedcollection, results.tags);
+								mergedCollectionData = merge(mergedCollectionData, results.assets);
+								mergedCollectionData = merge(mergedCollectionData, results.primaryauthor);
 								req.controllerData.collection = mergedCollectionData;
 								// req.controllerData.collectionData = results;
 								next();

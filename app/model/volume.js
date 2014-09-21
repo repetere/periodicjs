@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId;
 
-var collectionSchema = new Schema({
+var volumeSchema = new Schema({
 	id: ObjectId,
 	status: {
 		type: String,
@@ -12,7 +12,7 @@ var collectionSchema = new Schema({
 	},
 	entitytype: {
 		type: String,
-		'default': 'collection'
+		'default': 'volume'
 	},
 	title: String,
 	name: {
@@ -50,13 +50,11 @@ var collectionSchema = new Schema({
 		'default': Date.now,
 		index: true
 	},
-	items: [{
+	entities: [{
 		order: Number,
 		additionalattributes: Schema.Types.Mixed,
-		item: {
-			type: ObjectId,
-			ref: 'Item'
-		}
+		entityid: ObjectId,
+		entitytype: String
 	}],
 	contenttypes: [{
 		type: ObjectId,
@@ -75,7 +73,7 @@ var collectionSchema = new Schema({
 	random: Number
 });
 
-collectionSchema.pre('save', function (next, done) {
+volumeSchema.pre('save', function (next, done) {
 	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('title is too short'));
@@ -88,23 +86,4 @@ collectionSchema.pre('save', function (next, done) {
 	}
 });
 
-// collectionSchema.post('init', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been initialized from the db');
-// });
-// collectionSchema.post('validate', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been validated (but not saved yet)');
-// });
-// collectionSchema.post('save', function (doc) {
-// 	// this.db.models.Item.emit('created', this);
-// 	console.log("model - collection.js - " + doc._id + ' has been saved');
-// });
-// collectionSchema.post('remove', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been removed');
-// });
-
-// collectionSchema.statics.getRandomWorkout = function (options, callback) {
-// 	var self = this;
-// 	// queryHelper.getRandomDocument({model:self},callback);
-// };
-
-module.exports = collectionSchema;
+module.exports = volumeSchema;
