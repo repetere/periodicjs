@@ -92,6 +92,8 @@ var update = function (req, res) {
 		updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
 	}
 
+	console.log('updatecollection', updatecollection);
+
 	CoreController.updateModel({
 		model: Collection,
 		id: updatecollection.docid,
@@ -296,7 +298,7 @@ var loadCollections = function (req, res, next) {
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
-		population = 'tags categories authors contenttypes primaryauthor items.item',
+		population = 'tags categories authors contenttypes primaryauthor primaryasset items.item',
 		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};

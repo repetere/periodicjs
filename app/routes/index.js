@@ -1,8 +1,11 @@
 'use strict';
 
 var path = require('path'),
-	fs = require('fs'),
-	Extensions = require('periodicjs.core.extensions');
+	fs = require('fs-extra'),
+	Extensions = require('periodicjs.core.extensions'),
+	themeRoute,
+	themeConfig,
+	themeConfigJson;
 
 /**
  * The module that manages the express router for periodic, routes from extensions are loaded first, and then are overwritable from theme routes.
@@ -37,8 +40,13 @@ module.exports = function (periodic) {
 	/** if there's a theme set in the instance configuration object, load the custom routes if they exist 
 	 */
 	if (periodic.settings.theme) {
-		var themeRoute = path.join(periodic.settings.themepath, 'routes.js');
+		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
+		themeConfig = path.join(periodic.settings.themepath, 'periodicjs.theme.json');
 		if (fs.existsSync(themeRoute)) {
+			if(fs.existsSync(themeConfig)){
+				themeConfigJson = fs.readJsonSync(themeConfig);
+				periodic.settings.themeSettings = themeConfigJson;
+			}
 			require(themeRoute)(periodic);
 		}
 	}

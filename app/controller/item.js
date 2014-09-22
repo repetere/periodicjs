@@ -192,9 +192,16 @@ var loadFullItem = function (req, res, next) {
 					req: req
 				});
 			}
-			else {
+			else if (doc) {
 				req.controllerData.item = doc;
 				next();
+			}
+			else {
+				CoreController.handleDocumentQueryErrorResponse({
+					err: new Error('invalid document request'),
+					res: res,
+					req: req
+				});
 			}
 		}
 	});
