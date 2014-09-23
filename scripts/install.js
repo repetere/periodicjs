@@ -15,6 +15,8 @@ var fs = require('fs-extra'),
 		CoreUtilities = new Utilities({}),
 		npm = require('npm'),
 		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string',
+		upgradeinstallalias = typeof process.env.npm_config_upgrade ==='string',
+		nodemoduleinstall = typeof process.env.npm_config_install_node_module ==='string',
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
@@ -26,9 +28,11 @@ var fs = require('fs-extra'),
 	      }
 	    }
 	  };
-
-// console.log('upgradeinstall',upgradeinstall);
-// $ npm install --upgrade-install-periodic
+	  
+// install as module // $ npm install periodicjs@latest --install-node-module
+// default install // $ npm install periodicjs@latest 
+// upgrade // $ npm install periodicjs@latest --upgrade
+// upgrade // $ npm install periodicjs@latest --upgrade-install-periodic
 
 var moveInstalledPeriodic = function(){
 	fs.ensureDir(newlocation,function(err){
@@ -55,10 +59,12 @@ var moveInstalledPeriodic = function(){
 						}
 						else{	
 							console.log('Installed Periodicjs');
-
-							CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { console.log (text);
-							});
-							process.exit(0);
+							if(upgradeinstall || upgradeinstallalias){
+								CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+									console.log (text);
+									process.exit(0);
+								});	
+							}
 						}
 					});
 				}
@@ -195,27 +201,32 @@ npm.load({
 						console.log('Installed Periodicjs');
 						process.exit(0);
 					}
-					else if(upgradeinstall){
+					else if(upgradeinstall || upgradeinstallalias){
 						upgradePeriodic();
 					}
+					else if(nodemoduleinstall){
+						console.log('Installed Periodicjs');
+						process.exit(0);
+					}
 					else{
-						console.log('\u0007');
-						commandprompt.start();
-						commandprompt.get(schema, function (err, result) {
-						  if(err){
-								console.error(err);
-								process.exit(0);
-							}
-							else{
-								if(result.auto_clean_up.match(/y/gi)){
-									moveInstalledPeriodic();
-								}
-								else{
-									console.log('Installed Periodicjs');
-									process.exit(0);
-								}
-							}
-						});
+						moveInstalledPeriodic();
+						// console.log('\u0007');
+						// commandprompt.start();
+						// commandprompt.get(schema, function (err, result) {
+						//   if(err){
+						// 		console.error(err);
+						// 		process.exit(0);
+						// 	}
+						// 	else{
+						// 		if(result.auto_clean_up.match(/y/gi)){
+						// 			moveInstalledPeriodic();
+						// 		}
+						// 		else{
+						// 			console.log('Installed Periodicjs');
+						// 			process.exit(0);
+						// 		}
+						// 	}
+						// });
 					}
 				});
 			}

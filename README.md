@@ -15,7 +15,7 @@ Periodic runs with a production grade process manager called PM2, this allows fo
 ```
 $ npm install pm2 -g #for running the application
 $ npm install nodemon -g #for extention and module development
-$ npm install periodicjs@latest #when prompted if you want to copy directory, hit yes
+$ npm install periodicjs@latest 
 $ cd periodicjs
 $ sudo mongod # you need mongo running
 $ npm start #this starts the pm2 daemon process
@@ -48,6 +48,12 @@ $ open http://localhost:8786 # there's a login link at the bottom for the admin,
 		* Content Types are collections of additional attributes that can be added to Entities and Attributes.
 		* Content Types can be used to create "podcasts", "images", "slideshows", "listicles", "videos" and more by adding additional properties to items, collections, assets, tags and categories.
 
+
+### Themes
+Themes contain views and routes and are installed by uploading to the `content/themes` directory.
+
+Installing/Switching themes
+Changing themes can be done through the admin extension interface or manually in your application environment configuration json files.
 
 ### Extensions
 
@@ -112,9 +118,9 @@ npm run reload, reloads the pm2 daemon.
 ###Upgrades
 ```
 $ cd path/to/periodic/directory 
-$ npm install periodicjs@latest --upgrade-install-periodic
+$ npm install periodicjs@latest --upgrade
 ```
-Running npm install periodicjs with the **--upgrade-install-periodic** command line argument installs periodic without modifying which extensions you have installed.
+Running npm install periodicjs with the **--upgrade** command line argument installs periodic without modifying which extensions you have installed.
 
 ##Development
 *Make sure you have grunt installed*

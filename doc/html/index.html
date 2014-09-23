@@ -49,7 +49,7 @@
 <p>Periodic runs with a production grade process manager called PM2, this allows for you application to restart only when necessary and runs as a process in the background. PM2 is a prerequesite for running periodic</p>
 <pre><code>$ npm install pm2 -g #for running the application
 $ npm install nodemon -g #for extention and module development
-$ npm install periodicjs@latest #when prompted if you want to copy directory, hit yes
+$ npm install periodicjs@latest 
 $ cd periodicjs
 $ sudo mongod # you need mongo running
 $ npm start #this starts the pm2 daemon process
@@ -129,8 +129,8 @@ $ open http://localhost:8786 # there's a login link at the bottom for the admin,
 <p>npm run reload, reloads the pm2 daemon.</p>
 <h3>Upgrades</h3>
 <pre><code>$ cd path/to/periodic/directory 
-$ npm install periodicjs@latest --upgrade-install-periodic</code></pre>
-<p>Running npm install periodicjs with the <strong>--upgrade-install-periodic</strong> command line argument installs periodic without modifying which extensions you have installed.</p>
+$ npm install periodicjs@latest --upgrade</code></pre>
+<p>Running npm install periodicjs with the <strong>--upgrade</strong> command line argument installs periodic without modifying which extensions you have installed.</p>
 <h2>Development</h2>
 <p><em>Make sure you have grunt installed</em></p>
 <pre><code>$ npm install -g grunt-cli</code></pre>
