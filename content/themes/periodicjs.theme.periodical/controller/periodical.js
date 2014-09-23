@@ -75,7 +75,7 @@ var homepage = function(req,res){
 };
 
 var setCacheHeader = function(req,res,next){
-	logger.warn('settings headers');
+	logger.silly('using cache headers');
 	res.header('Cache-Control', 'public, max-age=86400');
 	next();
 };
