@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Customizable CMS platform",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
@@ -109,8 +109,8 @@
     "url": "https://github.com/typesettin/periodicjs/issues"
   },
   "homepage": "https://github.com/typesettin/periodicjs",
-  "_id": "periodicjs@1.7.3",
-  "_shasum": "28d5f2bad0d3e1a41f142f3670fbc8d70d6f07c3",
+  "_id": "periodicjs@1.7.7",
+  "_shasum": "5c0f3a18585747f6143bfcd544cac2ba93e56189",
   "_from": "periodicjs@latest",
   "_npmVersion": "2.0.0-beta.0",
   "_npmUser": {
@@ -124,10 +124,9 @@
     }
   ],
   "dist": {
-    "shasum": "28d5f2bad0d3e1a41f142f3670fbc8d70d6f07c3",
-    "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-1.7.3.tgz"
+    "shasum": "5c0f3a18585747f6143bfcd544cac2ba93e56189",
+    "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-1.7.7.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/periodicjs/-/periodicjs-1.7.3.tgz",
-  "readme": "ERROR: No README data found!"
+  "_resolved": "https://registry.npmjs.org/periodicjs/-/periodicjs-1.7.7.tgz"
 }

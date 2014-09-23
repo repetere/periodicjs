@@ -177,7 +177,7 @@ npm.load({
 			'periodicjs.ext.admin@1.7.3',
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
-			'periodicjs.ext.install@1.5.2',
+			'periodicjs.ext.install@1.5.3',
 			'periodicjs.ext.login@1.5.3',
 			'periodicjs.ext.mailer@1.5.22',
 			'periodicjs.ext.scheduled_content@1.5.2',
