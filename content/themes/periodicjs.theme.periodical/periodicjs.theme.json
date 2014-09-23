@@ -3,34 +3,14 @@
 	"periodicCompatibility": "1.7.5",
 	"author": "Yaw Joseph Etse",
 	"url":"http://about.me/yawjosephetse",
-	"settings":[{
-			"homepage":{
-				"value":"default",
-				"options":{
-						"type":"array",
-						"value":"default,item,collection"
-					}
-			},
-			"item cache control settings":{
-				"value":"public, max-age=86400",
-				"options":{
-						"type":"string",
-						"value":"public, max-age=86400"
-					}
-			},
-			"collection cache control settings":{
-				"value":"public, max-age=86400",
-				"options":{
-						"type":"string",
-						"value":"public, max-age=86400"
-					}
-			},
-			"browse cache control settings":{
-				"value":"public, max-age=86400",
-				"options":{
-						"type":"string",
-						"value":"public, max-age=86400"
-					}
-			}		
-		}]
+	"settings": {
+		"jfe-options-homepage":{
+			"type":"array",
+			"value":"default,item,collection"
+		},
+		"homepage":"default",
+		"item cache control settings":"public, max-age=86400",
+		"collection cache control settings":"public, max-age=86400",
+		"browse cache control settings":"public, max-age=86400",
+	}
 }
