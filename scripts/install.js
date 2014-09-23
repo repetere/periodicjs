@@ -28,7 +28,7 @@ var fs = require('fs-extra'),
 	      }
 	    }
 	  };
-	  
+
 // install as module // $ npm install periodicjs@latest --install-node-module
 // default install // $ npm install periodicjs@latest 
 // upgrade // $ npm install periodicjs@latest --upgrade
@@ -180,7 +180,7 @@ npm.load({
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.7.9',
+			'periodicjs.ext.admin@1.8.0',
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
 			'periodicjs.ext.install@1.5.3',

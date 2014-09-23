@@ -1,6 +1,6 @@
 {
   "name": "periodicjs",
-  "description": "Customizable CMS platform",
+  "description": "Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture. Periodic defines a lightweight application wrapper for Express, that provides a simple mechanism to handle theming, routes and extensions. Unlike some traditional content management solutions, there are no assumptions made about your data model, which allows for information hierarchies and taxonomies to be extremely malleable.",
   "version": "1.8.3",
   "main": "index.js",
   "engines": {
@@ -94,6 +94,15 @@
     "ui manager",
     "CMS",
     "CDS",
+    "Express",
+    "ExpressJS",
+    "Application Framework",
+    "Micro Framework",
+    "Node CMS",
+    "wordpress",
+    "drupal",
+    "modular",
+    "themes",
     "Content Delivery System",
     "Content Management System",
     "Periodic Decoupled Framework"
