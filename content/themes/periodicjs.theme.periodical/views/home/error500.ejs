@@ -1,0 +1,17 @@
+<% include ../shared/error_header %>
+<body class=" periodical-page">
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+
+	<section class="container">
+			<article class="content">
+					<h3 style="word-wrap:break-word;"><%- error.message %></h3>
+					<pre style="overflow:auto"><%- error.stack %></pre>
+			</article>
+	</section>
+<% include ../shared/error_footer %>

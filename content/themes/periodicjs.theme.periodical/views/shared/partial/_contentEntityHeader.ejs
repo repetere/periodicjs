@@ -1,0 +1,19 @@
+<header class="header">
+	<% include _contentEntity_bgImg %>
+	<%if(contentEffect!=='sidefixed'){%>
+	<div class="title">
+		<h1><%- contentEnitity.title  %></h1>
+		<% if(contentEffect==='fadeout' || contentEffect==='side' || contentEffect==='jam3'){ %>
+			<% if(contentContentAttributes){ %>
+				<p class="subline"><%- contentEnitity.contenttypeattributes.periodical.dek %></p>
+			<% } %>
+			<%
+				var metaauthor = contentEnitity.primaryauthor;
+				var metadate = contentEnitity.createdat;
+			%>
+			<% include _itemmeta %>
+		<% } %>
+	</div>
+	<%}%>
+</header>
+<button class="trigger" data-info="Click to read more"><span>&#8595;</span></button>

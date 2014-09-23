@@ -1,0 +1,16 @@
+<div class="title">
+	<%if(contentTitleLink){%>
+	<h1><a href="/item/<%- contentEnitity.name %>"><%- contentEnitity.title  %></a></h1>
+	<%}
+		else{%>
+	<h1><%- contentEnitity.title  %></h1>
+		<%}%>
+	<% if(contentContentAttributes){ %>
+		<p class="subline"><%- contentEnitity.contenttypeattributes.periodical.dek %></p>
+	<% } %>
+	<%
+		var metaauthor = contentEnitity.primaryauthor;
+		var metadate = contentEnitity.createdat;
+	%>
+	<% include _itemmeta %>
+</div>

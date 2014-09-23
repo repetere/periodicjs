@@ -1,0 +1,36 @@
+<header id="ha-header" class="ha-header ha-header-small  <%if(typeof useNavTransparency ==='undefined' || useNavTransparency===true){%> transparent <%}%> ">
+  <div class="ha-header-perspective">
+    <div class="ha-header-front">
+      <h1>
+
+        <a href="/">
+          <!-- Periodical -->
+          <img src="http://getperiodic.org/assets/img/periodic-favicon.png">
+        </a>
+      </h1>
+      <nav id="ha-header-nav-id">
+
+        <a href="/items" data-navitr="0">items</a>
+
+        <a href="/collections" data-navitr="1" class="">collections</a>
+
+        <a href="/browse/contenttypes" data-navitr="2" class="has-sub-nav">browse</a>
+
+        <a class="search-nav">
+          <form action="/search" method="get" class="_pea-form">
+            <input type="text" name="search">
+          </form>
+        </a>
+
+      </nav>
+    </div>
+    <div id="ha-header-subnav-id" class="ha-header-bottom">
+      <nav data-itr="2" style="display: none;">
+        <a href="/browse/authors" data-navitr="0" class="">Authors</a>
+        <a href="/browse/contenttypes" data-navitr="1" class="">Content Types</a>
+        <a href="/browse/categories" data-navitr="2" class="">Categories</a>
+        <a href="/browse/tags" data-navitr="3" class="">Tags</a>
+      </nav>
+    </div>
+  </div>
+</header>

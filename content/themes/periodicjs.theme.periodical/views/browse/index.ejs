@@ -1,0 +1,36 @@
+<% include ../shared/header %>
+<% var useNavTransparency = false; %>
+<body class=" item periodical-collection" >
+	<% include ../shared/partial/_navTransparency %>
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+  <% var collection = {}; 
+  	collection.items = docs;
+  	var useCollectionLink = false; %>
+  	<div class="listing-container">
+  		
+	  	<article class="content">	
+			  <h1 class="collection"> Browse <a href="/browse/<%= request.params.entitytype %>"><%= request.params.entitytype %></a> <%- request.params.entityitems %>
+		</h1>
+			  <div class="width100">
+					<% if(tags && tags.length>0){
+						tags.forEach(function(tag){
+							if(request.params.entitytype==="authors"){
+								%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="tag"><%= tag.username %></a> <%
+							}
+							else{
+								%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="tag"><%= tag.title %></a> <%
+							}
+						});
+						} %>
+				</div>
+			  <% include ../collection/_collectionListViewScroll_item %>
+	  	</article>
+
+  	</div>
+<% include ../shared/footer %>

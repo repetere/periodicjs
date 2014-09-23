@@ -1,0 +1,39 @@
+<!-- <div class="item"> -->
+  <% 
+  var useCollectionIntroTest = ((typeof skipCollectionIntro !== 'undefined' && skipCollectionIntro==false) || typeof contentEnitity.contenttypeattributes === 'undefined' || (contentEnitity.contenttypeattributes['periodical-collection'] && contentEnitity.contenttypeattributes['periodical-collection']['use-collection-intro']!=='false'));
+  if(useCollectionIntroTest){ %>
+  <div id="container" class="container intro-effect-fadeout modify item">
+    <header class="header">
+      <% include ../shared/partial/_contentEntity_bgImg %>  
+      <div class="title">
+        <% if(typeof linkCollectionTitle !== 'undefined'){ %>
+          <h1><a href="/collection/<%- contentEnitity.name%>"><%- contentEnitity.title  %></a></h1>
+        <% }
+        else{%>
+          <h1><%- contentEnitity.title  %></h1>
+        <%}%>
+        <% if(typeof contentEnitity.contenttypeattributes !== 'undefined'){ %>
+          <p class="subline"><%- contentEnitity.contenttypeattributes['periodical-collection'].dek %></p>
+        <% }%>
+        <% var metaauthor = contentEnitity.primaryauthor;
+          var metadate = contentEnitity.createdat; %>
+        <% include ../shared/partial/_itemmeta %>
+      </div>
+    </header>
+    <button class="trigger" data-info="Click to read more"><span>↓</span></button>
+    <article class="content">
+    <% if(typeof showCollectionContent === 'undefined' || showCollectionContent === true){ %>
+      <section class="collection-content">
+        <%- contentEnitity.content %>
+      </section>
+    <% }%>
+  <% }%>
+
+        <% include _collectionListViewScroll_item %>
+
+    <%
+    if(useCollectionIntroTest){
+      %>
+    </article>
+  <%}%>
+<!-- </div> -->

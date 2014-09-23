@@ -1,0 +1,34 @@
+<section id="linotype" class="linotype">
+
+<%
+if(contentEnitity.contenttypeattributes && contentEnitity.contenttypeattributes['periodical-collection'] && contentEnitity.contenttypeattributes['periodical-collection'].useintro){
+	%>
+
+	<article class="section active" id="section0" <% include ../shared/partial/_contentEntity_bgImg_background %> >
+
+			<% contentBgImgUseDefault = false;
+				  contentTitleLink = false;
+				  %>
+
+				
+				<% include ../shared/partial/_contentEntityTitle_subTitle %>
+		  </article>
+	<%
+	}%>
+	<% if(collection.items && collection.items.length>0){
+		collection.items.forEach(function(itemObj,index){%>
+		<% var contentEnitity = itemObj.item;
+				contentContentAttributes = (contentEnitity.contenttypeattributes && contentEnitity.contenttypeattributes.periodical)? true : false; 
+				contentBgImgUseDefault = false;
+				contentTitleLink = true;%>
+			<article class="section " id="section<%- (index+1) %>" <% include ../shared/partial/_contentEntity_bgImg_background %> >
+				<% if(contentContentCollectionAttributes && collection.contenttypeattributes['periodical-collection']['content-only'] && collection.contenttypeattributes['periodical-collection']['content-only']==='true'){ %>
+						<div class="linotype-content"><%- contentEnitity.content %></div>
+					<% }
+					else{%>
+						<% include ../shared/partial/_contentEntityTitle_subTitle %>
+					<%}%>		  	
+		  </article>
+		<%});
+	}%>
+</section>

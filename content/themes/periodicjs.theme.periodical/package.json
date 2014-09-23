@@ -1,0 +1,63 @@
+{
+  "name": "periodicjs.theme.periodical",
+  "description": "periodical theme",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.x"
+  },
+  "author": {
+    "name": "Yaw Joseph Etse",
+    "email": "yaw.etse@gmail.com",
+    "url": "http://about.me/yawjosephetse"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/typesettin/periodicjs.theme.periodical.git"
+  },
+  "scripts": {
+    "test": "mocha -R spec --recursive"
+  },
+  "keywords": [
+    "periodicjs"
+  ],
+  "dependencies": {
+    "async": "0.9.0",
+    "classie": ">=0.1.0",
+    "linotypejs": "~1.0.3",
+    "periodicjs.component.collection_list-view-scroll": "^1.0.0",
+    "periodicjs.theme-component.navigation-header": "~1.0.1"
+  },
+  "devDependencies": {
+    "browserify": "~4.2.1",
+    "chai": "1.9.1",
+    "grunt": ">=0.4.5",
+    "grunt-contrib-jshint": ">=0.4.3",
+    "grunt-contrib-watch": ">=0.4.1",
+    "grunt-simple-mocha": ">=0.4.0",
+    "grunt-jsbeautifier": ">=0.2.7",
+    "grunt-contrib-copy": ">=0.5.0",
+    "grunt-browserify": ">=2.1.3",
+    "grunt-contrib-less": ">=0.11.3",
+    "grunt-jsdoc": ">=0.5.6",
+    "grunt-contrib-uglify": ">=0.4.0",
+    "grunt-contrib-cssmin": ">=0.9.0",
+    "grunt-newer": ">=0.7.0",
+    "jsdoc": "3.3.0-alpha5",
+    "mocha": "1.9.0",
+    "uglify-js": "^2.4.15",
+    "uglifyify": "^2.5.0"
+  },
+  "homepage": "https://github.com/typesettin/periodicjs.theme.periodical",
+  "_npmVersion": "2.0.0-beta.0",
+  "_npmUser": {
+    "name": "yawetse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "yawetse",
+      "email": "yaw.etse@gmail.com"
+    }
+  ]
+}

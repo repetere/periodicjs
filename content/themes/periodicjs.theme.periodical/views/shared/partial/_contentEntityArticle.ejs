@@ -1,0 +1,17 @@
+<article class="content">
+	<%
+ if( contentEffect === 'sidefixed'){ %>
+	<% include _contentEntityTitle_subTitle %>
+<% } %>
+	<div>
+		<%- contentEnitity.content %>
+	</div>
+		<%
+ if( contentEffect === 'sidefixed'){ %>
+	<% include _contentEntityTags %>
+<% } %>
+</article>
+	<%
+ if( contentEffect !== 'sidefixed'){ %>
+	<% include _contentEntityTags %>
+<% } %>

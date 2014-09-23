@@ -1,0 +1,36 @@
+{
+	"name": "periodicjs.theme.periodical",
+	"periodicCompatibility": "1.7.5",
+	"author": "Yaw Joseph Etse",
+	"url":"http://about.me/yawjosephetse",
+	"settings":[{
+			"homepage":{
+				"value":"default",
+				"options":{
+						"type":"array",
+						"value":"default,item,collection"
+					}
+			},
+			"item cache control settings":{
+				"value":"public, max-age=86400",
+				"options":{
+						"type":"string",
+						"value":"public, max-age=86400"
+					}
+			},
+			"collection cache control settings":{
+				"value":"public, max-age=86400",
+				"options":{
+						"type":"string",
+						"value":"public, max-age=86400"
+					}
+			},
+			"browse cache control settings":{
+				"value":"public, max-age=86400",
+				"options":{
+						"type":"string",
+						"value":"public, max-age=86400"
+					}
+			}		
+		}]
+}
