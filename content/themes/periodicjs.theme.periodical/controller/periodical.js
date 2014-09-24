@@ -1,13 +1,20 @@
 'use strict';
 var path = require('path'),
+	// async = require('async'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
 	CoreUtilities,
 	CoreController,
 	themeController,
+	Collection,
+	collectionController,
+	Item,
+	itemController,
+	appSettings,
+	mongoose,
 	logger;
 
-var homepage = function(req,res){
+var defaulthomepage = function(req,res){
 	themeController.customLayout({
 			req: req,
 			res: res,
@@ -74,19 +81,89 @@ var homepage = function(req,res){
 		});
 };
 
+var homepage = function(req,res){
+	if(appSettings.themeSettings && appSettings.themeSettings.settings){
+		req.params.id = appSettings.themeSettings.settings['homepage-value'];
+		req.controllerData = (req.controllerData) ? req.controllerData : {};
+		var params = req.params,
+			docid,
+			population;
+		if(appSettings.themeSettings.settings.homepage ==='item'){
+				population = 'tags collections contenttypes categories assets primaryasset authors primaryauthor';
+				docid = params.id;
+
+			CoreController.loadModel({
+				docid: docid,
+				model: Item,
+				population: population,
+				callback: function (err, doc) {
+					itemController.loadFullItemData(req, res, err, doc, null, itemController.show);
+				}
+			});			
+		}
+		else if(appSettings.themeSettings.settings.homepage ==='collection'){
+				population = 'tags categories authors assets primaryasset contenttypes primaryauthor items';
+				docid = params.id;
+
+			CoreController.loadModel({
+				docid: docid,
+				model: Collection,
+				population: population,
+				callback: function (err, doc) {
+					collectionController.loadCollectionData(req, res, err, doc, null, collectionController.show);
+				}
+			});			
+		}
+		else{
+			defaulthomepage(req,res);
+		}
+	}
+	else{
+		defaulthomepage(req,res);
+	}
+};
+
 var setCacheHeader = function(req,res,next){
-	logger.silly('using cache headers');
-	res.header('Cache-Control', 'public, max-age=86400');
+	var httpPathName = req._parsedUrl.pathname;
+	if(appSettings.themeSettings && appSettings.themeSettings.settings){
+		switch(true){
+			case httpPathName==='/':
+				logger.silly('using home cache headers');
+				res.header('Cache-Control', appSettings.themeSettings.settings['home cache control settings']);
+				break;
+			case httpPathName==='/items' || (/item\//gi.test(httpPathName)):
+				logger.silly('using item cache headers');
+				res.header('Cache-Control', appSettings.themeSettings.settings['item cache control settings']);
+				break;
+			case httpPathName==='/collections' || (/collection\//gi.test(httpPathName)):
+				logger.silly('using collection cache headers');
+				res.header('Cache-Control', appSettings.themeSettings.settings['collection cache control settings']);
+				break;
+			case httpPathName==='/browse' || (/browse\//gi.test(httpPathName)):
+				logger.silly('using browse cache headers');
+				res.header('Cache-Control', appSettings.themeSettings.settings['browse cache control settings']);
+				break;
+			default:
+				logger.silly('using default cache headers');
+				res.header('Cache-Control', appSettings.themeSettings.settings['default cache control settings']);
+				break;
+		}
+	}
 	next();
 };
 
 var controller = function (resources) {
 	logger = resources.logger;
-	// mongoose = resources.mongoose;
-	// appSettings = resources.settings;
+	mongoose = resources.mongoose;
+	appSettings = resources.settings;
 	CoreController = new ControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
 	themeController = require(path.join(process.cwd(), 'app/controller/theme'))(resources);
+	Item = mongoose.model('Item');
+	itemController = require(path.resolve(process.cwd(), './app/controller/item'))(resources);
+	Collection = mongoose.model('Collection');
+	collectionController = require(path.resolve(process.cwd(), './app/controller/collection'))(resources);
+
 
 	return {
 		homepage: homepage,

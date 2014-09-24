@@ -140,6 +140,32 @@ var remove = function (req, res) {
 	}
 };
 
+var loadFullItemData = function (req, res, err, doc, next, callback) {
+	if (err) {
+		CoreController.handleDocumentQueryErrorResponse({
+			err: err,
+			res: res,
+			req: req
+		});
+	}
+	else if (doc) {
+		req.controllerData.item = doc;
+		if (callback) {
+			callback(req, res);
+		}
+		else {
+			next();
+		}
+	}
+	else {
+		CoreController.handleDocumentQueryErrorResponse({
+			err: new Error('invalid document request'),
+			res: res,
+			req: req
+		});
+	}
+};
+
 var loadItem = function (req, res, next) {
 	var params = req.params,
 		population = 'contenttypes primaryauthor authors',
@@ -185,24 +211,7 @@ var loadFullItem = function (req, res, next) {
 		model: Item,
 		population: 'tags collections contenttypes categories assets primaryasset authors primaryauthor',
 		callback: function (err, doc) {
-			if (err) {
-				CoreController.handleDocumentQueryErrorResponse({
-					err: err,
-					res: res,
-					req: req
-				});
-			}
-			else if (doc) {
-				req.controllerData.item = doc;
-				next();
-			}
-			else {
-				CoreController.handleDocumentQueryErrorResponse({
-					err: new Error('invalid document request'),
-					res: res,
-					req: req
-				});
-			}
+			loadFullItemData(req, res, err, doc, next, null);
 		}
 	});
 };
@@ -266,6 +275,7 @@ var controller = function (resources) {
 		create: create,
 		update: update,
 		remove: remove,
+		loadFullItemData: loadFullItemData,
 		loadItem: loadItem,
 		loadFullItem: loadFullItem,
 		loadItems: loadItems

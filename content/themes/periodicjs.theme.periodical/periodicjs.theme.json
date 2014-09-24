@@ -1,17 +1,19 @@
 {
-	"name": "periodicjs.theme.periodical",
-	"periodicCompatibility": "1.7.5",
-	"author": "Yaw Joseph Etse",
-	"url":"http://about.me/yawjosephetse",
-	"settings": {
-		"jfe-options-homepage":{
-			"type":"array",
-			"value":"default,item,collection"
-		},
-		"homepage":"default",
-		"homepage-value":"default",
-		"item cache control settings":"public, max-age=86400",
-		"collection cache control settings":"public, max-age=86400",
-		"browse cache control settings":"public, max-age=86400"
-	}
+  "name": "periodicjs.theme.periodical",
+  "periodicCompatibility": "1.7.5",
+  "author": "Yaw Joseph Etse",
+  "url": "http://about.me/yawjosephetse",
+  "settings": {
+    "jfe-options-homepage": {
+      "type": "array",
+      "value": "default,item,collection"
+    },
+    "homepage": "default",
+    "homepage-value": "default",
+    "home cache control settings": "public, max-age=86400",
+    "default cache control settings": "public, max-age=86400",
+    "item cache control settings": "public, max-age=86400",
+    "collection cache control settings": "public, max-age=86400",
+    "browse cache control settings": "public, max-age=86400"
+  }
 }
