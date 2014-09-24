@@ -167,6 +167,124 @@ var remove = function (req, res) {
 	}
 };
 
+var loadCollectionData = function (req, res, err, doc, next, callback) {
+	{
+		if (err) {
+			CoreController.handleDocumentQueryErrorResponse({
+				err: err,
+				res: res,
+				req: req
+			});
+		}
+		else {
+			Collection.populate(doc, {
+				path: 'items.item',
+				model: 'Item',
+				select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+			}, function (err, populatedcollection) {
+				if (err) {
+					CoreController.handleDocumentQueryErrorResponse({
+						err: err,
+						res: res,
+						req: req
+					});
+				}
+				else {
+					// console.log('doc',populatedcollection);
+					async.parallel({
+						tags: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.tags',
+									model: 'Tag',
+									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						categories: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.categories',
+									model: 'Category',
+									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
+								},
+								callback);
+						},
+						authors: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.authors',
+									model: 'User',
+									// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						primaryauthor: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.primaryauthor',
+									model: 'User',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						contenttypes: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.contenttypes',
+									model: 'Contenttype',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						assets: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.assets',
+									model: 'Asset',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						primaryasset: function (callback) {
+							Collection.populate(populatedcollection, {
+									path: 'items.item.primaryasset',
+									model: 'Asset',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						}
+					}, function (err, results) {
+						if (err) {
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else if (populatedcollection) {
+							// console.log('results.assets', results.assets);
+							var mergedCollectionData = merge(populatedcollection, results.tags);
+							mergedCollectionData = merge(mergedCollectionData, results.assets);
+							mergedCollectionData = merge(mergedCollectionData, results.primaryauthor);
+							req.controllerData.collection = mergedCollectionData;
+							// req.controllerData.collectionData = results;
+							if (callback) {
+								callback(req, res);
+							}
+							else {
+								next();
+							}
+						}
+						else {
+							CoreController.handleDocumentQueryErrorResponse({
+								err: new Error('invalid collection request'),
+								res: res,
+								req: req
+							});
+						}
+						// console.log('results',results.tags.items[0].item);
+					});
+				}
+			});
+		}
+	}
+};
+
 var loadCollection = function (req, res, next) {
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor items',
@@ -181,114 +299,7 @@ var loadCollection = function (req, res, next) {
 		model: Collection,
 		population: population,
 		callback: function (err, doc) {
-			if (err) {
-				CoreController.handleDocumentQueryErrorResponse({
-					err: err,
-					res: res,
-					req: req
-				});
-			}
-			else {
-				Collection.populate(doc, {
-					path: 'items.item',
-					model: 'Item',
-					select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-				}, function (err, populatedcollection) {
-					if (err) {
-						CoreController.handleDocumentQueryErrorResponse({
-							err: err,
-							res: res,
-							req: req
-						});
-					}
-					else {
-						// console.log('doc',populatedcollection);
-						async.parallel({
-							tags: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.tags',
-										model: 'Tag',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							},
-							categories: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.categories',
-										model: 'Category',
-										select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
-									},
-									callback);
-							},
-							authors: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.authors',
-										model: 'User',
-										// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							},
-							primaryauthor: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.primaryauthor',
-										model: 'User',
-										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							},
-							contenttypes: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.contenttypes',
-										model: 'Contenttype',
-										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							},
-							assets: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.assets',
-										model: 'Asset',
-										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							},
-							primaryasset: function (callback) {
-								Collection.populate(populatedcollection, {
-										path: 'items.item.primaryasset',
-										model: 'Asset',
-										// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-									},
-									callback);
-							}
-						}, function (err, results) {
-							if (err) {
-								CoreController.handleDocumentQueryErrorResponse({
-									err: err,
-									res: res,
-									req: req
-								});
-							}
-							else if (populatedcollection) {
-								// console.log('results.assets', results.assets);
-								var mergedCollectionData = merge(populatedcollection, results.tags);
-								mergedCollectionData = merge(mergedCollectionData, results.assets);
-								mergedCollectionData = merge(mergedCollectionData, results.primaryauthor);
-								req.controllerData.collection = mergedCollectionData;
-								// req.controllerData.collectionData = results;
-								next();
-							}
-							else {
-								CoreController.handleDocumentQueryErrorResponse({
-									err: new Error('invalid collection request'),
-									res: res,
-									req: req
-								});
-							}
-							// console.log('results',results.tags.items[0].item);
-						});
-					}
-				});
-			}
+			loadCollectionData(req, res, err, doc, next, null);
 		}
 	});
 };
@@ -421,6 +432,7 @@ var controller = function (resources) {
 		update: update,
 		append: append,
 		cli: cli,
+		loadCollectionData: loadCollectionData,
 		loadCollection: loadCollection,
 		loadCollections: loadCollections
 	};
