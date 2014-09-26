@@ -3,6 +3,7 @@
 var moment = require('moment'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	str2json = require('string-to-json'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -64,7 +65,7 @@ var create = function (req, res) {
 		newitem.publishat = new Date(moment(newitem.date + ' ' + newitem.time).format());
 	}
 
-	// console.log(newitem);
+	newitem = str2json.convert(newitem);
 	CoreController.createModel({
 		model: Item,
 		newdoc: newitem,
@@ -85,6 +86,7 @@ var update = function (req, res) {
 	if (updateitem.date && updateitem.time) {
 		updateitem.publishat = new Date(moment(updateitem.date + ' ' + updateitem.time).format());
 	}
+	updateitem = str2json.convert(updateitem);
 
 	CoreController.updateModel({
 		model: Item,

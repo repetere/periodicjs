@@ -5,6 +5,7 @@ var async = require('async'),
 	merge = require('utils-merge'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	str2json = require('string-to-json'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -67,6 +68,14 @@ var create = function (req, res) {
 		newcollection.publishat = new Date(moment(newcollection.date + ' ' + newcollection.time).format());
 	}
 
+	if (newcollection.items) {
+		for (var x in newcollection.items) {
+			newcollection.items[x] = JSON.parse(newcollection.items[x]);
+		}
+	}
+
+	newcollection = str2json.convert(newcollection);
+
 	CoreController.createModel({
 		model: Collection,
 		newdoc: newcollection,
@@ -91,8 +100,7 @@ var update = function (req, res) {
 	if (updatecollection.date && updatecollection.time) {
 		updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
 	}
-
-	console.log('updatecollection', updatecollection);
+	updatecollection = str2json.convert(updatecollection);
 
 	CoreController.updateModel({
 		model: Collection,

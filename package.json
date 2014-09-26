@@ -62,6 +62,7 @@
     "response-time": "2.0.0",
     "semver": ">=2.3.0",
     "serve-favicon": "2.0.0",
+    "string-to-json": "^0.1.0",
     "superagent": "~0.18.2",
     "util-extend": "1.0.1",
     "utils-merge": "1.0.0",
