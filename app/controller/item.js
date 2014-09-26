@@ -56,7 +56,7 @@ var index = function (req, res) {
 
 var create = function (req, res) {
 	var newitem = CoreUtilities.removeEmptyObjectValues(req.body);
-	newitem.name = CoreUtilities.makeNiceName(newitem.title);
+	newitem.name = (newitem.name) ? newitem.name : CoreUtilities.makeNiceName(newitem.title);
 	newitem.itemauthorname = req.user.username;
 	newitem.primaryauthor = req.user._id;
 	newitem.authors = [req.user._id];
@@ -78,7 +78,7 @@ var create = function (req, res) {
 var update = function (req, res) {
 	var updateitem = CoreUtilities.removeEmptyObjectValues(req.body);
 
-	updateitem.name = CoreUtilities.makeNiceName(updateitem.title);
+	updateitem.name = (updateitem.name) ? updateitem.name : CoreUtilities.makeNiceName(updateitem.title);
 	if (!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
 		updateitem.primaryasset = updateitem.assets[0];
 	}

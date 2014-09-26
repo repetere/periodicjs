@@ -59,7 +59,7 @@ var index = function (req, res) {
 
 var create = function (req, res) {
 	var newcollection = CoreUtilities.removeEmptyObjectValues(req.body);
-	newcollection.name = CoreUtilities.makeNiceName(newcollection.title);
+	newcollection.name = (newcollection.name) ? newcollection.name : CoreUtilities.makeNiceName(newcollection.title);
 	newcollection.itemauthorname = req.user.username;
 	newcollection.primaryauthor = req.user._id;
 	newcollection.authors = [req.user._id];
@@ -79,7 +79,7 @@ var create = function (req, res) {
 
 var update = function (req, res) {
 	var updatecollection = CoreUtilities.removeEmptyObjectValues(req.body);
-	updatecollection.name = CoreUtilities.makeNiceName(updatecollection.title);
+	updatecollection.name = (updatecollection.name) ? updatecollection.name : CoreUtilities.makeNiceName(updatecollection.title);
 	if (updatecollection.items && updatecollection.items.length > 0) {
 		for (var x in updatecollection.items) {
 			updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
