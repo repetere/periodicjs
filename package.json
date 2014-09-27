@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture. Periodic defines a lightweight application wrapper for Express, that provides a simple mechanism to handle theming, routes and extensions. Unlike some traditional content management solutions, there are no assumptions made about your data model, which allows for information hierarchies and taxonomies to be extremely malleable.",
-  "version": "1.8.6",
+  "version": "1.8.75",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
