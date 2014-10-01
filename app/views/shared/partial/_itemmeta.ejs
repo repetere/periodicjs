@@ -1,0 +1,16 @@
+<div class="_pea-row _pea-form _pea-container-forminput">
+	<div class="_pea-col-span12 _pea-text-small _pea-content-meta">
+		<% if(metaauthor) {
+				if(metaauthor.firstname && metaauthor.lastname){
+					%>by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.firstname %>  <%= metaauthor.lastname %></a> <%
+				}
+				else{
+					%>by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.username %></a> &mdash; <%
+				}
+			}
+			if(metadate){
+					var d = new Date(metadate);
+					%> <%= (d.getMonth()+1) %>/<%= d.getDate() %>/<%= d.getFullYear() %> <%
+			}%>
+	</div>
+</div>

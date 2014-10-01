@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Index</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Index</h1>
+    
+    
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Periodic <a href="https://travis-ci.org/typesettin/periodicjs"><img src="https://travis-ci.org/typesettin/periodicjs.svg?branch=master" alt="Build Status"></a> <a href="http://badge.fury.io/js/periodicjs"><img src="https://badge.fury.io/js/periodicjs.svg" alt="NPM version"></a></h1>
+<h2>Overview</h2>
+<p>Periodic is an enterprise information and content management system, designed for you to be able to quickly implement your own information architecture. Periodic is a lightweight application wrapper for <a href="http://expressjs.com/"><em>Express</em></a>, that provides a simple mechanism to handle theming, routes and extensions. </p>
+<p>Unlike some traditional content management solutions, there are no assumptions made about your data model, which allows for information hierarchies and taxonomies to be extremely malleable.</p>
+<h2>Installation</h2>
+<p>Periodic runs with a production grade process manager called PM2, this allows for you application to restart only when necessary and runs as a process in the background. PM2 is a prerequesite for running periodic</p>
+<pre><code>$ npm install pm2 -g #for running the application
+$ npm install nodemon -g #for extention and module development
+$ npm install periodicjs@latest 
+$ cd periodicjs
+$ sudo mongod # you need mongo running
+$ npm start #this starts the pm2 daemon process
+$ open http://localhost:8786 # there's a login link at the bottom for the admin, or http://localhost:8786/p-admin</code></pre>
+<h2>Usage</h2>
+<h3>Content</h3>
+<ul>
+<li><strong>Entities</strong><ul>
+<li><strong>Items</strong><ul>
+<li>Items are the base content entity, when used in conjunction with content types you can define new types of items with additional custom fields.</li>
+<li>Complicated taxonomies and information hierarchies can be created by classifying items with content types, tags and categories.</li>
+<li>The Drupal equivalent would be a node, the wordpress equivalent would be a post.</li>
+</ul>
+</li>
+<li><strong>Collections</strong><ul>
+<li>Collections are a generic grouping of items, they can be used to provide gallery, listicle, and slide show functionilty</li>
+<li>Like Items, you can create complicated information heirarchies by using custom attributes with content types, tags and categories.</li>
+<li>In equivalent content management systems, collections are like galleries.</li>
+</ul>
+</li>
+<li><strong>(Media) Assets</strong><ul>
+<li>Assets are uploaded files, you can create complicated information models and add additional fields with content types</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Attributes &amp; Taxonomies</strong><ul>
+<li><strong>Categories</strong><ul>
+<li>Categories are an entity attribute that can be nested into logical heirachries, additional attributes can be added with content types</li>
+</ul>
+</li>
+<li><strong>Tags</strong><ul>
+<li>Tags are an entity attribute that can be nested into logical heirachries, additional attributes can be added with content types</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Classification</strong><ul>
+<li><strong>Content Types</strong><ul>
+<li>Content Types are collections of additional attributes that can be added to Entities and Attributes.</li>
+<li>Content Types can be used to create &quot;podcasts&quot;, &quot;images&quot;, &quot;slideshows&quot;, &quot;listicles&quot;, &quot;videos&quot; and more by adding additional properties to items, collections, assets, tags and categories.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Extensions</h3>
+<p>Extensions are simply node modules that are name-spaced by the extension name prefix 'periodicjs.ext.'. The index.js file is loaded during runtime if the extension is enabled.</p>
+<p>Any part of the application can be overwritten via extensions; routes, controllers, views, etc.</p>
+<h4>Installing extensions</h4>
+<pre><code>$ npm install periodicjs.ext.myextension</code></pre>
+<pre><code>$ npm install periodicjs.ext.myextension --skip-install-periodic-ext</code></pre>
+<p>You can install extensions from the command line via npm, by installing with the <em>--skip-install-periodic-ext</em> command line argument, your extension configuration file will not be modified.</p>
+<h4>Configuring, Removing, Enabling and Disabling extensions</h4>
+<p>The state of all extensions are in the <code>content/extensions/extensions.json</code> configuration file and is loaded at runtime.</p>
+<p>Extensions can be enabled/disabled/removed either manually from <em>extensions.json</em> or from the admin extension interface.</p>
+<h3>Configuration</h3>
+<h4>Application Configuration</h4>
+<p>Your application loads <code>content/config/config.json</code> at runtime, here you can modify the runtime environment (or via the command line).</p>
+<p><code>config.json</code> will override any settings in your environment specific configurations</p>
+<h4>Database Configuration</h4>
+<p>The Database configuration settings are located in <code>content/config/database.js</code>, <code>database.js</code> is loaded at runtime. You can modify the environment specific database configuration here.</p>
+<h3>Runtimes</h3>
+<p>Periodic runs with a production grade process manager called PM2, this allows for you application to restart only when necessary and runs as a process in the background.</p>
+<h4>Starting Periodic</h4>
+<pre><code>$ npm start</code></pre>
+<p>Periodic runs with npm, the exact commands are in package.json.</p>
+<pre><code>$ npm start -p [port] -e [environment]</code></pre>
+<p>The run time environment can be modified with command line arguments for the specific environment and port settings. <strong>WARNING: anything in config.json will override these settings</strong></p>
+<pre><code>$ npm run nd</code></pre>
+<p>For development purposes only, the nd script runs with nodemon</p>
+<h4>Stopping Periodic</h4>
+<pre><code>$ npm stop$ pm2 kill periodicjs</code></pre>
+<p>Both npm stop and pm2 kill will stop the periodic daemon.</p>
+<h4>Restarting Periodic</h4>
+<pre><code>$ npm run reload</code></pre>
+<p>npm run reload, reloads the pm2 daemon.</p>
+<h3>Upgrades</h3>
+<pre><code>$ cd path/to/periodic/directory 
+$ npm install periodicjs@latest --upgrade</code></pre>
+<p>Running npm install periodicjs with the <strong>--upgrade</strong> command line argument installs periodic without modifying which extensions you have installed.</p>
+<h2>Development</h2>
+<p><em>Make sure you have grunt installed</em></p>
+<pre><code>$ npm install -g grunt-cli</code></pre>
+<p>Then run grunt watch</p>
+<pre><code>$ grunt watch</code></pre>
+<h2>API</h2>
+<h3><a href="https://github.com/typesettin/typesettin/periodicjs/blob/master/doc/api.md"><em>FULL API DOCUMENTATION</em></a></h3>
+<!---
+
+##Notes
+* The Navigation Module uses Node's event Emitter for event handling.
+* The less file is located in `resources/stylesheets`
+
+### About Linotypes
+
+The linotype machine (/ˈlaɪnətaɪp/ lyn-ə-typ) is a "line casting" machine used in printing. Along with letterpress printing, linotype was the industry standard for newspapers, magazines and posters from the late 19th century to the 1960s and 70s, when it was largely replaced by offset lithography printing and computer typesetting. 
+
+The name of the machine comes from the fact that it produces an entire line of metal type at once, hence a line-o'-type, a significant improvement over the previous industry standard, i.e., manual, letter-by-letter typesetting using a composing stick and drawers of letters.  The linotype machine operator enters text on a 90-character keyboard. 
+
+The machine assembles matrices, which are molds for the letter forms, in a line. The assembled line is then cast as a single piece, called a slug, of type metal in a process known as "hot metal" typesetting. The matrices are then returned to the type magazine from which they came, to be reused later. This allows much faster typesetting and composition than original hand composition in which operators place down one pre-cast metal letter, punctuation mark or space at a time.  
+
+The machine revolutionized typesetting and with it especially newspaper publishing, making it possible for a relatively small number of operators to set type for many pages on a daily basis. Before Mergenthaler's invention of the linotype in 1884, no daily newspaper in the world had more than eight pages.
+
+--></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-config.html">config</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#periodic">periodic</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 21 2014 03:15:42 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

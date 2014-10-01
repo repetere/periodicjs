@@ -1,0 +1,8 @@
+<h1><a href="/article/<%= item.name %>"><%= item.title %></a></h1>
+<% 
+	var metaauthor = item.primaryauthor;
+	var metadate = item.createdat;
+%>
+<% include _itemmeta %>
+<div class="content"><%- item.content %></div>
+<hr>

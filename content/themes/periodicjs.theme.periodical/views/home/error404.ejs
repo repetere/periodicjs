@@ -1,0 +1,17 @@
+<% include ../shared/header %>
+<body class="periodical-page">
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+	<section class="container">
+			<article class="content">
+			<h3 style="word-wrap:break-word;">Sorry page not found!</h3>
+			<pre style="overflow:auto"><%- JSON.stringify(flash_messages) %></pre>
+			<p>page: <%= url%></p>
+			</article>
+	</section>
+<% include ../shared/footer %>

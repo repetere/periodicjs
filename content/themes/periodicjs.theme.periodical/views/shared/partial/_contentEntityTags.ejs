@@ -1,0 +1,12 @@
+	<% if(contentEnitity.tags && contentEnitity.tags.length >0){
+		%> <div class="tags">
+		<small>
+		<strong>Tags: </strong> <%
+			for(var x = 0; x < contentEnitity.tags.length; x++){
+				%>
+				<a href="/browse/tags/<%- contentEnitity.tags[x].name %>">#<%- contentEnitity.tags[x].title %></a><% if(x !== contentEnitity.tags.length-1){%>,<%}%> 
+				<%
+			} %>
+			</small>
+			</div><%
+		} %>	

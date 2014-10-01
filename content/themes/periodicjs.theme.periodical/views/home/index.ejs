@@ -1,0 +1,24 @@
+<% pagedata.title="Home"%>
+<% include ../shared/header %>
+<body class=" item periodical-collection" >
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+	<%
+		var collection = layoutdata.collections[0];
+		collection.items = null;
+	  var contentEnitity = collection ;
+	  contentContentAttributes = (contentEnitity.contenttypeattributes && contentEnitity.contenttypeattributes.periodical)? true : false; 
+	  contentContentCollectionAttributes = (contentEnitity.contenttypeattributes && contentEnitity.contenttypeattributes['periodical-collection'])? true : false; 
+	  showCollectionContent = false;
+	  linkCollectionTitle = true;
+	  showCollectionMediaLink = true;
+	  %>
+
+		<% include ../collection/_collectionListViewScroll %>
+	<% include ../shared/partial/_footermeta %>
+<% include ../shared/footer %>

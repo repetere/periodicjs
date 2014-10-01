@@ -1,0 +1,21 @@
+<div class="titlelink">
+	<%if(contentEnitity.entitytype === 'collection' || (typeof useCollectionLink !=='undefined' && useCollectionLink===true)){%>
+	<h2><a href="/collection/<%- contentEnitity.name %>"><%- contentEnitity.title  %></a></h2>
+	<%}
+		else if(contentTitleLink){%>
+	<h2><a href="/item/<%- contentEnitity.name %>"><%- contentEnitity.title  %></a></h2>
+	<%}
+	else {%>
+	<h2><%- contentEnitity.title  %></h2>
+		<%}%>
+		<small>
+			<% if(contentContentAttributes){ %>
+				<p class="subline"><%- contentEnitity.contenttypeattributes.periodical.dek %></p>
+			<% } %>
+			<%
+				var metaauthor = contentEnitity.primaryauthor;
+				var metadate = contentEnitity.createdat;
+			%>
+			<% include _itemmeta %>
+		</small>
+</div>

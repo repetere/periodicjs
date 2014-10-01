@@ -1,0 +1,29 @@
+<div id="list-view-container" class="list-view-scroll-container">
+  <div id="list-view-scroll" class="list-view-scroll">
+    <% 
+    var iterateObjectArray = collection.items || layoutdata.items;
+    if(iterateObjectArray && iterateObjectArray.length>0){
+      iterateObjectArray.forEach(function(itemObj,index){
+        var contentEnitity = itemObj.item || itemObj;
+        if(contentEnitity){
+          contentContentAttributes = (typeof contentEnitity.contenttypeattributes !== 'undefined' && contentEnitity.contenttypeattributes.periodical)? true : false; 
+          contentBgImgUseDefault = true;
+          contentTitleLink = true;
+          main_content_side=(index%2==0) ? "left":"right";
+          main_media_side=(index%2==0) ? "right":"left";%>
+          <section id="list-view-scroll-section-<%- (index+1) %>" class="list-view-scroll-section list-view-scroll">
+            <% if (main_content_side=="left"){%>
+              <% include _collectionListViewScroll_article %>
+              <% include _collectionListViewScroll_figure %>
+              <%
+              }
+              else{%>
+            <% include _collectionListViewScroll_figure %>
+            <% include _collectionListViewScroll_article %>
+            <%}%>
+          </section>
+        <%}
+      });
+    }%>
+  </div>
+</div>

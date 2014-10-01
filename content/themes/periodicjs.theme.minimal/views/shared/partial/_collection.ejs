@@ -1,0 +1,38 @@
+<div class="width100">
+	<h2><a href="/collection/<%= collection.name %>"><%= collection.title %></a></h2>
+	<% var metaauthor = collection.primaryauthor;
+		var metadate = collection.createdat; 
+		if(!fullcollection){%>
+	<% include _itemmeta %>
+	<%}
+	if(request.params.pagenumber){
+		var fullitem=true;
+		var collectionitem=true;
+		try{
+			var item = collection.items[request.params.pagenumber-1].item;
+					%><% include _item %><%
+		}
+		catch(e){%><%= e.message %><%}%>
+		<%
+	}
+	else{
+		%>
+		<div class="width100"><%= collection.content %></div>
+		<%
+	}
+	if(fullcollection){%>
+		<% if(collection.items && collection.items.length>0){
+			if(!request.params.pagenumber){
+				%>
+				<div><a href="/collection/<%= collection.name %>/page/1">read more &rarr;</a></div>
+				<%
+			}
+			%>
+			<%- viewhelper.getPaginationHtml({
+					pagecount : collection.items.length,
+					urlbase : "/collection/"+collection.name+"/page",
+					pagenumber : request.params.pagenumber
+				}) %>
+		<%}%>
+	<%}%>
+</div>

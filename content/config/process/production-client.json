@@ -1,0 +1,20 @@
+{
+  "apps":[{
+    "name"              : "periodicjs",
+    "script"            : "index.js",
+    "instances"         : "6",
+    "min_uptime"        : "1000", 
+    "max_restarts"      : "10", 
+    "cron_restart"      : "3 */4 * * * *",
+    "watch"             : ["content/config/config.json","content/config/database.js", "content/extensions/restart.json"],
+    "error_file"        : "logs/production-err.log",
+    "out_file"          : "logs/production-out.log",
+    "pid_file"          : "processes/production-child.pid",
+    "merge_logs"        : "true",
+    "one_launch_only"   : "true",
+    "exec_mode"         : "cluster_mode",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }]
+}

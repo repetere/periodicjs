@@ -1,0 +1,23 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="container">
+		<% if(collections && collections.length>0){%>
+		<div class="row">
+		<%
+			collections.forEach(function(collection){%>
+        <div class="col-6 col-sm-6 col-lg-4">
+          <% include ../shared/partial/_collection_micro %>
+        </div>
+			<%});%>
+		</div>
+		<%
+		}
+		else{%>
+			<div class="row">
+        <div class="jumbotron">
+          <h1>No collections!</h1>
+        </div>
+      </div>
+		<%}%>
+	</div>
+<% include ../shared/footer %>

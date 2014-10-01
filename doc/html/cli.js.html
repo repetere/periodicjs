@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app/lib/cli.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: app/lib/cli.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>'use strict';
+
+var config = require('./config'),
+	path = require('path'),
+	database = require('../../content/config/database'),
+	appLog = require('../../content/config/logger'),
+	logger,
+	db,
+	mongoose,
+	periodicResources,
+	appconfig;
+/**
+ * A simple node script for running Command Line Argument based tasks from periodic controllers and extensions
+ * @author Yaw Joseph Etse
+ * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
+ * @license MIT
+ * @module cli
+ * @requires module:./config
+ * @requires module:path
+ * @requires module:../../content/config/database
+ * @requires module:../../content/config/logger
+ * @param {object} argv command line arguments from optimist
+ */
+var cli = function (argv) {
+	var models,
+		periodic = {};
+	/**
+	 * @description loads the periodic configuration options
+	 * @private
+	 * @memberOf cli
+	 */
+	var loadConfig = function () {
+		/** creates instance of configuration object
+		 * @instance
+		 */
+		appconfig = new config();
+		/** environment based database configuration
+		 * @instance
+		 */
+		db = database[appconfig.settings().application.environment];
+		/** instance of mongoose connection based on configuration settings in content/config/database.js
+		 * @instance
+		 */
+		mongoose = db.mongoose;
+	};
+	/**
+	 * @description loads application logger configuration
+	 */
+	var useLogger = function () {
+		/** winston logger instance based on  configuration settings in content/config/logger.js
+		 * @instance
+		 */
+		logger = new appLog(appconfig.settings().application.environment);
+		periodic.logger = logger;
+		process.on('uncaughtException', function (err) {
+			logger.error(err.message);
+		});
+	};
+	var setupMongoDB = function () {
+		/** load mongoose models
+		 * @param {object} periodic the same instance configuration object
+		 */
+		models = require('../../content/config/model')({
+			mongoose: db.mongoose,
+			dburl: db.url,
+			debug: appconfig.settings().debug,
+			periodic: periodic
+		});
+	};
+	var setResources = function () {
+		/**
+		 * @description application reference passed to controllers
+		 * @instance
+		 */
+		periodicResources = {
+			logger: logger,
+			settings: appconfig.settings(),
+			db: db,
+			mongoose: mongoose
+		};
+	};
+	var loadScript = function (argv) {
+		if (argv.controller) {
+			try {
+				var cliController = require('../controller/' + argv.controller)(periodicResources);
+				cliController.cli(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
+		else if (argv.extension) {
+			try {
+				var cliExtension = require(path.resolve(process.cwd(), './node_modules/periodicjs.ext.' + argv.extension + '/cli'))(periodicResources);
+				cliExtension.cli(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
+		else {
+			logger.error('no valid arguments', argv);
+			process.exit(0);
+		}
+		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+		//node index.js --cli --controller theme --install true --name "typesettin/periodicjs.theme.minimal" --version latest
+		// var Item = mongoose.model('Item');
+		// Item.find({}).limit(2).exec(function(err,items){ if(err){ console.error(err); } else{ console.info(items); } });
+	};
+
+	var init = function (argv) {
+		loadConfig();
+		useLogger();
+		setupMongoDB();
+		mongoose.connection.on('open', function () {
+			setResources();
+			loadScript(argv);
+		});
+	};
+
+	init(argv);
+};
+
+module.exports = cli;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-config.html">config</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#periodic">periodic</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 21 2014 03:15:42 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

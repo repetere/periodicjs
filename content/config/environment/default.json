@@ -1,0 +1,28 @@
+{
+	"name": "Periodic Enterprise Content Management",
+	"application":{
+		"port": "8283",
+		"environment": "development"
+	},
+	"cookies":{
+		"cookieParser":"defaultcookiejson"
+	},
+	"sessions":{
+		"enabled":true,
+		"type":"default"
+	},
+	"expressCompression": true,
+	"templateengine": "ejs",
+	"templatefileextension": "ejs",
+	"crsf": true,
+  "debug": true,
+  "status":"install",
+  "serverfromemail": "periodic@localhost",
+	"oauth":{
+		"facebook":{
+			"appid": "NEEDFBAPPID",
+			"appsecret": "NEEDFBAPPSECRET",
+			"callbackurl": "http://local.getperiodic.com:8080/auth/facebook/callback"
+		}
+	}
+}

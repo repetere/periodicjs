@@ -1,0 +1,110 @@
+.header-container{
+	z-index:10000;
+	position: fixed;
+	.ha-header {
+		h1 {
+			font-size: 1.3em;
+			img {
+				max-height: 1.5em;
+				top: 0.2em;
+				// position: relative;
+			}
+			a{
+				position: relative;
+				z-index: 10000;
+				color:#fff;
+			}
+			&:hover{
+				font-size: 1.5em;
+			}
+		}
+		nav{
+			a{
+				color: #ececec;
+				-webkit-transition: all 0.3s;
+				-moz-transition: all 0.3s;
+				transition: all 0.3s;
+				font-size:0.7em;
+				&:hover{
+					color: #fff;
+					font-size:0.9em;
+				}
+			}
+		}
+		&.ha-header-rotateBack{
+			height: 5em;
+			top: 0.5em;
+			padding-left: 0.5em;
+			padding-right: 0.5em;
+		}	
+		&.ha-header-rotate{
+			height: 6em;
+			top: 0.5em;
+			padding-left: 0.5em;
+			padding-right: 0.5em;
+		}	
+		&.ha-header-small{
+			height: 5em;
+			top: 0.5em;
+			padding-left: 0.5em;
+			padding-right: 0.5em;
+		}	
+		&.ha-header-subshow{
+			height: 5em;
+			top: 0.5em;
+			padding-left: 0.5em;
+			padding-right: 0.5em;
+			.ha-header-bottom{
+				height:2em;
+				nav{
+					text-align: right;
+					max-width:100%;
+					padding-left: 0.5em;
+					padding-right: 0.5em;
+				}
+			}
+			.ha-header-perspective {
+				// height:5em;
+				// top:0.5em;
+			}
+		}	
+	}
+}
+
+.ha-header-perspective > div {
+	background: #000;
+	-webkit-transition: background 0.9s ease-out;
+	-moz-transition: background 0.9s ease-out;
+	transition: background 0.9s ease-out;
+}
+
+.ha-header-perspective {
+	-webkit-perspective: 40em;
+	-moz-perspective: 40em;
+	perspective: 40em;
+
+	.ha-header-bottom {
+		background: #333;
+	-webkit-transition: background 0.9s ease-out;
+	-moz-transition: background 0.9s ease-out;
+	transition: background 0.9s ease-out;
+		&.transparent{
+			background: none;
+		}
+		a{
+			color:#333;
+		}
+	}
+}
+
+.ha-header.transparent{
+	.ha-header-perspective > div {
+		background: none;
+	}
+
+	.ha-header-perspective {
+		.ha-header-bottom {		
+			background: none;
+		}
+	}
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app/lib/staticviewhelper.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: app/lib/staticviewhelper.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/*
+ * periodic
+ * http://github.com/typesettin/periodic
+ *
+ * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
+ */
+
+'use strict';
+
+/**
+ * A module that contains view helpers for ejs views.
+ * @author Yaw Joseph Etse
+ * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
+ * @license MIT
+ * @module staticViewHelper
+ */
+module.exports = {
+	/** ejs view helper
+	 * @exports staticViewHelper/viewhelper
+	 * @memberOf staticViewHelper
+	 */
+	viewhelper: {
+		/** helper function that returns the html for a javascript tag
+		 * @param {object} scripts either a string or an object/array of file paths
+		 * @returns {string} script tag for javascript
+		 */
+		includeJavaScripts: function (scripts) {
+			function scriptTag(scriptsrc) {
+				return '&lt;script type="text/javascript" src="' + scriptsrc + '">&lt;/script>';
+			}
+
+			if (scripts) {
+				switch (typeof scripts) {
+				case 'array':
+				case 'object':
+					var scriptHtml = '';
+					for (var x in scripts) {
+						scriptHtml += scriptTag(scripts[x]);
+					}
+					return scriptHtml;
+					// break;
+				case 'string':
+					return scriptTag(scripts);
+					// break;
+				}
+			}
+		},
+		/** helper function exposes a server javascript object to the client
+		 * @param {object} obj server object for the client
+		 * @param {object} nameOfClientObj name of exposed server object for the client
+		 * @returns {string} javascript statement that contains server javascript object
+		 */
+		passObjToClient: function (obj, nameOfClientObj) {
+			return 'var ' + nameOfClientObj + ' = ' + (JSON.stringify(obj));
+		},
+		/** helper function that generates html for pagination
+		 * @param {object} options view options
+		 * @returns {string} html for pagination
+		 */
+		getPaginationHtml: function (options) {
+			var pagecount = options.pagecount,
+				urlbase = options.urlbase,
+				currentpage = (options.pagenumber) ? options.pagenumber - 1 : false,
+				paginationHtml = '&lt;div class="_pea-row _pea-form _pea-container-forminput">';
+			paginationHtml += '&lt;div class="_pea-col-span12 _pea-text-right _pea-text-small">';
+			paginationHtml += 'pages ';
+			for (var x = 0; x &lt; pagecount; x++) {
+				paginationHtml += ' &lt;a href="' + urlbase + '/' + (x + 1) + '" class="_pea-button';
+				if (currentpage === x) {
+					paginationHtml += ' _pea-color-info ';
+				}
+				paginationHtml += '">' + (x + 1) + '&lt;/a>';
+			}
+			paginationHtml += '&lt;/div>';
+			paginationHtml += '&lt;/div>';
+			return paginationHtml;
+		}
+	},
+	/** theme file path view helpers for ejs
+	 * @exports staticViewHelper/themehelper
+	 * @memberOf staticViewHelper
+	 */
+	themehelper: {
+		/** helper function to get file paths for extension resources
+		 * @param {object} ext name of periodic extension
+		 * @param {object} resource file path of extension resource
+		 * @returns {string} file path for extension resource
+		 */
+		extensionPublicResourcePath: function (ext, resource) {
+			var addPath = (resource) ? resource + '/' : '';
+			return '/extensions/' + ext + '/' + addPath;
+		},
+		/** helper function to get file paths for theme resources
+		 * @param {object} ext name of periodic theme
+		 * @param {object} resource file path of theme resource
+		 * @returns {string} file path for theme resource
+		 */
+		themePublicResourcePath: function (ext, resource) {
+			var addPath = (resource) ? resource + '/' : '';
+			return '/themes/' + ext + '/' + addPath;
+		}
+	}
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-config.html">config</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#periodic">periodic</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 21 2014 03:15:42 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

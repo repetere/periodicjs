@@ -1,0 +1,30 @@
+	<footer>
+		<div class="_pea-container">
+			<div class="_pea-row _pea-text-small">
+				<div class="_pea-col-span6">Thank you for curating with <a href="http://getperiodic.org" target="_blank">Periodic</a></div>
+				<div class="_pea-col-span6 _pea-text-right">
+					Version
+					<% if(pagedata && periodic){%><%= periodic.version %><%}%> | <a href="/p-admin">Admin</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script type="text/javascript">
+	window.addEventListener("load",function(e){
+		<%
+			var delayMultiplier=0;
+			for(x in flash_messages){
+				if(delayMultiplier === 0){
+					%>
+					if(typeof ribbonNotification === "object"){
+						ribbonNotification.showRibbon( '<%=flash_messages[x].join(". ") %>',8000,'<%= x %>');
+					}						
+					<%
+				}
+				delayMultiplier++;
+			};
+		%>
+	},false);
+	</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<p>
+<% if(metaauthor){
+	%>
+	by 
+	<strong>
+	<% if(metaauthor.firstname && metaauthor.lastname){
+			%><a href="/browse/authors/<%= metaauthor.username %>"><%= metaauthor.firstname %>  <%= metaauthor.lastname %></a> <%
+		}
+		else if(contentEnitity.itemauthorname){
+			%><a href="/browse/authors/<%= contentEnitity.itemauthorname %>"><%= contentEnitity.itemauthorname %></a> <%
+		}
+		else{
+			%><a href="/browse/authors/<%= metaauthor.username %>"><%= metaauthor.username %></a> <%
+		} %>
+	</strong> 
+	&#8212;
+	<%
+	}%>
+	 Posted 	
+	<% if(contentEnitity.categories && contentEnitity.categories.length >0){
+		%> in <%
+			for(var x = 0; x < contentEnitity.categories.length; x++){
+				%>
+				<strong><a href="/browse/categories/<%- contentEnitity.categories[x].name %>"><%- contentEnitity.categories[x].title %></a></strong><% if(x === contentEnitity.categories.length-2){%> &<%}else{%>,<%}%> 
+				<%
+			}
+		} %>
+	on 
+	<strong>
+	<%
+	if(metadate){
+			var d = new Date(metadate);
+			%> <%= (d.getMonth()+1) %>/<%= d.getDate() %>/<%= d.getFullYear() %> <%
+	}
+	%>
+	</strong>
+	<% if(typeof showCollectionMediaLink !== 'undefined' && showCollectionMediaLink === true){ %>
+    <strong><a href="/<%if(contentEnitity.entitytype === 'collection'){%>collection<%}else{%>item<%}%>/<%- contentEnitity.name%>">read &raquo;</a></strong>
+  <% }%>
+</p>

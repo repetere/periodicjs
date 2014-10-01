@@ -1,0 +1,31 @@
+<% var pagedisplaytype = "content" %>
+<% var pagedisplaytypeSpecific = "item" %>
+<% include ../shared/header %>
+<% contentEnitity = item;
+	contentContentAttributes = (contentEnitity.contenttypeattributes && contentEnitity.contenttypeattributes.periodical)? true : false;
+	contentEffect = (contentContentAttributes && contentEnitity.contenttypeattributes.periodical.effect) ? contentEnitity.contenttypeattributes.periodical.effect : false;
+
+	contentStatic = (contentContentAttributes && contentEnitity.contenttypeattributes.periodical.static) ? contentEnitity.contenttypeattributes.periodical.static : false; 
+  contentBgImgUseDefault = true;
+	contentTitleLink = true;
+	contentDimBigImg = true;
+	%>
+<body class="item ">
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+	<% if(contentEffect){ %>
+		<div id="container" class="container intro-effect-<%=contentEnitity.contenttypeattributes.periodical.effect%> <%if(contentStatic ==='true'){%>modify<%}%>  ">
+	<%}
+	else{%>
+		<div id="container" class="container intro-effect-push <%if(contentStatic ==='true'){%>modify<%}%>">
+	<%}%>
+<!-- < % include ../shared/nav % > -->
+<% include ../shared/partial/_contentEntityHeader %>
+<% include ../shared/partial/_contentEntityTitle %>
+<% include ../shared/partial/_contentEntityArticle %>
+<% include ../shared/footer %>

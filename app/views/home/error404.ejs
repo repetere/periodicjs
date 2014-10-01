@@ -1,0 +1,12 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="_pea-container _pea-theme">
+		<div class="_pea-row">
+			<div class="_pea-document">
+					<h3 style="word-wrap:break-word;">Sorry page not found!</h3>
+					<pre style="overflow:auto"><%- JSON.stringify(flash_messages) %></pre>
+					<p>page: <%= url%></p>
+			</div>
+		</div>
+	</div>
+<% include ../shared/footer %>

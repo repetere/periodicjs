@@ -1,0 +1,16 @@
+<%
+var useContentEntityImage = contentEnitity.primaryasset && contentEnitity.primaryasset.fileurl;
+%>
+style="
+background-image: url(<% if(useContentEntityImage){%>
+'<%- contentEnitity.primaryasset.fileurl  %>'
+ <%}
+ else if(typeof contentBgImgUseDefault==='undefined' || contentBgImgUseDefault){%>
+'<%= locals.themehelper.themePublicResourcePath('periodicjs.theme.periodical','img') %>/periodical-default-background.jpg'
+ <%} %>);
+background-repeat: no-repeat;
+-webkit-background-size: cover;
+background-size: cover;
+background-position: 50% 50%;
+background-color:#ececec;
+";

@@ -1,0 +1,196 @@
+configuration log Wed Oct 01 2014 20:20:25 GMT-0300 (ART)- 
+ creating admin user
+updated conf settings
+seeding database
+{ oauth: 
+   { facebook: 
+      { appid: 'NEEDFBAPPID',
+        appsecret: 'NEEDFBAPPSECRET',
+        callbackurl: 'http://local.getperiodic.com:8080/auth/facebook/callback' } },
+  serverfromemail: 'periodic@localhost',
+  status: 'install',
+  debug: true,
+  crsf: true,
+  templatefileextension: 'ejs',
+  templateengine: 'ejs',
+  expressCompression: true,
+  sessions: { enabled: true, type: 'default' },
+  cookies: { cookieParser: 'defaultcookiejson' },
+  application: { port: '8786', environment: 'development' },
+  name: 'Periodic Enterprise Content Management[dev]',
+  version: '1.8.76' }
+
+[0;36mMongoose:[0m users.ensureIndex({ email: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, sparse: [33mfalse[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m items.ensureIndex({ publishat: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m }  
+
+[0;36mMongoose:[0m collections.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m volumes.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m categories.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m contenttypes.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m tags.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m userroles.ensureIndex({ userroleid: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m userprivileges.ensureIndex({ userprivilegeid: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m usergroups.ensureIndex({ usergroupid: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m settings.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m usergroups.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m users.ensureIndex({ username: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, sparse: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m items.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m collections.ensureIndex({ publishat: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m }  
+
+[0;36mMongoose:[0m userroles.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+[0;36mMongoose:[0m users.ensureIndex({ userid: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, sparse: [33mtrue[39m }  
+
+[0;36mMongoose:[0m volumes.ensureIndex({ publishat: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m }  
+
+[0;36mMongoose:[0m userprivileges.ensureIndex({ name: [33m1[39m }) { safe: [90mundefined[39m, background: [33mtrue[39m, unique: [33mtrue[39m }  
+
+documents.length 62
+
+0 documents[x] { datatype: 'user',
+  datadocument: 
+   { email: 'testuser1@example.com',
+     username: 'testuser1',
+     accounttype: 'invalid',
+     userasset: 'not actual image',
+     userroles: [ 900, 500, 300, 600, 100 ] } } Users []
+
+1 documents[x] { datatype: 'user',
+  datadocument: 
+   { email: 'staff@example.com',
+     username: 'staff',
+     activated: false,
+     accounttype: 'invalid',
+     userasset: '-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-icon-12036-png',
+     userroles: [ 200, 300 ] } } Users [ { email: 'testuser1@example.com',
+    username: 'testuser1',
+    accounttype: 'invalid',
+    userasset: 'not actual image',
+    userroles: [ 900, 500, 300, 600, 100 ],
+    apikey: '1412205626097_pCDoJ!zy8ajrh6XB' } ]
+
+model - asset.js - 542c8c3a51eaa149838604d2 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m assets.insert({ __v: [33m0[39m, status: [32m'VALID'[39m, createdat: new Date("Wed, 01 Oct 2014 23:20:26 GMT"), assettype: [32m'image/png'[39m, contenttypes: [], _id: ObjectId("542c8c3a51eaa149838604d2"), name: [32m'-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-periodic-solid-png'[39m, fileurl: [32m'/uploads/files/2014/6/10/53be08b48b526fc60ebfe0ce-periodic-solid.png'[39m, locationtype: [32m'local'[39m, attributes: { periodicDirectory: [32m'/public/uploads/files/2014/6/10'[39m, periodicPath: [32m'/public/uploads/files/2014/6/10/53be08b48b526fc60ebfe0ce-periodic-solid.png'[39m, periodicFilename: [32m'53be08b48b526fc60ebfe0ce-periodic-solid.png'[39m } }) {}  
+
+model - asset.js - 542c8c3a51eaa149838604d3 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m assets.insert({ __v: [33m0[39m, status: [32m'VALID'[39m, createdat: new Date("Wed, 01 Oct 2014 23:20:26 GMT"), assettype: [32m'image/png'[39m, contenttypes: [], _id: ObjectId("542c8c3a51eaa149838604d3"), name: [32m'-uploads-files-2014-6-10-53be08b48b526fc60ebfe0ce-icon-12036-png'[39m, fileurl: [32m'/uploads/files/2014/6/10/53be08b48b526fc60ebfe0ce-icon-12036.png'[39m, locationtype: [32m'local'[39m, attributes: { periodicDirectory: [32m'/public/uploads/files/2014/6/10'[39m, periodicPath: [32m'/public/uploads/files/2014/6/10/53be08b48b526fc60ebfe0ce-icon-12036.png'[39m, periodicFilename: [32m'53be08b48b526fc60ebfe0ce-icon-12036.png'[39m } }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d4 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d4"), name: [32m'can-view-content'[39m, title: [32m'can view content'[39m, userprivilegeid: [33m110[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d5 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d5"), name: [32m'can-view-themes'[39m, title: [32m'can view themes'[39m, userprivilegeid: [33m120[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d6 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d6"), name: [32m'can-view-extensions'[39m, title: [32m'can view extensions'[39m, userprivilegeid: [33m130[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d7 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d7"), name: [32m'can-view-settings'[39m, title: [32m'can view settings'[39m, userprivilegeid: [33m140[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d8 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d8"), name: [32m'can-view-users'[39m, title: [32m'can view users'[39m, userprivilegeid: [33m150[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604d9 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604d9"), name: [32m'can-view-uac'[39m, title: [32m'can view uac'[39m, userprivilegeid: [33m160[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604da has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604da"), name: [32m'can-add-content'[39m, title: [32m'can add content'[39m, userprivilegeid: [33m310[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604db has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604db"), name: [32m'can-add-themes'[39m, title: [32m'can add themes'[39m, userprivilegeid: [33m320[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604dc has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604dc"), name: [32m'can-add-extensions'[39m, title: [32m'can add extensions'[39m, userprivilegeid: [33m330[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604dd has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604dd"), name: [32m'can-add-users'[39m, title: [32m'can add users'[39m, userprivilegeid: [33m350[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604de has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604de"), name: [32m'can-add-uac'[39m, title: [32m'can add uac'[39m, userprivilegeid: [33m360[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604df has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604df"), name: [32m'can-modify-content'[39m, title: [32m'can modify content'[39m, userprivilegeid: [33m710[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e0 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e0"), name: [32m'can-modify-other-content'[39m, title: [32m'can modify other content'[39m, userprivilegeid: [33m715[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e1 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e1"), name: [32m'can-modify-themes'[39m, title: [32m'can modify themes'[39m, userprivilegeid: [33m720[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e2 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e2"), name: [32m'can-modify-extensions'[39m, title: [32m'can modify extensions'[39m, userprivilegeid: [33m730[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e3 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e3"), name: [32m'can-modify-settings'[39m, title: [32m'can modify settings'[39m, userprivilegeid: [33m740[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e4 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e4"), name: [32m'can-modify-users'[39m, title: [32m'can modify users'[39m, userprivilegeid: [33m750[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e5 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e5"), name: [32m'can-modify-uac'[39m, title: [32m'can modify uac'[39m, userprivilegeid: [33m760[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e6 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e6"), name: [32m'can-delete-content'[39m, title: [32m'can delete content'[39m, userprivilegeid: [33m910[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e7 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e7"), name: [32m'can-delete-other-content'[39m, title: [32m'can delete other content'[39m, userprivilegeid: [33m915[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e8 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e8"), name: [32m'can-delete-themes'[39m, title: [32m'can delete themes'[39m, userprivilegeid: [33m920[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604e9 has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604e9"), name: [32m'can-delete-extensions'[39m, title: [32m'can delete extensions'[39m, userprivilegeid: [33m930[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604ea has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604ea"), name: [32m'can-delete-users'[39m, title: [32m'can delete users'[39m, userprivilegeid: [33m950[39m }) {}  
+
+model - userprivilege.js - 542c8c3a51eaa149838604eb has been validated (but not saved yet)
+
+[0;36mMongoose:[0m userprivileges.insert({ __v: [33m0[39m, _id: ObjectId("542c8c3a51eaa149838604eb"), name: [32m'can-delete-uac'[39m, title: [32m'can delete uac'[39m, userprivilegeid: [33m960[39m }) {}  
+
+model - asset.js - 542c8c3a51eaa149838604d2 has been saved
+
+Seeding Data Started: 72ms
+
+[31merror[39m: err name=MongoError, code=11000, err=insertDocument :: caused by :: 11000 E11000 duplicate key error index: periodic_dev.userprivileges.$userprivilegeid_1  dup key: { : 140 }
+
+installed, config.conf updated 
+  ====##CONFIGURED##====

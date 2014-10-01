@@ -1,0 +1,16 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="_pea-container _pea-theme">
+		<h1> Search for: <small><%= request.query.search %></small></h1>
+		<% if(docs && docs.length>0){
+			var fullitem=false;
+			var collectionitem=false;
+			docs.forEach(function(item){%>
+				<% include ../shared/partial/_item %>
+			<%});
+		}
+		else{%>
+			no docs
+		<%}%>
+	</div>
+<% include ../shared/footer %>

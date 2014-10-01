@@ -1,0 +1,23 @@
+<% include ../shared/header %>
+<% var useNavTransparency = false; %>
+<body class=" item periodical-collection" >
+	<% include ../shared/partial/_navTransparency %>
+	<div class="periodical-page-border top"></div>
+	<div class="periodical-page-border right"></div>
+	<div class="periodical-page-border left"></div>
+	<div class="periodical-page-border bottom"></div>
+	<div class="header-container">
+    <% include ../shared/nav %>
+  </div>
+  <% var collection = {}; 
+  	collection.items = items;
+  	var useCollectionLink = false; %>
+  	<div class="listing-container">
+  		
+	  	<article class="content">	
+			  <h1 class="collection">Items</h1>
+			  <% include ../collection/_collectionListViewScroll_item %>
+	  	</article>
+
+  	</div>
+<% include ../shared/footer %>

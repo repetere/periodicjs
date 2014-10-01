@@ -1,0 +1,18 @@
+<% 
+if(metaauthor) {
+	if(metaauthor.firstname && metaauthor.lastname){%>
+		<p class="lead">by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.firstname %>  <%= metaauthor.lastname %></a></p><%
+	}
+	else{ %>
+		<p class="lead">by <a href="/author/<%= metaauthor.username %>"><%= metaauthor.username %></a></p><%
+	}
+}%>
+<hr>
+<%
+if(metadate){
+	var d = new Date(metadate); %> 
+	<p> 
+		<span class="glyphicon glyphicon-time"></span> Posted on <%= (d.getMonth()+1) %>/<%= d.getDate() %>/<%= d.getFullYear() %></p>
+	 <%
+}%>
+<hr>
