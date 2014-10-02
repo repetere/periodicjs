@@ -15,5 +15,9 @@
     "enabled": true,
     "type": "mongo"
   },
-  "crsf": true
+  "crsf": true,
+  "sessions": {
+    "enabled": true,
+    "type": "default"
+  }
 }

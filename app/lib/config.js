@@ -24,7 +24,8 @@ var fs = require('fs-extra'),
  * @requires module:optimist
  * @throws {Error} If missing configuration files
  * @todo to do later
- */
+ **/
+
 var Config = function () {
 
 var appEnvironment = argv.e,
@@ -56,7 +57,6 @@ var appEnvironment = argv.e,
 		this[name] = value;
 	}.bind(this);
 
-
 	/**
 	 * augments the configuration information
 	 * @augments {object} appends instance configuration
@@ -76,6 +76,7 @@ var appEnvironment = argv.e,
 			file = config + '.json';
 		return path.join(directory, file);
 	};
+
 
 	/**
 	 * loads app configuration
