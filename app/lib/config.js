@@ -8,9 +8,9 @@
 'use strict';
 
 var fs = require('fs-extra'),
-	extend = require('util-extend'),
-	path = require('path'),
-	argv = require('optimist').argv;
+		extend = require('util-extend'),
+		path = require('path'),
+		argv = require('optimist').argv;
 /**
  * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
@@ -18,14 +18,16 @@ var fs = require('fs-extra'),
  * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
  * @license MIT
  * @module config
+ * @constructor Config
  * @requires module:fs
  * @requires module:util-extent
  * @requires module:optimist
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var config = function () {
-	var appEnvironment = argv.e,
+var Config = function () {
+
+var appEnvironment = argv.e,
 		appPort = argv.p,
 		packagejsonFileJSON,
 		configurationFile,
@@ -36,7 +38,7 @@ var config = function () {
 		configurationDefaultFileJSON,
 		config = {};
 
-	/** 
+	/**
 	 * gets the configuration information
 	 * @return { object } current instance configuration
 	 */
@@ -44,7 +46,7 @@ var config = function () {
 		return config;
 	};
 
-	/** 
+	/**
 	 * augments the configuration information
 	 * @augments {object} appends instance configuration
 	 * @param {string} name name of new configuration setting
@@ -55,7 +57,7 @@ var config = function () {
 	}.bind(this);
 
 
-	/** 
+	/**
 	 * augments the configuration information
 	 * @augments {object} appends instance configuration
 	 * @param {string} name name of new configuration setting
@@ -65,7 +67,7 @@ var config = function () {
 		config[name] = value;
 	}.bind(this);
 
-	/** 
+	/**
 	 * generate file path for config files
 	 * @return { string } file path for config file
 	 */
@@ -75,7 +77,7 @@ var config = function () {
 		return path.join(directory, file);
 	};
 
-	/** 
+	/**
 	 * loads app configuration
 	 * @throws {Error} If missing config file
 	 * @this {object} configuration instance
@@ -129,4 +131,4 @@ var config = function () {
 	this.init();
 };
 
-module.exports = config;
+module.exports = Config;

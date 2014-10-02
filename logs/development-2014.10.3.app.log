@@ -8,3 +8,10 @@
 {"level":"info","message":"Old Periodical Content Type","timestamp":"2014-10-01T23:20:28.266Z"}
 {"level":"info","message":"Updated Periodical Content Type","timestamp":"2014-10-01T23:20:28.266Z"}
 {"level":"info","message":"Your instance of Periodicjs 1.8.76 is up to date with the current version 1.8.76","timestamp":"2014-10-01T23:20:30.493Z"}
+{"level":"info","message":"Express server listening on port 8786","timestamp":"2014-10-01T23:37:40.539Z"}
+{"level":"info","message":"Running in environment: development","timestamp":"2014-10-01T23:37:40.540Z"}
+{"level":"info","message":"Old Periodical Content Type","timestamp":"2014-10-01T23:37:40.678Z"}
+{"level":"info","message":"Updated Periodical Content Type","timestamp":"2014-10-01T23:37:40.679Z"}
+{"level":"info","message":"Old Periodical Collection Content Type","timestamp":"2014-10-01T23:37:40.683Z"}
+{"level":"info","message":"Updated Periodical Collection Content Type","timestamp":"2014-10-01T23:37:40.683Z"}
+{"level":"info","message":"Your instance of Periodicjs 1.8.76 is up to date with the current version 1.8.76","timestamp":"2014-10-01T23:37:43.208Z"}

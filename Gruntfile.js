@@ -25,7 +25,7 @@ module.exports = function (grunt) {
 				reporter: 'spec'
 			},
 			all: {
-				src: 'test/**/*.js'
+				src: 'test/unit/**/*.js'
 			}
 		},
 		jshint: {
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
 				'index.js',
 				'app/**/*.js',
 				'!app/doc/**/*.js',
-				'test/**/*.js',
+				'test/unit/**/*.js',
 				'package.json',
 				'config/**/*.js',
 				'node_modules/periodicjs*/index.js',
