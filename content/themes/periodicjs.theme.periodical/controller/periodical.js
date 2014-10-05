@@ -127,6 +127,9 @@ var setCacheHeader = function(req,res,next){
 	var httpPathName = req._parsedUrl.pathname;
 	if(appSettings.themeSettings && appSettings.themeSettings.settings){
 		switch(true){
+			case (/p-admin\//gi.test(httpPathName)):
+				logger.silly('no cache on admin');
+				break;
 			case httpPathName==='/':
 				logger.silly('using home cache headers');
 				res.header('Cache-Control', appSettings.themeSettings.settings['home cache control settings']);
