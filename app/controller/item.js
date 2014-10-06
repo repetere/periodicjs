@@ -4,6 +4,7 @@ var moment = require('moment'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
 	str2json = require('string-to-json'),
+	async = require('async'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -218,49 +219,86 @@ var loadFullItem = function (req, res, next) {
 	});
 };
 
+var loadItemsWithCount = function (req, res, next) {
+	req.headers.loaditemcount = true;
+	next();
+};
+
+var loadItemsWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.itemsperpage || req.query.limit || 15;
+	next();
+};
+
 var loadItems = function (req, res, next) {
-	var query,
-		offset = req.query.offset,
+	var pagenum = req.query.pagenum - 1;
+	if(pagenum && pagenum<1){ 
+		pagenum = 0;
+	}
+	var parallelTask = {},
+		query = {},
 		sort = req.query.sort,
-		limit = req.query.limit,
+		limit = req.query.limit || req.query.itemsperpage,
+		offset = req.query.offset || (pagenum*limit),
 		population = 'tags categories authors contenttypes primaryasset primaryauthor',
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		orQuery = [];
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
 	}
-	else {
+
+	if(orQuery.length>0){
 		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
+			$or: orQuery
 		};
 	}
 
-	CoreController.searchModel({
-		model: Item,
-		query: query,
-		sort: sort,
-		limit: limit,
-		offset: offset,
-		population: population,
-		callback: function (err, documents) {
-			if (err) {
+	parallelTask.itemscount = function(cb){
+		if(req.headers.loaditemcount){
+			Item.count(query, function( err, count){
+				cb(err, count);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+	parallelTask.itemsquery = function(cb){
+		CoreController.searchModel({
+			model: Item,
+			query: query,
+			sort: sort,
+			limit: limit,
+			offset: offset,
+			population: population,
+			callback: function (err, documents) {
+				cb(err,documents);
+			}
+		});
+	};
+
+	async.parallel(
+		parallelTask,
+		function(err,results){
+			if(err){
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
-			else {
-				req.controllerData.items = documents;
+			else{
+				// console.log(results);
+				req.controllerData.items = results.itemsquery;
+				req.controllerData.itemscount = results.itemscount;
 				next();
 			}
-		}
-	});
+	});	
 };
 
 var controller = function (resources) {
@@ -280,6 +318,8 @@ var controller = function (resources) {
 		loadFullItemData: loadFullItemData,
 		loadItem: loadItem,
 		loadFullItem: loadFullItem,
+		loadItemsWithDefaultLimit: loadItemsWithDefaultLimit,
+		loadItemsWithCount:loadItemsWithCount,
 		loadItems: loadItems
 	};
 };
