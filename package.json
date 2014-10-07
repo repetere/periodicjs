@@ -85,8 +85,10 @@
     "grunt-jsdoc": "^0.6.0",
     "grunt-newer": ">=0.7.0",
     "grunt-simple-mocha": ">=0.4.0",
+    "grunt-strip-code": "^0.1.2",
     "jsdoc": "3.3.0-alpha5",
     "mocha": "1.9.0",
+    "testem": "^0.6.22",
     "uglify-js": "^2.4.15",
     "uglifyify": "^2.5.0"
   },

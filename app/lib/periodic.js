@@ -65,6 +65,8 @@ var periodic = function () {
 	 * @memberOf periodic
 	 */
 	var init = {};
+
+	
 	/**
 	 * @description loads the periodic configuration options
 	 */

@@ -8,13 +8,20 @@ var path = require('path'),
 
 describe('A module that represents a periodic app',function () {
 
+  // beforeEach(function () {
+  //   periodic = periodicjs();
+  // });
+
   describe('The periodic object',function () {
-    var periodic = periodicjs
     it('should return an object',function (done) {
-      expect( periodic() ).to.be.an('object');
+      expect( periodicjs() ).to.be.an('object');
       done();
     });
+
     it('should have the need config properties', function (done) {
+      var periodicConf = periodicjs;
+      console.log(periodicConf.init())
+      expect(periodicConf).to.have.property('name');
       done();
     });
   });
