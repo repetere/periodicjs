@@ -22,6 +22,10 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'User'
 	},
+	entitytype: {
+		type: String,
+		'default': 'asset'
+	},
 	userid: ObjectId,
 	username: String,
 	assettype: {

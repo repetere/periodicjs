@@ -1,12 +1,14 @@
 'use strict';
 
-var Utilities = require('periodicjs.core.utilities'),
+var async = require('async'),
+	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controllerhelper'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
 	mongoose,
 	Category,
+	User,
 	logger;
 
 var create = function (req, res) {
@@ -106,48 +108,143 @@ var remove = function (req, res) {
 	}
 };
 
-var loadCategories = function (req, res, next) {
-	var query,
-		offset = req.query.offset,
+var loadCategoriesWithCount = function (req, res, next) {
+	req.headers.loadcategorycount = true;
+	next();
+};
+
+var loadCategoriesWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.categoriesperpage || req.query.limit || 15;
+	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
+	next();
+};
+
+var getCategoriesData = function(options){
+	var parallelTask = {},
+ 		req = options.req,
+		res = options.res,
+ 		pagenum = req.query.pagenum - 1,
+		next = options.next,
+		query = options.query,
 		sort = req.query.sort,
-		limit = req.query.limit,
-		// population = 'categories collections authors primaryauthor',
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
+		callback = options.callback,
+		limit = req.query.limit || req.query.categoriesperpage,
+		offset = req.query.offset || (pagenum*limit),
+		population = options.population,
+		orQuery = options.orQuery,
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		parallelFilterTask = {};
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
-	}
-	else {
-		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
-		};
+
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
 	}
 
-	CoreController.searchModel({
-		model: Category,
-		query: query,
-		sort: sort,
-		limit: limit,
-		offset: offset,
-		population: 'contenttypes parent',
-		callback: function (err, documents) {
-			if (err) {
+	parallelFilterTask.authors = function(cb){
+		if(req.query.filter_authors){
+			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
+
+			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	async.parallel(
+		parallelFilterTask,
+		function(err,filters){
+			if(err){
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
-			else {
-				req.controllerData.categories = documents;
-				next();
+			else{
+				if(filters.authors){
+					var aarray =[];
+					for(var w in filters.authors){
+						aarray.push(filters.authors[w]._id);
+					}
+					orQuery.push({'authors':{$in:aarray}});
+				}
+
+				if(orQuery.length>0){
+					query = {
+						$and: orQuery
+					};
+				}
+
+				parallelTask.categoriescount = function(cb){
+					if(req.headers.loadcategorycount){
+						Category.count(query, function( err, count){
+							cb(err, count);
+						});
+					}
+					else{
+						cb(null,null);
+					}
+				};
+				parallelTask.categoriesquery = function(cb){
+					CoreController.searchModel({
+						model: Category,
+						query: query,
+						sort: sort,
+						limit: limit,
+						offset: offset,
+						population: population,
+						callback: function (err, documents) {
+							cb(err,documents);
+						}
+					});
+				};
+
+				async.parallel(
+					parallelTask,
+					function(err,results){
+						if(err){
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else{
+							// console.log(results);
+							req.controllerData.categories = results.categoriesquery;
+							req.controllerData.categoriescount = results.categoriescount;
+							if(callback){
+								callback(req, res);
+							}
+							else{
+								next();								
+							}
+						}
+				});	
 			}
-		}
+	});
+};
+
+var loadCategories = function (req, res, next) {
+	var query,
+		population= 'contenttypes parent',
+		orQuery = [];
+
+	getCategoriesData({
+		req: req,
+		res: res,
+		next: next,
+		population: population,
+		query: query,
+		orQuery: orQuery
 	});
 };
 
@@ -247,8 +344,12 @@ var controller = function (resources) {
 	CoreController = new ControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
 	Category = mongoose.model('Category');
+	User = mongoose.model('User');
 
 	return {
+		getCategoriesData: getCategoriesData,
+		loadCategoriesWithDefaultLimit: loadCategoriesWithDefaultLimit,
+		loadCategoriesWithCount:loadCategoriesWithCount,
 		loadCategories: loadCategories,
 		loadCategory: loadCategory,
 		loadChildren: loadChildren,

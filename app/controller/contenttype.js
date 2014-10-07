@@ -1,12 +1,14 @@
 'use strict';
 
-var CoreControllerHelper = require('periodicjs.core.controllerhelper'),
+var async = require('async'),
+	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
 	Utilities = require('periodicjs.core.utilities'),
 	CoreController,
 	CoreUtilities,
 	appSettings,
 	mongoose,
 	Contenttype,
+	User,
 	logger;
 
 var create = function (req, res) {
@@ -121,48 +123,144 @@ var removeitem = function (req, res) {
 	});
 };
 
-var loadContenttypes = function (req, res, next) {
-	var query,
-		offset = req.query.offset,
+var loadContenttypeWithCount = function (req, res, next) {
+	req.headers.loadcontenttypecount = true;
+	next();
+};
+
+var loadContenttypeWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.contenttypesperpage || req.query.limit || 15;
+	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
+	next();
+};
+
+var getContenttypeData = function(options){
+	var parallelTask = {},
+ 		req = options.req,
+		res = options.res,
+ 		pagenum = req.query.pagenum - 1,
+		next = options.next,
+		query = options.query,
 		sort = req.query.sort,
-		limit = req.query.limit,
-		population = 'author',
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
+		callback = options.callback,
+		limit = req.query.limit || req.query.contenttypesperpage,
+		offset = req.query.offset || (pagenum*limit),
+		population = options.population,
+		orQuery = options.orQuery,
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		parallelFilterTask = {};
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
-	}
-	else {
-		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
-		};
+
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
 	}
 
-	CoreController.searchModel({
-		model: Contenttype,
-		query: query,
-		sort: sort,
-		limit: limit,
-		offset: offset,
-		population: population,
-		callback: function (err, documents) {
-			if (err) {
+	parallelFilterTask.authors = function(cb){
+		if(req.query.filter_authors){
+			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
+
+			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	async.parallel(
+		parallelFilterTask,
+		function(err,filters){
+			if(err){
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
-			else {
-				req.controllerData.contenttypes = documents;
-				next();
+			else{
+				if(filters.authors){
+					var aarray =[];
+					for(var w in filters.authors){
+						aarray.push(filters.authors[w]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'author':{$in:aarray}});
+				}
+
+				if(orQuery.length>0){
+					query = {
+						$and: orQuery
+					};
+				}
+
+				parallelTask.contenttypescount = function(cb){
+					if(req.headers.loadcontenttypecount){
+						Contenttype.count(query, function( err, count){
+							cb(err, count);
+						});
+					}
+					else{
+						cb(null,null);
+					}
+				};
+				parallelTask.contenttypesquery = function(cb){
+					CoreController.searchModel({
+						model: Contenttype,
+						query: query,
+						sort: sort,
+						limit: limit,
+						offset: offset,
+						population: population,
+						callback: function (err, documents) {
+							cb(err,documents);
+						}
+					});
+				};
+
+				async.parallel(
+					parallelTask,
+					function(err,results){
+						if(err){
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else{
+							// console.log(results);
+							req.controllerData.contenttypes = results.contenttypesquery;
+							req.controllerData.contenttypescount = results.contenttypescount;
+							if(callback){
+								callback(req, res);
+							}
+							else{
+								next();								
+							}
+						}
+				});	
 			}
-		}
+	});
+};
+
+var loadContenttypes = function (req, res, next) {
+	var query,
+		population = 'author',
+		orQuery = [];
+
+	getContenttypeData({
+		req: req,
+		res: res,
+		next: next,
+		population: population,
+		query: query,
+		orQuery: orQuery
 	});
 };
 
@@ -221,8 +319,12 @@ var controller = function (resources) {
 	CoreController = new CoreControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
 	Contenttype = mongoose.model('Contenttype');
+	User = mongoose.model('User');
 
 	return {
+		getContenttypeData: getContenttypeData,
+		loadContenttypeWithDefaultLimit: loadContenttypeWithDefaultLimit,
+		loadContenttypeWithCount:loadContenttypeWithCount,
 		loadContenttypes: loadContenttypes,
 		loadContenttype: loadContenttype,
 		create: create,
