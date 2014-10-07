@@ -75,6 +75,12 @@ module.exports = function (grunt) {
 				options: {}
 			}
 		},
+
+		strip_code:{
+			src: 'app/**/*.js',
+			options:{}
+		},
+
 		uglify: {
 			options: {
 				sourceMap: true,
@@ -151,4 +157,5 @@ module.exports = function (grunt) {
 	grunt.registerTask('doc', 'jsdoc');
 	grunt.registerTask('test','simplemocha');
 	grunt.registerTask('default', ['jshint', 'browserify', 'doc', 'uglify', 'simplemocha', 'less']);
+	grunt.registerTask('strip',['strip_code'])
 };

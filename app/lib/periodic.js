@@ -65,8 +65,6 @@ var periodic = function () {
 	 * @memberOf periodic
 	 */
 	var init = {};
-
-	
 	/**
 	 * @description loads the periodic configuration options
 	 */
@@ -89,6 +87,8 @@ var periodic = function () {
 		 * @instance
 		 */
 		mngse = db.mongoose;
+
+		
 	};
 	/**
 	 * @description loads application logger configuration
@@ -329,7 +329,10 @@ var periodic = function () {
 
 	return {
 		app: app,
-		port: app.get('port')
+		port: app.get('port'),
+		/* test-code */
+		init:init
+		/* end-test-code */
 	};
 };
 
