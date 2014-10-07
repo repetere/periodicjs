@@ -1,0 +1,38 @@
+{
+  "apps" : [{
+    "name"              : "periodicjs",
+    "script"            : "index.js",
+    "instances"         : "1",
+    "min_uptime"        : "200", 
+    "max_restarts"      : "10", 
+    "cron_restart"      : "1 0 * * *",
+    "watch"             : ["./content/extensions/restart.json","./content/config/database.js"],
+    "error_file"        : "logs/development-err.log",
+    "out_file"          : "logs/development-out.log",
+    "pid_file"          : "processes/development-child.pid",
+    "merge_logs"        : "true",
+    "one_launch_only"   : "true",
+    "exec_mode"         : "fork_mode",
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }],
+  "deploy" : {
+    "production" : {
+      "user" : "node",
+      "host" : "212.83.163.1",
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:repo.git",
+      "path" : "/var/www/production",
+      "post-deploy" : "npm run deploysync"
+    },
+    "dev" : {
+      "user" : "node",
+      "host" : "212.83.163.1",
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:repo.git",
+      "path" : "/var/www/development",
+      "post-deploy" : "npm run deploysync"
+    }
+  }
+}

@@ -27,7 +27,8 @@
     "reload": "pm2 reload periodicjs",
     "list": "pm2 list periodicjs",
     "test": "mocha -R spec --recursive",
-    "postinstall": "node scripts/install.js"
+    "postinstall": "node scripts/install.js",
+    "deploysync": "node scripts/deploymentsync.js"
   },
   "dependencies": {
     "async": "0.9.0",
