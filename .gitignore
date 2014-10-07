@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 node_modules/
 logs/
-=======
 .DS_store
 *.DS_store
 lib-cov
@@ -43,4 +41,3 @@ build/Release
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
 public/uploads/files
->>>>>>> 365c630e39fdf91c4a87f5cc967fecf2e9c7597c

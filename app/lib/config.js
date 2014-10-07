@@ -69,14 +69,23 @@ var appEnvironment = argv.e,
 
 	/**
 	 * generate file path for config files
+	 * @param {string} the name of the file in content/config/environment
 	 * @return { string } file path for config file
 	 */
-	this.getConfigFilePath = function (config) {
+	this.getConfigFilePath = function (filename) {
 		var directory = path.resolve(__dirname, '../../content/config/environment/'),
-			file = config + '.json';
+			file = filename + '.json';
 		return path.join(directory, file);
 	};
 
+	/**
+	* Get The package.json version
+	* @return { string } file path for config file
+	*/
+	this.__packageJsonFileVersion = function () {
+		var packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		return packagejsonFileJSON.version
+	}
 
 	/**
 	 * loads app configuration
@@ -84,8 +93,8 @@ var appEnvironment = argv.e,
 	 * @this {object} configuration instance
 	 */
 	this.init = function () {
-		/** get info from package.json */
-		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		// /** get info from package.json */
+		// packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
 
 		/** load user config file: content/config/config.json */
 		configurationOverrideFileJSON = fs.readJSONSync(configurationOverrideFile);
@@ -114,7 +123,7 @@ var appEnvironment = argv.e,
 			config = extend(config, configurationFileJSON);
 		}
 		config = extend(config, configurationOverrideFileJSON);
-		config.version = packagejsonFileJSON.version;
+		config.version = this.__packageJsonFileVersion();
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;

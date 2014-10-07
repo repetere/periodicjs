@@ -25,11 +25,8 @@ module.exports = function (grunt) {
 				reporter: 'spec'
 			},
 			all: {
-<<<<<<< HEAD
 				src: 'test/unit/**/*.js'
-=======
-				src: 'test/**/*.js'
->>>>>>> 365c630e39fdf91c4a87f5cc967fecf2e9c7597c
+				// src: 'test/**/*.js'
 			}
 		},
 		jshint: {
@@ -41,11 +38,8 @@ module.exports = function (grunt) {
 				'index.js',
 				'app/**/*.js',
 				'!app/doc/**/*.js',
-<<<<<<< HEAD
 				'test/unit/**/*.js',
-=======
 				'test/**/*.js',
->>>>>>> 365c630e39fdf91c4a87f5cc967fecf2e9c7597c
 				'package.json',
 				'config/**/*.js',
 				'node_modules/periodicjs*/index.js',
@@ -155,6 +149,6 @@ module.exports = function (grunt) {
 		}
 	}
 	grunt.registerTask('doc', 'jsdoc');
-
-	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
+	grunt.registerTask('test','simplemocha');
+	grunt.registerTask('default', ['jshint', 'browserify', 'doc', 'uglify', 'simplemocha', 'less']);
 };

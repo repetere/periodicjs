@@ -57,7 +57,7 @@ var periodic = function () {
 		dburl,
 		mngse;
 	//https://github.com/expressjs/timeout
-	//https://github.com/expressjs/vhost 
+	//https://github.com/expressjs/vhost
 
 
 	/** initializes periodic express configuration options
@@ -74,7 +74,7 @@ var periodic = function () {
 		 */
 		appconfig = new Config();
 		app.set('port', appconfig.settings().application.port);
-		app.set('env', appconfig.settings().application.environment);
+		app.set('env', 	appconfig.settings().application.environment);
 		/** environment based database configuration
 		 * @instance
 		 */
