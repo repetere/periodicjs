@@ -12,6 +12,10 @@ var async = require('async'),
 	mongoose,
 	Item,
 	Collection,
+	Category,
+	Tag,
+	User,
+	Contenttypes,
 	logger;
 
 var show = function (req, res) {
@@ -312,49 +316,204 @@ var loadCollection = function (req, res, next) {
 	});
 };
 
-var loadCollections = function (req, res, next) {
-	var query,
-		offset = req.query.offset,
+var loadCollectionsWithCount = function (req, res, next) {
+	req.headers.loadcollectioncount = true;
+	next();
+};
+
+var loadCollectionsWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.collectionsperpage || req.query.limit || 15;
+	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
+	next();
+};
+
+var getCollectionsData = function(options){
+	var parallelTask = {},
+ 		req = options.req,
+		res = options.res,
+ 		pagenum = req.query.pagenum - 1,
+		next = options.next,
+		query = options.query,
 		sort = req.query.sort,
-		limit = req.query.limit,
-		population = 'tags categories authors contenttypes primaryauthor primaryasset items.item',
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
+		callback = options.callback,
+		limit = req.query.limit || req.query.collectionsperpage,
+		offset = req.query.offset || (pagenum*limit),
+		population = options.population,
+		orQuery = options.orQuery,
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		parallelFilterTask = {};
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
-	}
-	else {
-		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
-		};
+
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
 	}
 
-	CoreController.searchModel({
-		model: Collection,
-		query: query,
-		sort: sort,
-		limit: limit,
-		offset: offset,
-		population: population,
-		callback: function (err, documents) {
-			if (err) {
+	parallelFilterTask.contenttypes = function(cb){
+		if(req.query.filter_contenttypes){
+			var contenttypesArray = (typeof req.query.filter_contenttypes==='string') ? req.query.filter_contenttypes.split(',') : req.query.filter_contenttypes;
+			Contenttypes.find({'name':{$in:contenttypesArray}},'_id', function( err, contenttypeids){
+				cb(err, contenttypeids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};	
+	parallelFilterTask.categories = function(cb){
+		if(req.query.filter_categories){
+			var categoriesArray = (typeof req.query.filter_categories==='string') ? req.query.filter_categories.split(',') : req.query.filter_categories;
+
+			Category.find({'name':{$in:categoriesArray}},'_id', function( err, categoryids){
+				cb(err, categoryids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+	parallelFilterTask.tags = function(cb){
+		if(req.query.filter_tags){
+			var tagsArray = (typeof req.query.filter_tags==='string') ? req.query.filter_tags.split(',') : req.query.filter_tags;
+
+			Tag.find({'name':{$in:tagsArray}},'_id', function( err, tagids){
+				cb(err, tagids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+	parallelFilterTask.authors = function(cb){
+		if(req.query.filter_authors){
+			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
+
+			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	async.parallel(
+		parallelFilterTask,
+		function(err,filters){
+			if(err){
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
-			else {
-				// console.log(documents);
-				req.controllerData.collections = documents;
-				next();
+			else{
+				// console.log('filters',filters);
+				if(filters.contenttypes){
+					var ctarray =[];
+					for(var z in filters.contenttypes){
+						ctarray.push(filters.contenttypes[z]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'contenttypes':{$in:ctarray}});
+				}
+				if(filters.categories){
+					var catarray =[];
+					for(var y in filters.categories){
+						catarray.push(filters.categories[y]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'categories':{$in:catarray}});
+				}
+				if(filters.tags){
+					var tarray =[];
+					for(var x in filters.tags){
+						tarray.push(filters.tags[x]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'tags':{$in:tarray}});
+				}
+				if(filters.authors){
+					var aarray =[];
+					for(var w in filters.authors){
+						aarray.push(filters.authors[w]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'authors':{$in:aarray}});
+				}
+
+				if(orQuery.length>0){
+					query = {
+						$and: orQuery
+					};
+				}
+
+				parallelTask.collectionscount = function(cb){
+					if(req.headers.loadcollectioncount){
+						Collection.count(query, function( err, count){
+							cb(err, count);
+						});
+					}
+					else{
+						cb(null,null);
+					}
+				};
+				parallelTask.collectionsquery = function(cb){
+					CoreController.searchModel({
+						model: Collection,
+						query: query,
+						sort: sort,
+						limit: limit,
+						offset: offset,
+						population: population,
+						callback: function (err, documents) {
+							cb(err,documents);
+						}
+					});
+				};
+
+				async.parallel(
+					parallelTask,
+					function(err,results){
+						if(err){
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else{
+							// console.log(results);
+							req.controllerData.collections = results.collectionsquery;
+							req.controllerData.collectionscount = results.collectionscount;
+							if(callback){
+								callback(req, res);
+							}
+							else{
+								next();								
+							}
+						}
+				});	
 			}
-		}
+	});
+};
+
+var loadCollections = function (req, res, next) {
+	var query = {},
+		population = 'tags categories authors contenttypes primaryauthor primaryasset items.item',
+		orQuery = [];
+
+	getCollectionsData({
+		req: req,
+		res: res,
+		next: next,
+		population: population,
+		query: query,
+		orQuery: orQuery
 	});
 };
 
@@ -431,6 +590,10 @@ var controller = function (resources) {
 	CoreUtilities = new Utilities(resources);
 	Item = mongoose.model('Item');
 	Collection = mongoose.model('Collection');
+	Contenttypes = mongoose.model('Contenttype');
+	Category = mongoose.model('Category');
+	Tag = mongoose.model('Tag');
+	User = mongoose.model('User');
 
 	return {
 		show: show,
@@ -442,6 +605,9 @@ var controller = function (resources) {
 		cli: cli,
 		loadCollectionData: loadCollectionData,
 		loadCollection: loadCollection,
+		getCollectionsData: getCollectionsData,
+		loadCollectionsWithDefaultLimit: loadCollectionsWithDefaultLimit,
+		loadCollectionsWithCount:loadCollectionsWithCount,
 		loadCollections: loadCollections
 	};
 };

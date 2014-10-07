@@ -7,6 +7,7 @@
 
 'use strict';
 
+var querystring = require('querystring');
 /**
  * A module that contains view helpers for ejs views.
  * @author Yaw Joseph Etse
@@ -53,6 +54,14 @@ module.exports = {
 		passObjToClient: function (obj, nameOfClientObj) {
 			return 'var ' + nameOfClientObj + ' = ' + (JSON.stringify(obj));
 		},
+		/** helper function to get querystring
+		 * @param {object} obj of query params
+		 * @returns {string} query string
+		 */
+		getQueryString: function (obj) {
+			return querystring.stringify(obj);
+		},
+
 		/** helper function that generates html for pagination
 		 * @param {object} options view options
 		 * @returns {string} html for pagination

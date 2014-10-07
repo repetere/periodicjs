@@ -11,6 +11,8 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	MediaAsset,
+	User,
+	Contenttypes,
 	logger;
 
 var upload = function (req, res, next) {
@@ -184,49 +186,163 @@ var remove = function (req, res) {
 	console.log('asset', asset);
 };
 
-var loadAssets = function (req, res, next) {
-	var query,
-		offset = req.query.offset,
+var loadAssetWithCount = function (req, res, next) {
+	req.headers.loadcontenttypecount = true;
+	next();
+};
+
+var loadAssetWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.contenttypesperpage || req.query.limit || 15;
+	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
+	next();
+};
+
+var getAssetData = function(options){
+	var parallelTask = {},
+ 		req = options.req,
+		res = options.res,
+ 		pagenum = req.query.pagenum - 1,
+		next = options.next,
+		query = options.query,
 		sort = req.query.sort,
-		limit = req.query.limit,
-		population = 'author contenttypes',
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
+		callback = options.callback,
+		limit = req.query.limit || req.query.assetsperpage,
+		offset = req.query.offset || (pagenum*limit),
+		population = options.population,
+		orQuery = options.orQuery,
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		parallelFilterTask = {};
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
-	}
-	else {
-		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
-		};
+
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
 	}
 
-	CoreController.searchModel({
-		model: MediaAsset,
-		query: query,
-		sort: sort,
-		limit: limit,
-		offset: offset,
-		population: population,
-		callback: function (err, documents) {
-			if (err) {
+	parallelFilterTask.authors = function(cb){
+		if(req.query.filter_authors){
+			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
+
+			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	parallelFilterTask.contenttypes = function(cb){
+		if(req.query.filter_contenttypes){
+			var contenttypesArray = (typeof req.query.filter_contenttypes==='string') ? req.query.filter_contenttypes.split(',') : req.query.filter_contenttypes;
+			Contenttypes.find({'name':{$in:contenttypesArray}},'_id', function( err, contenttypeids){
+				cb(err, contenttypeids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};	
+	async.parallel(
+		parallelFilterTask,
+		function(err,filters){
+			if(err){
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
 					res: res,
 					req: req
 				});
 			}
-			else {
-				// console.log(documents);
-				req.controllerData.assets = documents;
-				next();
+			else{
+				if(filters.authors){
+					var aarray =[];
+					for(var w in filters.authors){
+						aarray.push(filters.authors[w]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'author':{$in:aarray}});
+				}
+				if(filters.contenttypes){
+					var ctarray =[];
+					for(var z in filters.contenttypes){
+						ctarray.push(filters.contenttypes[z]._id);
+					}
+					// console.log('ctarray',ctarray);
+					orQuery.push({'contenttypes':{$in:ctarray}});
+				}
+				
+				if(orQuery.length>0){
+					query = {
+						$and: orQuery
+					};
+				}
+
+				parallelTask.assetscount = function(cb){
+					if(req.headers.loadcontenttypecount){
+						MediaAsset.count(query, function( err, count){
+							cb(err, count);
+						});
+					}
+					else{
+						cb(null,null);
+					}
+				};
+				parallelTask.assetsquery = function(cb){
+					CoreController.searchModel({
+						model: MediaAsset,
+						query: query,
+						sort: sort,
+						limit: limit,
+						offset: offset,
+						population: population,
+						callback: function (err, documents) {
+							cb(err,documents);
+						}
+					});
+				};
+
+				async.parallel(
+					parallelTask,
+					function(err,results){
+						if(err){
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else{
+							// console.log(results);
+							req.controllerData.assets = results.assetsquery;
+							req.controllerData.assetscount = results.assetscount;
+							if(callback){
+								callback(req, res);
+							}
+							else{
+								next();								
+							}
+						}
+				});	
 			}
-		}
+	});
+};
+
+var loadAssets = function (req, res, next) {
+	var query,
+		population = 'author contenttypes',
+		orQuery = [];
+
+	getAssetData({
+		req: req,
+		res: res,
+		next: next,
+		population: population,
+		query: query,
+		orQuery: orQuery
 	});
 };
 
@@ -286,17 +402,18 @@ var controller = function (resources) {
 	CoreController = new ControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
 	MediaAsset = mongoose.model('Asset');
-	// Collection = mongoose.model('Collection');
+	User = mongoose.model('User');
+	Contenttypes = mongoose.model('Contenttype');
 
 	return {
-		// show:show,
-		// index:index,
 		remove: remove,
 		upload: upload,
 		createassetfile: createassetfile,
 		update: update,
-		// append:append,
 		loadAsset: loadAsset,
+		getAssetData: getAssetData,
+		loadAssetWithDefaultLimit: loadAssetWithDefaultLimit,
+		loadAssetWithCount:loadAssetWithCount,
 		loadAssets: loadAssets,
 		searchResults: searchResults
 	};
