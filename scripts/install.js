@@ -19,16 +19,7 @@ var fs = require('fs-extra'),
 		nodemoduleinstall = typeof process.env.npm_config_install_node_module ==='string',
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
-		newlocation = path.resolve(process.cwd(),'../../periodicjs')//,
-		// schema = {
-	 //    properties: {
-	 //      auto_clean_up: {
-	 //        message: 'Do you want to remove node_modules and copy periodicjs to site root? (Yes or No)',
-	 //        required: true
-	 //      }
-	 //    }
-	 //  }
-	  ;
+		newlocation = path.resolve(process.cwd(),'../../periodicjs');
 
 // install as module // $ npm install periodicjs@latest --install-node-module
 // default install // $ npm install periodicjs@latest 
@@ -36,6 +27,7 @@ var fs = require('fs-extra'),
 // upgrade // $ npm install periodicjs@latest --upgrade-install-periodic
 
 var moveInstalledPeriodic = function(){
+	fs.copySync(path.join(originallocation,'.npmignore'),path.join(originallocation,'.gitignore'));  
 	fs.ensureDir(newlocation,function(err){
 		if(err){
 			console.error(err);
@@ -61,10 +53,15 @@ var moveInstalledPeriodic = function(){
 						else{	
 							console.log('Installed Periodicjs');
 							if(upgradeinstall || upgradeinstallalias){
-								CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+								console.log('Restart to upgrade Periodicjs');
+								console.log('\u0007');
+								CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
 									console.log (text);
-									process.exit(0);
-								});	
+									CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+										console.log (text);
+										process.exit(0);
+									});	
+								});
 							}
 						}
 					});
@@ -75,8 +72,6 @@ var moveInstalledPeriodic = function(){
 };
 
 var upgradePeriodic = function(){
-	CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
-		console.log (text);
 
 		var updatedExtensionJsonFile = path.join(originallocation,'content/extensions/extensions.json'),
 		updatedPeriodicjsExtJson = fs.readJSONSync(updatedExtensionJsonFile),
@@ -158,6 +153,7 @@ var upgradePeriodic = function(){
 
 		fs.removeSync(path.join(originallocation,'content/config/environment')); 
 		fs.removeSync(path.join(originallocation,'content/config/extensions')); 
+		fs.removeSync(path.join(originallocation,'content/config/deployment')); 
 		fs.removeSync(path.join(originallocation,'content/config/process')); 
 		fs.removeSync(path.join(originallocation,'content/config/config.json')); 
 		fs.removeSync(path.join(originallocation,'content/config/database.js')); 
@@ -167,7 +163,6 @@ var upgradePeriodic = function(){
 		fs.removeSync(path.join(originallocation,'logs'));  
 
 		moveInstalledPeriodic(); 
-	});
 };
 
 npm.load({
@@ -181,14 +176,14 @@ npm.load({
 	}
 	else {
 		npm.commands.install([
-			'periodicjs.ext.admin@1.8.5',
+			'periodicjs.ext.admin@1.8.6',
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
 			'periodicjs.ext.install@1.5.3',
-			'periodicjs.ext.login@1.5.4',
+			'periodicjs.ext.login@1.6.0',
 			'periodicjs.ext.mailer@1.5.3',
 			'periodicjs.ext.scheduled_content@1.5.2',
-			'periodicjs.ext.user_access_control@1.5.4',
+			'periodicjs.ext.user_access_control@1.5.5',
 			],
 		function (err 
 			//,data
@@ -203,6 +198,7 @@ npm.load({
 						process.exit(0);
 					}
 					else if(upgradeinstall || upgradeinstallalias){
+						console.log('Upgrade Periodicjs');
 						upgradePeriodic();
 					}
 					else if(nodemoduleinstall){
@@ -211,23 +207,6 @@ npm.load({
 					}
 					else{
 						moveInstalledPeriodic();
-						// console.log('\u0007');
-						// commandprompt.start();
-						// commandprompt.get(schema, function (err, result) {
-						//   if(err){
-						// 		console.error(err);
-						// 		process.exit(0);
-						// 	}
-						// 	else{
-						// 		if(result.auto_clean_up.match(/y/gi)){
-						// 			moveInstalledPeriodic();
-						// 		}
-						// 		else{
-						// 			console.log('Installed Periodicjs');
-						// 			process.exit(0);
-						// 		}
-						// 	}
-						// });
 					}
 				});
 			}
