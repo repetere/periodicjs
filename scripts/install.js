@@ -19,16 +19,7 @@ var fs = require('fs-extra'),
 		nodemoduleinstall = typeof process.env.npm_config_install_node_module ==='string',
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
-		newlocation = path.resolve(process.cwd(),'../../periodicjs')//,
-		// schema = {
-	 //    properties: {
-	 //      auto_clean_up: {
-	 //        message: 'Do you want to remove node_modules and copy periodicjs to site root? (Yes or No)',
-	 //        required: true
-	 //      }
-	 //    }
-	 //  }
-	  ;
+		newlocation = path.resolve(process.cwd(),'../../periodicjs');
 
 // install as module // $ npm install periodicjs@latest --install-node-module
 // default install // $ npm install periodicjs@latest 
@@ -188,7 +179,7 @@ npm.load({
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
 			'periodicjs.ext.install@1.5.3',
-			'periodicjs.ext.login@1.5.4',
+			'periodicjs.ext.login@1.6.0',
 			'periodicjs.ext.mailer@1.5.3',
 			'periodicjs.ext.scheduled_content@1.5.2',
 			'periodicjs.ext.user_access_control@1.5.4',
