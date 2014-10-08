@@ -165,6 +165,7 @@ var upgradePeriodic = function(){
 		// fs.removeSync(path.join(originallocation,'content/extensions/extensions.json'));  
 		fs.removeSync(path.join(originallocation,'processes'));  
 		fs.removeSync(path.join(originallocation,'logs'));  
+		fs.copySync(path.join(originallocation,'.npmignore'),path.join(originallocation,'.gitignore'));  
 
 		moveInstalledPeriodic(); 
 	});

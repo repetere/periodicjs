@@ -36,3 +36,21 @@ build/Release
 node_modules
 !.gitignore
 !*.gitignore
+
+.DS_store
+*.DS_store
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.swp
+*.swo
+*.gz
+*.tempconf
+
+# Logs
+!logs
+*.log
