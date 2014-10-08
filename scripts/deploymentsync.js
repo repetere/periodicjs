@@ -8,7 +8,9 @@
 'use strict';
 
 var async = require('async'),
-		Utilities = require('periodicjs.core.utilities'),
+ 		fs = require('fs-extra'),
+ 		path = require('path'),
+ 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		Extensions = require('periodicjs.core.extensions'),
 		CoreExtensions = new Extensions({}),
@@ -131,10 +133,54 @@ var installMissingExtensions = function(missingExtensions,callback){
 	}
 };
 
+var getThemeName = function(missingExtensionResult,callback){
+	var themename;
+	fs.readJSON(path.resolve(process.cwd(),'content/config/config.json'),function(err,confJSON){
+		if(err){
+			console.log('install theme modules err',err);
+			callback(null,missingExtensionResult,null);
+		}
+		else if(confJSON && confJSON.theme){
+			themename = confJSON.theme;
+			callback(null,missingExtensionResult,themename);
+		}
+		else{
+			callback(null,missingExtensionResult,null);
+		}
+	});
+};
+
+var installThemeModules = function(missingExtensionResult,themename,callback){
+	if(themename){
+		npm.load({
+			'strict-ssl': false,
+			'prefix':path.resolve(process.cwd(),'content/themes',themename),
+			'production': true
+		},function (err) {
+			if (err) {
+				console.log('install theme npm modules err',err);
+				callback(null,missingExtensionResult);
+			}
+			else {
+				npm.commands.install([],
+				function (err) {
+					console.log('theme npm install err',err,path.resolve(process.cwd(),'content/themes',themename));
+					callback(null,missingExtensionResult,'installed theme node modules');
+				});	
+			}
+		});
+	}
+	else{
+		callback(null,missingExtensionResult,'no config.json for theme module install');
+	}
+};
+
 async.waterfall([
 	getInstalledExtensions,
 	getMissingExtensionsFromConfig,
-	installMissingExtensions
+	installMissingExtensions,
+	getThemeName,
+	installThemeModules
 	],
 	function(err,result){	
 		if(err){
