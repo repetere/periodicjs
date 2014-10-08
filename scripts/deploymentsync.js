@@ -7,57 +7,163 @@
 
 'use strict';
 
-var fs = require('fs-extra'),
-		path = require('path'),
+var async = require('async'),
 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
-		nodemodulespath = path.resolve(process.cwd(),'node_modules'),
+		Extensions = require('periodicjs.core.extensions'),
+		CoreExtensions = new Extensions({}),
 		npm = require('npm');
+/** 
+ * @description get list of installed extensions to test against extensions.json to see if during deployment, new extensions were added, if so, then install them
+ */
+var getInstalledExtensions = function(callback){
+	// var installedExtensions =[];
+	// fs.readdir(nodemodulespath,function(err,files){
+	// 	if(err){
+	// 		callback(err,null);
+	// 	}
+	// 	else{
+	// 		if(files && files.length >0){
+	// 			for(var x in files){
+	// 				if(files[x].match(/periodicjs.ext/gi)){
+	// 					installedExtensions.push(files[x]);
+	// 				}
+	// 			}
+	// 			callback(null,installedExtensions);
+	// 		}
+	// 		else{
+	// 			callback(null,null);
+	// 		}
+	// 	}
+	// });
+	npm.load({
+		'strict-ssl': false,
+		'production': true,
+		'json': true,
+		'depth': 0,
+		'prefix':process.cwd(),
+		'skip-install-periodic-ext': true
+	},function (err) {
+		if (err) {
+			callback(err,null);
+		}
+		else {
+			npm.commands.list([],
+			function (err,data) {
+				var installedmod =[];
+				for(var x in data.dependencies){
+					if(data.dependencies[x].name.match(/periodicjs.ext/gi)){
+						installedmod.push(data.dependencies[x].name+'@'+data.dependencies[x].version);					
+					}
+				}
+				// console.log('installedmod',installedmod);
+				callback(null,installedmod);
+			});	
+		}
+	});
+};
 
-fs.readdir(nodemodulespath,function(err,files){
-	if(err){
-		throw new Error(err);
+var getMissingExtensionsFromConfig = function(installedExtensions,callback){
+	/** 
+	 * compare installed extensions with extension from conf
+	 * @param  {array} installedExtensions   array of extensions installed in node modules
+	 * @param  {array} allExtensionsFromConf array of extension objects from extensions.json
+	 * @return {array}                       list of npm modules to install from missing extension list
+	 */
+	var getMissingExtensions = function(installedExtensions,allExtensionsFromConf){
+		var installedExtensionsFromConf=[],
+			missingExtensionsInstallList=[];
+
+		if(installedExtensions && installedExtensions.length>0 && allExtensionsFromConf && allExtensionsFromConf.length>0){
+			for(var y in installedExtensions){
+				for(var z in allExtensionsFromConf){
+					if(installedExtensions[y]===allExtensionsFromConf[z].name+'@'+allExtensionsFromConf[z].version){
+						/**
+						 * remove items from array that are in the array list of installed module, put the removed item in an array of objects that have already been installed, the resulting array will have removed installed extensions
+						 */
+						installedExtensionsFromConf.push(allExtensionsFromConf.splice(z,1)[0]);
+					}
+				}
+			}	
+		}
+
+		/**
+		 * if the extension is private or is installed from a custom github repo, and it's defined in the ext conf, then use that install otherwise install from npm
+		 */
+		if(allExtensionsFromConf && allExtensionsFromConf.length>0){
+			for(var a in allExtensionsFromConf){
+				if(allExtensionsFromConf[a].periodicConfig && allExtensionsFromConf[a].periodicConfig.customGitNPMInstall ){
+					missingExtensionsInstallList.push(allExtensionsFromConf[a].periodicConfig.customGitNPMInstall);
+				}
+				else{
+					missingExtensionsInstallList.push(allExtensionsFromConf[a].name+'@'+allExtensionsFromConf[a].version);
+				}
+			}
+		}
+		return missingExtensionsInstallList;
+	},
+	missingExtensions=[];
+
+
+	CoreExtensions.getExtensions(null,function(err,currentextensions){
+		if(err){
+			callback(err,null);
+		}
+		else{
+			missingExtensions = getMissingExtensions(installedExtensions,currentextensions);
+			// console.log('missingExtensions',missingExtensions);		
+			callback(null,missingExtensions);
+		}
+	});
+};
+
+var installMissingExtensions = function(missingExtensions,callback){
+	if(missingExtensions && missingExtensions.length>0){
+		npm.load({
+			'strict-ssl': false,
+			'production': true,
+			'skip-install-periodic-ext': true
+		},function (err) {
+			if (err) {
+				callback(err,null);
+			}
+			else {
+				npm.commands.install(missingExtensions,
+				function (err 
+					//,data
+					) {
+					if (err) {
+						callback(err,null);
+					}
+					else {
+						callback(null,'installed missing extensions');
+					}
+				});	
+				npm.on('log', function (message) {
+					console.log(message);
+				});
+			}
+		});
 	}
 	else{
-		console.log('files',files);
+		callback(null,'no extensions to install');
 	}
-});
+};
 
-// npm.load({
-// 	'strict-ssl': false,
-// 	'production': true,
-// 	'skip-install-periodic-ext': true
-// },function (err) {
-// 	if (err) {
-// 		console.error(err);
-// 	}
-// 	else {
-// 		npm.commands.install([
-// 			'periodicjs.ext.admin@1.8.5',
-// 			'periodicjs.ext.dbseed@1.5.3',
-// 			'periodicjs.ext.default_routes@1.5.3',
-// 			'periodicjs.ext.install@1.5.3',
-// 			'periodicjs.ext.login@1.5.4',
-// 			'periodicjs.ext.mailer@1.5.3',
-// 			'periodicjs.ext.scheduled_content@1.5.2',
-// 			'periodicjs.ext.user_access_control@1.5.4',
-// 			],
-// 		function (err 
-// 			//,data
-// 			) {
-// 			if (err) {
-// 				console.error(err);
-// 			}
-// 			else {
-// 				console.log('installed missing extensions');
-// 				CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
-// 					console.log (text);
-// 					process.exit(0);
-// 				});	
-// 			}
-// 		});	
-// 		npm.on('log', function (message) {
-// 			console.log(message);
-// 		});
-// 	}
-// });
+async.waterfall([
+	getInstalledExtensions,
+	getMissingExtensionsFromConfig,
+	installMissingExtensions
+	],
+	function(err,result){	
+		if(err){
+			throw new Error(err);
+		}
+		else{
+			console.log('deployment sync result',result);
+			CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+				console.log (text);
+				process.exit(0);
+			});		
+		}
+});
