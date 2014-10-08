@@ -153,6 +153,7 @@ var upgradePeriodic = function(){
 
 		fs.removeSync(path.join(originallocation,'content/config/environment')); 
 		fs.removeSync(path.join(originallocation,'content/config/extensions')); 
+		fs.removeSync(path.join(originallocation,'content/config/deployment')); 
 		fs.removeSync(path.join(originallocation,'content/config/process')); 
 		fs.removeSync(path.join(originallocation,'content/config/config.json')); 
 		fs.removeSync(path.join(originallocation,'content/config/database.js')); 
