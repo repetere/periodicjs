@@ -36,6 +36,7 @@ var fs = require('fs-extra'),
 // upgrade // $ npm install periodicjs@latest --upgrade-install-periodic
 
 var moveInstalledPeriodic = function(){
+	fs.copySync(path.join(originallocation,'.npmignore'),path.join(originallocation,'.gitignore'));  
 	fs.ensureDir(newlocation,function(err){
 		if(err){
 			console.error(err);
@@ -61,10 +62,13 @@ var moveInstalledPeriodic = function(){
 						else{	
 							console.log('Installed Periodicjs');
 							if(upgradeinstall || upgradeinstallalias){
-								CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+								CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
 									console.log (text);
-									process.exit(0);
-								});	
+									CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
+										console.log (text);
+										process.exit(0);
+									});	
+								});
 							}
 						}
 					});
@@ -75,8 +79,6 @@ var moveInstalledPeriodic = function(){
 };
 
 var upgradePeriodic = function(){
-	CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
-		console.log (text);
 
 		var updatedExtensionJsonFile = path.join(originallocation,'content/extensions/extensions.json'),
 		updatedPeriodicjsExtJson = fs.readJSONSync(updatedExtensionJsonFile),
@@ -165,10 +167,8 @@ var upgradePeriodic = function(){
 		// fs.removeSync(path.join(originallocation,'content/extensions/extensions.json'));  
 		fs.removeSync(path.join(originallocation,'processes'));  
 		fs.removeSync(path.join(originallocation,'logs'));  
-		fs.copySync(path.join(originallocation,'.npmignore'),path.join(originallocation,'.gitignore'));  
 
 		moveInstalledPeriodic(); 
-	});
 };
 
 npm.load({
