@@ -37,6 +37,10 @@ module.exports = function (periodic) {
 		appRouter = periodic.express.Router(),
 		ExtensionCore = new Extensions(periodic.settings);
 
+	/** load extensions */
+	periodic.settings.extconf = ExtensionCore.settings();
+	ExtensionCore.loadExtensions(periodic);
+	
 	/** if there's a theme set in the instance configuration object, load the custom routes if they exist 
 	 */
 	if (periodic.settings.theme) {
@@ -50,9 +54,6 @@ module.exports = function (periodic) {
 			require(themeRoute)(periodic);
 		}
 	}
-	/** load extensions */
-	periodic.settings.extconf = ExtensionCore.settings();
-	ExtensionCore.loadExtensions(periodic);
 
 	/**
 	 * set up default routes if no routes are defined/overwritten in extensions or themes

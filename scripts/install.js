@@ -62,6 +62,8 @@ var moveInstalledPeriodic = function(){
 						else{	
 							console.log('Installed Periodicjs');
 							if(upgradeinstall || upgradeinstallalias){
+								console.log('Restart to upgrade Periodicjs');
+								console.log('\u0007');
 								CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
 									console.log (text);
 									CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
@@ -204,6 +206,7 @@ npm.load({
 						process.exit(0);
 					}
 					else if(upgradeinstall || upgradeinstallalias){
+						console.log('Upgrade Periodicjs');
 						upgradePeriodic();
 					}
 					else if(nodemoduleinstall){
@@ -212,23 +215,6 @@ npm.load({
 					}
 					else{
 						moveInstalledPeriodic();
-						// console.log('\u0007');
-						// commandprompt.start();
-						// commandprompt.get(schema, function (err, result) {
-						//   if(err){
-						// 		console.error(err);
-						// 		process.exit(0);
-						// 	}
-						// 	else{
-						// 		if(result.auto_clean_up.match(/y/gi)){
-						// 			moveInstalledPeriodic();
-						// 		}
-						// 		else{
-						// 			console.log('Installed Periodicjs');
-						// 			process.exit(0);
-						// 		}
-						// 	}
-						// });
 					}
 				});
 			}

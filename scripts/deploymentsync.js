@@ -17,25 +17,6 @@ var async = require('async'),
  * @description get list of installed extensions to test against extensions.json to see if during deployment, new extensions were added, if so, then install them
  */
 var getInstalledExtensions = function(callback){
-	// var installedExtensions =[];
-	// fs.readdir(nodemodulespath,function(err,files){
-	// 	if(err){
-	// 		callback(err,null);
-	// 	}
-	// 	else{
-	// 		if(files && files.length >0){
-	// 			for(var x in files){
-	// 				if(files[x].match(/periodicjs.ext/gi)){
-	// 					installedExtensions.push(files[x]);
-	// 				}
-	// 			}
-	// 			callback(null,installedExtensions);
-	// 		}
-	// 		else{
-	// 			callback(null,null);
-	// 		}
-	// 	}
-	// });
 	npm.load({
 		'strict-ssl': false,
 		'production': true,
