@@ -145,10 +145,11 @@ var upgradePeriodic = function(){
 			}
 		}
 
-		// console.log('updatedPeriodicjsExtJson',updatedPeriodicjsExtJson);
-		// console.log('currentPeriodicjsExtJson',currentPeriodicjsExtJson);
-		// console.log('current_ext_admin',current_ext_admin);
+		console.log('updatedPeriodicjsExtJson',updatedPeriodicjsExtJson);
+		console.log('currentPeriodicjsExtJson',currentPeriodicjsExtJson);
 		mergedPeriodicExtJson = merge(currentPeriodicjsExtJson, updatedPeriodicjsExtJson);
+		console.log('mergedPeriodicExtJson',mergedPeriodicExtJson);
+
 		fs.writeJSONSync(updatedExtensionJsonFile,mergedPeriodicExtJson);
 
 		fs.removeSync(path.join(originallocation,'content/config/environment')); 
