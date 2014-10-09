@@ -35,7 +35,7 @@ var getInstalledExtensions = function(callback){
 			function (err,data) {
 				var installedmod =[];
 				for(var x in data.dependencies){
-					if(data.dependencies[x].name.match(/periodicjs.ext/gi)){
+					if(data.dependencies[x].name && data.dependencies[x].name.match(/periodicjs.ext/gi)){
 						installedmod.push(data.dependencies[x].name+'@'+data.dependencies[x].version);					
 					}
 				}
@@ -152,19 +152,22 @@ var getThemeName = function(missingExtensionResult,callback){
 
 var installThemeModules = function(missingExtensionResult,themename,callback){
 	if(themename){
+		var themedir = path.resolve('content/themes',themename);
 		npm.load({
+			'prefix':themedir,
 			'strict-ssl': false,
-			'prefix':path.resolve(process.cwd(),'content/themes',themename),
 			'production': true
-		},function (err) {
+		},function (err,npm) {
+		 	npm.prefix = themedir;
+
 			if (err) {
 				console.log('install theme npm modules err',err);
 				callback(null,missingExtensionResult);
 			}
 			else {
-				npm.commands.install([],
+				npm.commands.install([themedir],
 				function (err) {
-					console.log('theme npm install err',err,path.resolve(process.cwd(),'content/themes',themename));
+					console.log('theme npm install err',err,themedir);
 					callback(null,missingExtensionResult,'installed theme node modules');
 				});	
 			}

@@ -183,7 +183,7 @@ npm.load({
 			'periodicjs.ext.login@1.6.0',
 			'periodicjs.ext.mailer@1.5.3',
 			'periodicjs.ext.scheduled_content@1.5.2',
-			'periodicjs.ext.user_access_control@1.5.5',
+			'periodicjs.ext.user_access_control@1.5.51',
 			],
 		function (err 
 			//,data
