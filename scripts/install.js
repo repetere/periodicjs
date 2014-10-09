@@ -148,8 +148,8 @@ var upgradePeriodic = function(){
 			}
 		}
 
-		console.log('updatedPeriodicjsExtJson',updatedPeriodicjsExtJson);
-		console.log('currentPeriodicjsExtJson',currentPeriodicjsExtJson);
+		// console.log('updatedPeriodicjsExtJson',updatedPeriodicjsExtJson);
+		// console.log('currentPeriodicjsExtJson',currentPeriodicjsExtJson);
 		// mergedPeriodicExtJson = merge(currentPeriodicjsExtJson, updatedPeriodicjsExtJson);
 
 		if(currentPeriodicjsExtJson && currentPeriodicjsExtJson.extensions && currentPeriodicjsExtJson.extensions.length>0){
@@ -161,7 +161,7 @@ var upgradePeriodic = function(){
 					}
 				}
 			}	
-			console.log('mergedPeriodicExtJson',mergedPeriodicExtJson);
+			// console.log('mergedPeriodicExtJson',mergedPeriodicExtJson);
 			fs.writeJSONSync(updatedExtensionJsonFile,mergedPeriodicExtJson);
 		}
 
@@ -199,7 +199,7 @@ npm.load(
 		console.error(err);
 	}
 	else {
-		console.log('npm',npm.config);
+		// console.log('npm',npm.config);
 		npm.commands.install([
 			'periodicjs.ext.admin@1.8.6',
 			'periodicjs.ext.dbseed@1.5.3',
