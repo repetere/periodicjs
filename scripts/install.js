@@ -10,12 +10,13 @@
 var fs = require('fs-extra'),
 		path = require('path'),
 		// commandprompt = require('prompt'),
-		merge = require('utils-merge'),
+		// merge = require('utils-merge'),
 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		npm = require('npm'),
 		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string',
 		upgradeinstallalias = typeof process.env.npm_config_upgrade ==='string',
+		// skipExtensionSetupIfUpgrade = (upgradeinstall || upgradeinstallalias)? true : false,
 		nodemoduleinstall = typeof process.env.npm_config_install_node_module ==='string',
 		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
@@ -85,7 +86,9 @@ var upgradePeriodic = function(){
 		current_ext_mailer,
 		current_ext_scheduled_content,
 		current_ext_user_access_control,
-		mergedPeriodicExtJson;
+		mergedPeriodicExtJson={
+			extensions:[]
+		};
 
 		for(var x in currentPeriodicjsExtJson.extensions){
 			switch(currentPeriodicjsExtJson.extensions[x].name){
@@ -147,10 +150,21 @@ var upgradePeriodic = function(){
 
 		console.log('updatedPeriodicjsExtJson',updatedPeriodicjsExtJson);
 		console.log('currentPeriodicjsExtJson',currentPeriodicjsExtJson);
-		mergedPeriodicExtJson = merge(currentPeriodicjsExtJson, updatedPeriodicjsExtJson);
-		console.log('mergedPeriodicExtJson',mergedPeriodicExtJson);
+		// mergedPeriodicExtJson = merge(currentPeriodicjsExtJson, updatedPeriodicjsExtJson);
 
-		fs.writeJSONSync(updatedExtensionJsonFile,mergedPeriodicExtJson);
+		if(currentPeriodicjsExtJson && currentPeriodicjsExtJson.extensions && currentPeriodicjsExtJson.extensions.length>0){
+			mergedPeriodicExtJson = currentPeriodicjsExtJson;
+			for(var a in mergedPeriodicExtJson.extensions){
+				for(var b in updatedPeriodicjsExtJson.extensions){
+					if(mergedPeriodicExtJson.extensions[a].name === updatedPeriodicjsExtJson.extensions[b].name){
+						mergedPeriodicExtJson.extensions[a] = updatedPeriodicjsExtJson.extensions[b];
+					}
+				}
+			}	
+			console.log('mergedPeriodicExtJson',mergedPeriodicExtJson);
+			fs.writeJSONSync(updatedExtensionJsonFile,mergedPeriodicExtJson);
+		}
+
 
 		fs.removeSync(path.join(originallocation,'content/config/environment')); 
 		fs.removeSync(path.join(originallocation,'content/config/extensions')); 
@@ -166,16 +180,26 @@ var upgradePeriodic = function(){
 		moveInstalledPeriodic(); 
 };
 
-npm.load({
+
+var npmconfig ={
 	'strict-ssl': false,
-	'production': true,
-	'skip-install-periodic-ext': true,
-	'upgrade-install-periodic-ext' : upgradeinstall
-},function (err) {
+	'production': true
+};
+// if(skipExtensionSetupIfUpgrade){
+// 	npmconfig['skip-install-periodic-ext']= skipExtensionSetupIfUpgrade;
+// }
+// if(upgradeinstall){
+// 	npmconfig['upgrade-install-periodic-ext']= upgradeinstall;
+// }
+
+npm.load(
+	npmconfig,
+	function (err,npm) {
 	if (err) {
 		console.error(err);
 	}
 	else {
+		console.log('npm',npm.config);
 		npm.commands.install([
 			'periodicjs.ext.admin@1.8.6',
 			'periodicjs.ext.dbseed@1.5.3',
@@ -212,8 +236,9 @@ npm.load({
 				});
 			}
 		});	
-		npm.on('log', function (message) {
-			console.log(message);
-		});
+		
+		// npm.on('log', function (message) {
+		// 	console.log(message);
+		// });
 	}
 });
