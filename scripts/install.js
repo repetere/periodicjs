@@ -201,11 +201,11 @@ npm.load(
 	else {
 		// console.log('npm',npm.config);
 		npm.commands.install([
-			'periodicjs.ext.admin@1.8.6',
+			'periodicjs.ext.admin@1.8.7',
 			'periodicjs.ext.dbseed@1.5.3',
 			'periodicjs.ext.default_routes@1.5.3',
 			'periodicjs.ext.install@1.5.3',
-			'periodicjs.ext.login@1.6.0',
+			'periodicjs.ext.login@1.6.10',
 			'periodicjs.ext.mailer@1.5.3',
 			'periodicjs.ext.scheduled_content@1.5.2',
 			'periodicjs.ext.user_access_control@1.5.51',
