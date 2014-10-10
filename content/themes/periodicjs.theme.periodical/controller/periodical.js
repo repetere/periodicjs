@@ -2,7 +2,7 @@
 var path = require('path'),
 	// async = require('async'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	CoreUtilities,
 	CoreController,
 	themeController,
