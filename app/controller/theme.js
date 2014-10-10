@@ -71,7 +71,7 @@ var customLayout = function (options) {
 	function getAsyncCallback(functiondata) {
 		var querydata = (functiondata.search.customquery) ? functiondata.search.customquery : getTitleNameQuerySearch(functiondata.search.query);
 		return function (cb) {
-			console.log('functiondata.search.query', functiondata.search.query);
+			//console.log('functiondata.search.query', functiondata.search.query);
 			CoreController.searchModel({
 				model: getModelFromName(functiondata.model),
 				query: querydata,
