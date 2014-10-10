@@ -211,7 +211,6 @@ npm.load(
 			'periodicjs.ext.user_access_control@1.90.10',
 			],
 		function (err 
-			//,data
 			) {
 			if (err) {
 				console.error(err);
