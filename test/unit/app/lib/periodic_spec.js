@@ -21,9 +21,9 @@ describe('A module that represents a periodic app',function () {
     });
 
     it('uses express methods',function () {
-      // console.log( periodicjs().init.loadConfiguration() )
-      // console.log( periodicjs().app.get('env') )
-      // expect(periodicjs).to.be.ok();
+      console.log( periodicjs().init.loadConfiguration() )
+      console.log( periodicjs().app.get('env') )
+      expect(periodicjs).to.be.ok();
     });
   });
 });

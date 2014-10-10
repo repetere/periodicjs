@@ -79,7 +79,12 @@ module.exports = function (grunt) {
 	            'test/browserified.js': ['test/unit/**/*.js'],
 	        },
         options: {
-            debug: true
+            debug: true,
+						aliasMappings: [{
+					    cwd: '../app/',
+					    dest: 'App',
+					    src: ['app/**/*.js']
+					}]
         }
 			}
 		},

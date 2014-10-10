@@ -86,10 +86,10 @@ var periodic = function () {
 		/** instance of mongoose connection based on configuration settings in content/config/database.js
 		 * @instance
 		 */
-		mngse = db.mongoose;
-
-		
+		mngse = db.mongoose;		
 	};
+
+
 	/**
 	 * @description loads application logger configuration
 	 */

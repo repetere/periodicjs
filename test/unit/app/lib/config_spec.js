@@ -1,6 +1,5 @@
 var path = require('path'),
-    //config = require(path.resolve(process.cwd(),'app/lib/config.js')),
-    config = require('../../../../app/lib/config.js'),
+    config = require(path.resolve(process.cwd(),'app/lib/config.js')),
     chai = require('chai'),
     expect = require('chai').expect,
     configuration = new config();
