@@ -17,7 +17,7 @@
   },
   "scripts": {
     "nd": "nodemon --watch app --watch content/extensions/restart.json index.js ",
-    "startdev": "nodemon --watch app --watch content/extensions/restart.json index.js ",
+    "ndprod": "NODE_ENV=production nodemon --watch app --watch content/extensions/restart.json index.js ",
     "start_prod": "pm2 start content/config/process/production.json",
     "start": "pm2 start content/config/process/development.json",
     "stop": "pm2 delete periodicjs",
@@ -26,7 +26,8 @@
     "test": "mocha -R spec --recursive",
     "postinstall": "node scripts/install.js",
     "deploysync": "node scripts/deploymentsync.js",
-    "deploy_dev": "pm2 deploy content/config/deployment/ecosystem.json dev"
+    "deploy_dev": "pm2 deploy content/config/deployment/ecosystem.json dev",
+    "deploy_prod": "pm2 deploy content/config/deployment/ecosystem.json production"
   },
   "dependencies": {
     "async": "0.9.0",
