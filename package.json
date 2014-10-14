@@ -55,7 +55,7 @@
     "optimist": "0.6.1",
     "passport": "~0.2.0",
     "periodicjs.core.controller": "1.90.10",
-    "periodicjs.core.extensions": "1.90.15",
+    "periodicjs.core.extensions": "1.90.16",
     "periodicjs.core.mailer": "1.90.15",
     "periodicjs.core.utilities": "1.90.10",
     "prompt": "0.2.13",
