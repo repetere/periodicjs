@@ -39,7 +39,7 @@ var getInstalledExtensions = function(callback){
 						installedmod.push(data.dependencies[x].name+'@'+data.dependencies[x].version);					
 					}
 				}
-				// console.log('installedmod',installedmod);
+				console.log('installedmod',installedmod);
 				callback(null,installedmod);
 			});	
 		}
@@ -94,7 +94,7 @@ var getMissingExtensionsFromConfig = function(installedExtensions,callback){
 		}
 		else{
 			missingExtensions = getMissingExtensions(installedExtensions,currentextensions);
-			// console.log('missingExtensions',missingExtensions);		
+			console.log('missingExtensions',missingExtensions);		
 			callback(null,missingExtensions);
 		}
 	});
@@ -105,12 +105,14 @@ var installMissingExtensions = function(missingExtensions,callback){
 		npm.load({
 			'strict-ssl': false,
 			'production': true,
-			'skip-install-periodic-ext': true
+			'skip-install-periodic-ext': true,
+			'skip_ext_conf': true
 		},function (err) {
 			if (err) {
 				callback(err,null);
 			}
 			else {
+			 	npm.skip_ext_conf = true;
 				npm.commands.install(missingExtensions,
 				function (err 
 					//,data
