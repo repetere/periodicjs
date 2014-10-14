@@ -199,7 +199,7 @@ npm.load(
 		npm.commands.install([
 			'periodicjs.ext.admin@1.90.21',
 			'periodicjs.ext.dbseed@1.90.20',
-			'periodicjs.ext.default_routes@1.90.20',
+			'periodicjs.ext.default_routes@1.90.25',
 			'periodicjs.ext.install@1.90.20',
 			'periodicjs.ext.login@1.90.20',
 			'periodicjs.ext.mailer@1.90.20',
