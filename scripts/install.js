@@ -197,14 +197,14 @@ npm.load(
 		// console.log('npm.prefix',npm.prefix);
 		var currentscriptdirarray = process.cwd().split(path.sep);
 		npm.commands.install([
-			'periodicjs.ext.admin@1.90.21',
-			'periodicjs.ext.dbseed@1.90.20',
+			'periodicjs.ext.admin@1.90.26',
+			'periodicjs.ext.dbseed@1.90.26',
 			'periodicjs.ext.default_routes@1.90.26',
-			'periodicjs.ext.install@1.90.20',
-			'periodicjs.ext.login@1.90.20',
-			'periodicjs.ext.mailer@1.90.20',
-			'periodicjs.ext.scheduled_content@1.90.20',
-			'periodicjs.ext.user_access_control@1.90.21',
+			'periodicjs.ext.install@1.90.26',
+			'periodicjs.ext.login@1.90.26',
+			'periodicjs.ext.mailer@1.90.26',
+			'periodicjs.ext.scheduled_content@1.90.26',
+			'periodicjs.ext.user_access_control@1.90.26',
 			],
 		function (err 
 			) {
