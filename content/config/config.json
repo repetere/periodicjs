@@ -1,8 +1,4 @@
 {
-  "application": {
-    "port": "8786",
-    "environment": "development"
-  },
   "sessions": {
     "enabled": true,
     "type": "default"

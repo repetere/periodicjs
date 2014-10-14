@@ -185,12 +185,6 @@ var npmconfig ={
 	'strict-ssl': false,
 	'production': true
 };
-// if(skipExtensionSetupIfUpgrade){
-// 	npmconfig['skip-install-periodic-ext']= skipExtensionSetupIfUpgrade;
-// }
-// if(upgradeinstall){
-// 	npmconfig['upgrade-install-periodic-ext']= upgradeinstall;
-// }
 
 npm.load(
 	npmconfig,
@@ -199,7 +193,9 @@ npm.load(
 		console.error(err);
 	}
 	else {
-		// console.log('npm',npm.config);
+		// console.log('npm.config',npm.config);
+		// console.log('npm.prefix',npm.prefix);
+		var currentscriptdirarray = process.cwd().split(path.sep);
 		npm.commands.install([
 			'periodicjs.ext.admin@1.90.21',
 			'periodicjs.ext.dbseed@1.90.20',
@@ -218,7 +214,12 @@ npm.load(
 			else {
 				fs.open(originallocation,'r',function(err){
 					if(err){
-						console.log('Installed Periodicjs');
+						// console.log('Install err',err);
+						console.log('Installed Periodicjs Local Dependencies');
+						process.exit(0);
+					}
+					else if(currentscriptdirarray[currentscriptdirarray.length-2]!=='node_modules'){
+						console.warn('Already Installed Periodic');
 						process.exit(0);
 					}
 					else if(upgradeinstall || upgradeinstallalias){
@@ -234,10 +235,6 @@ npm.load(
 					}
 				});
 			}
-		});	
-		
-		// npm.on('log', function (message) {
-		// 	console.log(message);
-		// });
+		});
 	}
 });

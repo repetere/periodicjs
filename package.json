@@ -16,8 +16,8 @@
     "url": "git://github.com/typesettin/periodicjs.git"
   },
   "scripts": {
-    "nd": "NODE_ENV=development nodemon --watch app --watch content/extensions/restart.json index.js ",
-    "ndprod": "NODE_ENV=production nodemon --watch app --watch content/extensions/restart.json index.js ",
+    "nd": "NODE_ENV=development nodemon --watch app --watch content/extensions/restart.json,content/config/database.js index.js ",
+    "ndprod": "NODE_ENV=production nodemon --watch app --watch content/extensions/restart.json,content/config/database.js index.js ",
     "start_prod": "pm2 start content/config/process/production.json",
     "start": "pm2 start content/config/process/development.json",
     "stop": "pm2 delete periodicjs",

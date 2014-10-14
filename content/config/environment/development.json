@@ -1,7 +1,7 @@
 {
 	"name": "Periodic Enterprise Content Management[dev]",
 	"application":{
-		"port": "8384",
+		"port": "8786",
 		"environment": "development"
 	},
 	"sessions":{
