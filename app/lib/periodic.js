@@ -89,6 +89,10 @@ var periodic = function () {
 		 * @instance
 		 */
 		mngse = db.mongoose;
+		/** if debug option is set output instance configuration */
+		if (appconfig.settings().debug) {
+			console.log(appconfig.settings());
+		}
 	};
 	/**
 	 * @description loads application logger configuration
