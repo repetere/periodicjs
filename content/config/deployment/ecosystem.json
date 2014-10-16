@@ -24,7 +24,7 @@
       "ref"  : "origin/master",
       "repo" : "git@github.com:repo.git",
       "path" : "/var/www/production",
-      "post-deploy" : "cd periodicjs && npm install --upgrade --skip_ext_conf && npm run deploysync"
+      "post-deploy" : "cd periodicjs && npm install --upgrade  && npm run deploysync"
     },
     "dev" : {
       "user" : "node",
@@ -32,7 +32,7 @@
       "ref"  : "origin/master",
       "repo" : "git@github.com:repo.git",
       "path" : "/var/www/development",
-      "post-deploy" : "cd periodicjs && npm install --upgrade --skip_ext_conf && npm run deploysync"
+      "post-deploy" : "cd periodicjs && npm install --upgrade  && npm run deploysync"
     }
   }
 }
