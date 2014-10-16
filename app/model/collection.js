@@ -51,7 +51,10 @@ var collectionSchema = new Schema({
 		index: true
 	},
 	items: [{
-		order: Number,
+		order: {
+			type: Number,
+			'default': 1
+		},
 		additionalattributes: Schema.Types.Mixed,
 		item: {
 			type: ObjectId,
