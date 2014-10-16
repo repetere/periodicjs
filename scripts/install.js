@@ -16,24 +16,37 @@ var fs = require('fs-extra'),
 		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
 		alreadyInstalledDir = false,
+		dependenciesInstalledDirCheck = false,
+		installeddircheck,
 		npmhelper = require('./npmhelper')({
 			originalnodemoduleslocation : originalnodemoduleslocation,
 			originallocation : originallocation,
 			newlocation : newlocation
 		});
 
+try{
+	installeddircheck = fs.statSync(newlocation,'r');
+ 	alreadyInstalledDir=true;
+}
+catch(e){
+ 	alreadyInstalledDir=false;
+}
+
+try{
+	installeddircheck = fs.statSync(originallocation,'r');
+ 	dependenciesInstalledDirCheck=false;
+}
+catch(e){
+ 	dependenciesInstalledDirCheck=true;
+}
+
 if(process.env.npm_config_skip_post_install){
 	console.log('skip post install');
 }
+else if(dependenciesInstalledDirCheck){
+	console.log('skip post install because of dependenciesInstalledDirCheck',dependenciesInstalledDirCheck);
+}
 else{
-	try{
-		var installeddircheck = fs.statSync(newlocation,'r');
-	 	alreadyInstalledDir=true;
-	}
-	catch(e){
-	 	alreadyInstalledDir=false;
-	}
-
 	npmhelper.installStandardExtensions(
 		function (err) {
 			var currentscriptdirarray = process.cwd().split(path.sep);
