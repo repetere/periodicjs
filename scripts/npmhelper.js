@@ -189,6 +189,7 @@ var upgradePeriodic = function(callback){
 var installStandardExtensions = function(callback){
 	var npmconfig ={
 		'strict-ssl': false,
+		'save-optional': true,
 		'production': true
 	};
 
@@ -200,6 +201,7 @@ var installStandardExtensions = function(callback){
 			callback(err);
 		}
 		else {
+		 	npm['save-optional'] = true;
 			npm.commands.install(
 				standardExtensions,
 				callback
