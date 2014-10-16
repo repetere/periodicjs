@@ -22,15 +22,19 @@ var getInstalledExtensions = function(callback){
 	npm.load({
 		'strict-ssl': false,
 		'production': true,
+		'quiet': true,
+		'silent': true,
 		'json': true,
 		'depth': 0,
 		'prefix':process.cwd(),
-		'skip-install-periodic-ext': true
+		// 'skip-install-periodic-ext': true
 	},function (err) {
 		if (err) {
 			callback(err,null);
 		}
 		else {
+		 	npm.silent = true;
+		 	npm.quiet = true;
 			npm.commands.list([],
 			function (err,data) {
 				var installedmod =[];
@@ -105,14 +109,17 @@ var installMissingExtensions = function(missingExtensions,callback){
 		npm.load({
 			'strict-ssl': false,
 			'production': true,
-			// 'skip-install-periodic-ext': true,
-			'skip_ext_conf': true
+			'silent': true,
+			'save-optional': true
+			// 'skip_ext_conf': true
 		},function (err) {
 			if (err) {
 				callback(err,null);
 			}
 			else {
-			 	// npm.skip_ext_conf = true;
+			 	npm['save-optional'] = true;
+			 	npm.silent = true;
+			 	npm.quiet = true;
 				npm.commands.install(missingExtensions,
 				function (err 
 					//,data
@@ -121,7 +128,7 @@ var installMissingExtensions = function(missingExtensions,callback){
 						callback(err,null);
 					}
 					else {
-						callback(null,'installed missing extensions');
+						callback(null,'installed missing extensions',missingExtensions);
 					}
 				});	
 				npm.on('log', function (message) {
@@ -133,6 +140,41 @@ var installMissingExtensions = function(missingExtensions,callback){
 	else{
 		callback(null,'no extensions to install');
 	}
+};
+
+var installMissingNodeModules = function(missingExtensions,callback){
+	npm.load({
+		'strict-ssl': false,
+		'production': true,
+		'silent': true,
+		'no-optional': true,
+		'save-optional': false
+		// 'skip_ext_conf': true
+	},function (err) {
+		if (err) {
+			callback(err,null);
+		}
+		else {
+		 	npm['no-optional'] = true;
+		 	npm['save-optional'] = false;
+		 	npm.silent = true;
+		 	npm.quiet = true;
+			npm.commands.install(
+			function (err 
+				//,data
+				) {
+				if (err) {
+					callback(err,null);
+				}
+				else {
+					callback(null,missingExtensions);
+				}
+			});	
+			npm.on('log', function (message) {
+				console.log(message);
+			});
+		}
+	});
 };
 
 var getThemeName = function(missingExtensionResult,callback){
@@ -158,9 +200,12 @@ var installThemeModules = function(missingExtensionResult,themename,callback){
 		npm.load({
 			'prefix':themedir,
 			'strict-ssl': false,
+			'silent': true,
 			'production': true
 		},function (err,npm) {
 		 	npm.prefix = themedir;
+		 	npm.silent = true;
+		 	npm.quiet = true;
 
 			if (err) {
 				console.log('install theme npm modules err',err);
@@ -184,6 +229,7 @@ async.waterfall([
 	getInstalledExtensions,
 	getMissingExtensionsFromConfig,
 	installMissingExtensions,
+	installMissingNodeModules,
 	getThemeName,
 	installThemeModules
 	],
