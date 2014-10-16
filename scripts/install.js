@@ -22,50 +22,55 @@ var fs = require('fs-extra'),
 			newlocation : newlocation
 		});
 
-try{
-	var installeddircheck = fs.statSync(newlocation,'r');
- 	alreadyInstalledDir=true;
+if(process.env.npm_config_skip_post_install){
+	console.log('skip post install');
 }
-catch(e){
- 	alreadyInstalledDir=false;
-}
+else{
+	try{
+		var installeddircheck = fs.statSync(newlocation,'r');
+	 	alreadyInstalledDir=true;
+	}
+	catch(e){
+	 	alreadyInstalledDir=false;
+	}
 
-npmhelper.installStandardExtensions(
-	function (err) {
-		var currentscriptdirarray = process.cwd().split(path.sep);
-		if (err) {
-			console.error(err);
-		}
-		else {
-			fs.open(originallocation,'r',function(err){
-				if(err){
-					console.log('Installed Periodicjs Local Dependencies');
-					process.exit(0);
-				}
-				else if(currentscriptdirarray[currentscriptdirarray.length-2]!=='node_modules'){
-					console.warn('Already Installed Periodic');
-					process.exit(0);
-				}
-				else if(alreadyInstalledDir){
-					console.log('Periodicjs Already Installed, Now Upgrading');
-					npmhelper.upgradePeriodic(function(){ 
-						npmhelper.moveInstalledPeriodic(); 
-					});
-				}
-				else if(upgradeinstall || upgradeinstallalias){
-					console.log('Upgrade Periodicjs');
-					npmhelper.upgradePeriodic(function(){ 
-						npmhelper.moveInstalledPeriodic(); 
-					});
-				}
-				else if(nodemoduleinstall){
-					console.log('Installed Periodicjs');
-					process.exit(0);
-				}
-				else{
-					console.log('New Periodicjs Install');
-					npmhelper.moveInstalledPeriodic();
-				}
-			});
-		}
-	});
+	npmhelper.installStandardExtensions(
+		function (err) {
+			var currentscriptdirarray = process.cwd().split(path.sep);
+			if (err) {
+				console.error(err);
+			}
+			else {
+				fs.open(originallocation,'r',function(err){
+					if(err){
+						console.log('Installed Periodicjs Local Dependencies');
+						process.exit(0);
+					}
+					else if(currentscriptdirarray[currentscriptdirarray.length-2]!=='node_modules'){
+						console.warn('Already Installed Periodic');
+						process.exit(0);
+					}
+					else if(alreadyInstalledDir){
+						console.log('Periodicjs Already Installed, Now Upgrading');
+						npmhelper.upgradePeriodic(function(){ 
+							npmhelper.moveInstalledPeriodic(); 
+						});
+					}
+					else if(upgradeinstall || upgradeinstallalias){
+						console.log('Upgrade Periodicjs');
+						npmhelper.upgradePeriodic(function(){ 
+							npmhelper.moveInstalledPeriodic(); 
+						});
+					}
+					else if(nodemoduleinstall){
+						console.log('Installed Periodicjs');
+						process.exit(0);
+					}
+					else{
+						console.log('New Periodicjs Install');
+						npmhelper.moveInstalledPeriodic();
+					}
+				});
+			}
+		});	
+}

@@ -195,7 +195,7 @@ var installStandardExtensions = function(callback){
 
 	npm.load(
 		npmconfig,
-		function (err,npm) {
+		function (err) {
 		if (err) {
 			console.error(err);
 			callback(err);

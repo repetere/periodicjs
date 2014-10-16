@@ -22,10 +22,12 @@ var getInstalledExtensions = function(callback){
 	npm.load({
 		'strict-ssl': false,
 		'production': true,
+		'no-optional': true,
 		'quiet': true,
 		'silent': true,
 		'json': true,
 		'depth': 0,
+		'skip_post_install':true,
 		'prefix':process.cwd(),
 		// 'skip-install-periodic-ext': true
 	},function (err) {
@@ -33,6 +35,8 @@ var getInstalledExtensions = function(callback){
 			callback(err,null);
 		}
 		else {
+		 	npm['no-optional'] = true;
+		 	npm.skip_post_install = true;
 		 	npm.silent = true;
 		 	npm.quiet = true;
 			npm.commands.list([],
@@ -131,9 +135,9 @@ var installMissingExtensions = function(missingExtensions,callback){
 						callback(null,'installed missing extensions',missingExtensions);
 					}
 				});	
-				npm.on('log', function (message) {
-					console.log(message);
-				});
+				//npm.on('log', function (message) {
+				//	console.log(message);
+				//});
 			}
 		});
 	}
@@ -148,8 +152,9 @@ var installMissingNodeModules = function(missingExtensions,callback){
 		'production': true,
 		'silent': true,
 		'no-optional': true,
-		'save-optional': false
-		// 'skip_ext_conf': true
+		'save-optional': false,
+		'skip_post_install':true,
+		'skip_ext_conf': true
 	},function (err) {
 		if (err) {
 			callback(err,null);
@@ -158,8 +163,10 @@ var installMissingNodeModules = function(missingExtensions,callback){
 		 	npm['no-optional'] = true;
 		 	npm['save-optional'] = false;
 		 	npm.silent = true;
+		 	npm.skip_post_install = true;
 		 	npm.quiet = true;
-			npm.commands.install(
+		 	//console.log('npm',npm);
+			npm.commands.install([],
 			function (err 
 				//,data
 				) {
@@ -170,9 +177,9 @@ var installMissingNodeModules = function(missingExtensions,callback){
 					callback(null,missingExtensions);
 				}
 			});	
-			npm.on('log', function (message) {
-				console.log(message);
-			});
+			//npm.on('log', function (message) {
+			//	console.log(message);
+			//});
 		}
 	});
 };
