@@ -73,8 +73,22 @@ module.exports = function (grunt) {
 					}
 				}],
 				options: {}
+			},
+			test:{
+					files: {
+	            'test/browserified.js': ['test/unit/**/*.js'],
+	        },
+        options: {
+            debug: true
+        }
 			}
 		},
+
+		strip_code:{
+			src: 'app/**/*.js',
+			options:{}
+		},
+
 		uglify: {
 			options: {
 				sourceMap: true,
@@ -150,5 +164,7 @@ module.exports = function (grunt) {
 	}
 	grunt.registerTask('doc', 'jsdoc');
 	grunt.registerTask('test','simplemocha');
+	grunt.registerTask('testem', ['newer:browserify:test'])
 	grunt.registerTask('default', ['jshint', 'browserify', 'doc', 'uglify', 'simplemocha', 'less']);
+	grunt.registerTask('strip',['strip_code'])
 };
