@@ -15,6 +15,14 @@ var contenttypeSchema = new Schema({
 		type: ObjectId,
 		ref: 'User'
 	},
+	createdat: {
+		type: Date,
+		'default': Date.now
+	},
+	updatedat: {
+		type: Date,
+		'default': Date.now
+	},
 	attributes: [{
 		title: String,
 		name: String,

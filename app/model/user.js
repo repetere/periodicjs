@@ -88,17 +88,17 @@ var userSchema = new Schema({
 		ref: 'Userrole'
 	}],
 	apikey: String,
-	twitterAccessToken: String,
-	twitterAccessTokenSecret: String,
-	twitterUsername: String,
-	twitterId: String,
-	facebookaccesstoken: String,
-	facebookusername: String,
-	facebookid: String,
-	foursquareAccessToken: String,
-	foursquareId: String,
-	foursquareName: String,
-	attributes: Schema.Types.Mixed,
+	// twitterAccessToken: String,
+	// twitterAccessTokenSecret: String,
+	// twitterUsername: String,
+	// twitterId: String,
+	// facebookaccesstoken: String,
+	// facebookusername: String,
+	// facebookid: String,
+	// foursquareAccessToken: String,
+	// foursquareId: String,
+	// foursquareName: String,
+	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
