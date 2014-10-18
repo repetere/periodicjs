@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId;
 
-var volumeSchema = new Schema({
+var librarySchema = new Schema({
 	id: ObjectId,
 	status: {
 		type: String,
@@ -12,7 +12,7 @@ var volumeSchema = new Schema({
 	},
 	entitytype: {
 		type: String,
-		'default': 'volume'
+		'default': 'library'
 	},
 	title: String,
 	name: {
@@ -73,7 +73,7 @@ var volumeSchema = new Schema({
 	random: Number
 });
 
-volumeSchema.pre('save', function (next, done) {
+librarySchema.pre('save', function (next, done) {
 	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('title is too short'));
@@ -86,4 +86,4 @@ volumeSchema.pre('save', function (next, done) {
 	}
 });
 
-module.exports = volumeSchema;
+module.exports = librarySchema;

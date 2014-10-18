@@ -108,29 +108,4 @@ itemSchema.pre('save', function (next, done) {
 	}
 });
 
-// itemSchema.post('init', function (doc) {
-// 	console.log('model - item.js - ' + doc._id + ' has been initialized from the db');
-// });
-// itemSchema.post('validate', function (doc) {
-// 	console.log('model - item.js - ' + doc._id + ' has been validated (but not saved yet)');
-// });
-// itemSchema.post('save', function (doc) {
-// 	// this.db.models.Item.emit('created', this);
-// 	console.log('model - item.js - ' + doc._id + ' has been saved');
-// });
-// itemSchema.post('remove', function (doc) {
-// 	console.log('model - item.js - ' + doc._id + ' has been removed');
-// });
-
-// itemSchema.statics.getRandomWorkout = function (options, callback) {
-// 	var self = this;
-// 	// queryHelper.getRandomDocument({model:self},callback);
-// };
-
-// itemSchema.statics.getUserWorkouts = function (options, callback) {
-// 	this.find({
-// 		userid: options.user._id
-// 	}).populate('media').exec(callback);
-// };
-
 module.exports = itemSchema;

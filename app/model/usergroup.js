@@ -17,11 +17,11 @@ var usergroupSchema = new Schema({
 	},
 	roles: [{
 		type: ObjectId,
-		ref: "Userrole"
+		ref: 'Userrole'
 	}],
 	author: {
 		type: ObjectId,
-		ref: "User"
+		ref: 'User'
 	},
 	description: String,
 	extensionattributes: Schema.Types.Mixed,
@@ -29,7 +29,7 @@ var usergroupSchema = new Schema({
 });
 
 usergroupSchema.pre('save', function (next, done) {
-	var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	if (this.name !== undefined && this.name.length < 4) {
 		done(new Error('User role title is too short'));
 	}
@@ -41,18 +41,18 @@ usergroupSchema.pre('save', function (next, done) {
 	}
 });
 
-usergroupSchema.post('init', function (doc) {
-	console.log("model - usergroup.js - " + doc._id + ' has been initialized from the db');
-});
-usergroupSchema.post('validate', function (doc) {
-	console.log("model - usergroup.js - " + doc._id + ' has been validated (but not saved yet)');
-});
-usergroupSchema.post('save', function (doc) {
-	// this.db.models.Item.emit('created', this);
-	console.log("model - usergroup.js - " + doc._id + ' has been saved');
-});
-usergroupSchema.post('remove', function (doc) {
-	console.log("model - usergroup.js - " + doc._id + ' has been removed');
-});
+// usergroupSchema.post('init', function (doc) {
+// 	console.log("model - usergroup.js - " + doc._id + ' has been initialized from the db');
+// });
+// usergroupSchema.post('validate', function (doc) {
+// 	console.log("model - usergroup.js - " + doc._id + ' has been validated (but not saved yet)');
+// });
+// usergroupSchema.post('save', function (doc) {
+// 	// this.db.models.Item.emit('created', this);
+// 	console.log("model - usergroup.js - " + doc._id + ' has been saved');
+// });
+// usergroupSchema.post('remove', function (doc) {
+// 	console.log("model - usergroup.js - " + doc._id + ' has been removed');
+// });
 
 module.exports = usergroupSchema;

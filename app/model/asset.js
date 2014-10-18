@@ -47,7 +47,7 @@ var assetSchema = new Schema({
 	random: Number
 });
 
-
+/*
 assetSchema.post('init', function (doc) {
 	logger.info('model - asset.js - ' + doc._id + ' has been initialized from the db');
 });
@@ -60,6 +60,6 @@ assetSchema.post('save', function (doc) {
 assetSchema.post('remove', function (doc) {
 	logger.info('model - asset.js - ' + doc._id + ' has been removed');
 });
-
+*/
 
 module.exports = assetSchema;

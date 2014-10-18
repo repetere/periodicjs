@@ -10,12 +10,12 @@
  * @param {object} options periodic instance configuration object, that has references to mongo, logging, etc
  */
 module.exports = function(options){
-	var mongoose = options.mongoose,
-		db = mongoose.connect(options.dburl),
-		userSchema = require('../../app/model/user.js'),
+	var mongoose = options.mongoose;
+		mongoose.connect(options.dburl);
+	var userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
 		collectionSchema = require('../../app/model/collection.js'),
-		volumeSchema = require('../../app/model/volume.js'),
+		librarySchema = require('../../app/model/library.js'),
 		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
 		contenttypeSchema = require('../../app/model/contenttype.js'),
@@ -33,7 +33,7 @@ module.exports = function(options){
 	mongoose.model('User',userSchema);
 	mongoose.model('Item',itemSchema);
 	mongoose.model('Collection',collectionSchema);
-	mongoose.model('Volume',volumeSchema);
+	mongoose.model('Library',librarySchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);
 	mongoose.model('Contenttype',contenttypeSchema);
