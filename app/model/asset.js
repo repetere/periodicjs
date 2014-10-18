@@ -2,8 +2,7 @@
 
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId,
-	logger = console;
+	ObjectId = Schema.ObjectId;
 
 var assetSchema = new Schema({
 	id: ObjectId,
