@@ -38,10 +38,14 @@ var cli = function (argv) {
 		 * @instance
 		 */
 		db = database[appconfig.settings().application.environment];
+		appconfig.setSetting('dburl',db.url);
 		/** instance of mongoose connection based on configuration settings in content/config/database.js
 		 * @instance
 		 */
 		mongoose = db.mongoose;
+		if (appconfig.settings().debug) {
+			console.log(appconfig.settings());
+		}
 	};
 	/**
 	 * @description loads application logger configuration

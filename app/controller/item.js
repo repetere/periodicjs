@@ -2,7 +2,7 @@
 
 var moment = require('moment'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	str2json = require('string-to-json'),
 	async = require('async'),
 	CoreUtilities,

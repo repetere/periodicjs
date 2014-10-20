@@ -2,7 +2,7 @@
 
 var path = require('path'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	CoreMailer = require('periodicjs.core.mailer'),
 	welcomeemailtemplate,
 	emailtransport,

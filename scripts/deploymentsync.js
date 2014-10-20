@@ -8,7 +8,9 @@
 'use strict';
 
 var async = require('async'),
-		Utilities = require('periodicjs.core.utilities'),
+ 		fs = require('fs-extra'),
+ 		path = require('path'),
+ 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		Extensions = require('periodicjs.core.extensions'),
 		CoreExtensions = new Extensions({}),
@@ -20,24 +22,32 @@ var getInstalledExtensions = function(callback){
 	npm.load({
 		'strict-ssl': false,
 		'production': true,
+		'no-optional': true,
+		'quiet': true,
+		'silent': true,
 		'json': true,
 		'depth': 0,
+		'skip_post_install':true,
 		'prefix':process.cwd(),
-		'skip-install-periodic-ext': true
+		// 'skip-install-periodic-ext': true
 	},function (err) {
 		if (err) {
 			callback(err,null);
 		}
 		else {
+		 	npm['no-optional'] = true;
+		 	npm.skip_post_install = true;
+		 	npm.silent = true;
+		 	npm.quiet = true;
 			npm.commands.list([],
 			function (err,data) {
 				var installedmod =[];
 				for(var x in data.dependencies){
-					if(data.dependencies[x].name.match(/periodicjs.ext/gi)){
+					if(data.dependencies[x].name && data.dependencies[x].name.match(/periodicjs.ext/gi)){
 						installedmod.push(data.dependencies[x].name+'@'+data.dependencies[x].version);					
 					}
 				}
-				// console.log('installedmod',installedmod);
+				console.log('installedmod',installedmod);
 				callback(null,installedmod);
 			});	
 		}
@@ -92,7 +102,7 @@ var getMissingExtensionsFromConfig = function(installedExtensions,callback){
 		}
 		else{
 			missingExtensions = getMissingExtensions(installedExtensions,currentextensions);
-			// console.log('missingExtensions',missingExtensions);		
+			console.log('missingExtensions',missingExtensions);		
 			callback(null,missingExtensions);
 		}
 	});
@@ -103,12 +113,17 @@ var installMissingExtensions = function(missingExtensions,callback){
 		npm.load({
 			'strict-ssl': false,
 			'production': true,
-			'skip-install-periodic-ext': true
+			'silent': true,
+			'save-optional': true
+			// 'skip_ext_conf': true
 		},function (err) {
 			if (err) {
 				callback(err,null);
 			}
 			else {
+			 	npm['save-optional'] = true;
+			 	npm.silent = true;
+			 	npm.quiet = true;
 				npm.commands.install(missingExtensions,
 				function (err 
 					//,data
@@ -117,12 +132,12 @@ var installMissingExtensions = function(missingExtensions,callback){
 						callback(err,null);
 					}
 					else {
-						callback(null,'installed missing extensions');
+						callback(null,'installed missing extensions',missingExtensions);
 					}
 				});	
-				npm.on('log', function (message) {
-					console.log(message);
-				});
+				//npm.on('log', function (message) {
+				//	console.log(message);
+				//});
 			}
 		});
 	}
@@ -131,10 +146,99 @@ var installMissingExtensions = function(missingExtensions,callback){
 	}
 };
 
+var installMissingNodeModules = function(missingExtensions,callback){
+	npm.load({
+		'strict-ssl': false,
+		'production': true,
+		'silent': true,
+		'no-optional': true,
+		'save-optional': false,
+		'skip_post_install':true,
+		'skip_ext_conf': true
+	},function (err) {
+		if (err) {
+			callback(err,null);
+		}
+		else {
+		 	npm['no-optional'] = true;
+		 	npm['save-optional'] = false;
+		 	npm.silent = true;
+		 	npm.skip_post_install = true;
+		 	npm.quiet = true;
+		 	//console.log('npm',npm);
+			npm.commands.install([],
+			function (err 
+				//,data
+				) {
+				if (err) {
+					callback(err,null);
+				}
+				else {
+					callback(null,missingExtensions);
+				}
+			});	
+			//npm.on('log', function (message) {
+			//	console.log(message);
+			//});
+		}
+	});
+};
+
+var getThemeName = function(missingExtensionResult,callback){
+	var themename;
+	fs.readJSON(path.resolve(process.cwd(),'content/config/config.json'),function(err,confJSON){
+		if(err){
+			console.log('install theme modules err',err);
+			callback(null,missingExtensionResult,null);
+		}
+		else if(confJSON && confJSON.theme){
+			themename = confJSON.theme;
+			callback(null,missingExtensionResult,themename);
+		}
+		else{
+			callback(null,missingExtensionResult,null);
+		}
+	});
+};
+
+var installThemeModules = function(missingExtensionResult,themename,callback){
+	if(themename){
+		var themedir = path.resolve('content/themes',themename);
+		npm.load({
+			'prefix':themedir,
+			'strict-ssl': false,
+			'silent': true,
+			'production': true
+		},function (err,npm) {
+		 	npm.prefix = themedir;
+		 	npm.silent = true;
+		 	npm.quiet = true;
+
+			if (err) {
+				console.log('install theme npm modules err',err);
+				callback(null,missingExtensionResult);
+			}
+			else {
+				npm.commands.install([themedir],
+				function (err) {
+					console.log('theme npm install err',err,themedir);
+					callback(null,missingExtensionResult,'installed theme node modules');
+				});	
+			}
+		});
+	}
+	else{
+		callback(null,missingExtensionResult,'no config.json for theme module install');
+	}
+};
+
 async.waterfall([
 	getInstalledExtensions,
 	getMissingExtensionsFromConfig,
-	installMissingExtensions
+	installMissingExtensions,
+	installMissingNodeModules,
+	getThemeName,
+	installThemeModules
 	],
 	function(err,result){	
 		if(err){

@@ -88,17 +88,17 @@ var userSchema = new Schema({
 		ref: 'Userrole'
 	}],
 	apikey: String,
-	twitterAccessToken: String,
-	twitterAccessTokenSecret: String,
-	twitterUsername: String,
-	twitterId: String,
-	facebookaccesstoken: String,
-	facebookusername: String,
-	facebookid: String,
-	foursquareAccessToken: String,
-	foursquareId: String,
-	foursquareName: String,
-	attributes: Schema.Types.Mixed,
+	// twitterAccessToken: String,
+	// twitterAccessTokenSecret: String,
+	// twitterUsername: String,
+	// twitterId: String,
+	// facebookaccesstoken: String,
+	// facebookusername: String,
+	// facebookid: String,
+	// foursquareAccessToken: String,
+	// foursquareId: String,
+	// foursquareName: String,
+	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
@@ -107,7 +107,7 @@ userSchema.pre('save', function (next, done) {
 	this._wasNew = this.isNew;
 	this.random = Math.random();
 
-	var badusername = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+	// var badusername = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	if (this.password !== undefined && this.password.length < 8) {
 		done(new Error('Password is too short'));
 	}
@@ -159,8 +159,8 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
 
 // Remember Me implementation helper method
 userSchema.methods.generateRandomToken = function () {
-	var user = this,
-		chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+	// var user = this,
+	var	chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
 		token = new Date().getTime() + '_';
 	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);

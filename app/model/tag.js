@@ -57,20 +57,6 @@ tagSchema.pre('save', function (next, done) {
 	}
 });
 
-// tagSchema.post('init', function (doc) {
-// 	console.log('model - tag.js - ' + doc._id + ' has been initialized from the db');
-// });
-// tagSchema.post('validate', function (doc) {
-// 	console.log('model - tag.js - ' + doc._id + ' has been validated (but not saved yet)');
-// });
-// tagSchema.post('save', function (doc) {
-// 	// this.db.models.Item.emit('created', this);
-// 	console.log('model - tag.js - ' + doc._id + ' has been saved');
-// });
-// tagSchema.post('remove', function (doc) {
-// 	console.log('model - tag.js - ' + doc._id + ' has been removed');
-// });
-
 tagSchema.methods.getChildren = function (getTagChildrenCallback) {
 	var currentTag = {
 			title: this.title,
@@ -128,10 +114,5 @@ tagSchema.methods.getChildren = function (getTagChildrenCallback) {
 		}
 	});
 };
-
-// tagSchema.statics.getRandomWorkout = function (options, callback) {
-// 	var self = this;
-// 	// queryHelper.getRandomDocument({model:self},callback);
-// };
 
 module.exports = tagSchema;

@@ -4,7 +4,7 @@ var async = require('async'),
 	moment = require('moment'),
 	merge = require('utils-merge'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	str2json = require('string-to-json'),
 	CoreUtilities,
 	CoreController,
@@ -93,30 +93,41 @@ var create = function (req, res) {
 var update = function (req, res) {
 	var updatecollection = CoreUtilities.removeEmptyObjectValues(req.body);
 	updatecollection.name = (updatecollection.name) ? updatecollection.name : CoreUtilities.makeNiceName(updatecollection.title);
-	if (updatecollection.items && updatecollection.items.length > 0) {
-		for (var x in updatecollection.items) {
-			updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
-		}
-	}
-	if (!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length > 0) {
-		updatecollection.primaryasset = updatecollection.assets[0];
-	}
-	if (updatecollection.date && updatecollection.time) {
-		updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
-	}
-	updatecollection = str2json.convert(updatecollection);
+	try{
 
-	CoreController.updateModel({
-		model: Collection,
-		id: updatecollection.docid,
-		updatedoc: updatecollection,
-		saverevision: true,
-		population: 'contenttypes',
-		res: res,
-		req: req,
-		successredirect: '/p-admin/collection/edit/',
-		appendid: true
-	});
+		if (updatecollection.items && updatecollection.items.length > 0) {
+			for (var x in updatecollection.items) {
+				// console.log('x',x,'updatecollection.items[x]',updatecollection.items[x]);
+				updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
+			}
+		}
+		if (!updatecollection.primaryasset && updatecollection.assets && updatecollection.assets.length > 0) {
+			updatecollection.primaryasset = updatecollection.assets[0];
+		}
+		if (updatecollection.date && updatecollection.time) {
+			updatecollection.publishat = new Date(moment(updatecollection.date + ' ' + updatecollection.time).format());
+		}
+		updatecollection = str2json.convert(updatecollection);
+
+		CoreController.updateModel({
+			model: Collection,
+			id: updatecollection.docid,
+			updatedoc: updatecollection,
+			saverevision: true,
+			population: 'contenttypes',
+			res: res,
+			req: req,
+			successredirect: '/p-admin/collection/edit/',
+			appendid: true
+		});
+	}
+	catch(e){
+		CoreController.handleDocumentQueryErrorResponse({
+			err: e,
+			res: res,
+			req: req
+		});
+	}
 };
 
 var append = function (req, res) {

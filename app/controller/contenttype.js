@@ -1,7 +1,7 @@
 'use strict';
 
 var async = require('async'),
-	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreControllerHelper = require('periodicjs.core.controller'),
 	Utilities = require('periodicjs.core.utilities'),
 	CoreController,
 	CoreUtilities,
