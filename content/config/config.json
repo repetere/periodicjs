@@ -1,21 +1,4 @@
 {
-  "application": {
-    "port": "8786",
-    "environment": "development"
-  },
-  "cookies": {
-    "cookieParser": "0xdz4ufdv5lmobt9mpl0w8mr1173z0k9"
-  },
-  "theme": "periodicjs.theme.periodical",
-  "status": "active",
-  "name": "Periodicjs",
-  "adminnotificationemail": "ecasilla01@gmail.com",
-  "homepage": "localhost:8786",
-  "sessions": {
-    "enabled": true,
-    "type": "mongo"
-  },
-  "crsf": true,
   "sessions": {
     "enabled": true,
     "type": "default"

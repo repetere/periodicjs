@@ -42,3 +42,7 @@ node_modules
 public/uploads/files
 !.gitignore
 !*.gitignore
+logs/development-2014.10.2.app.log
+logs/development-2014.10.3.app.log
+logs/development-2014.10.4.app.log
+logs/install-periodicjs.log
