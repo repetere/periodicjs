@@ -51,7 +51,10 @@ var collectionSchema = new Schema({
 		index: true
 	},
 	items: [{
-		order: Number,
+		order: {
+			type: Number,
+			'default': 1
+		},
 		additionalattributes: Schema.Types.Mixed,
 		item: {
 			type: ObjectId,
@@ -88,24 +91,5 @@ collectionSchema.pre('save', function (next, done) {
 		next();
 	}
 });
-
-// collectionSchema.post('init', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been initialized from the db');
-// });
-// collectionSchema.post('validate', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been validated (but not saved yet)');
-// });
-// collectionSchema.post('save', function (doc) {
-// 	// this.db.models.Item.emit('created', this);
-// 	console.log("model - collection.js - " + doc._id + ' has been saved');
-// });
-// collectionSchema.post('remove', function (doc) {
-// 	console.log("model - collection.js - " + doc._id + ' has been removed');
-// });
-
-// collectionSchema.statics.getRandomWorkout = function (options, callback) {
-// 	var self = this;
-// 	// queryHelper.getRandomDocument({model:self},callback);
-// };
 
 module.exports = collectionSchema;

@@ -1,5 +1,5 @@
 'use strict';
-var CoreControllerHelper = require('periodicjs.core.controllerhelper'),
+var CoreControllerHelper = require('periodicjs.core.controller'),
 	CoreController,
 	Contenttype,
 	AppDBSetting,

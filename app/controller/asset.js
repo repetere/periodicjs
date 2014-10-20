@@ -5,7 +5,7 @@ var path = require('path'),
 	fs = require('fs-extra'),
 	formidable = require('formidable'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -87,6 +87,7 @@ var upload = function (req, res, next) {
 var createassetfile = function (req, res) {
 	var newasset = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData);
 	newasset.name = CoreUtilities.makeNiceName(newasset.fileurl);
+	newasset.title = newasset.title || newasset.name;
 	newasset.author = req.user._id;
 	CoreController.loadModel({
 		model: MediaAsset,

@@ -8,7 +8,7 @@ var path = require('path'),
 	Utilities = require('periodicjs.core.utilities'),
 	CoreExtension,
 	CoreUtilities,
-	CoreControllerHelper = require('periodicjs.core.controllerhelper'),
+	CoreControllerHelper = require('periodicjs.core.controller'),
 	Decompress = require('decompress'),
 	// applicationController,
 	CoreController,
@@ -62,6 +62,7 @@ var install_viaNPM = function (options) {
 		logfile = options.logfile;
 	npm.load({
 			'strict-ssl': false,
+			'save-optional': true,
 			'production': true
 		},
 		function (err) {
@@ -73,6 +74,7 @@ var install_viaNPM = function (options) {
 				});
 			}
 			else {
+				npm['save-optional']=true;
 				npm.commands.install([repourl], function (err, data) {
 					if (err) {
 						install_logErrorOutput({
@@ -122,6 +124,7 @@ var upload_npminstall = function (options) {
 	npm.load({
 			'strict-ssl': false,
 			'production': true,
+			'save-optional': true,
 			prefix: path.join(extdir, extname)
 		},
 		function (err) {
@@ -132,6 +135,7 @@ var upload_npminstall = function (options) {
 				});
 			}
 			else {
+				npm['save-optional']=true;
 				npm.commands.install(function (err, data) {
 					if (err) {
 						install_logErrorOutput({
@@ -289,7 +293,7 @@ var cli = function (argv) {
 
 		install_logOutput({
 			logfile: logfile,
-			logdata: "beginning extension install: " + reponame,
+			logdata: 'beginning extension install: ' + reponame,
 			callback: function (err) {
 				if (err) {
 					throw new Error(err);

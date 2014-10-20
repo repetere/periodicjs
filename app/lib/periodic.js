@@ -79,6 +79,8 @@ var periodic = function () {
 		 * @instance
 		 */
 		db = database[app.get('env')];
+		appconfig.setSetting('dburl',db.url);
+
 		/** shortcut to db url in content/config/database.js
 		 * @instance
 		 */
@@ -89,6 +91,10 @@ var periodic = function () {
 		mngse = db.mongoose;
 
 		
+		/** if debug option is set output instance configuration */
+		if (appconfig.settings().debug) {
+			console.log(appconfig.settings());
+		}
 	};
 	/**
 	 * @description loads application logger configuration

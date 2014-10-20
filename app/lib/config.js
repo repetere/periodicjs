@@ -132,10 +132,6 @@ var appEnvironment = argv.e,
 		if (config.theme) {
 			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
 		}
-		/** if debug option is set output instance configuration */
-		if (config.debug) {
-			console.log(config);
-		}
 	}.bind(this);
 
 	this.init();

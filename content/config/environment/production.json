@@ -1,0 +1,12 @@
+{
+	"name": "Periodic Enterprise Content Management[prod]",
+	"application":{
+		"port": "8989",
+		"environment": "production"
+	},
+	"sessions":{
+		"enabled":true,
+		"type":"default"
+	},
+	"debug":false
+}

@@ -1,8 +1,9 @@
 'use strict';
 
 var path = require('path'),
+	async = require('async'),
 	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controllerhelper'),
+	ControllerHelper = require('periodicjs.core.controller'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -201,6 +202,160 @@ var loadUser = function (req, res, next) {
 	});
 };
 
+var loadUsersWithCount = function (req, res, next) {
+	req.headers.loadtagcount = true;
+	next();
+};
+
+var loadUsersWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.usersperpage || req.query.limit || 15;
+	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
+	next();
+};
+
+var getUsersData = function(options){
+	var parallelTask = {},
+ 		req = options.req,
+		res = options.res,
+ 		pagenum = req.query.pagenum - 1,
+		next = options.next,
+		query = options.query,
+		sort = req.query.sort,
+		callback = options.callback,
+		limit = req.query.limit || req.query.tagsperpage,
+		offset = req.query.offset || (pagenum*limit),
+		population = options.population,
+		orQuery = options.orQuery,
+    Userrole = mongoose.model('Userrole'),
+		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
+		parallelFilterTask = {};
+
+	req.controllerData = (req.controllerData) ? req.controllerData : {};
+
+	if (req.query.search !== undefined && req.query.search.length > 0) {
+		orQuery.push({
+			title: searchRegEx
+		}, {
+			'name': searchRegEx
+		});
+	}
+
+	parallelFilterTask.authors = function(cb){
+		if(req.query.filter_authors){
+			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
+
+			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	parallelFilterTask.userroles = function(cb){
+		if(req.query.filter_userroles){
+			var userrolesArray = (typeof req.query.filter_userroles==='string') ? req.query.filter_userroles.split(',') : req.query.filter_userroles;
+
+			Userrole.find({'name':{$in:userrolesArray}},'_id', function( err, userids){
+				cb(err, userids);
+			});
+		}
+		else{
+			cb(null,null);
+		}
+	};
+
+	async.parallel(
+		parallelFilterTask,
+		function(err,filters){
+			if(err){
+				CoreController.handleDocumentQueryErrorResponse({
+					err: err,
+					res: res,
+					req: req
+				});
+			}
+			else{
+				if(filters.authors){
+					var aarray =[];
+					for(var w in filters.authors){
+						aarray.push(filters.authors[w]._id);
+					}
+					orQuery.push({'authors':{$in:aarray}});
+				}
+				if(filters.userroles){
+					var urarray =[];
+					for(var q in filters.userroles){
+						urarray.push(filters.userroles[q]._id);
+					}
+					orQuery.push({'userroles':{$in:urarray}});
+				}
+				if(req.query.filter_accounttype){
+					var accounttypeArray = (typeof req.query.filter_accounttype==='string') ? req.query.filter_accounttype.split(',') : req.query.filter_accounttype;
+					orQuery.push({'accounttype':{$in:accounttypeArray}});
+				}
+				if(req.query.filter_activated){
+					orQuery.push({'activated': CoreUtilities.replaceBooleanStringObjectValues(req.query.filter_activated) });
+				}
+
+				if(orQuery.length>0){
+					query = {
+						$and: orQuery
+					};
+				}
+
+				parallelTask.userscount = function(cb){
+					if(req.headers.loadtagcount){
+						User.count(query, function( err, count){
+							cb(err, count);
+						});
+					}
+					else{
+						cb(null,null);
+					}
+				};
+				parallelTask.usersquery = function(cb){
+					CoreController.searchModel({
+						model: User,
+						query: query,
+						sort: sort,
+						limit: limit,
+						offset: offset,
+						population: population,
+						callback: function (err, documents) {
+							cb(err,documents);
+						}
+					});
+				};
+
+				async.parallel(
+					parallelTask,
+					function(err,results){
+						if(err){
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else{
+							// console.log(results);
+							req.controllerData.users = results.usersquery;
+							req.controllerData.userscount = results.userscount;
+							if(callback){
+								callback(req, res);
+							}
+							else{
+								next();								
+							}
+						}
+				});	
+			}
+	});
+};
+
+
 var loadUsers = function (req, res, next) {
 	var query,
 		offset = req.query.offset,
@@ -285,6 +440,9 @@ var controller = function (resources) {
 		remove: remove,
 		loadUser: loadUser,
 		loadUsers: loadUsers,
+		loadUsersWithDefaultLimit: loadUsersWithDefaultLimit,
+		loadUsersWithCount: loadUsersWithCount,
+		getUsersData: getUsersData,
 		searchResults: searchResults
 	};
 };

@@ -150,7 +150,7 @@ module.exports = function (grunt) {
 				tasks: ['newer:less']
 			},
 			js: {
-				files: ['<%= jshint.all %>', 'content/extensions/node_modules/periodicjs*/resources/**/*.js'],
+				files: ['<%= jshint.all %>'],
 				tasks: ['newer:simplemocha:all', 'newer:jshint:all', 'newer:jsbeautifier', 'newer:browserify', 'newer:uglify:all', 'newer:copy:main', 'doc']
 			}
 		}
