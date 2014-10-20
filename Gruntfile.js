@@ -25,7 +25,8 @@ module.exports = function (grunt) {
 				reporter: 'spec'
 			},
 			all: {
-				src: 'test/**/*.js'
+				src: 'test/unit/**/*.js'
+				// src: 'test/**/*.js'
 			}
 		},
 		jshint: {
@@ -37,6 +38,7 @@ module.exports = function (grunt) {
 				'index.js',
 				'app/**/*.js',
 				'!app/doc/**/*.js',
+				'test/unit/**/*.js',
 				'test/**/*.js',
 				'package.json',
 				'config/**/*.js',
@@ -71,8 +73,27 @@ module.exports = function (grunt) {
 					}
 				}],
 				options: {}
+			},
+			test:{
+					files: {
+	            'test/browserified.js': ['test/unit/**/*.js'],
+	        },
+        options: {
+            debug: true,
+						aliasMappings: [{
+					    cwd: '../app/',
+					    dest: 'App',
+					    src: ['app/**/*.js']
+					}]
+        }
 			}
 		},
+
+		strip_code:{
+			src: 'app/**/*.js',
+			options:{}
+		},
+
 		uglify: {
 			options: {
 				sourceMap: true,
@@ -147,6 +168,8 @@ module.exports = function (grunt) {
 		}
 	}
 	grunt.registerTask('doc', 'jsdoc');
-
-	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
+	grunt.registerTask('test','simplemocha');
+	grunt.registerTask('testem', ['newer:browserify:test'])
+	grunt.registerTask('default', ['jshint', 'browserify', 'doc', 'uglify', 'simplemocha', 'less']);
+	grunt.registerTask('strip',['strip_code'])
 };

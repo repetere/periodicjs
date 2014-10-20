@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Module: periodic/init</title>
-    
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,15 +16,15 @@
 <body>
 
 <div id="main">
-    
+
     <h1 class="page-title">Module: periodic/init</h1>
-    
+
     
 
 
 
 <section>
-    
+
 <header>
     <h2>
         <span class="ancestors"><a href="global.html#periodic">periodic</a></span>
@@ -32,80 +32,364 @@
     periodic/init
     </h2>
     
-</header>  
+</header>
 
 <article>
     <div class="container-overview">
     
-    
+
     
         
             <div class="description"><p>initializes periodic express configuration options</p></div>
         
-        
+
         
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line67">line 67</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
-        
+
         
     
     </div>
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
-        
+        <h3 class="subsection-title">Members</h3>
+
         <dl>
             
 <dt>
-    <h4 class="name" id="applicationRouting"><span class="type-signature">&lt;static> </span>applicationRouting<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+    <h4 class="name" id="appconfig"><span class="type-signature"></span>appconfig<span class="type-signature"></span></h4>
+
     
 </dt>
 <dd>
     
+    <div class="description">
+        <p>creates instance of configuration object</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line75">line 75</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="db"><span class="type-signature"></span>db<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>environment based database configuration</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line81">line 81</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="dburl"><span class="type-signature"></span>dburl<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>shortcut to db url in content/config/database.js</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="logger"><span class="type-signature"></span>logger<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>winston logger instance based on  configuration settings in content/config/logger.js</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line98">line 98</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="mngse"><span class="type-signature"></span>mngse<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>instance of mongoose connection based on configuration settings in content/config/database.js</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="applicationRouting"><span class="type-signature">&lt;static> </span>applicationRouting<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+
     
     <div class="description">
         <p>application routing options</p>
@@ -113,56 +397,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line230">line 230</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -170,11 +456,11 @@
             
 <dt>
     <h4 class="name" id="appLogging"><span class="type-signature">&lt;static> </span>appLogging<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>set application logging options</p>
@@ -182,56 +468,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line151">line 151</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -239,11 +527,11 @@
             
 <dt>
     <h4 class="name" id="catchErrors"><span class="type-signature">&lt;static> </span>catchErrors<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>exception catching settings</p>
@@ -251,56 +539,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line286">line 286</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -308,11 +598,11 @@
             
 <dt>
     <h4 class="name" id="expressSettings"><span class="type-signature">&lt;static> </span>expressSettings<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>sets up standard express settings</p>
@@ -320,56 +610,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line117">line 117</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -377,11 +669,11 @@
             
 <dt>
     <h4 class="name" id="loadConfiguration"><span class="type-signature">&lt;static> </span>loadConfiguration<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>loads the periodic configuration options</p>
@@ -389,56 +681,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line71">line 71</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -446,11 +740,11 @@
             
 <dt>
     <h4 class="name" id="pageCompression"><span class="type-signature">&lt;static> </span>pageCompression<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>use gzip compression if enabled in configuration options</p>
@@ -458,56 +752,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line143">line 143</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -515,11 +811,11 @@
             
 <dt>
     <h4 class="name" id="serverStatus"><span class="type-signature">&lt;static> </span>serverStatus<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>application server status</p>
@@ -527,56 +823,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line253">line 253</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -584,11 +882,11 @@
             
 <dt>
     <h4 class="name" id="staticCaching"><span class="type-signature">&lt;static> </span>staticCaching<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>set reponse cache settings for static assets, in dev mode disable caching</p>
@@ -596,56 +894,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line131">line 131</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -653,11 +953,11 @@
             
 <dt>
     <h4 class="name" id="useLocals"><span class="type-signature">&lt;static> </span>useLocals<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>template rendering helper functions and objects</p>
@@ -665,56 +965,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line214">line 214</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -722,11 +1024,11 @@
             
 <dt>
     <h4 class="name" id="useLogger"><span class="type-signature">&lt;static> </span>useLogger<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>loads application logger configuration</p>
@@ -734,56 +1036,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line94">line 94</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -791,11 +1095,11 @@
             
 <dt>
     <h4 class="name" id="useSessions"><span class="type-signature">&lt;static> </span>useSessions<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>set up express application session configuration</p>
@@ -803,56 +1107,58 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line182">line 182</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
@@ -860,11 +1166,11 @@
             
 <dt>
     <h4 class="name" id="viewSettings"><span class="type-signature">&lt;static> </span>viewSettings<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         <p>configure express view rendering options</p>
@@ -872,42 +1178,42 @@
     
 
     
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+
     
+<dl class="details">
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="periodic.js.html">app/lib/periodic.js</a>, <a href="periodic.js.html#line108">line 108</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
     <dt class="tag-todo">To Do:</dt>
     <dd class="tag-todo">
@@ -918,29 +1224,31 @@
     
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
@@ -948,13 +1256,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-config.html">config</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#periodic">periodic</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__packageJsonFileVersion">__packageJsonFileVersion</a></li><li><a href="global.html#getConfigFilePath">getConfigFilePath</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#periodic">periodic</a></li><li><a href="global.html#setConfig">setConfig</a></li><li><a href="global.html#setSetting">setSetting</a></li><li><a href="global.html#settings">settings</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 21 2014 03:15:42 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Oct 07 2014 17:11:37 GMT-0300 (ART)
 </footer>
 
 <script> prettyPrint(); </script>

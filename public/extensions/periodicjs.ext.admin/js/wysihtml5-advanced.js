@@ -111,7 +111,7 @@ var wysihtml5ParserRules = {
             "remove": 1
         },
         "form": {
-            "rename_tag": "div"
+            // "rename_tag": "div"
         },
         "rt": {
             "rename_tag": "span"
@@ -293,7 +293,7 @@ var wysihtml5ParserRules = {
             "remove": 1
         },
         "input": {
-            "remove": 1
+            // "remove": 1
         },
         "table": {},
         "keygen": {
@@ -367,9 +367,7 @@ var wysihtml5ParserRules = {
         "frame": {
             "remove": 1
         },
-        "section": {
-            "rename_tag": "div"
-        },
+        "section": { },
         "body": {
             "rename_tag": "div"
         },
@@ -409,7 +407,7 @@ var wysihtml5ParserRules = {
             }
         },
         "textarea": {
-            "rename_tag": "span"
+            // "rename_tag": "span"
         },
         "embed": {
             "remove": 1
@@ -500,7 +498,7 @@ var wysihtml5ParserRules = {
             "remove": 1
         },
         "article": {
-            "rename_tag": "div"
+            // "rename_tag": "div"
         },
         "cite": {},
         "link": {

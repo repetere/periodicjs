@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Source: app/lib/config.js</title>
-    
+
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
@@ -16,16 +16,16 @@
 <body>
 
 <div id="main">
-    
+
     <h1 class="page-title">Source: app/lib/config.js</h1>
-    
+
     
 
 
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>/*
+            <pre class="prettyprint source linenums"><code>/*
  * periodic
  * http://github.com/typesettin/periodic
  *
@@ -35,9 +35,9 @@
 'use strict';
 
 var fs = require('fs-extra'),
-	extend = require('util-extend'),
-	path = require('path'),
-	argv = require('optimist').argv;
+		extend = require('util-extend'),
+		path = require('path'),
+		argv = require('optimist').argv;
 /**
  * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
@@ -45,14 +45,17 @@ var fs = require('fs-extra'),
  * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
  * @license MIT
  * @module config
+ * @constructor Config
  * @requires module:fs
  * @requires module:util-extent
  * @requires module:optimist
  * @throws {Error} If missing configuration files
  * @todo to do later
- */
-var config = function () {
-	var appEnvironment = argv.e,
+ **/
+
+var Config = function () {
+
+var appEnvironment = argv.e,
 		appPort = argv.p,
 		packagejsonFileJSON,
 		configurationFile,
@@ -63,7 +66,7 @@ var config = function () {
 		configurationDefaultFileJSON,
 		config = {};
 
-	/** 
+	/**
 	 * gets the configuration information
 	 * @return { object } current instance configuration
 	 */
@@ -71,7 +74,7 @@ var config = function () {
 		return config;
 	};
 
-	/** 
+	/**
 	 * augments the configuration information
 	 * @augments {object} appends instance configuration
 	 * @param {string} name name of new configuration setting
@@ -81,8 +84,7 @@ var config = function () {
 		this[name] = value;
 	}.bind(this);
 
-
-	/** 
+	/**
 	 * augments the configuration information
 	 * @augments {object} appends instance configuration
 	 * @param {string} name name of new configuration setting
@@ -92,24 +94,34 @@ var config = function () {
 		config[name] = value;
 	}.bind(this);
 
-	/** 
+	/**
 	 * generate file path for config files
+	 * @param {string} the name of the file in content/config/environment
 	 * @return { string } file path for config file
 	 */
-	this.getConfigFilePath = function (config) {
+	this.getConfigFilePath = function (filename) {
 		var directory = path.resolve(__dirname, '../../content/config/environment/'),
-			file = config + '.json';
+			file = filename + '.json';
 		return path.join(directory, file);
 	};
 
-	/** 
+	/**
+	* Get The package.json version
+	* @return { string } file path for config file
+	*/
+	this.__packageJsonFileVersion = function () {
+		var packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		return packagejsonFileJSON.version
+	}
+
+	/**
 	 * loads app configuration
 	 * @throws {Error} If missing config file
 	 * @this {object} configuration instance
 	 */
 	this.init = function () {
-		/** get info from package.json */
-		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		// /** get info from package.json */
+		// packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
 
 		/** load user config file: content/config/config.json */
 		configurationOverrideFileJSON = fs.readJSONSync(configurationOverrideFile);
@@ -124,11 +136,11 @@ var config = function () {
 		}
 		else {
 			appEnvironment = (argv.e) ?
-				argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
+				argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' &amp;&amp; typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
 				configurationOverrideFileJSON.application.environment : null;
 		}
 
-		/** set & load file path for base environment config */
+		/** set &amp; load file path for base environment config */
 		configurationFile = this.getConfigFilePath(appEnvironment);
 
 		/** override environment data with user config */
@@ -138,7 +150,7 @@ var config = function () {
 			config = extend(config, configurationFileJSON);
 		}
 		config = extend(config, configurationOverrideFileJSON);
-		config.version = packagejsonFileJSON.version;
+		config.version = this.__packageJsonFileVersion();
 
 		/** override port with command line argument */
 		config.application.port = (appPort) ? appPort : config.application.port;
@@ -156,7 +168,7 @@ var config = function () {
 	this.init();
 };
 
-module.exports = config;
+module.exports = Config;
 </code></pre>
         </article>
     </section>
@@ -167,13 +179,13 @@ module.exports = config;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-config.html">config</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#periodic">periodic</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-cli.html">cli</a></li><li><a href="module-periodic.html">periodic</a></li><li><a href="init.html">periodic/init</a></li><li><a href="module-routes.html">routes</a></li><li><a href="module-staticViewHelper.html">staticViewHelper</a></li><li><a href="themehelper.html">staticViewHelper/themehelper</a></li><li><a href="viewhelper.html">staticViewHelper/viewhelper</a></li><li><a href="module-themes.html">themes</a></li></ul><h3>Classes</h3><ul><li><a href="Config.html">Config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__packageJsonFileVersion">__packageJsonFileVersion</a></li><li><a href="global.html#getConfigFilePath">getConfigFilePath</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#periodic">periodic</a></li><li><a href="global.html#setConfig">setConfig</a></li><li><a href="global.html#setSetting">setSetting</a></li><li><a href="global.html#settings">settings</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 21 2014 03:15:42 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Oct 07 2014 17:11:37 GMT-0300 (ART)
 </footer>
 
 <script> prettyPrint(); </script>

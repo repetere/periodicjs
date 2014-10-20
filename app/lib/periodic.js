@@ -57,7 +57,7 @@ var periodic = function () {
 		dburl,
 		mngse;
 	//https://github.com/expressjs/timeout
-	//https://github.com/expressjs/vhost 
+	//https://github.com/expressjs/vhost
 
 
 	/** initializes periodic express configuration options
@@ -74,7 +74,7 @@ var periodic = function () {
 		 */
 		appconfig = new Config();
 		app.set('port', appconfig.settings().application.port);
-		app.set('env', appconfig.settings().application.environment);
+		app.set('env', 	appconfig.settings().application.environment);
 		/** environment based database configuration
 		 * @instance
 		 */
@@ -89,11 +89,15 @@ var periodic = function () {
 		 * @instance
 		 */
 		mngse = db.mongoose;
+
+		
 		/** if debug option is set output instance configuration */
 		if (appconfig.settings().debug) {
 			console.log(appconfig.settings());
 		}
 	};
+
+
 	/**
 	 * @description loads application logger configuration
 	 */
@@ -333,7 +337,10 @@ var periodic = function () {
 
 	return {
 		app: app,
-		port: app.get('port')
+		port: app.get('port'),
+		/* test-code */
+		init:init
+		/* end-test-code */
 	};
 };
 

@@ -1,4 +1,97 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*
+ * classie
+ * http://github.amexpub.com/modules/classie
+ *
+ * Copyright (c) 2013 AmexPub. All rights reserved.
+ */
+
+module.exports = require('./lib/classie');
+
+},{"./lib/classie":2}],2:[function(require,module,exports){
+/*!
+ * classie - class helper functions
+ * from bonzo https://github.com/ded/bonzo
+ * 
+ * classie.has( elem, 'my-class' ) -> true/false
+ * classie.add( elem, 'my-new-class' )
+ * classie.remove( elem, 'my-unwanted-class' )
+ * classie.toggle( elem, 'my-class' )
+ */
+
+/*jshint browser: true, strict: true, undef: true */
+/*global define: false */
+'use strict';
+
+  // class helper functions from bonzo https://github.com/ded/bonzo
+
+  function classReg( className ) {
+    return new RegExp("(^|\\s+)" + className + "(\\s+|$)");
+  }
+
+  // classList support for class management
+  // altho to be fair, the api sucks because it won't accept multiple classes at once
+  var hasClass, addClass, removeClass;
+
+  if (typeof document === "object" && 'classList' in document.documentElement ) {
+    hasClass = function( elem, c ) {
+      return elem.classList.contains( c );
+    };
+    addClass = function( elem, c ) {
+      elem.classList.add( c );
+    };
+    removeClass = function( elem, c ) {
+      elem.classList.remove( c );
+    };
+  }
+  else {
+    hasClass = function( elem, c ) {
+      return classReg( c ).test( elem.className );
+    };
+    addClass = function( elem, c ) {
+      if ( !hasClass( elem, c ) ) {
+        elem.className = elem.className + ' ' + c;
+      }
+    };
+    removeClass = function( elem, c ) {
+      elem.className = elem.className.replace( classReg( c ), ' ' );
+    };
+  }
+
+  function toggleClass( elem, c ) {
+    var fn = hasClass( elem, c ) ? removeClass : addClass;
+    fn( elem, c );
+  }
+
+  var classie = {
+    // full names
+    hasClass: hasClass,
+    addClass: addClass,
+    removeClass: removeClass,
+    toggleClass: toggleClass,
+    // short names
+    has: hasClass,
+    add: addClass,
+    remove: removeClass,
+    toggle: toggleClass
+  };
+
+  // transport
+
+  if ( typeof module === "object" && module && typeof module.exports === "object" ) {
+    // commonjs / browserify
+    module.exports = classie;
+  } else {
+    // AMD
+    define(classie);
+  }
+
+  // If there is a window object, that at least has a document property,
+  // define classie
+  if ( typeof window === "object" && typeof window.document === "object" ) {
+    window.classie = classie;
+  }
+},{}],3:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,10 +151,8 @@ EventEmitter.prototype.emit = function(type) {
       er = arguments[1];
       if (er instanceof Error) {
         throw er; // Unhandled 'error' event
-      } else {
-        throw TypeError('Uncaught, unspecified "error" event.');
       }
-      return false;
+      throw TypeError('Uncaught, unspecified "error" event.');
     }
   }
 
@@ -303,7 +394,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -328,7 +419,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -393,14 +484,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -989,8 +1080,8 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":4,"FWaASH":3,"inherits":2}],6:[function(require,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":6,"_process":5,"inherits":4}],8:[function(require,module,exports){
 /*
  * manuscript
  * http://github.com/typesettin/manuscript
@@ -1000,7 +1091,7 @@ function hasOwnProperty(obj, prop) {
 
 module.exports = require('./lib/letterpress');
 
-},{"./lib/letterpress":7}],7:[function(require,module,exports){
+},{"./lib/letterpress":9}],9:[function(require,module,exports){
 /*
  * letterpress
  * http://github.com/typesettin/letterpress
@@ -1394,100 +1485,7 @@ module.exports = letterpress;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.letterpress = letterpress;
 }
-},{"classie":8,"domhelper":10,"events":1,"superagent":13,"util":5,"util-extend":12}],8:[function(require,module,exports){
-/*
- * classie
- * http://github.amexpub.com/modules/classie
- *
- * Copyright (c) 2013 AmexPub. All rights reserved.
- */
-
-module.exports = require('./lib/classie');
-
-},{"./lib/classie":9}],9:[function(require,module,exports){
-/*!
- * classie - class helper functions
- * from bonzo https://github.com/ded/bonzo
- * 
- * classie.has( elem, 'my-class' ) -> true/false
- * classie.add( elem, 'my-new-class' )
- * classie.remove( elem, 'my-unwanted-class' )
- * classie.toggle( elem, 'my-class' )
- */
-
-/*jshint browser: true, strict: true, undef: true */
-/*global define: false */
-'use strict';
-
-  // class helper functions from bonzo https://github.com/ded/bonzo
-
-  function classReg( className ) {
-    return new RegExp("(^|\\s+)" + className + "(\\s+|$)");
-  }
-
-  // classList support for class management
-  // altho to be fair, the api sucks because it won't accept multiple classes at once
-  var hasClass, addClass, removeClass;
-
-  if (typeof document === "object" && 'classList' in document.documentElement ) {
-    hasClass = function( elem, c ) {
-      return elem.classList.contains( c );
-    };
-    addClass = function( elem, c ) {
-      elem.classList.add( c );
-    };
-    removeClass = function( elem, c ) {
-      elem.classList.remove( c );
-    };
-  }
-  else {
-    hasClass = function( elem, c ) {
-      return classReg( c ).test( elem.className );
-    };
-    addClass = function( elem, c ) {
-      if ( !hasClass( elem, c ) ) {
-        elem.className = elem.className + ' ' + c;
-      }
-    };
-    removeClass = function( elem, c ) {
-      elem.className = elem.className.replace( classReg( c ), ' ' );
-    };
-  }
-
-  function toggleClass( elem, c ) {
-    var fn = hasClass( elem, c ) ? removeClass : addClass;
-    fn( elem, c );
-  }
-
-  var classie = {
-    // full names
-    hasClass: hasClass,
-    addClass: addClass,
-    removeClass: removeClass,
-    toggleClass: toggleClass,
-    // short names
-    has: hasClass,
-    add: addClass,
-    remove: removeClass,
-    toggle: toggleClass
-  };
-
-  // transport
-
-  if ( typeof module === "object" && module && typeof module.exports === "object" ) {
-    // commonjs / browserify
-    module.exports = classie;
-  } else {
-    // AMD
-    define(classie);
-  }
-
-  // If there is a window object, that at least has a document property,
-  // define classie
-  if ( typeof window === "object" && typeof window.document === "object" ) {
-    window.classie = classie;
-  }
-},{}],10:[function(require,module,exports){
+},{"classie":1,"domhelper":10,"events":3,"superagent":13,"util":7,"util-extend":12}],10:[function(require,module,exports){
 /*
  * domhelper
  * http://github.com/yawetse/domhelper
@@ -1837,7 +1835,7 @@ module.exports = domhelper;
 if ( typeof window === "object" && typeof window.document === "object" ) {
 	window.domhelper = domhelper;
 }
-},{"classie":8}],12:[function(require,module,exports){
+},{"classie":1}],12:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3117,27 +3115,35 @@ module.exports = function(arr, fn, initial){
 },{}],16:[function(require,module,exports){
 'use strict';
 
-var updatemedia = function( element, mediadoc ){
-	var updateMediaResultHtml = function(element,mediadoc){
+var updatemedia = function (element, mediadoc, additem) {
+	var updateMediaResultHtml = function (element, mediadoc) {
 		element.appendChild(generateMediaHtml(mediadoc));
 	};
 
-	var generateMediaHtml = function(mediadoc){
+	var generateMediaHtml = function (mediadoc) {
 		var mediaHtml = document.createElement('div'),
-			htmlForInnerMedia='';
-		mediaHtml.setAttribute('class','_pea-col-span4 media-item-x');
-		mediaHtml.setAttribute('data-id',mediadoc._id);
-		htmlForInnerMedia+='<input style="display:none;" name="assets" type="checkbox" value="'+mediadoc._id+'" checked="checked"></input>';
-		if(mediadoc.assettype.match('image')){
-			htmlForInnerMedia+='<img class="_pea-col-span11" src="'+mediadoc.fileurl+'"/>';
+			htmlForInnerMedia = '';
+		mediaHtml.setAttribute('class', '_pea-col-span4 media-item-x');
+		mediaHtml.setAttribute('data-id', mediadoc._id);
+		if (!additem) {
+			htmlForInnerMedia += '<input style="display:none;" name="assets" type="checkbox" value="' + mediadoc._id + '" checked="checked"></input>';
 		}
-		else{
-			htmlForInnerMedia+='<div class="_pea-col-span11"> '+mediadoc.fileurl+'</div>';
+		if (mediadoc.assettype.match('image')) {
+			htmlForInnerMedia += '<img class="_pea-col-span11" title="' + mediadoc.name + '" src="' + mediadoc.fileurl + '"/>';
 		}
-		htmlForInnerMedia+='<div class="mix-options _pea-text-right">';
-		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="make primary asset" class="_pea-button make-primary _pea-color-warn">*</a>';
-		htmlForInnerMedia+='<a data-assetid="'+mediadoc._id+'" title="remove asset" class="_pea-button remove-asset _pea-color-error">x</a>';
-		htmlForInnerMedia+='</div>';
+		else {
+			htmlForInnerMedia += '<div class="_pea-col-span11"> ' + mediadoc.fileurl + '</div>';
+		}
+		htmlForInnerMedia += '<div class="mix-options _pea-text-right">';
+		if (additem) {
+			htmlForInnerMedia += '<a data-id="' + mediadoc._id + '"  title="' + mediadoc.name + '" class="_pea-button add-asset-item _pea-color-success">+</a>';
+		}
+		else {
+			htmlForInnerMedia += '<a href="/p-admin/asset/' + mediadoc._id + '" target="_blank"  title="edit asset" class="_pea-button edit-asset _pea-color-info">i</a>';
+			htmlForInnerMedia += '<a data-assetid="' + mediadoc._id + '" title="make primary asset" class="_pea-button make-primary _pea-color-warn">*</a>';
+			htmlForInnerMedia += '<a data-assetid="' + mediadoc._id + '" title="remove asset" class="_pea-button remove-asset _pea-color-error">x</a>';
+		}
+		htmlForInnerMedia += '</div>';
 		mediaHtml.innerHTML = htmlForInnerMedia;
 		return mediaHtml;
 	};
@@ -3145,157 +3151,127 @@ var updatemedia = function( element, mediadoc ){
 	updateMediaResultHtml(element, mediadoc);
 };
 
-updatemedia.handleMediaButtonClick = function(e){
+updatemedia.handleMediaButtonClick = function (e) {
 	var eTarget = e.target;
-	if(eTarget.getAttribute('class') && eTarget.getAttribute('class').match('remove-asset')){
+	if (eTarget.getAttribute('class') && eTarget.getAttribute('class').match('remove-asset')) {
 		document.getElementById('media-files-result').removeChild(eTarget.parentElement.parentElement);
 	}
-	else if(eTarget.getAttribute('class') && eTarget.getAttribute('class').match('make-primary')){
+	else if (eTarget.getAttribute('class') && eTarget.getAttribute('class').match('make-primary')) {
 		document.getElementById('primaryasset-input').value = eTarget.getAttribute('data-assetid');
 		var mpbuttons = document.querySelectorAll('._pea-button.make-primary');
-		for(var x in mpbuttons){
-			if(typeof mpbuttons[x]==='object'){
-				mpbuttons[x].style.display='inline-block';
+		for (var x in mpbuttons) {
+			if (typeof mpbuttons[x] === 'object') {
+				mpbuttons[x].style.display = 'inline-block';
 			}
 		}
-		eTarget.style.display='none';
+		eTarget.style.display = 'none';
 	}
 };
 
-updatemedia.uploadFile = function(mediafilesresult,file,options){
+updatemedia.uploadFile = function (mediafilesresult, file, options) {
 	var reader = new FileReader(),
-			client = new XMLHttpRequest(),
-			formData = new FormData(),
-			posturl = (options && options.posturl) ? options.posturl : '/mediaasset/new?format=json',
-			callback = (options && options.callback) ? options.callback : function(data){
-				updatemedia(mediafilesresult,data);
-			};
+		client = new XMLHttpRequest(),
+		formData = new FormData(),
+		posturl = (options && options.posturl) ? options.posturl : '/mediaasset/new?format=json',
+		callback = (options && options.callback) ? options.callback : function (data) {
+			updatemedia(mediafilesresult, data);
+		};
 
-	reader.onload = function() {
+	reader.onload = function () {
 		// console.log(e);
 		// console.log(file);
-		formData.append('mediafile',file,file.name);
+		formData.append('mediafile', file, file.name);
 
 		client.open('post', posturl, true);
-		client.setRequestHeader('x-csrf-token', document.querySelector('input[name=_csrf]').value );
-		client.send(formData);  /* Send to server */ 
+		client.setRequestHeader('x-csrf-token', document.querySelector('input[name=_csrf]').value);
+		client.send(formData); /* Send to server */
 	};
 	reader.readAsDataURL(file);
-	client.onreadystatechange = function(){
-		if(client.readyState === 4){
-			try{
+	client.onreadystatechange = function () {
+		if (client.readyState === 4) {
+			try {
 				var res = JSON.parse(client.response);
-				if(res.result==='error'){
-					window.ribbonNotification.showRibbon( res.data.error,4000,'error');
+				if (res.result === 'error') {
+					window.ribbonNotification.showRibbon(res.data.error, 4000, 'error');
 				}
-				else if(client.status !== 200){
-					window.ribbonNotification.showRibbon( client.status+': '+client.statusText,4000,'error');
+				else if (client.status !== 200) {
+					window.ribbonNotification.showRibbon(client.status + ': ' + client.statusText, 4000, 'error');
 				}
-				else{
-					window.ribbonNotification.showRibbon('saved',4000,'success');
+				else {
+					window.ribbonNotification.showRibbon('saved', 4000, 'success');
 					callback(res.data.doc);
 				}
 			}
-			catch(e){
-				window.ribbonNotification.showRibbon( e.message,4000,'error');
+			catch (e) {
+				window.ribbonNotification.showRibbon(e.message, 4000, 'error');
 				console.log(e);
 			}
 		}
 	};
 };
 
-module.exports =updatemedia;
+module.exports = updatemedia;
+
 },{}],17:[function(require,module,exports){
 'use strict';
 
 var letterpress = require('letterpressjs'),
-	request = require('superagent'),
 	updatemedia = require('./updatemedia'),
 	roles_lp = new letterpress({
-		idSelector : '#padmin-userroles',
+		idSelector: '#padmin-userroles',
 		sourcedata: '/userroles/search.json',
 		sourcearrayname: 'userroles',
 		valueLabel: 'name',
 		disablenewtags: true,
-		createTagFunc:function(id,val,callback){			
-			if(id==='NEWTAG' || id==='SELECT'){
-				window.ribbonNotification.showRibbon( 'role does not exist',4000,'error');
+		createTagFunc: function (id, val, callback) {
+			if (id === 'NEWTAG' || id === 'SELECT') {
+				window.ribbonNotification.showRibbon('role does not exist', 4000, 'error');
 			}
-			else if(id!=='SELECT'||id!=='NEWTAG'){
-				callback(id,val);
+			else if (id !== 'SELECT' || id !== 'NEWTAG') {
+				callback(id, val);
 			}
 		}
 	}),
-	deleteButton,
 	mediafileinput,
 	mediafilesresult;
 
-var deleteUser = function(e) {
-	e.preventDefault();
-	var eTarget = e.target;
-	request
-		.post(eTarget.getAttribute('data-href'))
-		.set('Accept', 'application/json')
-		.send({ 
-			_csrf: document.querySelector('input[name=_csrf]').value 
-		})
-		.query({ format: 'json'})
-		.end(function(error, res){
-			if(res.error){
-				error = res.error;
-			}
-			if(error || res.status === 500){
-				window.ribbonNotification.showRibbon( error.message,4000,'error');
-			}
-			else{
-				if(res.body.result==='error'){
-					window.ribbonNotification.showRibbon( res.body.data.error,4000,'error');
-				}
-				else{
-					window.ribbonNotification.showRibbon( res.body.data ,4000,'warn');
-					// var assetid = eTarget.getAttribute('assetid');
-					// var assettr = document.querySelector('[data-tr-assetid="'+assetid+'"]');
-					// removeTableRow(assettr);
-				}
-			}
-	});
-};
-
-var uploadMediaFiles = function(e){
+var uploadMediaFiles = function (e) {
 	// fetch FileList object
-	var files = e.target.files || e.dataTransfer.files, 
+	var files = e.target.files || e.dataTransfer.files,
 		f,
-		updateuserpic = function(mediadoc){
+		updateuserpic = function (mediadoc) {
 			console.log(mediadoc);
-			updatemedia(mediafilesresult,mediadoc);
+			updatemedia(mediafilesresult, mediadoc);
 		};
 
 	// process all File objects
-	for (var i = 0; i <files.length; i++) {
+	for (var i = 0; i < files.length; i++) {
 		f = files[i];
 		// ParseFile(f);
 		// uploadFile(f);
-		updatemedia.uploadFile(mediafilesresult,f,{
-			callback:updateuserpic
+		updatemedia.uploadFile(mediafilesresult, f, {
+			callback: updateuserpic
 		});
 	}
 };
 
-window.addEventListener('load',function(){
-	if(document.querySelector('#padmin-userroles')){
+window.backToUsersLanding = function () {
+	window.location = '/p-admin/users';
+};
+
+window.addEventListener('load', function () {
+	if (document.querySelector('#padmin-userroles')) {
 		roles_lp.init();
-		if(typeof window.userprofileuseroles ==='object'){
+		if (typeof window.userprofileuseroles === 'object') {
 			roles_lp.setPreloadDataObject(window.userprofileuseroles);
 		}
 	}
-	deleteButton = document.getElementById('delete-user');
 	window.ajaxFormEventListers('._pea-ajax-form');
-	if(deleteButton){
-		deleteButton.addEventListener('click',deleteUser,false);
-	}
+
 	mediafileinput = document.getElementById('padmin-mediafiles');
 	mediafilesresult = document.getElementById('media-files-result');
-	mediafileinput.addEventListener('change',uploadMediaFiles,false);
-	mediafilesresult.addEventListener('click',updatemedia.handleMediaButtonClick,false);
+	mediafileinput.addEventListener('change', uploadMediaFiles, false);
+	mediafilesresult.addEventListener('click', updatemedia.handleMediaButtonClick, false);
 });
-},{"./updatemedia":16,"letterpressjs":6,"superagent":13}]},{},[17]);
+
+},{"./updatemedia":16,"letterpressjs":8}]},{},[17]);

@@ -1,0 +1,19 @@
+{
+  "launch_in_dev" : ["Node"],
+  "launch_in_ci": ["JsCoverage","Chrome","Firefox","Safari","MochaCoverage"],
+  "framework": "mocha+chai",
+  "launchers": {
+    "Node": {
+      "command": "mocha --recursive -c -s 1000 -R spec -u bdd -t 3000 --inline-diffs "
+    },
+    "MochaCoverage" : {
+      "command": "mocha --recursive --reporter html-cov > test/coverage/coverage.html"
+    },
+    "JsCoverage": "jscoverage content/ test/coverage/content && jscoverage app/ test/coverage/app"
+  },
+  "src_files": [
+    "app/**/*.js",
+    "test/helpers/*.js",
+    "test/unit/**/*.js"
+  ]
+}

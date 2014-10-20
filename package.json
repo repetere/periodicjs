@@ -73,6 +73,7 @@
   "devDependencies": {
     "browserify": "~4.2.1",
     "chai": "1.9.1",
+    "chai-fs": "^0.1.0",
     "grunt": ">=0.4.5",
     "grunt-browserify": ">=2.1.3",
     "grunt-contrib-copy": ">=0.5.0",
