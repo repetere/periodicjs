@@ -1,16 +1,17 @@
+'use strict';
+/*jshint expr: true*/
+
 var path = require('path'),
-    periodicjs = require(path.resolve(process.cwd(),'app/lib/periodic.js')),
-    chai = require('chai'),
-    expect = require('chai').expect;
-    chai.use(require('chai-fs'));
+  periodicjs = require(path.resolve(process.cwd(), 'app/lib/periodic.js')),
+  chai = require('chai'),
+  expect = require('chai').expect;
+chai.use(require('chai-fs'));
 
-'use-strict'
-
-describe('A module that represents a periodic app',function () {
-
-  describe('The periodic object',function () {
-    it('should return an object',function (done) {
-      expect( periodicjs() ).to.be.an('object');
+describe('A module that represents a periodic app', function () {
+  this.timeout(5000);
+  describe('The periodic object', function () {
+    it('should return an object', function (done) {
+      expect(periodicjs()).to.be.an('object');
       done();
     });
 
@@ -20,7 +21,7 @@ describe('A module that represents a periodic app',function () {
       done();
     });
 
-    it('uses express methods',function () {
+    it('uses express methods', function () {
       //console.log( periodicjs().init.loadConfiguration() )
       //console.log( periodicjs().app.get('env') )
       //expect(periodicjs().app.get('env')).to.eql('development');

@@ -39,16 +39,12 @@ module.exports = function (grunt) {
 				'!app/doc/**/*.js',
 				'test/**/*.js',
 				'package.json',
-				'config/**/*.js',
-				'node_modules/periodicjs*/index.js',
-				'node_modules/periodicjs*/contoller/**/*.js',
-				'node_modules/periodicjs*/resources/*.js',
-				'!node_modules/periodicjs*/node_modules/**/*.js'
+				'config/**/*.js'
 			]
 		},
 		jsdoc: {
 			dist: {
-				src: ['app/**/*.js', 'scripts/**/*.js', 'test/*.js', 'index.js'],
+				src: ['app/**/*.js', 'scripts/**/*.js', 'test/**/*.js', 'index.js'],
 				options: {
 					destination: 'doc/html',
 					configure: 'jsdoc.json'
@@ -57,6 +53,22 @@ module.exports = function (grunt) {
 		},
 		browserify: {
 			dist: {
+				files: [{
+					expand: true,
+					cwd: 'scripts',
+					src: ['resources/js/*_src.js'],
+					dest: 'node_modules',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src);
+						finallocation = finallocation.replace('_src', '_build');
+						finallocation = finallocation.replace('resources', 'public');
+						finallocation = path.resolve(finallocation);
+						return finallocation;
+					}
+				}],
+				options: {}
+			},
+			extension_resources: {
 				files: [{
 					expand: true,
 					cwd: 'node_modules',
@@ -81,6 +93,20 @@ module.exports = function (grunt) {
 				}
 			},
 			all: {
+				files: [{
+					expand: true,
+					cwd: 'scripts',
+					src: ['public/js/*_build.js'],
+					dest: 'node_modules',
+					rename: function (dest, src) {
+						var finallocation = path.join(dest, src);
+						finallocation = finallocation.replace('_build', '.min');
+						finallocation = path.resolve(finallocation);
+						return finallocation;
+					}
+				}]
+			},
+			extension_resources: {
 				files: [{
 					expand: true,
 					cwd: 'node_modules',
@@ -147,6 +173,7 @@ module.exports = function (grunt) {
 		}
 	}
 	grunt.registerTask('doc', 'jsdoc');
-
-	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'cssmin', 'uglify', 'test', 'less']);
+	grunt.registerTask('test', 'simplemocha');
+	grunt.registerTask('lint', 'jshint');
+	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'uglify', 'test', 'less']);
 };
