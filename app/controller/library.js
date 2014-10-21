@@ -96,10 +96,10 @@ var update = function (req, res) {
 	updatelibrary.name = (updatelibrary.name) ? updatelibrary.name : CoreUtilities.makeNiceName(updatelibrary.title);
 	try{
 
-		if (updatelibrary.items && updatelibrary.items.length > 0) {
-			for (var x in updatelibrary.items) {
-				// console.log('x',x,'updatelibrary.items[x]',updatelibrary.items[x]);
-				updatelibrary.items[x] = JSON.parse(updatelibrary.items[x]);
+		if (updatelibrary.content_entities && updatelibrary.content_entities.length > 0) {
+			for (var x in updatelibrary.content_entities) {
+				// console.log('x',x,'updatelibrary.content_entities[x]',updatelibrary.content_entities[x]);
+				updatelibrary.content_entities[x] = JSON.parse(updatelibrary.content_entities[x]);
 			}
 		}
 		if (!updatelibrary.primaryasset && updatelibrary.assets && updatelibrary.assets.length > 0) {
@@ -109,6 +109,7 @@ var update = function (req, res) {
 			updatelibrary.publishat = new Date(moment(updatelibrary.date + ' ' + updatelibrary.time).format());
 		}
 		updatelibrary = str2json.convert(updatelibrary);
+		// console.log('updatelibrary',updatelibrary);
 
 		CoreController.updateModel({
 			model: Library,
@@ -193,6 +194,7 @@ var remove = function (req, res) {
 
 var loadLibraryData = function (req, res, err, doc, next, callback) {
 	{
+		// var populationerror;
 		if (err) {
 			CoreController.handleDocumentQueryErrorResponse({
 				err: err,
@@ -201,72 +203,139 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 			});
 		}
 		else {
-			Library.populate(doc, {
-				path: 'items.item',
-				model: 'Item',
-				select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
-			}, function (err, populatedlibrary) {
-				if (err) {
+			async.parallel({
+				populateItems:function(asyncCB){
+					Library.populate(doc,{
+						path: 'content_entities.entity_item',
+						model: 'Item',
+						select: 'title name content dek createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+					},asyncCB);
+				},
+				populateCollections:function(asyncCB){
+					Library.populate(doc,{
+						path: 'content_entities.entity_collection',
+						model: 'Collection',
+						select: 'title name content dek createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor '
+					},asyncCB);
+				}
+			},
+			function(loadLibraryDataError,loadLibraryDataResults){
+				if (loadLibraryDataError) {
 					CoreController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
 						req: req
 					});
 				}
-				else {
-					// console.log('doc',populatedlibrary);
+				else{
 					async.parallel({
-						tags: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.tags',
+						entity_item_tags: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.tags',
 									model: 'Tag',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
 								callback);
 						},
-						categories: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.categories',
+						entity_collection_tags: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.tags',
+									model: 'Tag',
+									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_item_categories: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.categories',
 									model: 'Category',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
 								},
 								callback);
 						},
-						authors: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.authors',
+						entity_collection_categories: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.categories',
+									model: 'Category',
+									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
+								},
+								callback);
+						},
+						entity_item_authors: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.authors',
 									model: 'User',
 									// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
 								callback);
 						},
-						primaryauthor: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.primaryauthor',
+						entity_item_primaryauthor: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.primaryauthor',
 									model: 'User',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
 								callback);
 						},
-						contenttypes: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.contenttypes',
+						entity_item_contenttypes: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.contenttypes',
 									model: 'Contenttype',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
 								callback);
 						},
-						assets: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.assets',
+						entity_item_assets: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.assets',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
 								callback);
 						},
-						primaryasset: function (callback) {
-							Library.populate(populatedlibrary, {
-									path: 'items.item.primaryasset',
+						entity_item_primaryasset: function (callback) {
+							Library.populate(loadLibraryDataResults.populateItems, {
+									path: 'content_entities.entity_item.primaryasset',
+									model: 'Asset',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_collection_authors: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.authors',
+									model: 'User',
+									// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_collection_primaryauthor: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.primaryauthor',
+									model: 'User',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_collection_contenttypes: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.contenttypes',
+									model: 'Contenttype',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_collection_assets: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.assets',
+									model: 'Asset',
+									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
+								},
+								callback);
+						},
+						entity_collection_primaryasset: function (callback) {
+							Library.populate(loadLibraryDataResults.populateCollections, {
+									path: 'content_entities.entity_collection.primaryasset',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 								},
@@ -280,11 +349,19 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								req: req
 							});
 						}
-						else if (populatedlibrary) {
+						else if (loadLibraryDataResults.populateItems || loadLibraryDataResults.populateCollections) {
 							// console.log('results.assets', results.assets);
-							var mergedLibraryData = merge(populatedlibrary, results.tags);
-							mergedLibraryData = merge(mergedLibraryData, results.assets);
-							mergedLibraryData = merge(mergedLibraryData, results.primaryauthor);
+							var mergedLibraryData;
+							if(loadLibraryDataResults.populateItems){
+								mergedLibraryData = merge(loadLibraryDataResults.populateItems, results.entity_item_tags);
+								mergedLibraryData = merge(mergedLibraryData, results.entity_item_assets);
+								mergedLibraryData = merge(mergedLibraryData, results.entity_item_primaryauthor);
+							}
+							if(loadLibraryDataResults.populateCollections){
+								mergedLibraryData = merge(loadLibraryDataResults.populateCollections, results.entity_collection_tags);
+								mergedLibraryData = merge(mergedLibraryData, results.entity_collection_assets);
+								mergedLibraryData = merge(mergedLibraryData, results.entity_collection_primaryauthor);
+							}
 							req.controllerData.library = mergedLibraryData;
 							// req.controllerData.libraryData = results;
 							if (callback) {
@@ -311,7 +388,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 
 var loadLibrary = function (req, res, next) {
 	var params = req.params,
-		population = 'tags categories authors assets primaryasset contenttypes primaryauthor items',
+		population = 'tags categories authors assets primaryasset contenttypes primaryauthor content_entities',
 		docid = params.id;
 	// console.log('params',params);
 
@@ -516,7 +593,7 @@ var getLibrariesData = function(options){
 
 var loadLibraries = function (req, res, next) {
 	var query = {},
-		population = 'tags categories authors contenttypes primaryauthor primaryasset items.item',
+		population = 'tags categories authors contenttypes primaryauthor primaryasset content_entities.entity_item content_entities.entity_collection',
 		orQuery = [];
 
 	getLibrariesData({
