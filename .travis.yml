@@ -7,7 +7,7 @@ services:
 
 before_script:
   - sleep 10
-  - npm postinstall
+  - npm run postinstall
 
 branches:
   only:
