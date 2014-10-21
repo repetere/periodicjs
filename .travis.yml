@@ -12,5 +12,6 @@ before_script:
 branches:
   only:
     - master
+    - devel
 git:
   submodules: false  
