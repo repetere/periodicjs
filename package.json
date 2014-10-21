@@ -11,6 +11,19 @@
     "email": "yaw.etse@gmail.com",
     "url": "http://about.me/yawjosephetse"
   },
+  "contributors": [{
+      "name": "Vishnu Ravi",
+      "email": "hello@vishnu.io",
+      "url": "http://www.vishnu.io"
+    },{
+      "name": "Alan David Garcia",
+      "email": "alandavidgarcia@gmail.com",
+      "url": "http://alangalan.tumblr.com"
+    },{
+      "name": "Ernie Casilla",
+      "email": "ecasilla@icloud.com",
+      "url": "http://www.erniecasilla.com"
+    }],
   "repository": {
     "type": "git",
     "url": "git://github.com/typesettin/periodicjs.git"
