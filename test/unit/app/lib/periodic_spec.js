@@ -11,7 +11,7 @@ describe('A module that represents a periodic app', function () {
   this.timeout(5000);
   describe('The periodic object', function () {
     it('should return an object', function (done) {
-      expect(periodicjs()).to.be.an('object');
+      expect(periodicjs({skiprouting:true})).to.be.an('object');
       done();
     });
 

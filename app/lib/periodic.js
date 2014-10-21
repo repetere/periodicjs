@@ -31,7 +31,7 @@
  * @requires module:../../content/config/logger
  * @requires module:../../content/config/database
  */
-var periodic = function () {
+var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
 		path = require('path'),
 		bodyParser = require('body-parser'),
@@ -79,7 +79,7 @@ var periodic = function () {
 		 * @instance
 		 */
 		db = database[app.get('env')];
-		appconfig.setSetting('dburl',db.url);
+		appconfig.setSetting('dburl', db.url);
 
 		/** shortcut to db url in content/config/database.js
 		 * @instance
@@ -246,11 +246,16 @@ var periodic = function () {
 			db: db,
 			mongoose: mngse
 		};
-		if (appconfig.settings().status === 'install') {
-			require('periodicjs.ext.install')(periodicObj);
+		if(periodicConfigOptions && periodicConfigOptions.skiprouting){
+			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
 		}
-		else {
-			require('../routes/index')(periodicObj);
+		else{
+			if (appconfig.settings().status === 'install') {
+				require('periodicjs.ext.install')(periodicObj);
+			}
+			else {
+				require('../routes/index')(periodicObj);
+			}
 		}
 	};
 	/**
