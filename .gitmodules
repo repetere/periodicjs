@@ -1,0 +1,3 @@
+[submodule ".coverage"]
+  path = .coverage
+  url = https://github.com/visionmedia/node-jscoverage

@@ -24,6 +24,7 @@
     "reload": "pm2 reload periodicjs",
     "list": "pm2 list periodicjs",
     "test": "mocha -R spec --recursive",
+    "coverage": "mocha -R html-cov --recursive > test/coverage.html",
     "postinstall": "node scripts/install.js",
     "postupdate": "node scripts/update.js",
     "deploysync": "node scripts/deploymentsync.js",
@@ -88,6 +89,7 @@
     "grunt-simple-mocha": ">=0.4.0",
     "jsdoc": "3.3.0-alpha5",
     "mocha": "1.9.0",
+    "supertest": "^0.14.0",
     "uglify-js": "^2.4.15",
     "uglifyify": "^2.5.0"
   },
