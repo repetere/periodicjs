@@ -50,7 +50,7 @@ var librarySchema = new Schema({
 		'default': Date.now,
 		index: true
 	},
-	entities: [{
+	content_entities: [{
 		entitytype: String,
 		order: {
 			type: Number,

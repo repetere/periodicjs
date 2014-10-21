@@ -35,6 +35,7 @@ var itemSchema = new Schema({
 		type: String,
 		unique: true
 	},
+	dek: String,
 	content: String,
 	contenttypes: [{
 		type: ObjectId,
