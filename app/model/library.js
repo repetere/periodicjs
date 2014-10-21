@@ -80,6 +80,7 @@ var librarySchema = new Schema({
 	}],
 	attributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
+	contenttypeattributes: Schema.Types.Mixed,
 	random: Number
 });
 
