@@ -51,10 +51,20 @@ var librarySchema = new Schema({
 		index: true
 	},
 	entities: [{
-		order: Number,
+		entitytype: String,
+		order: {
+			type: Number,
+			'default': 1
+		},
 		additionalattributes: Schema.Types.Mixed,
-		entityid: ObjectId,
-		entitytype: String
+		entity_item: {
+			type: ObjectId,
+			ref: 'Item'
+		},
+		entity_collection: {
+			type: ObjectId,
+			ref: 'Collection'
+		}
 	}],
 	contenttypes: [{
 		type: ObjectId,
