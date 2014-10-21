@@ -12,7 +12,6 @@ var settingSchema = new Schema({
 	},
 	value: Schema.Types.Mixed,
 	attributes: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
