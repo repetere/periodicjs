@@ -78,6 +78,10 @@ var collectionSchema = new Schema({
 			type: Date,
 			'default': Date.now
 		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
 		changeset: Schema.Types.Mixed
 	}],
 	attributes: Schema.Types.Mixed,

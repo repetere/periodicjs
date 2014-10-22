@@ -84,6 +84,10 @@ var itemSchema = new Schema({
 			type: Date,
 			'default': Date.now
 		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
 		changeset: Schema.Types.Mixed
 	}],
 	link: String,

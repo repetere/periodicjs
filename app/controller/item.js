@@ -83,6 +83,7 @@ var create = function (req, res) {
 
 var update = function (req, res) {
 	var updateitem = CoreUtilities.removeEmptyObjectValues(req.body);
+	// console.log('req.controllerData.item',req.controllerData.item);
 
 	updateitem.name = (updateitem.name) ? updateitem.name : CoreUtilities.makeNiceName(updateitem.title);
 	if (!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
@@ -98,7 +99,8 @@ var update = function (req, res) {
 		id: updateitem.docid,
 		updatedoc: updateitem,
 		saverevision: true,
-		population: 'contenttypes',
+		originalrevision: req.controllerData.item,
+		population: 'contenttypes authors',
 		res: res,
 		req: req,
 		successredirect: '/p-admin/item/edit/',
