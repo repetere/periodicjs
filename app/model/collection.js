@@ -73,6 +73,13 @@ var collectionSchema = new Schema({
 		type: ObjectId,
 		ref: 'Category'
 	}],
+	changes: [{
+		createdat: {
+			type: Date,
+			'default': Date.now
+		},
+		changeset: Schema.Types.Mixed
+	}],
 	attributes: Schema.Types.Mixed,
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
