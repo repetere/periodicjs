@@ -88,6 +88,7 @@ var itemSchema = new Schema({
 			type: ObjectId,
 			ref: 'User'
 		},
+		editor_username: String,
 		changeset: Schema.Types.Mixed
 	}],
 	link: String,

@@ -82,6 +82,7 @@ var collectionSchema = new Schema({
 			type: ObjectId,
 			ref: 'User'
 		},
+		editor_username: String,
 		changeset: Schema.Types.Mixed
 	}],
 	attributes: Schema.Types.Mixed,
