@@ -1,4 +1,4 @@
-i'use strict';
+'use strict';
 /*jshint expr: true*/
 
 var path    = require('path'),
