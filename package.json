@@ -126,12 +126,6 @@
     "Content Management System",
     "Periodic Decoupled Framework"
   ],
-  "contributors": [
-    {
-      "name": "Yaw Joseph Etse",
-      "email": "yaw.etse@gmail.com"
-    }
-  ],
   "gitHead": "ec239f4c3466993bc1afddb98fd835840758d827",
   "bugs": {
     "url": "https://github.com/typesettin/periodicjs/issues"

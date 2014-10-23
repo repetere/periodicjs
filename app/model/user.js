@@ -125,19 +125,19 @@ userSchema.pre('save', function (next, done) {
 	}
 });
 
-userSchema.post('init', function (doc) {
-	logger.info('model - user.js - ' + doc._id + ' has been initialized from the db');
-});
-userSchema.post('validate', function (doc) {
-	logger.info('model - user.js - ' + doc._id + ' has been validated (but not saved yet)');
-});
-userSchema.post('save', function (doc) {
-	logger.info('model - user.js - ' + doc._id + ' has been saved');
-});
-userSchema.pre('remove', function (doc) {
-	console.log('==================deleted============');
-	logger.info('model - user.js - ' + doc._id + ' has been removed');
-});
+// userSchema.post('init', function (doc) {
+// 	logger.info('model - user.js - ' + doc._id + ' has been initialized from the db');
+// });
+// userSchema.post('validate', function (doc) {
+// 	logger.info('model - user.js - ' + doc._id + ' has been validated (but not saved yet)');
+// });
+// userSchema.post('save', function (doc) {
+// 	logger.info('model - user.js - ' + doc._id + ' has been saved');
+// });
+// userSchema.pre('remove', function (doc) {
+// 	console.log('==================deleted============');
+// 	logger.info('model - user.js - ' + doc._id + ' has been removed');
+// });
 
 // Password verification
 userSchema.methods.comparePassword = function (candidatePassword, cb) {
@@ -160,7 +160,7 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
 // Remember Me implementation helper method
 userSchema.methods.generateRandomToken = function () {
 	// var user = this,
-	var	chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+	var chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
 		token = new Date().getTime() + '_';
 	for (var x = 0; x < 16; x++) {
 		var i = Math.floor(Math.random() * 62);
