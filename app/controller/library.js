@@ -116,6 +116,7 @@ var update = function (req, res) {
 			id: updatelibrary.docid,
 			updatedoc: updatelibrary,
 			saverevision: true,
+			originalrevision: req.controllerData.library,
 			population: 'contenttypes',
 			res: res,
 			req: req,
