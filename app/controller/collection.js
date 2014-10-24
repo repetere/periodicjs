@@ -357,7 +357,19 @@ var getCollectionsData = function(options){
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	if (req.query.search !== undefined && req.query.search.length > 0) {
+	if(req.query.ids){
+		var queryIdArray=[];
+		if(Array.isArray(req.query.ids)){
+			queryIdArray = req.query.ids;
+		}
+		else if(typeof req.query.ids ==='string'){
+			queryIdArray = req.query.ids.split(',');
+		}
+		orQuery.push({
+			'_id': {$in:queryIdArray}
+		});
+	}
+	else if (req.query.search !== undefined && req.query.search.length > 0) {
 		orQuery.push({
 			title: searchRegEx
 		}, {
