@@ -105,7 +105,8 @@ For development purposes only, the nd script runs with nodemon
 
 ####Stopping Periodic
 ```
-$ npm stop$ pm2 kill periodicjs
+$ npm stop
+$ pm2 kill periodicjs
 ```
 Both npm stop and pm2 kill will stop the periodic daemon.
 
