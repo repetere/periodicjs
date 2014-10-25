@@ -45,6 +45,7 @@ var assetSchema = new Schema({
 	content: String,
 	filedata: Schema.Types.Mixed,
 	attributes: Schema.Types.Mixed,
+	versions: Schema.Types.Mixed,
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number

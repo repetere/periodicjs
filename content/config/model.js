@@ -15,7 +15,7 @@ module.exports = function(options){
 	var userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
 		collectionSchema = require('../../app/model/collection.js'),
-		librarySchema = require('../../app/model/library.js'),
+		compilationSchema = require('../../app/model/compilation.js'),
 		categorySchema = require('../../app/model/category.js'),
 		assetSchema = require('../../app/model/asset.js'),
 		contenttypeSchema = require('../../app/model/contenttype.js'),
@@ -33,7 +33,7 @@ module.exports = function(options){
 	mongoose.model('User',userSchema);
 	mongoose.model('Item',itemSchema);
 	mongoose.model('Collection',collectionSchema);
-	mongoose.model('Library',librarySchema);
+	mongoose.model('Compilation',compilationSchema);
 	mongoose.model('Category',categorySchema);
 	mongoose.model('Asset',assetSchema);
 	mongoose.model('Contenttype',contenttypeSchema);

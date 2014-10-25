@@ -12,7 +12,7 @@ var async = require('async'),
 	mongoose,
 	Item,
 	Collection,
-	Library,
+	Compilation,
 	Category,
 	Tag,
 	User,
@@ -21,7 +21,7 @@ var async = require('async'),
 
 var show = function (req, res) {
 	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'library/show',
+			viewname: 'compilation/show',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
@@ -31,9 +31,9 @@ var show = function (req, res) {
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: req.controllerData.library.title
+						title: req.controllerData.compilation.title
 					},
-					library: req.controllerData.library,
+					compilation: req.controllerData.compilation,
 					user: req.user
 				}
 			});
@@ -43,7 +43,7 @@ var show = function (req, res) {
 
 var index = function (req, res) {
 	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'library/index',
+			viewname: 'compilation/index',
 			themefileext: appSettings.templatefileextension
 		},
 		function (err, templatepath) {
@@ -53,9 +53,9 @@ var index = function (req, res) {
 				renderView: templatepath,
 				responseData: {
 					pagedata: {
-						title: 'Libraries'
+						title: 'Compilations'
 					},
-					libraries: req.controllerData.libraries,
+					compilations: req.controllerData.compilations,
 					user: req.user
 				}
 			});
@@ -64,84 +64,84 @@ var index = function (req, res) {
 };
 
 var create = function (req, res) {
-	var newlibrary = CoreUtilities.removeEmptyObjectValues(req.body);
-	newlibrary.name = (newlibrary.name) ? newlibrary.name : CoreUtilities.makeNiceName(newlibrary.title);
-	newlibrary.itemauthorname = req.user.username;
-	newlibrary.primaryauthor = req.user._id;
-	newlibrary.authors = [req.user._id];
-	if (newlibrary.date && newlibrary.time) {
-		newlibrary.publishat = new Date(moment(newlibrary.date + ' ' + newlibrary.time).format());
+	var newcompilation = CoreUtilities.removeEmptyObjectValues(req.body);
+	newcompilation.name = (newcompilation.name) ? newcompilation.name : CoreUtilities.makeNiceName(newcompilation.title);
+	newcompilation.itemauthorname = req.user.username;
+	newcompilation.primaryauthor = req.user._id;
+	newcompilation.authors = [req.user._id];
+	if (newcompilation.date && newcompilation.time) {
+		newcompilation.publishat = new Date(moment(newcompilation.date + ' ' + newcompilation.time).format());
 	}
 
-	if (newlibrary.items) {
-		for (var x in newlibrary.items) {
-			newlibrary.items[x] = JSON.parse(newlibrary.items[x]);
+	if (newcompilation.items) {
+		for (var x in newcompilation.items) {
+			newcompilation.items[x] = JSON.parse(newcompilation.items[x]);
 		}
 	}
 
-	newlibrary = str2json.convert(newlibrary);
-	newlibrary.changes= [{
+	newcompilation = str2json.convert(newcompilation);
+	newcompilation.changes= [{
 		editor:req.user._id,
 		editor_username:req.user.username,
 		changeset:{
-			title:newlibrary.title,
-			name:newlibrary.name,
-			content:newlibrary.content,
+			title:newcompilation.title,
+			name:newcompilation.name,
+			content:newcompilation.content,
 
-			tags: (newlibrary.tags && Array.isArray(newlibrary.tags)) ? newlibrary.tags: [newlibrary.tags],
-			categories: (newlibrary.categories && Array.isArray(newlibrary.categories)) ? newlibrary.categories: [newlibrary.categories],
-			assets: (newlibrary.assets && Array.isArray(newlibrary.assets)) ? newlibrary.assets: [newlibrary.assets],
-			contenttypes: (newlibrary.contenttypes && Array.isArray(newlibrary.contenttypes)) ? newlibrary.contenttypes: [newlibrary.contenttypes],
+			tags: (newcompilation.tags && Array.isArray(newcompilation.tags)) ? newcompilation.tags: [newcompilation.tags],
+			categories: (newcompilation.categories && Array.isArray(newcompilation.categories)) ? newcompilation.categories: [newcompilation.categories],
+			assets: (newcompilation.assets && Array.isArray(newcompilation.assets)) ? newcompilation.assets: [newcompilation.assets],
+			contenttypes: (newcompilation.contenttypes && Array.isArray(newcompilation.contenttypes)) ? newcompilation.contenttypes: [newcompilation.contenttypes],
 
-			primaryasset:newlibrary.primaryasset,
-			contenttypeattributes:newlibrary.contenttypeattributes,
+			primaryasset:newcompilation.primaryasset,
+			contenttypeattributes:newcompilation.contenttypeattributes,
 		}
 	}];
 
 	CoreController.createModel({
-		model: Library,
-		newdoc: newlibrary,
+		model: Compilation,
+		newdoc: newcompilation,
 		res: res,
 		req: req,
-		successredirect: '/p-admin/library/edit/',
+		successredirect: '/p-admin/compilation/edit/',
 		appendid: true
 	});
 };
 
 var update = function (req, res) {
-	var updatelibrary = (req.skipemptyvaluecheck)? req.body: CoreUtilities.removeEmptyObjectValues(req.body),
+	var updatecompilation = (req.skipemptyvaluecheck)? req.body: CoreUtilities.removeEmptyObjectValues(req.body),
 		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
-		// console.log('updatelibrary',updatelibrary);
-		if(updatelibrary.title && !updatelibrary.name){
-		updatelibrary.name = (updatelibrary.name) ? updatelibrary.name : CoreUtilities.makeNiceName(updatelibrary.title);
+		// console.log('updatecompilation',updatecompilation);
+		if(updatecompilation.title && !updatecompilation.name){
+		updatecompilation.name = (updatecompilation.name) ? updatecompilation.name : CoreUtilities.makeNiceName(updatecompilation.title);
 		}
 
 	try{
-		if (updatelibrary.content_entities && updatelibrary.content_entities.length > 0) {
-			for (var x in updatelibrary.content_entities) {
-				updatelibrary.content_entities[x] = JSON.parse(updatelibrary.content_entities[x]);
+		if (updatecompilation.content_entities && updatecompilation.content_entities.length > 0) {
+			for (var x in updatecompilation.content_entities) {
+				updatecompilation.content_entities[x] = JSON.parse(updatecompilation.content_entities[x]);
 			}
 		}
-		if (!updatelibrary.primaryasset && updatelibrary.assets && updatelibrary.assets.length > 0) {
-			updatelibrary.primaryasset = updatelibrary.assets[0];
+		if (!updatecompilation.primaryasset && updatecompilation.assets && updatecompilation.assets.length > 0) {
+			updatecompilation.primaryasset = updatecompilation.assets[0];
 		}
-		if (updatelibrary.date && updatelibrary.time) {
-			updatelibrary.publishat = new Date(moment(updatelibrary.date + ' ' + updatelibrary.time).format());
+		if (updatecompilation.date && updatecompilation.time) {
+			updatecompilation.publishat = new Date(moment(updatecompilation.date + ' ' + updatecompilation.time).format());
 		}
-		updatelibrary = str2json.convert(updatelibrary);
-		// console.log('updatelibrary',updatelibrary);
+		updatecompilation = str2json.convert(updatecompilation);
+		// console.log('updatecompilation',updatecompilation);
 
 		CoreController.updateModel({
-			model: Library,
-			id: updatelibrary.docid,
-			updatedoc: updatelibrary,
+			model: Compilation,
+			id: updatecompilation.docid,
+			updatedoc: updatecompilation,
 			forceupdate: req.forceupdate,
-			originalrevision: req.controllerData.library,
+			originalrevision: req.controllerData.compilation,
 			saverevision: saverevision,
 			population: 'contenttypes',
 			res: res,
 			req: req,
-			successredirect: req.redirectpath || '/p-admin/library/edit/',
+			successredirect: req.redirectpath || '/p-admin/compilation/edit/',
 			appendid: true
 		});
 	}
@@ -161,20 +161,20 @@ var append = function (req, res) {
 
 	logger.silly('objectToModify', objectToModify);
 	CoreController.updateModel({
-		model: Library,
-		id: req.controllerData.library._id,
+		model: Compilation,
+		id: req.controllerData.compilation._id,
 		updatedoc: objectToModify,
 		saverevision: true,
 		res: res,
 		req: req,
 		appendArray: true,
-		successredirect: '/p-admin/library/edit/',
+		successredirect: '/p-admin/compilation/edit/',
 		appendid: true
 	});
 };
 
 var remove = function (req, res) {
-	var removelibrary = req.controllerData.library,
+	var removecompilation = req.controllerData.compilation,
 		User = mongoose.model('User');
 
 	if (!User.hasPrivilege(req.user, 710)) {
@@ -186,8 +186,8 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
-			model: Library,
-			deleteid: removelibrary._id,
+			model: Compilation,
+			deleteid: removecompilation._id,
 			req: req,
 			res: res,
 			callback: function (err) {
@@ -202,7 +202,7 @@ var remove = function (req, res) {
 					CoreController.handleDocumentQueryRender({
 						req: req,
 						res: res,
-						redirecturl: '/p-admin/libraries',
+						redirecturl: '/p-admin/compilations',
 						responseData: {
 							result: 'success',
 							data: 'deleted'
@@ -214,7 +214,7 @@ var remove = function (req, res) {
 	}
 };
 
-var loadLibraryData = function (req, res, err, doc, next, callback) {
+var loadCompilationData = function (req, res, err, doc, next, callback) {
 	{
 		// var populationerror;
 		if (err) {
@@ -227,22 +227,22 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 		else {
 			async.parallel({
 				populateItems:function(asyncCB){
-					Library.populate(doc,{
+					Compilation.populate(doc,{
 						path: 'content_entities.entity_item',
 						model: 'Item',
 						select: 'title name content dek createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
 					},asyncCB);
 				},
 				populateCollections:function(asyncCB){
-					Library.populate(doc,{
+					Compilation.populate(doc,{
 						path: 'content_entities.entity_collection',
 						model: 'Collection',
 						select: 'title name content dek createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor '
 					},asyncCB);
 				}
 			},
-			function(loadLibraryDataError,loadLibraryDataResults){
-				if (loadLibraryDataError) {
+			function(loadCompilationDataError,loadCompilationDataResults){
+				if (loadCompilationDataError) {
 					CoreController.handleDocumentQueryErrorResponse({
 						err: err,
 						res: res,
@@ -252,7 +252,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 				else{
 					async.parallel({
 						entity_item_tags: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.tags',
 									model: 'Tag',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -260,7 +260,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_tags: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.tags',
 									model: 'Tag',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -268,7 +268,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_categories: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.categories',
 									model: 'Category',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
@@ -276,7 +276,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_categories: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.categories',
 									model: 'Category',
 									select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories authors primaryauthor '
@@ -284,7 +284,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_authors: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.authors',
 									model: 'User',
 									// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -292,7 +292,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_primaryauthor: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.primaryauthor',
 									model: 'User',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -300,7 +300,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_contenttypes: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.contenttypes',
 									model: 'Contenttype',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -308,7 +308,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_assets: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.assets',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -316,7 +316,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_item_primaryasset: function (callback) {
-							Library.populate(loadLibraryDataResults.populateItems, {
+							Compilation.populate(loadCompilationDataResults.populateItems, {
 									path: 'content_entities.entity_item.primaryasset',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -324,7 +324,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_authors: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.authors',
 									model: 'User',
 									// select: 'firstname name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -332,7 +332,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_primaryauthor: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.primaryauthor',
 									model: 'User',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -340,7 +340,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_contenttypes: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.contenttypes',
 									model: 'Contenttype',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -348,7 +348,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_assets: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.assets',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -356,7 +356,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								callback);
 						},
 						entity_collection_primaryasset: function (callback) {
-							Library.populate(loadLibraryDataResults.populateCollections, {
+							Compilation.populate(loadCompilationDataResults.populateCollections, {
 									path: 'content_entities.entity_collection.primaryasset',
 									model: 'Asset',
 									// select: 'title name content createdat updatedat publishat status contenttypes contenttypeattributes tags categories assets primaryasset authors primaryauthor itemauthorname'
@@ -371,21 +371,21 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 								req: req
 							});
 						}
-						else if (loadLibraryDataResults.populateItems || loadLibraryDataResults.populateCollections) {
+						else if (loadCompilationDataResults.populateItems || loadCompilationDataResults.populateCollections) {
 							// console.log('results.assets', results.assets);
-							var mergedLibraryData;
-							if(loadLibraryDataResults.populateItems){
-								mergedLibraryData = merge(loadLibraryDataResults.populateItems, results.entity_item_tags);
-								mergedLibraryData = merge(mergedLibraryData, results.entity_item_assets);
-								mergedLibraryData = merge(mergedLibraryData, results.entity_item_primaryauthor);
+							var mergedCompilationData;
+							if(loadCompilationDataResults.populateItems){
+								mergedCompilationData = merge(loadCompilationDataResults.populateItems, results.entity_item_tags);
+								mergedCompilationData = merge(mergedCompilationData, results.entity_item_assets);
+								mergedCompilationData = merge(mergedCompilationData, results.entity_item_primaryauthor);
 							}
-							if(loadLibraryDataResults.populateCollections){
-								mergedLibraryData = merge(loadLibraryDataResults.populateCollections, results.entity_collection_tags);
-								mergedLibraryData = merge(mergedLibraryData, results.entity_collection_assets);
-								mergedLibraryData = merge(mergedLibraryData, results.entity_collection_primaryauthor);
+							if(loadCompilationDataResults.populateCollections){
+								mergedCompilationData = merge(loadCompilationDataResults.populateCollections, results.entity_collection_tags);
+								mergedCompilationData = merge(mergedCompilationData, results.entity_collection_assets);
+								mergedCompilationData = merge(mergedCompilationData, results.entity_collection_primaryauthor);
 							}
-							req.controllerData.library = mergedLibraryData;
-							// req.controllerData.libraryData = results;
+							req.controllerData.compilation = mergedCompilationData;
+							// req.controllerData.compilationData = results;
 							if (callback) {
 								callback(req, res);
 							}
@@ -395,7 +395,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 						}
 						else {
 							CoreController.handleDocumentQueryErrorResponse({
-								err: new Error('invalid library request'),
+								err: new Error('invalid compilation request'),
 								res: res,
 								req: req
 							});
@@ -408,7 +408,7 @@ var loadLibraryData = function (req, res, err, doc, next, callback) {
 	}
 };
 
-var loadLibrary = function (req, res, next) {
+var loadCompilation = function (req, res, next) {
 	var params = req.params,
 		population = 'tags categories authors assets primaryasset contenttypes primaryauthor content_entities',
 		docid = params.id;
@@ -419,26 +419,26 @@ var loadLibrary = function (req, res, next) {
 
 	CoreController.loadModel({
 		docid: docid,
-		model: Library,
+		model: Compilation,
 		population: population,
 		callback: function (err, doc) {
-			loadLibraryData(req, res, err, doc, next, null);
+			loadCompilationData(req, res, err, doc, next, null);
 		}
 	});
 };
 
-var loadLibrariesWithCount = function (req, res, next) {
-	req.headers.loadlibrarycount = true;
+var loadCompilationsWithCount = function (req, res, next) {
+	req.headers.loadcompilationcount = true;
 	next();
 };
 
-var loadLibrariesWithDefaultLimit = function (req, res, next) {
-	req.query.limit = req.query.librariesperpage || req.query.limit || 15;
+var loadCompilationsWithDefaultLimit = function (req, res, next) {
+	req.query.limit = req.query.compilationsperpage || req.query.limit || 15;
 	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
 	next();
 };
 
-var getLibrariesData = function(options){
+var getCompilationsData = function(options){
 	var parallelTask = {},
  		req = options.req,
 		res = options.res,
@@ -447,7 +447,7 @@ var getLibrariesData = function(options){
 		query = options.query,
 		sort = req.query.sort,
 		callback = options.callback,
-		limit = req.query.limit || req.query.librariesperpage,
+		limit = req.query.limit || req.query.compilationsperpage,
 		offset = req.query.offset || (pagenum*limit),
 		population = options.population,
 		orQuery = options.orQuery,
@@ -575,9 +575,9 @@ var getLibrariesData = function(options){
 					};
 				}
 
-				parallelTask.librariescount = function(cb){
-					if(req.headers.loadlibrarycount){
-						Library.count(query, function( err, count){
+				parallelTask.compilationscount = function(cb){
+					if(req.headers.loadcompilationcount){
+						Compilation.count(query, function( err, count){
 							cb(err, count);
 						});
 					}
@@ -585,9 +585,9 @@ var getLibrariesData = function(options){
 						cb(null,null);
 					}
 				};
-				parallelTask.librariesquery = function(cb){
+				parallelTask.compilationsquery = function(cb){
 					CoreController.searchModel({
-						model: Library,
+						model: Compilation,
 						query: query,
 						sort: sort,
 						limit: limit,
@@ -611,8 +611,8 @@ var getLibrariesData = function(options){
 						}
 						else{
 							// console.log(results);
-							req.controllerData.libraries = results.librariesquery;
-							req.controllerData.librariescount = results.librariescount;
+							req.controllerData.compilations = results.compilationsquery;
+							req.controllerData.compilationscount = results.compilationscount;
 							if(callback){
 								callback(req, res);
 							}
@@ -625,12 +625,12 @@ var getLibrariesData = function(options){
 	});
 };
 
-var loadLibraries = function (req, res, next) {
+var loadCompilations = function (req, res, next) {
 	var query = {},
 		population = 'tags categories authors contenttypes primaryauthor primaryasset content_entities.entity_item content_entities.entity_collection',
 		orQuery = [];
 
-	getLibrariesData({
+	getCompilationsData({
 		req: req,
 		res: res,
 		next: next,
@@ -642,8 +642,8 @@ var loadLibraries = function (req, res, next) {
 
 var cli = function (argv) {
 	if (argv.search) {
-		// var Library = mongoose.model('Library');
-		// Library.find({}).limit(2).exec(function(err,items){ 
+		// var Compilation = mongoose.model('Compilation');
+		// Compilation.find({}).limit(2).exec(function(err,items){ 
 		// 	if(err){ console.error(err); } else{ console.info(items); }
 		// 	process.exit(0);
 		// });
@@ -666,7 +666,7 @@ var cli = function (argv) {
 				}]
 			};
 		}
-		// Library.find(query).limit(5).populate(population).exec(function(err,docs){
+		// Compilation.find(query).limit(5).populate(population).exec(function(err,docs){
 		// 		console.log('in model search cb');
 		// 		if(err){
 		// 			console.log(err);
@@ -679,7 +679,7 @@ var cli = function (argv) {
 		// 		}
 		// 	});
 		CoreController.searchModel({
-			model: Library,
+			model: Compilation,
 			query: query,
 			sort: sort,
 			limit: limit,
@@ -713,7 +713,7 @@ var controller = function (resources) {
 	CoreUtilities = new Utilities(resources);
 	Item = mongoose.model('Item');
 	Collection = mongoose.model('Collection');
-	Library = mongoose.model('Library');
+	Compilation = mongoose.model('Compilation');
 	Contenttypes = mongoose.model('Contenttype');
 	Category = mongoose.model('Category');
 	Tag = mongoose.model('Tag');
@@ -727,12 +727,12 @@ var controller = function (resources) {
 		update: update,
 		append: append,
 		cli: cli,
-		loadLibraryData: loadLibraryData,
-		loadLibrary: loadLibrary,
-		getLibrariesData: getLibrariesData,
-		loadLibrariesWithDefaultLimit: loadLibrariesWithDefaultLimit,
-		loadLibrariesWithCount:loadLibrariesWithCount,
-		loadLibraries: loadLibraries
+		loadCompilationData: loadCompilationData,
+		loadCompilation: loadCompilation,
+		getCompilationsData: getCompilationsData,
+		loadCompilationsWithDefaultLimit: loadCompilationsWithDefaultLimit,
+		loadCompilationsWithCount:loadCompilationsWithCount,
+		loadCompilations: loadCompilations
 	};
 };
 
