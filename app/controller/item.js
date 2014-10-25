@@ -71,6 +71,23 @@ var create = function (req, res) {
 	}
 
 	newitem = str2json.convert(newitem);
+	newitem.changes= [{
+		editor:req.user._id,
+		editor_username:req.user.username,
+		changeset:{
+			title:newitem.title,
+			name:newitem.name,
+			content:newitem.content,
+			
+			tags: (newitem.tags && Array.isArray(newitem.tags)) ? newitem.tags: [newitem.tags],
+			categories: (newitem.tags && Array.isArray(newitem.categories)) ? newitem.categories: [newitem.categories],
+			assets: (newitem.tags && Array.isArray(newitem.assets)) ? newitem.assets: [newitem.assets],
+			contenttypes: (newitem.tags && Array.isArray(newitem.contenttypes)) ? newitem.contenttypes: [newitem.contenttypes],
+
+			primaryasset:newitem.primaryasset,
+			contenttypeattributes:newitem.contenttypeattributes,
+		}
+	}];
 	CoreController.createModel({
 		model: Item,
 		newdoc: newitem,
@@ -82,10 +99,13 @@ var create = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updateitem = CoreUtilities.removeEmptyObjectValues(req.body);
-	// console.log('req.controllerData.item',req.controllerData.item);
+	var updateitem = (req.skipemptyvaluecheck)? req.body: CoreUtilities.removeEmptyObjectValues(req.body),
+		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
 
-	updateitem.name = (updateitem.name) ? updateitem.name : CoreUtilities.makeNiceName(updateitem.title);
+	if(updateitem.title && !updateitem.name){
+		updateitem.name = (updateitem.name) ? updateitem.name : CoreUtilities.makeNiceName(updateitem.title);
+	}
+
 	if (!updateitem.primaryasset && updateitem.assets && updateitem.assets.length > 0) {
 		updateitem.primaryasset = updateitem.assets[0];
 	}
@@ -98,12 +118,13 @@ var update = function (req, res) {
 		model: Item,
 		id: updateitem.docid,
 		updatedoc: updateitem,
-		saverevision: true,
+		forceupdate: req.forceupdate,
+		saverevision: saverevision,
 		originalrevision: req.controllerData.item,
 		population: 'contenttypes authors',
 		res: res,
 		req: req,
-		successredirect: '/p-admin/item/edit/',
+		successredirect: req.redirectpath ||  '/p-admin/item/edit/',
 		appendid: true
 	});
 };

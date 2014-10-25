@@ -79,6 +79,21 @@ var create = function (req, res) {
 	}
 
 	newcollection = str2json.convert(newcollection);
+	newcollection.changes= [{
+		editor:req.user._id,
+		editor_username:req.user.username,
+		changeset:{
+			title: newcollection.title,
+			name: newcollection.name,
+			content: newcollection.content,
+			tags: (newcollection.tags && Array.isArray(newcollection.tags)) ? newcollection.tags: [newcollection.tags],
+			categories: (newcollection.categories && Array.isArray(newcollection.categories)) ? newcollection.categories: [newcollection.categories],
+			assets: (newcollection.assets && Array.isArray(newcollection.assets)) ? newcollection.assets: [newcollection.assets],
+			contenttypes: (newcollection.contenttypes && Array.isArray(newcollection.contenttypes)) ? newcollection.contenttypes: [newcollection.contenttypes],
+			primaryasset: newcollection.primaryasset,
+			contenttypeattributes: newcollection.contenttypeattributes,
+		}
+	}];
 
 	CoreController.createModel({
 		model: Collection,
@@ -91,13 +106,15 @@ var create = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updatecollection = CoreUtilities.removeEmptyObjectValues(req.body);
-	updatecollection.name = (updatecollection.name) ? updatecollection.name : CoreUtilities.makeNiceName(updatecollection.title);
-	try{
+	var updatecollection = (req.skipemptyvaluecheck)? req.body: CoreUtilities.removeEmptyObjectValues(req.body),
+		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
 
+	if(updatecollection.title && !updatecollection.name){
+		updatecollection.name = (updatecollection.name) ? updatecollection.name : CoreUtilities.makeNiceName(updatecollection.title);
+	}
+	try{
 		if (updatecollection.items && updatecollection.items.length > 0) {
 			for (var x in updatecollection.items) {
-				// console.log('x',x,'updatecollection.items[x]',updatecollection.items[x]);
 				updatecollection.items[x] = JSON.parse(updatecollection.items[x]);
 			}
 		}
@@ -113,12 +130,13 @@ var update = function (req, res) {
 			model: Collection,
 			id: updatecollection.docid,
 			updatedoc: updatecollection,
-			saverevision: true,
+			forceupdate: req.forceupdate,
+			saverevision: saverevision,
 			originalrevision: req.controllerData.collection,
 			population: 'contenttypes primaryasset assets primaryauthor authors',
 			res: res,
 			req: req,
-			successredirect: '/p-admin/collection/edit/',
+			successredirect: req.redirectpath || '/p-admin/collection/edit/',
 			appendid: true
 		});
 	}

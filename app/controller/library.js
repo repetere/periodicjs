@@ -80,6 +80,23 @@ var create = function (req, res) {
 	}
 
 	newlibrary = str2json.convert(newlibrary);
+	newlibrary.changes= [{
+		editor:req.user._id,
+		editor_username:req.user.username,
+		changeset:{
+			title:newlibrary.title,
+			name:newlibrary.name,
+			content:newlibrary.content,
+
+			tags: (newlibrary.tags && Array.isArray(newlibrary.tags)) ? newlibrary.tags: [newlibrary.tags],
+			categories: (newlibrary.categories && Array.isArray(newlibrary.categories)) ? newlibrary.categories: [newlibrary.categories],
+			assets: (newlibrary.assets && Array.isArray(newlibrary.assets)) ? newlibrary.assets: [newlibrary.assets],
+			contenttypes: (newlibrary.contenttypes && Array.isArray(newlibrary.contenttypes)) ? newlibrary.contenttypes: [newlibrary.contenttypes],
+
+			primaryasset:newlibrary.primaryasset,
+			contenttypeattributes:newlibrary.contenttypeattributes,
+		}
+	}];
 
 	CoreController.createModel({
 		model: Library,
@@ -92,13 +109,16 @@ var create = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updatelibrary = CoreUtilities.removeEmptyObjectValues(req.body);
-	updatelibrary.name = (updatelibrary.name) ? updatelibrary.name : CoreUtilities.makeNiceName(updatelibrary.title);
-	try{
+	var updatelibrary = (req.skipemptyvaluecheck)? req.body: CoreUtilities.removeEmptyObjectValues(req.body),
+		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
+		// console.log('updatelibrary',updatelibrary);
+		if(updatelibrary.title && !updatelibrary.name){
+		updatelibrary.name = (updatelibrary.name) ? updatelibrary.name : CoreUtilities.makeNiceName(updatelibrary.title);
+		}
 
+	try{
 		if (updatelibrary.content_entities && updatelibrary.content_entities.length > 0) {
 			for (var x in updatelibrary.content_entities) {
-				// console.log('x',x,'updatelibrary.content_entities[x]',updatelibrary.content_entities[x]);
 				updatelibrary.content_entities[x] = JSON.parse(updatelibrary.content_entities[x]);
 			}
 		}
@@ -115,12 +135,13 @@ var update = function (req, res) {
 			model: Library,
 			id: updatelibrary.docid,
 			updatedoc: updatelibrary,
-			saverevision: true,
+			forceupdate: req.forceupdate,
 			originalrevision: req.controllerData.library,
+			saverevision: saverevision,
 			population: 'contenttypes',
 			res: res,
 			req: req,
-			successredirect: '/p-admin/library/edit/',
+			successredirect: req.redirectpath || '/p-admin/library/edit/',
 			appendid: true
 		});
 	}
