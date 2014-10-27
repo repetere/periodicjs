@@ -15,7 +15,7 @@ function getCookie(res) {
 }
 
 describe('the default route when no modules are installed', function(){
-    this.timeout(5000);
+  this.timeout(5000);
 
   before(function(done){
     periodicjs.mongoose.connection.on('open',function(){
