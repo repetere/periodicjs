@@ -2,12 +2,15 @@ language: node_js
 node_js:
   - "0.10"
 
+install: 
+  - npm install --prefix ./
+  - sleep 10
+  - npm run postinstall
+
+
 services:
   - mongodb
 
-before_script:
-  - sleep 10
-  - npm run postinstall
 
 branches:
   only:
