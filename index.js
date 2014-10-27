@@ -25,5 +25,12 @@ else {
 	 * @type {object}
 	 */
 	var periodic = require('./app/lib/periodic')();
-	periodic.app.listen(periodic.port);
+	if(argv.waitformongo || (periodic.config && periodic.config.waitformongo)){
+		periodic.mongoose.connection.on('open',function(){
+			periodic.expressapp.listen(periodic.port);
+		});	
+	}
+	else{
+		periodic.expressapp.listen(periodic.port);
+	}
 }

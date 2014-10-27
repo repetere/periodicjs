@@ -338,7 +338,9 @@ var periodic = function (periodicConfigOptions) {
 	console.timeEnd('Server Starting');
 
 	return {
-		app: app,
+		expressapp: app,
+		mongoose: mngse,
+		config: periodicConfigOptions,
 		port: app.get('port')
 	};
 };
