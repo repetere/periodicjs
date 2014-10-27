@@ -28,7 +28,7 @@ var fs = require('fs-extra'),
 			'periodicjs.ext.install@1.90.26',
 			'periodicjs.ext.login@1.90.26',
 			'periodicjs.ext.mailer@1.90.26',
-			'periodicjs.ext.scheduled_content@1.90.26',
+			'periodicjs.ext.scheduled_content@2.0.0',
 			'periodicjs.ext.user_access_control@1.90.26',
 		];
 

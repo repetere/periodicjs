@@ -43,6 +43,7 @@ var periodic = function (periodicConfigOptions) {
 		compress = require('compression'),
 		flash = require('connect-flash'),
 		csrf = require('csurf'),
+		fs = require('fs-extra'),
 		request = require('superagent'),
 		semver = require('semver'),
 		app = express(),
@@ -250,7 +251,7 @@ var periodic = function (periodicConfigOptions) {
 			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
 		}
 		else{
-			if (appconfig.settings().status === 'install') {
+			if (fs.existsSync(path.resolve(process.cwd(),'node_modules','periodicjs.ext.install')) && appconfig.settings().status === 'install') {
 				require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
