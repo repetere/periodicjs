@@ -5,7 +5,26 @@ node_js:
 services:
   - mongodb
 
-before_script:
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#periodicjs"
+    template:
+      - "Build by %{author} :"
+      - "Git Info: %{branch} - %{commit} with the message %{commit_message}"
+      - "Travis states: %{message}"
+      - "Build Details: %{build_url}"
+      - "Change View: %{compare_url}"
+      - "result = %{result}"
+      - "elapsed time... %{duration}"
+    use_notice: true
+    skip_join: false
+
+  
+
+
+install: 
+  - npm install --prefix ./
   - sleep 10
   - npm run postinstall
 
