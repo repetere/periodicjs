@@ -29,7 +29,7 @@ describe('the default route when no modules are installed', function(){
       .get('/')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
-       .expect(/Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture.p/)
+       .expect(/Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture./)
       .end(done)
     });
     it('should respond with 404', function(done){
