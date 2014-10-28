@@ -10,7 +10,7 @@ notifications:
     channels:
       - "irc.freenode.org#periodicjs"
     template:
-      - "Build by %{author} has failed:"
+      - "Build by %{author} :"
       - "Git Info: %{branch} - %{commit} with the message %{commit_message}"
       - "Travis states: %{message}"
       - "Build Details: %{build_url}"
