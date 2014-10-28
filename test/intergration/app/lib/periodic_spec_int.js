@@ -21,7 +21,6 @@ describe('the default route when no modules are installed', function(){
     periodicjs.mongoose.connection.on('open',function(){
       done();
     });
-    // console.log('app',app);
   });
 
   context('GET /', function(){
@@ -30,15 +29,15 @@ describe('the default route when no modules are installed', function(){
       .get('/')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
-      // .expect(/<p>Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture.<\/p>/)
+       .expect(/Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture.p/)
       .end(done)
     });
     it('should respond with 404', function(done){
       request(periodicjs.expressapp)
       .get('/missing')
       .expect('Content-Type', 'text/html; charset=utf-8')
-      // .expect(/<p>page: missing <\/p>/)
-      .expect(400,done)
+       .expect(/Sorry page not found!/)
+      .expect(404,done)
     });
   });
 });
