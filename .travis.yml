@@ -9,15 +9,19 @@ notifications:
   irc:
     channels:
       - "irc.freenode.org#periodicjs"
-    on_success: always
-    on_failure: always
     template:
       - "Build by %{author} has failed:"
-      - "Git Info: %{branch} - %{commit}"
+      - "Git Info: %{branch} - %{commit} with the message %{commit_message}"
       - "Travis states: %{message}"
       - "Build Details: %{build_url}"
       - "Change View: %{compare_url}"
-      - skip_join: true
+      - "result = %{result}"
+      - "elapsed time... %{duration}"
+    use_notice: true
+    skip_join: false
+
+  
+
 
 install: 
   - npm install --prefix ./
