@@ -17,7 +17,7 @@ notifications:
       - "Travis states: %{message}"
       - "Build Details: %{build_url}"
       - "Change View: %{compare_url}"
-      skip_join: true
+      - skip_join: true
 
 install: 
   - npm install --prefix ./
