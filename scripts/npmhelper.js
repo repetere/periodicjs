@@ -339,11 +339,12 @@ var installMissingExtensions = function(missingExtensions,callback){
 		});
 	}
 	else{
-		callback(null,'no extensions to install');
+		callback(null,'no extensions to install',missingExtensions);
 	}
 };
 
-var installMissingNodeModules = function(missingExtensions,callback){
+var installMissingNodeModules = function(missingExtensionStatus,missingExtensions,callback){
+	console.log('missingExtensionStatus',missingExtensionStatus);
 	npm.load({
 		'strict-ssl': false,
 		'production': true,
