@@ -84,6 +84,49 @@ var upload = function (req, res, next) {
 	});
 };
 
+var show = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'asset/show',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
+					pagedata: {
+						title: req.controllerData.asset.title
+					},
+					asset: req.controllerData.asset,
+					user: req.user
+				}
+			});
+		}
+	);
+};
+
+var index = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'asset/index',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
+					pagedata: {
+						title: 'Assets'
+					},
+					assets: req.controllerData.assets,
+					user: req.user
+				}
+			});
+		}
+	);
+};
 var createassetfile = function (req, res) {
 	var newasset = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData);
 	newasset.name = CoreUtilities.makeNiceName(newasset.fileurl);
@@ -419,6 +462,8 @@ var controller = function (resources) {
 	Contenttypes = mongoose.model('Contenttype');
 
 	return {
+		show: show,
+		index: index,
 		remove: remove,
 		upload: upload,
 		createassetfile: createassetfile,

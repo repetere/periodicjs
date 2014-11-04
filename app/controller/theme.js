@@ -13,7 +13,7 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	logger,
-	User, Category, Item, Tag, Asset, Collection, Contenttype;
+	User, Category, Item, Tag, Asset, Collection, Compilation, Contenttype;
 
 var customLayout = function (options) {
 	var req = options.req,
@@ -29,6 +29,7 @@ var customLayout = function (options) {
 	Tag = mongoose.model('Tag');
 	Asset = mongoose.model('Asset');
 	Collection = mongoose.model('Collection');
+	Compilation = mongoose.model('Compilation');
 	Contenttype = mongoose.model('Contenttype');
 
 	function getModelFromName(modelname) {
@@ -45,6 +46,8 @@ var customLayout = function (options) {
 			return Asset;
 		case 'Collection':
 			return Collection;
+		case 'Compilation':
+			return Compilation;
 		case 'Contenttype':
 			return Contenttype;
 		}
