@@ -35,11 +35,14 @@ module.exports = function (periodic) {
 	 */
 	var homeController = require('../controller/home')(periodic),
 		appRouter = periodic.express.Router(),
+		ignoreExtensionIndex,
 		ExtensionCore = new Extensions(periodic.settings);
 
 	/** load extensions */
 	periodic.settings.extconf = ExtensionCore.settings();
-	ExtensionCore.loadExtensions(periodic);
+	periodic.ignoreExtension = 'periodicjs.ext.default_routes';
+	ignoreExtensionIndex = ExtensionCore.loadExtensions(periodic);
+	console.log('ignoreExtensionIndex',ignoreExtensionIndex);
 	
 	/** if there's a theme set in the instance configuration object, load the custom routes if they exist 
 	 */
@@ -53,6 +56,13 @@ module.exports = function (periodic) {
 			}
 			require(themeRoute)(periodic);
 		}
+	}
+
+	/**
+	 * load default routes last if enabled
+	 */
+	if(typeof ignoreExtensionIndex !== 'undefined'){
+		require(ExtensionCore.files()[ignoreExtensionIndex])(periodic);
 	}
 
 	/**
