@@ -21,6 +21,7 @@ var customLayout = function (options) {
 		next = options.next,
 		parallelTask = {},
 		layoutdata = options.layoutdata,
+		layoutdatavarname = options.layoutdatavarname || 'layoutdata',
 		pagetitle = (options.pagetitle) ? options.pagetitle : 'Periodic';
 
 	Item = mongoose.model('Item');
@@ -103,12 +104,14 @@ var customLayout = function (options) {
 			}
 			else {
 				if (next) {
-					req.controllerData.layoutdata = results;
+					req.controllerData = (req.controllerData) ? req.controllerData : {};
+					req.controllerData[layoutdatavarname] = results;
 					next();
 				}
 				else {
 					var viewpath = options.viewpath,
-						extname = options.extname;
+						extname = options.extname,
+						responseData ={};
 
 					CoreController.getPluginViewDefaultTemplate({
 							viewname: viewpath,
@@ -116,20 +119,19 @@ var customLayout = function (options) {
 							themefileext: appSettings.templatefileextension
 						},
 						function (err, templatepath) {
+							responseData.pagedata = {
+								title: pagetitle
+							};
+							responseData.periodic =  {
+								version: appSettings.version
+							};
+							responseData.user = CoreUtilities.removePrivateInfo(req.user);
+							responseData[layoutdatavarname] = results;
 							CoreController.handleDocumentQueryRender({
 								res: res,
 								req: req,
 								renderView: templatepath,
-								responseData: {
-									layoutdata: results,
-									pagedata: {
-										title: pagetitle
-									},
-									periodic: {
-										version: appSettings.version
-									},
-									user: CoreUtilities.removePrivateInfo(req.user)
-								}
+								responseData: responseData
 							});
 						}
 					);
