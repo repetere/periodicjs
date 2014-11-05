@@ -63,7 +63,7 @@ var browse = function (req, res, next) {
 		sort = req.query.sort,
 		limit = req.query.limit,
 		// selection = 'title content tags.title tags.name categories.title categories.name authors.username contenttypes primaryasset primaryauthor.username',
-		population = 'tags categories authors contenttypes primaryasset primaryauthor';
+		population = 'tags categories authors contenttypes items.item content_entities.entity_item content_entities.entity_collection primaryasset primaryauthor';
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	if (params.entitytype) {
