@@ -8,7 +8,7 @@ var async = require('async'),
 	appSettings,
 	mongoose,
 	logger,
-	Item, Collection, User, Contenttype, Category, Tag;
+	Item, Collection, Compilation, User, Contenttype, Category, Tag;
 
 var results = function (req, res) {
 	CoreController.getPluginViewDefaultTemplate({
@@ -126,6 +126,18 @@ var browse = function (req, res, next) {
 	}
 
 	async.parallel({
+		searchCompilations: function (callback) {
+			CoreController.searchModel({
+				model: Compilation,
+				query: query,
+				sort: sort,
+				limit: limit,
+				offset: offset,
+				// selection:selection,
+				population: population,
+				callback: callback
+			});
+		},
 		searchCollections: function (callback) {
 			CoreController.searchModel({
 				model: Collection,
@@ -317,6 +329,7 @@ var controller = function (resources) {
 	CoreUtilities = new Utilities(resources);
 	Category = mongoose.model('Category');
 	Collection = mongoose.model('Collection');
+	Compilation = mongoose.model('Compilation');
 	Contenttype = mongoose.model('Contenttype');
 	Item = mongoose.model('Item');
 	Tag = mongoose.model('Tag');
