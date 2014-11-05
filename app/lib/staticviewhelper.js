@@ -83,6 +83,22 @@ module.exports = {
 			paginationHtml += '</div>';
 			paginationHtml += '</div>';
 			return paginationHtml;
+		},
+		/** get injectible html fragments
+		 * @exports staticViewHelper/getHTML
+		 * @memberOf staticViewHelper
+		 */
+		getHTML: function(htmlLocalsObject){
+			var returnHTML ='';
+			if(typeof htmlLocalsObject ==='object'){
+				for(var x in htmlLocalsObject){
+					returnHTML+=htmlLocalsObject[x];
+				}
+			}
+			else{
+				returnHTML='<!-- not a valid HTML object -->';
+			}
+			return returnHTML;
 		}
 	},
 	/** theme file path view helpers for ejs

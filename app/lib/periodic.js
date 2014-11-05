@@ -225,6 +225,10 @@ var periodic = function (periodicConfigOptions) {
 			next();
 		});
 		app.use(function (req, res, next) {
+			res.locals.additionalHeadHTML ={};
+			res.locals.additionalFooterHTML ={};
+			res.locals.additionalPreContentHTML ={};
+			res.locals.additionalPostContentHTML ={};
 			app.locals.isLoggedIn = function () {
 				return req.user;
 			};
