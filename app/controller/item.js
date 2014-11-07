@@ -53,6 +53,8 @@ var index = function (req, res) {
 						title: 'Articles'
 					},
 					items: req.controllerData.items,
+					itemscount: req.controllerData.itemscount,
+					itempages: Math.ceil(req.controllerData.itemscount / req.query.limit),
 					user: req.user
 				}
 			});

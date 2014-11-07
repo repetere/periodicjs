@@ -55,6 +55,8 @@ var index = function (req, res) {
 						title: 'Collections'
 					},
 					collections: req.controllerData.collections,
+					collectionscount: req.controllerData.collectionscount,
+					collectionpages: Math.ceil(req.controllerData.collectionscount / req.query.limit),
 					user: req.user
 				}
 			});

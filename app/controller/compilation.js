@@ -56,6 +56,8 @@ var index = function (req, res) {
 						title: 'Compilations'
 					},
 					compilations: req.controllerData.compilations,
+					compilationscount: req.controllerData.compilationscount,
+					compilationpages: Math.ceil(req.controllerData.compilationscount / req.query.limit),
 					user: req.user
 				}
 			});
