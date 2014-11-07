@@ -435,7 +435,7 @@ var loadCompilationsWithCount = function (req, res, next) {
 };
 
 var loadCompilationsWithDefaultLimit = function (req, res, next) {
-	req.query.limit = req.query.compilationsperpage || req.query.limit || 15;
+	req.query.limit = req.query.compilationsperpage || req.query.docsperpage || req.query.limit || 15;
 	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
 	next();
 };

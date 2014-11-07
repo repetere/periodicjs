@@ -354,7 +354,7 @@ var loadCollectionsWithCount = function (req, res, next) {
 };
 
 var loadCollectionsWithDefaultLimit = function (req, res, next) {
-	req.query.limit = req.query.collectionsperpage || req.query.limit || 15;
+	req.query.limit = req.query.collectionsperpage || req.query.docsperpage || req.query.limit || 15;
 	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
 	next();
 };
