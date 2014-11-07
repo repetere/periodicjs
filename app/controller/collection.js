@@ -546,7 +546,7 @@ var getCollectionsData = function(options){
 
 var loadCollections = function (req, res, next) {
 	var query = {},
-		population = 'tags categories authors contenttypes primaryauthor primaryasset items.item',
+		population = 'tags categories authors contenttypes assets primaryauthor primaryasset items.item',
 		orQuery = [];
 
 	getCollectionsData({

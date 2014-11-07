@@ -627,7 +627,7 @@ var getCompilationsData = function(options){
 
 var loadCompilations = function (req, res, next) {
 	var query = {},
-		population = 'tags categories authors contenttypes primaryauthor primaryasset content_entities.entity_item content_entities.entity_collection',
+		population = 'tags categories authors contenttypes primaryauthor primaryasset assets content_entities.entity_item content_entities.entity_collection',
 		orQuery = [];
 
 	getCompilationsData({
