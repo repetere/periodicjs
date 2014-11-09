@@ -1,15 +1,15 @@
 #Periodic [![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs)
 
-## Periodic is software suite used to build data driven applications. 
+## Periodic is an application framework built on top of Express and MongoDB designed for data driven content based applications. 
 
-The platform is 100% open source and composed from extremely modular components that enable creating bespoke [Node.js](nodejs.org)/[Express](expressjs.com)/[MongoDB](http://www.mongodb.org/) based applications efficiently with new or existing themes and extensions.
+The platform is 100% open source and composed of extremely modular components that enable creating bespoke [Node.js](nodejs.org)/[Express](expressjs.com)/[MongoDB](http://www.mongodb.org/) based applications efficiently with new or existing themes and extensions.
 
 ### What can I build with Periodic?
 The platform is built with the UNIX / small utility / modular application design philosophy in mind. Content creators, developers, software engineers and entrepreneurs are encouraged to build large robust applications by integrating small single purposed extensions.
 
 Periodic emphasizes a curated (and non-opinionated) workflow, using Express with MongoDB and an extremely malleable data model. 
 
-The information architecture possibilities are limitless, and the use of additional frameworks, templating languages and design libraries is highly encouraged.
+The use of additional frameworks, templating languages and design libraries is highly encouraged.
 
 Applications built with Periodic range from simple blogs, complicated enterprise media publications, mobile application datastores, e-commerce platforms and more.
 
