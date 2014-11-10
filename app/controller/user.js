@@ -484,6 +484,7 @@ var controller = function (resources) {
 		loadUsers: loadUsers,
 		loadUsersWithDefaultLimit: loadUsersWithDefaultLimit,
 		loadUsersWithCount: loadUsersWithCount,
+		showProfile: showProfile,
 		loadUserForBrowseControllerContent:loadUserForBrowseControllerContent,
 		getUsersData: getUsersData,
 		searchResults: searchResults
