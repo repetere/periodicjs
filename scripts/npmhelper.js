@@ -26,7 +26,7 @@ var fs = require('fs-extra'),
 		standardExtensions = [
 			'periodicjs.ext.admin@2.0.3',
 			'periodicjs.ext.dbseed@2.1.0',
-			'periodicjs.ext.default_routes@2.0.2',
+			'periodicjs.ext.default_routes@2.0.3',
 			'periodicjs.ext.install@1.90.26',
 			'periodicjs.ext.login@1.90.26',
 			'periodicjs.ext.mailer@1.90.26',

@@ -49,6 +49,30 @@ var show = function (req, res) {
 	);
 };
 
+var showProfile = function (req, res) {
+	CoreController.getPluginViewDefaultTemplate({
+			viewname: 'author/profile',
+			themefileext: appSettings.templatefileextension
+		},
+		function (err, templatepath) {
+			CoreController.handleDocumentQueryRender({
+				res: res,
+				req: req,
+				renderView: templatepath,
+				responseData: {
+					pagedata: {
+						title: req.controllerData.user.username
+					},
+					author: CoreUtilities.removePrivateInfo(req.controllerData.user),
+					docs: req.controllerData.searchdocuments,
+					user: CoreUtilities.removePrivateInfo(req.user)
+				}
+			});
+		}
+	);
+};
+
+
 var create = function (req, res) {
 	var newuser = CoreUtilities.removeEmptyObjectValues(req.body),
 		err = User.checkValidation({
@@ -200,6 +224,12 @@ var loadUser = function (req, res, next) {
 			}
 		}
 	});
+};
+
+var loadUserForBrowseControllerContent = function (req, res, next) {
+	req.params.entitytype = 'authors';
+	req.params.entityItems = req.params.id;
+	next();
 };
 
 var loadUsersWithCount = function (req, res, next) {
@@ -454,6 +484,7 @@ var controller = function (resources) {
 		loadUsers: loadUsers,
 		loadUsersWithDefaultLimit: loadUsersWithDefaultLimit,
 		loadUsersWithCount: loadUsersWithCount,
+		loadUserForBrowseControllerContent:loadUserForBrowseControllerContent,
 		getUsersData: getUsersData,
 		searchResults: searchResults
 	};
