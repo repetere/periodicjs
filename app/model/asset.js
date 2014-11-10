@@ -39,6 +39,14 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'Contenttype'
 	}],
+	tags: [{
+		type: ObjectId,
+		ref: 'Tag'
+	}],
+	categories: [{
+		type: ObjectId,
+		ref: 'Category'
+	}],
 	fileurl: String,
 	locationtype: String,
 	description: String,
