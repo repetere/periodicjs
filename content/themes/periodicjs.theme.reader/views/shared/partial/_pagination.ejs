@@ -1,0 +1,56 @@
+<% 
+	currentpagenum = parseInt(request.query.pagenum);
+
+	var prevlink = '?'+locals.viewhelper.getQueryString(request.query).replace('pagenum='+currentpagenum,'pagenum='+(parseInt(currentpagenum-1)));	
+	var nextlink = '?'+locals.viewhelper.getQueryString(request.query).replace('pagenum='+currentpagenum,'pagenum='+(parseInt(currentpagenum)+1));
+%>
+<article class="content pre-content">
+	<section class="_pea-row">
+		<form method="get"	action="/<%- docscountlabel %>" class="submitOnChange">
+			<div class="_pea-col-span6 _pea-text-left">
+				Page
+				<% if(currentpagenum >1){%>
+					<a href="<%= prevlink %>">&laquo;</a> 
+				<%}%>
+
+				<% if(editlistingprops){%>
+					<input type="text" name="pagenum" class="_pea-text-center autoFormSubmit" style="width:2em;" value="<%- request.query.pagenum %>"/>
+				<%}
+				else{%>
+					<%- request.query.pagenum %>
+				<%}%> of <%- docpages %> 
+
+				<% if(docs && docs.length>0 && docs.length >= request.query.limit){%>
+					<a href="<%= nextlink %>">&raquo;</a>
+				<%}%>
+			</div>
+			<div class="_pea-col-span6 _pea-text-right">
+				<a href="/<%- docscountlabel %>">Reset Filters</a>
+				<% if(editlistingprops){%>
+				 | 
+					<span >
+						<% var docsperpage = [{
+							"value":"15",
+							"label":"15"
+							},{
+							"value":"30",
+							"label":"30"
+							},{
+							"value":"50",
+							"label":"50"
+							}]; %>
+						<select name="docsperpage"  class="autoFormSubmit">
+							<% docsperpage.forEach(function(iperpage){
+								%>
+									<option <% if(docsrequestperpage === iperpage.value ){%> selected="selected"
+									<%}%> value="<%= iperpage.value %>"><%= iperpage.label %></option>
+								<%
+								}); %>
+						</select> per page
+					</span> | 
+					<span><%- docscount %> <%- docscountlabel %></span>
+				<%}%>
+			</div>
+		</form>
+	</section>
+</article>

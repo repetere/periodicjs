@@ -1,0 +1,11 @@
+<div id="searchformcontainer" class="overlay overlay-contentscale">
+	<form name="searchform" id="searchform" class="reader_ajax_form" action="/search" data-errorfunction="ajaxSearchError" data-successfunction="ajaxSearchResult">
+		<input type="hidden" name="_csrf" value=<%= locals.token %> >
+		<input type="text" id="contentSearchInput" class="overlaysearch" name="search" value=""/>
+		<input type="submit" id="contentSubmitButton" name="submitbutton" value="search"/>
+	</form>
+	<button type="button" class="overlay-close">Close</button>
+	<h3 id="searchResultTitle"></h3>
+	<section id="searchResultSection">
+	</section>
+</div><!-- /search overlay -->

@@ -1,0 +1,42 @@
+				<% if(locals.additionalPostContentHTML && locals.additionalPostContentHTML.length>0){%>
+					<article class="content pre-content">
+						<%- locals.viewhelper.getHTML(locals.additionalPostContentHTML) %>
+					</article>
+				<%} %>
+				<footer class="_pea-row">
+					<div class="_pea-col-span6">
+						<% if(locals.showperiodiccredit ==='show'){%>
+              Curated with <a href="http://getperiodic.org" target="_blank">Periodic</a> | <%} %>Copyright © <% if(pagedata && periodic){%><%= periodic.name %><%}%> <%var d = new Date();%> <%- d.getFullYear() %>
+          </div>
+					<div class="_pea-col-span6 _pea-pull-right _pea-text-right">
+						Version <% if(pagedata && periodic){%><%= periodic.version %><%} if(locals.showadminlink ==='show'){%> | <a href="/p-admin">Admin</a><%}%>
+					</div>
+				</footer>
+			</div>	<!-- /wrapper -->
+			</div><!-- /container -->
+			<nav class="outer-nav top horizontal">
+				<a href="/">Home</a>
+				<% if(locals.navlinks ==='categories' && locals.navdata && locals.navdata.categories && locals.navdata.categories.length>0){
+					locals.navdata.categories.forEach(function(category){%>
+						<a href="/browse/categories/<%- category.name %>"><%- category.title %></a>
+					<%});
+				}
+				else if(locals.usecustomnav ==='yes' && locals.customnav){%>
+					<%- locals.customnav %>
+				<%}
+				else{%>
+					<a href="/items">Items</a>
+					<a href="/collections">Collections</a>
+					<a href="/compilations">Compilations</a>
+					<a href="/browse/authors">Authors</a>
+					<a href="/browse/contenttypes">Content Types</a>
+					<a href="/browse/categories">Categories</a>
+					<a href="/browse/tags">Tags</a>
+				<%}%>
+			</nav>
+
+			<% include search_overlay %>
+		</div><!-- /reader-container -->
+		<%- locals.viewhelper.getHTML(locals.additionalFooterHTML) %>
+	</body>
+</html>

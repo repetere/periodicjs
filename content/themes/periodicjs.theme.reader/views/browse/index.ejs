@@ -1,0 +1,43 @@
+<% include ../shared/header %>
+
+<section class="content pre-content">
+	<h1> Browse <a href="/browse/<%= request.params.entitytype %>"><%= request.params.entitytype %></a> <%- request.params.entityitems %>
+	</h1>
+	<% if(tags && tags.length>0){
+		tags.forEach(function(tag){
+			if(request.params.entitytype==="authors"){
+				%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="tag"><%= tag.username %></a> <%
+			}
+			else{
+				%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="tag"><%= tag.title %></a> <%
+			}
+		});
+		} %>
+		<hr>
+</section>
+<% if(docs && docs.length>0){
+	docs.forEach(function(doc){
+		switch (doc.entitytype){
+			case 'compilation':
+				var compilation = doc; %>
+				<% include ../compilation/_compilation %>
+				<%break;
+			case 'collection':
+				var collection = doc; %>
+				<% include ../collection/_collection %>
+				<%break;
+			case 'item':
+				var item = doc; %>
+				<% include ../item/_item %>
+				<%break;
+		}
+		%>
+	<%});
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no docs</h1>
+	</article>
+<%}%>
+
+<% include ../shared/footer %>

@@ -1,0 +1,30 @@
+<% include ../shared/header %>
+	
+<section class="user-profile">
+	<% include _userprofile %>
+</section>
+<% if(docs && docs.length>0){
+	docs.forEach(function(doc){
+		switch (doc.entitytype){
+			case 'compilation':
+				var compilation = doc; %>
+				<% include ../compilation/_compilation %>
+				<%break;
+			case 'collection':
+				var collection = doc; %>
+				<% include ../collection/_collection %>
+				<%break;
+			case 'item':
+				var item = doc; %>
+				<% include ../item/_item %>
+				<%break;
+		}
+		%>
+	<%});
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no docs</h1>
+	</article>
+<%}%>		
+<% include ../shared/footer %>
