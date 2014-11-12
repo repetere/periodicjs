@@ -3,9 +3,8 @@
 		<% include _genericdoc_full_asset_html %>
 	</section>
 <%}
-else{%>
+else if(genericdoc.assets && genericdoc.assets.length >0){%>
 	<section class="section_assets">
-	<% if(genericdoc.assets && genericdoc.assets.length >0){%>
 		<div id="content_assets" class="content_assets p_c_fws-slideshow  p_c_fws-slideshow-preview ">
 			<ul>
 				<% genericdoc.assets.forEach(function(asset){%>
@@ -16,6 +15,5 @@ else{%>
 			</ul>
 			<!-- <div id="assetInfoButton"><span>i</span></div> -->
 		</div>
-	<%}%>	
 	</section>
 <%} %>
