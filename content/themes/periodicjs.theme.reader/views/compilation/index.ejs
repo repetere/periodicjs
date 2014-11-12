@@ -1,0 +1,21 @@
+<% include ../shared/header %>
+<% if(compilations && compilations.length>0){
+	compilations.forEach(function(compilation){%>
+		<% include _compilation %>
+	<%});
+	%>
+	<% var docscount = compilationscount, 
+			docscountlabel = 'compilations',
+			docs = compilations,
+			docsrequestperpage = request.query.compilationsperpage || request.query.docsperpage,
+			docpages = compilationpages,
+			editlistingprops= true;  %>
+	<% include ../shared/partial/_pagination %>
+	<%
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no compilations</h1>
+	</article>
+<%}%>
+<% include ../shared/footer %>

@@ -1,0 +1,11 @@
+<% if(genericdoc.authors && genericdoc.authors.length > 0){%>
+	<small>
+		<strong>Authors: </strong> <%
+			genericdoc.authors.forEach(function(author,i){
+				%>
+				<a href="/author/<%- author.username %>" class="tag">#<%- author.username %></a>
+				<%
+			});
+		%>
+	</small>
+<%}%>

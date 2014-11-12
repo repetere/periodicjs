@@ -1,0 +1,19 @@
+<%
+var backgroundimage;
+if(asset.assettype && asset.assettype.match("image")){  
+	backgroundimage = asset.fileurl;
+}%>
+<div class="asset">
+	<figure class="asset-figure-effect" style="background-image: url(<%- backgroundimage %>);">
+		
+    <figcaption>
+	    <p class="icon-links">
+	    	<a href="/asset/<%- asset.name %>">View</a>
+	    </p>
+	    <h2><%- asset.title %></h2>
+	    <p class="description">
+	    	<%- asset.content %>
+	    </p>
+    </figcaption>
+	</figure>
+</div>

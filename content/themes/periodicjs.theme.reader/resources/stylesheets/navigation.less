@@ -1,0 +1,225 @@
+.perspective {
+    background: #aaa;
+    position: relative;
+}
+
+.perspective {
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    background: #fff;
+    min-height: 100%;
+    position: relative;
+    outline: 1px solid rgba(0,0,0,0);
+    z-index: 10;
+    -webkit-transform: translateZ(0) translateX(0) rotateY(0deg); /* reset transforms (Chrome bug) */
+    transform: translateZ(0) translateX(0) rotateY(0deg);
+}
+
+.container::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0px;
+    opacity: 0;
+    background: rgba(0,0,0,0.2);
+    /* the transition delay of the height needs to be synced with the container transition time */
+    -webkit-transition: opacity 0.4s, height 0s 0.4s;
+    transition: opacity 0.4s, height 0s 0.4s;
+}
+
+/* Modal view */
+.perspective.modalview {
+    position: fixed;
+    -webkit-perspective: 1500px;
+    perspective: 1500px;
+}
+
+.modalview .container {
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.modalview .wrapper {
+    -webkit-transform: translateZ(-1px); /* solves a rendering bug in Chrome on Windows */
+}
+
+.animate .container::after {
+    opacity: 1;
+    height: 101%;
+    -webkit-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+
+
+/* Effect Move Down */
+.effect-movedown {
+    background: #34495e;
+}
+
+.effect-movedown .container {
+    -webkit-transition: -webkit-transform 0.4s;
+    transition: transform 0.4s;
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+}
+
+.effect-movedown .container::after {
+    background: rgba(52, 73, 94, 0.5);
+}
+
+.effect-movedown.animate .container {
+    -webkit-transform: translateY(100%) translateZ(-1500px);
+    transform: translateY(100%) translateZ(-1500px);
+}
+
+.no-csstransforms3d .effect-movedown.animate .container {
+    top: 75%;
+}
+
+.effect-movedown .outer-nav a {
+    opacity: 0;
+    -webkit-transform: translateY(-20px);
+    transform: translateY(-20px);
+    -webkit-transition: -webkit-transform 0.4s, opacity 0.4s;
+    transition: transform 0.4s, opacity 0.4s;
+}
+
+.effect-movedown .outer-nav a:hover {
+    color: @_reader-color-red;
+}
+
+.effect-movedown.animate .outer-nav a {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(2) {
+    -webkit-transition-delay: 0.04s;
+    transition-delay: 0.04s;
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(3) {
+    -webkit-transition-delay: 0.08s;
+    transition-delay: 0.08s;
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(4) {
+    -webkit-transition-delay: 0.12s;
+    transition-delay: 0.12s;
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(5) {
+    -webkit-transition-delay: 0.16s;
+    transition-delay: 0.16s;
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(6) {
+    -webkit-transition-delay: 0.2s;
+    transition-delay: 0.2s;
+}
+
+.effect-movedown.animate .outer-nav a:nth-child(7) {
+    -webkit-transition-delay: 0.24s;
+    transition-delay: 0.24s;
+}
+
+
+/* Outer Nav */
+.outer-nav {
+    position: absolute;
+    height: auto;
+    font-size: 2em;
+}
+
+.outer-nav.vertical {
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+.outer-nav.horizontal {
+    left: 50%;
+    width: 75%;
+    max-width: 1000px;
+    text-align: center;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+.outer-nav.left {
+    left: 25%;
+}
+
+.outer-nav.right {
+    right: 25%;
+}
+
+.outer-nav.top {
+    top: 25%;
+}
+
+.outer-nav.bottom {
+    bottom: 25%;
+}
+
+.outer-nav a {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: 300;
+    margin: 0 0 30px 0;
+    color: #fff;
+    -webkit-transition: color 0.3s;
+    transition: color 0.3s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+.outer-nav a:hover {
+    color: #ffdccd;
+}
+
+.outer-nav.vertical a {
+    display: block;
+}
+
+.outer-nav.horizontal a {
+    margin: 15px 20px;
+}
+
+.outer-nav a::before {
+    display: inline-block;
+    font-family: 'typicons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    margin-right: 10px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+// .icon-news::before { content: "\e600" }
+// .icon-home::before { content: "\e601" }
+// .icon-image::before { content: "\e602" }
+// .icon-upload::before { content: "\e603" }
+// .icon-star::before { content: "\e604" }
+// .icon-mail::before { content: "\e605" }
+// .icon-lock::before { content: "\e606" }
+// .icon-chart-pie::before { content: "\e607" }

@@ -1,0 +1,11 @@
+<% if(genericdoc.tags && genericdoc.tags.length > 0){%>
+	<small>
+		<strong>Tags: </strong> <%
+			genericdoc.tags.forEach(function(tag,i){
+				%>
+				<a href="/browse/tags/<%- tag.name %>" class="tag">#<%- tag.title %></a>
+				<%
+			});
+		%>
+	</small>
+<%}%>

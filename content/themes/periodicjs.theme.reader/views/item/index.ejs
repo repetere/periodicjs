@@ -1,0 +1,21 @@
+<% include ../shared/header %>
+<% if(items && items.length>0){
+	items.forEach(function(item){%>
+		<% include _item %>
+	<%});
+	%>
+	<% var docscount = itemscount, 
+			docscountlabel = 'items',
+			docs = items,
+			docsrequestperpage = request.query.itemsperpage || request.query.docsperpage,
+			docpages = itempages,
+			editlistingprops= true;  %>
+	<% include ../shared/partial/_pagination %>
+	<%
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no items</h1>
+	</article>
+<%}%>
+<% include ../shared/footer %>

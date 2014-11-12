@@ -1,0 +1,32 @@
+<% include ../shared/header %>
+<% if(homepagedocs && homepagedocs.length>0){
+	homepagedocs.forEach(function(doc){
+		switch (doc.entitytype){
+			case 'compilation':
+				var compilation = doc; %>
+				<% include ../compilation/_compilation %>
+				<%break;
+			case 'collection':
+				var collection = doc; %>
+				<% include ../collection/_collection %>
+				<%break;
+			case 'item':
+				var item = doc; %>
+				<% include ../item/_item %>
+				<%break;
+		}
+		%>
+	<%});%>
+	<section class="content content-meta _pea-text-center _pea-row">
+		<div class="_pea-col-span4"><a href="/items">View all items</a></div>
+		<div class="_pea-col-span4"><a href="/collections">View all collections</a></div>
+		<div class="_pea-col-span4"><a href="/compilations">View all compilations</a></div>
+	</section>
+	<%
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no docs</h1>
+	</article>
+<%}%>
+<% include ../shared/footer %>

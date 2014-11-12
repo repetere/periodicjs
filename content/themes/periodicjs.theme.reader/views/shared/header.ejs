@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><% include partial/_site_title %> </title>
+	<meta name="author" content="Yaw Joseph Etse" />
+	<meta name="description" content="fullPage full-screen backgrounds." />
+	<meta name="keywords"  content="fullpage,screen,fullscreen,backgrounds,full-screen" />
+	<meta name="Resource-type" content="Document" />
+	<link rel="icon" type="image/png" href="/favicon.png">
+  <link href="<%= locals.themehelper.themePublicResourcePath('periodicjs.theme.reader','stylesheets') %>reader.css" rel="stylesheet">
+  <script src="<%= locals.themehelper.themePublicResourcePath('periodicjs.theme.reader','js') %>reader.min.js"></script>
+	<% if(pagedata && periodic){%>
+		<% var headertags = locals.viewhelper.includeJavaScripts(pagedata.headerjs); %><%- headertags %>
+	<%}%>
+	<%- locals.viewhelper.getHTML(locals.additionalHeadHTML) %>
+</head>
+	<body>
+		<div id="perspective" class="perspective effect-movedown reader-container link-styledlinkes link-arrow">
+			<% include nav %>
+			<div id="container" class="container">
+				<div class="wrapper">	
+				<% if(locals.additionalPreContentHTML && locals.additionalPreContentHTML.length>0){%>
+					<article class="content pre-content">
+						<%- locals.viewhelper.getHTML(locals.additionalPreContentHTML) %>
+					</article>
+				<%} %>

@@ -1,0 +1,13 @@
+<%
+var backgroundimage;
+if(asset.assettype && asset.assettype.match("image")){  
+	assetfile = '<img src="'+asset.fileurl+'" />';
+}
+else{
+	assetfile = asset.fileurl;
+}%>
+<div class="asset">
+	<figure>
+		<%- assetfile %>
+	</figure>
+</div>
