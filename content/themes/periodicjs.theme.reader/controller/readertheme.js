@@ -46,12 +46,14 @@ var getNavCategories = function(req,res,next){
 var homepageindex = function(req,res){
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
-	var homepagedocs = req.controllerData.layoutdata.items,
-		sortedHomepageDocs =[];
-	homepagedocs.concat(req.controllerData.layoutdata.collections);
-	homepagedocs.concat(req.controllerData.layoutdata.compilations);
+	var homepagedocs = [],
+		sortedHomepageDocs =[],
+		homepageitems = req.controllerData.layoutdata.items,
+		homepagecollections = req.controllerData.layoutdata.collections,
+		homepagecompilations = req.controllerData.layoutdata.compilations;
+	homepagedocs = homepagedocs.concat(homepagecompilations,homepagecollections,homepageitems);
 
-	sortedHomepageDocs = homepagedocs.sort(CoreUtilities.sortObject('desc', 'createdat'));
+	sortedHomepageDocs = homepagedocs.sort(CoreUtilities.sortObject('desc', 'publishat'));
 
 	CoreController.getPluginViewDefaultTemplate({
 				viewname: 'home/index',
@@ -84,11 +86,11 @@ var defaulthomepage = function(req,res,next){
 				items: {
 					model: 'Item',
 					search: {
-						query: req.params.item,
+						customquery: {'collectionitemonly':false},
 						sort: '-publishat',
 						limit: 5,
 						offset: 0,
-						population: 'authors primaryauthor contenttypes primaryasset tags categories '
+						population: 'authors primaryauthor contenttypes primaryasset tags primaryauthor assets categories '
 					}
 				},
 				collections: {
@@ -98,7 +100,7 @@ var defaulthomepage = function(req,res,next){
 						sort: '-publishat',
 						limit: 5,
 						offset: 0,
-						population: 'tags categories authors assets primaryasset contenttypes primaryauthor items'
+						population: 'tags categories authors assets primaryasset contenttypes primaryauthor items items.item'
 					}
 				},
 				compilations: {
@@ -108,7 +110,7 @@ var defaulthomepage = function(req,res,next){
 						sort: '-publishat',
 						limit: 5,
 						offset: 0,
-						population: 'tags categories authors assets primaryasset contenttypes primaryauthor content_entities'
+						population: 'tags categories authors assets primaryasset contenttypes primaryauthor content_entities content_entities.entity_item content_entities.entity_collection content_entities.entity_collection.items.item'
 					}
 				},
 			}
