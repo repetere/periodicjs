@@ -88,7 +88,7 @@ var defaulthomepage = function(req,res,next){
 						sort: '-publishat',
 						limit: 5,
 						offset: 0,
-						population: 'authors primaryauthor contenttypes primaryasset tags primaryauthor assets categories '
+						population: 'authors primaryauthor contenttypes primaryasset tags categories '
 					}
 				},
 				collections: {
