@@ -4281,8 +4281,8 @@ var detectcss = require('detectcss'),
 	contentSearchInput,
 	// assetInfoButton,
 	autoSubmitElements,
-	assetSlideshow,
-	AssetfullWidthSlideshow,
+	assetSlideshows,
+	AssetfullWidthSlideshows = [],
 	isSearching = false,
 	overlay,
 	closeBttn,
@@ -4431,10 +4431,12 @@ var init = function () {
 
 	t = setTimeout(removeTitle, 2000);
 
-	if (assetSlideshow) {
-		AssetfullWidthSlideshow = new componentfullwidthslideshow({
-			element: assetSlideshow
-		});
+	if (assetSlideshows) {
+		for (var e = 0; e < assetSlideshows.length; e++) {
+			AssetfullWidthSlideshows.push(new componentfullwidthslideshow({
+				element: assetSlideshows[e]
+			}));
+		}
 	}
 
 	if (autoSubmitElements && autoSubmitElements.length > 0) {
@@ -4478,7 +4480,7 @@ window.addEventListener('load', function () {
 	contentSearchInput = document.querySelector('#contentSearchInput');
 	searchResultTitle = document.querySelector('#searchResultTitle');
 	searchResultSection = document.querySelector('#searchResultSection');
-	assetSlideshow = document.querySelector('#content_assets');
+	assetSlideshows = document.querySelectorAll('.content_assets');
 	autoSubmitElements = document.querySelectorAll('.autoFormSubmit');
 	// assetInfoButton = document.querySelector('#assetInfoButton');
 
