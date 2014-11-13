@@ -42,6 +42,8 @@ node_modules
 public/uploads/files
 !public/uploads/files/2014/10
 content/files/backups
+content/files/backups/.restoretemp
+content/files/backups/.tempbackup
 *.backup
 !.gitignore
 !*.gitignore

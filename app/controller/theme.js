@@ -284,44 +284,6 @@ var enable = function (req, res, next) {
 	});
 };
 
-// var install_removeThemeFromConf = function (options) {
-// 	var extname = options.extname,
-// 		logfile = options.logfile,
-// 		confFilePath = path.join(process.cwd(), 'content/config/config.json');
-
-// 	fs.readJson(confFilePath, function (err, configFileJson) {
-// 		if (err) {
-// 			install_logErrorOutput({
-// 				logfile: logfile,
-// 				logdata: err.message
-// 			});
-// 		}
-// 		else {
-// 			configFileJson.theme = '';
-
-// 			fs.outputJson(
-// 				confFilePath,
-// 				configFileJson,
-// 				function (err) {
-// 					if (err) {
-// 						install_logErrorOutput({
-// 							logfile: logfile,
-// 							logdata: err.message
-// 						});
-// 					}
-// 					else {
-// 						install_logOutput({
-// 							logfile: logfile,
-// 							logdata: extname + ' removed, extensions.conf updated, application restarting \r\n  ====##REMOVED-END##====',
-// 							callback: function () {}
-// 						});
-// 					}
-// 				}
-// 			);
-// 		}
-// 	});
-// };
-
 var uninstall_removeFiles = function (options) {
 	var themedir = options.themedir,
 		// repourl = options.repourl,

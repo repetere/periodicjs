@@ -41,6 +41,8 @@ build/Release
 node_modules
 public/uploads/files
 !public/uploads/files/2014/10
+content/files/backups/.restoretemp
+content/files/backups/.tempbackup
 !.gitignore
 !*.gitignore
 
