@@ -92,7 +92,9 @@ module.exports = {
 			var returnHTML ='';
 			if(typeof htmlLocalsObject ==='object'){
 				for(var x in htmlLocalsObject){
+					returnHTML+='<!-- START['+x+'] -->';
 					returnHTML+=htmlLocalsObject[x];
+					returnHTML+='<!-- END['+x+'] -->';
 				}
 			}
 			else{
