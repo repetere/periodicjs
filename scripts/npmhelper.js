@@ -191,14 +191,16 @@ var upgradePeriodic = function(callback){
 };
 
 var installCustomConfigNodeModules = function(callback){
-	var currentConfig = fs.readJSONSync(path.resolve(newlocation,'content/config/config.json')),
+	var currentConfig = fs.readJSONSync(path.resolve(process.cwd(),'content/config/config.json')),
 		npmconfig ={
 			'strict-ssl': false,
 			'save-optional': true,
 			'production': true
 		};
 
-	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules) ){
+	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules)  && currentConfig.node_modules.length >0 ){
+	 	npm['save-optional'] = true;
+		//console.log('install these modules',currentConfig.node_modules)
 		npm.load(
 			npmconfig,
 			function (err) {
