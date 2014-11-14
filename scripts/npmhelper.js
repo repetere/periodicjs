@@ -179,6 +179,8 @@ var upgradePeriodic = function(callback){
 	fs.removeSync(path.join(originallocation,'content/config/process')); 
 	fs.removeSync(path.join(originallocation,'content/config/config.json')); 
 	fs.removeSync(path.join(originallocation,'content/config/database.js')); 
+	fs.removeSync(path.join(originallocation,'content/config/logger.js')); 
+	fs.removeSync(path.join(originallocation,'content/config/startup.js')); 
 	fs.removeSync(path.join(originallocation,'public/uploads/files')); 
 	// fs.removeSync(path.join(originallocation,'content/extensions/extensions.json'));  
 	fs.removeSync(path.join(originallocation,'processes'));  
@@ -188,13 +190,46 @@ var upgradePeriodic = function(callback){
 	callback(); 
 };
 
+var installCustomConfigNodeModules = function(callback){
+	var currentConfig = fs.readJSONSync(path.resolve(newlocation,'content/config/config.json')),
+		npmconfig ={
+			'strict-ssl': false,
+			'save-optional': true,
+			'production': true
+		};
+
+	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules) ){
+		npm.load(
+			npmconfig,
+			function (err) {
+			if (err) {
+				console.error(err);
+				callback(err);
+			}
+			else {
+			 	npm['save-optional'] = true;
+				npm.commands.install(
+					currentConfig.node_modules,
+					callback
+				);
+			}
+		});
+	}
+	else{
+		callback(null,'no custom node modules');
+	}
+};
+
 var installStandardExtensions = function(callback){
 	var npmconfig ={
 		'strict-ssl': false,
 		'save-optional': true,
 		'production': true
-	};
-
+	},
+	currentConfig = fs.readJSONSync(path.resolve(newlocation,'content/config/config.json'));
+	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules) ){
+		standardExtensions = standardExtensions.concat(currentConfig.node_modules);
+	}
 	npm.load(
 		npmconfig,
 		function (err) {
@@ -451,6 +486,7 @@ var npmhelper = function(options){
 		getMissingExtensionsFromConfig: getMissingExtensionsFromConfig,
 		installMissingExtensions: installMissingExtensions,
 		installMissingNodeModules: installMissingNodeModules,
+		installCustomConfigNodeModules: installCustomConfigNodeModules,
 		getThemeName: getThemeName,
 		installThemeModules: installThemeModules
 	};

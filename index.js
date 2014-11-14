@@ -5,8 +5,9 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 'use strict';
-
+require('./content/config/startup');
 var argv = require('optimist').argv;
+
 /**
  * @description the script that starts the periodic express application.
  * @author Yaw Joseph Etse
