@@ -379,40 +379,49 @@ var installMissingExtensions = function(missingExtensions,callback){
 };
 
 var installMissingNodeModules = function(missingExtensionStatus,missingExtensions,callback){
-	console.log('missingExtensionStatus',missingExtensionStatus);
-	npm.load({
-		'strict-ssl': false,
-		'production': true,
-		'silent': true,
-		'no-optional': true,
-		'save-optional': false,
-		'skip_post_install':true,
-		'skip_ext_conf': true
-	},function (err) {
-		if (err) {
-			callback(err,null);
+	installCustomConfigNodeModules(function(err,customcallbackstatus){
+		if(err){
+			callback(err);
 		}
-		else {
-		 	npm['no-optional'] = true;
-		 	npm['save-optional'] = false;
-		 	npm.silent = true;
-		 	npm.skip_post_install = true;
-		 	npm.quiet = true;
-		 	//console.log('npm',npm);
-			npm.commands.install([],
-			function (err 
-				//,data
-				) {
+		else{
+			console.log('customcallbackstatus',customcallbackstatus);
+			console.log('missingExtensionStatus',missingExtensionStatus);
+			npm.load({
+				'strict-ssl': false,
+				'production': true,
+				'silent': true,
+				'no-optional': true,
+				'save-optional': false,
+				'skip_post_install':true,
+				'skip_ext_conf': true
+			},function (err) {
 				if (err) {
 					callback(err,null);
 				}
 				else {
-					callback(null,missingExtensions);
+				 	npm['no-optional'] = true;
+				 	npm['save-optional'] = false;
+				 	npm.silent = true;
+				 	npm.skip_post_install = true;
+				 	npm.quiet = true;
+				 	//console.log('npm',npm);
+					npm.commands.install([],
+					function (err 
+						//,data
+						) {
+						if (err) {
+							callback(err,null);
+						}
+						else {
+							callback(null,missingExtensions);
+						}
+					});	
+					//npm.on('log', function (message) {
+					//	console.log(message);
+					//});
 				}
-			});	
-			//npm.on('log', function (message) {
-			//	console.log(message);
-			//});
+			});
+
 		}
 	});
 };

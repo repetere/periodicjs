@@ -8,13 +8,8 @@
 'use strict';
 
 var async = require('async'),
- 		fs = require('fs-extra'),
- 		path = require('path'),
  		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
-		Extensions = require('periodicjs.core.extensions'),
-		CoreExtensions = new Extensions({}),
-		npm = require('npm'),
 		npmhelper = require('./npmhelper')({});
 
 async.waterfall([
