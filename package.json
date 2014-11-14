@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "2.2.1",
+  "version": "2.3.1",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
@@ -51,7 +51,7 @@
   "dependencies": {
     "async": "0.9.0",
     "bcrypt": "~0.7.8",
-    "body-parser": "1.4.3",
+    "body-parser": "1.9.2",
     "compression": "1.0.3",
     "connect-flash": "0.1.1",
     "connect-mongo": "0.4.1",
@@ -61,7 +61,7 @@
     "decompress": "0.3.1",
     "download": "~0.1.17",
     "ejs": "1.0.0",
-    "express": "4.4.5",
+    "express": "4.10.2",
     "express-session": "1.2.1",
     "formidable": "1.0.15",
     "fs-extra": "0.9.1",
@@ -83,10 +83,10 @@
     "semver": ">=2.3.0",
     "serve-favicon": "2.0.0",
     "string-to-json": "^0.1.0",
-    "superagent": "~0.18.2",
+    "superagent": "~0.21.0",
     "util-extend": "1.0.1",
     "utils-merge": "1.0.0",
-    "winston": "0.7.3"
+    "winston": "0.8.3"
   },
   "devDependencies": {
     "browserify": "~4.2.1",
