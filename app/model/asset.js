@@ -39,6 +39,10 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'Contenttype'
 	}],
+	authors: [{
+		type: ObjectId,
+		ref: 'User'
+	}],
 	tags: [{
 		type: ObjectId,
 		ref: 'Tag'
@@ -46,6 +50,18 @@ var assetSchema = new Schema({
 	categories: [{
 		type: ObjectId,
 		ref: 'Category'
+	}],
+	changes: [{
+		createdat: {
+			type: Date,
+			'default': Date.now
+		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
+		editor_username: String,
+		changeset: Schema.Types.Mixed
 	}],
 	fileurl: String,
 	locationtype: String,

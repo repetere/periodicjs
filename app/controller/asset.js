@@ -3,6 +3,7 @@
 var path = require('path'),
 	async = require('async'),
 	fs = require('fs-extra'),
+	str2json = require('string-to-json'),
 	formidable = require('formidable'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controller'),
@@ -132,6 +133,23 @@ var createassetfile = function (req, res) {
 	newasset.name = CoreUtilities.makeNiceName(newasset.fileurl);
 	newasset.title = newasset.title || newasset.name;
 	newasset.author = req.user._id;
+	newasset = str2json.convert(newasset);
+	newasset.changes= [{
+		editor:req.user._id,
+		editor_username:req.user.username,
+		changeset:{
+			title:newasset.title,
+			name:newasset.name,
+			content:newasset.content,
+			tags: (newasset.tags && Array.isArray(newasset.tags)) ? newasset.tags: [newasset.tags],
+			categories: (newasset.tags && Array.isArray(newasset.categories)) ? newasset.categories: [newasset.categories],
+			assets: (newasset.tags && Array.isArray(newasset.assets)) ? newasset.assets: [newasset.assets],
+			contenttypes: (newasset.tags && Array.isArray(newasset.contenttypes)) ? newasset.contenttypes: [newasset.contenttypes],
+			contenttypeattributes:newasset.contenttypeattributes
+		}
+	}];
+
+
 	CoreController.loadModel({
 		model: MediaAsset,
 		docid: newasset.name,
@@ -171,19 +189,23 @@ var createassetfile = function (req, res) {
 };
 
 var update = function (req, res) {
-	var updateasset = CoreUtilities.removeEmptyObjectValues(req.body);
+	var updateasset = CoreUtilities.removeEmptyObjectValues(req.body),
+		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
 
 	updateasset.name = CoreUtilities.makeNiceName(updateasset.title);
+	updateasset = str2json.convert(updateasset);
 
 	CoreController.updateModel({
 		model: MediaAsset,
 		id: updateasset.docid,
 		updatedoc: updateasset,
-		saverevision: false,
+		forceupdate: req.forceupdate,
+		saverevision: saverevision,
+		originalrevision: req.controllerData.asset,
 		population: 'contenttypes parent',
 		res: res,
 		req: req,
-		successredirect: '/p-admin/mediaasset/edit/',
+		successredirect: req.redirectpath ||  '/p-admin/mediaasset/edit/',
 		appendid: true
 	});
 };
@@ -404,7 +426,7 @@ var loadAssets = function (req, res, next) {
 
 var loadAsset = function (req, res, next) {
 	var params = req.params,
-		population = 'author contenttypes',
+		population = 'author contenttypes tags categories authors',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
