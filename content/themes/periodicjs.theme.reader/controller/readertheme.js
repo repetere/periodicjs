@@ -13,6 +13,7 @@ var path = require('path'),
 	Item,
 	itemController,
 	appSettings,
+	appThemeEnvSettings,
 	mongoose,
 	logger;
 
@@ -118,14 +119,14 @@ var defaulthomepage = function(req,res,next){
 };
 
 var homepagedata = function(req,res,next){
-	if(appSettings.themeSettings && appSettings.themeSettings.settings){
-		req.params.id = appSettings.themeSettings.settings['homepage-value'];
+	if(appSettings.themeSettings && appThemeEnvSettings){
+		req.params.id = appThemeEnvSettings['homepage-value'];
 		req.controllerData = (req.controllerData) ? req.controllerData : {};
 		var params = req.params,
 			docid,
 			population;
 
-		switch(appSettings.themeSettings.settings.homepage){
+		switch(appThemeEnvSettings.homepage){
 			case 'item':
 				population = 'tags collections contenttypes categories assets primaryasset authors primaryauthor';
 				docid = params.id;
@@ -177,30 +178,30 @@ var homepagedata = function(req,res,next){
 
 var setCacheHeader = function(req,res,next){
 	var httpPathName = req._parsedUrl.pathname;
-	if(appSettings.themeSettings && appSettings.themeSettings.settings){
+	if(appSettings.themeSettings && appThemeEnvSettings){
 		switch(true){
 			case (/p-admin\//gi.test(httpPathName)):
 				logger.silly('no cache on admin');
 				break;
 			case httpPathName==='/':
 				logger.silly('using home cache headers');
-				res.header('Cache-Control', appSettings.themeSettings.settings['home cache control settings']);
+				res.header('Cache-Control', appThemeEnvSettings['home cache control settings']);
 				break;
 			case httpPathName==='/items' || (/item\//gi.test(httpPathName)):
 				logger.silly('using item cache headers');
-				res.header('Cache-Control', appSettings.themeSettings.settings['item cache control settings']);
+				res.header('Cache-Control', appThemeEnvSettings['item cache control settings']);
 				break;
 			case httpPathName==='/collections' || (/collection\//gi.test(httpPathName)):
 				logger.silly('using collection cache headers');
-				res.header('Cache-Control', appSettings.themeSettings.settings['collection cache control settings']);
+				res.header('Cache-Control', appThemeEnvSettings['collection cache control settings']);
 				break;
 			case httpPathName==='/browse' || (/browse\//gi.test(httpPathName)):
 				logger.silly('using browse cache headers');
-				res.header('Cache-Control', appSettings.themeSettings.settings['browse cache control settings']);
+				res.header('Cache-Control', appThemeEnvSettings['browse cache control settings']);
 				break;
 			default:
 				logger.silly('using default cache headers');
-				res.header('Cache-Control', appSettings.themeSettings.settings['default cache control settings']);
+				res.header('Cache-Control', appThemeEnvSettings['default cache control settings']);
 				break;
 		}
 	}
@@ -220,7 +221,9 @@ var controller = function (resources) {
 	collectionController = require(path.resolve(process.cwd(), './app/controller/collection'))(resources);
 	Compilation = mongoose.model('Compilation');
 	compilationController = require(path.resolve(process.cwd(), './app/controller/compilation'))(resources);
-
+	if(appSettings.themeSettings && appSettings.themeSettings.settings){
+		appThemeEnvSettings = appSettings.themeSettings.settings[appSettings.application.environment];
+	}
 
 	return {
 		homepagedata: homepagedata,

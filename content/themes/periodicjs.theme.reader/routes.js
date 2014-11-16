@@ -1,22 +1,21 @@
 'use strict';
-var path = require('path');
+// var path = require('path');
 
 module.exports = function (periodic) {
-	// console.log('periodic.app.locals', periodic.app.locals);
 	var readerthemeController = require('./controller/readertheme')(periodic),
-		itemController = require(path.join(process.cwd(), 'app/controller/item'))(periodic),
-		themeRouter = periodic.express.Router();
+		themeRouter = periodic.express.Router(),
+		envThemeSettings = periodic.settings.themeSettings.settings[periodic.settings.application.environment];
 
 	if(periodic.settings.themeSettings){
-		periodic.app.locals.showperiodiccredit = periodic.settings.themeSettings[periodic.settings.application.environment].settings.showperiodiccredit;
-		periodic.app.locals.showadminlink = periodic.settings.themeSettings[periodic.settings.application.environment].settings.showadminlink;
-		periodic.app.locals.navlinks = periodic.settings.themeSettings[periodic.settings.application.environment].settings.navlinks;
-		periodic.app.locals.autohidetitle = periodic.settings.themeSettings[periodic.settings.application.environment].settings.autohidetitle;
-		periodic.app.locals.usecustomnav = periodic.settings.themeSettings[periodic.settings.application.environment].settings.usecustomnav;
-		periodic.app.locals.customnav = periodic.settings.themeSettings[periodic.settings.application.environment].settings.customnav;	
+		periodic.app.locals.showperiodiccredit = envThemeSettings.showperiodiccredit;
+		periodic.app.locals.showadminlink = envThemeSettings.showadminlink;
+		periodic.app.locals.navlinks = envThemeSettings.navlinks;
+		periodic.app.locals.autohidetitle = envThemeSettings.autohidetitle;
+		periodic.app.locals.usecustomnav = envThemeSettings.usecustomnav;
+		periodic.app.locals.customnav = envThemeSettings.customnav;	
 	}
 
-	if (periodic.settings.themeSettings[periodic.settings.application.environment].settings.navlinks === 'categories') {
+	if (envThemeSettings.navlinks === 'categories') {
 		themeRouter.get('/browse/:entitytype|/browse/:entitytype/:entityitems|/author/:id|/search|/404|/notfound|/collections|/collection/:id|/collection/search|/items|/item/search|/articles|/item/:id|/', readerthemeController.loadNavCategories, readerthemeController.getNavCategories);
 	}
 
