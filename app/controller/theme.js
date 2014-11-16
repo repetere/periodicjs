@@ -196,6 +196,7 @@ var updateConfigTheme = function (options) {
 		// next = options.next,
 		confFilePath = path.join(process.cwd(), 'content/config/environment/'+appSettings.application.environment+'.json');
 
+	fs.ensureFileSync(confFilePath);
 	fs.readJson(confFilePath, function (err, configFileJson) {
 		if (err) {
 			CoreController.handleDocumentQueryErrorResponse({
