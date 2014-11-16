@@ -48,13 +48,13 @@ module.exports = function (periodic) {
 	 */
 	if (periodic.settings.theme) {
 		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
-		themeConfig = path.join(periodic.settings.themepath, 'periodicjs.theme.json');
+		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
 		if (fs.existsSync(themeRoute)) {
 			if(fs.existsSync(themeConfig)){
 				themeConfigJson = fs.readJsonSync(themeConfig);
 				periodic.settings.themeSettings = themeConfigJson;
 			}
-			require(themeRoute)(periodic);
+			// require(themeRoute)(periodic);
 		}
 	}
 
