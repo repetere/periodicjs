@@ -15,6 +15,16 @@ var path = require('path'),
 	logger,
 	User, Category, Item, Tag, Asset, Collection, Compilation, Contenttype;
 
+	var repoversion,
+		reponame,
+		repourl,
+		timestamp,
+		logdir,
+		logfile,
+		themedir,
+		themename,
+		clitask;
+
 var customLayout = function (options) {
 	var req = options.req,
 		res = options.res,
@@ -235,7 +245,7 @@ var updateConfigTheme = function (options) {
 };
 
 var getThemeConfig = function (options) {
-	var themeConfigFile = path.join(process.cwd(), 'content/themes', options.themename, 'periodicjs.theme.json');
+	var themeConfigFile = path.join(process.cwd(), 'content/config/themes', options.themename, 'periodicjs.theme.json');
 	fs.readJson(themeConfigFile, options.callback);
 };
 
@@ -713,23 +723,195 @@ var themeFunctions = {
 	}
 };
 
-var install = function (req, res) {
-	var repoversion = req.query.version,
-		reponame = req.query.name,
-		repourl = themeFunctions.getrepourl({
-			repoversion: repoversion,
-			reponame: reponame
-		}),
-		timestamp = (new Date()).getTime(),
-		logdir = themeFunctions.getlogdir(),
-		logfile = themeFunctions.getlogfile({
-			logdir: logdir,
-			userid: req.user._id,
-			reponame: reponame,
-			timestamp: timestamp
-		}),
-		themedir = themeFunctions.getthemedir();
-	//JSON.stringify(myData, null, 4)
+/**
+ * get both installed files, and the default files in ext conf directory, if missin files, add them to missing conf files array
+ * @param {object} options ext_default_config_file_path - ext conf files,ext_installed_config_file_path - destination for ext conf files
+ * @param  {Function} callback async.parallel callback
+ * @return {Array}            array of missing conf files
+ */
+var getThemeConfigFiles = function (options, callback) {
+	var ext_default_config_file_path = options.ext_default_config_file_path,
+		ext_installed_config_file_path = options.ext_installed_config_file_path,
+		missing_conf_files = [],
+		installed_conf_files = [];
+
+	async.parallel({
+			defaultThemeConfFiles: function (cb) {
+				fs.readdir(ext_default_config_file_path, function (err, files) {
+					cb(null, files);
+				});
+			},
+			installedThemeConfFiles: function (cb) {
+				fs.readdir(ext_installed_config_file_path, function (err, files) {
+					cb(null, files);
+				});
+			}
+		},
+		function (err, result) {
+			try {
+				if (result.defaultThemeConfFiles && result.defaultThemeConfFiles.length > 0) {
+					missing_conf_files = result.defaultThemeConfFiles;
+					if (result.installedThemeConfFiles && result.installedThemeConfFiles.length > 0) {
+						for (var c in missing_conf_files) {
+							for (var d in result.installedThemeConfFiles) {
+								if (missing_conf_files[c] === result.installedThemeConfFiles[d]) {
+									installed_conf_files.push(missing_conf_files.splice(c, 1)[0]);
+								}
+							}
+						}
+					}
+				}
+				callback(null, {
+					ext_default_config_file_path: ext_default_config_file_path,
+					ext_installed_config_file_path: ext_installed_config_file_path,
+					missingThemeConfFiles: missing_conf_files
+				});
+			}
+			catch (e) {
+				callback(e, null);
+			}
+		});
+};
+
+/**
+ * copy missing files if any are missing
+ * @param {object} options ext_default_config_file_path - ext conf files,ext_installed_config_file_path - destination for ext conf files,missingThemeConfFiles array of missing files
+ * @param  {Function} callback            async callback
+ */
+var copyMissingConfigFiles = function (options, callback) {
+	var ext_default_config_file_path = options.ext_default_config_file_path,
+		ext_installed_config_file_path = options.ext_installed_config_file_path,
+		missingThemeConfFiles = options.missingThemeConfFiles;
+	if (missingThemeConfFiles && missingThemeConfFiles.length > 0) {
+		async.each(missingThemeConfFiles, function (file, cb) {
+			fs.copy(path.resolve(ext_default_config_file_path, file), path.resolve(ext_installed_config_file_path, file), cb);
+		}, function (err) {
+			callback(err);
+		});
+	}
+	else {
+		callback(null);
+	}
+};
+
+/**
+ * copy extension config files if they don't exist
+ * @param  {object}   options  configdir - default config files, extconfigdir - install directory of config files
+ * @param  {Function} callback async callback
+ * @return {Function}            async callback
+ */
+var installConfigDirectory = function (options, callback) {
+	var defaultconfigdir = options.installedthemeconfdir,
+		installextconfigdir = options.themeconfdestinationdir;
+
+	if (defaultconfigdir && installextconfigdir) {
+
+		fs.mkdirs(installextconfigdir, function (err) {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				async.waterfall([
+						function (cb) {
+							cb(null, {
+								ext_default_config_file_path: defaultconfigdir,
+								ext_installed_config_file_path: installextconfigdir
+							});
+						},
+						getThemeConfigFiles,
+						copyMissingConfigFiles
+					],
+					function (err) {
+						if (err) {
+							callback(err, null);
+						}
+						else {
+							callback(null, 'Copied config files');
+						}
+					}.bind(this));
+			}
+		}.bind(this));
+	}
+	else {
+		callback(null, 'No config files to copy');
+	}
+};
+
+
+var installpublicdir = function(asynccallback){
+	var themedir = path.resolve(__dirname, '../../content/themes/', themename, 'public'),
+		themepublicdir = path.resolve(__dirname, '../../public/themes/', themename);
+
+	fs.readdir(themedir, function (err
+		//, files
+	) {
+		// console.log('files',files);
+		if (err) {
+			asynccallback(null,'No Public Directory to Copy');
+		}
+		else {
+			//make destination dir
+			fs.mkdirs(themepublicdir, function (err) {
+				if (err) {
+					asynccallback(err,null);
+				}
+				else {
+					fs.copy(themedir, themepublicdir, function (err) {
+						if (err) {
+							asynccallback(err,null);
+						}
+						else {
+							asynccallback(null,'Copied public files');
+						}
+					});
+				}
+			});
+		}
+	});
+};
+
+var installdownload = function(asynccallback){
+	var downloadtothemedir = path.join(themedir, reponame.split('/')[1]),
+		download = require('download'),
+		dlsteam;
+	// console.log('downloadtothemedir',downloadtothemedir);
+	fs.ensureDir(downloadtothemedir, function (err) {
+		if (err) {
+			asynccallback(err,null);
+		}
+		else {
+			dlsteam = download(repourl, downloadtothemedir, {
+				extract: true,
+				strip: 1
+			});
+			dlsteam.on('response', function () {
+				install_logOutput({
+					logfile: logfile,
+					logdata: reponame + ' starting download'
+				});
+			});
+			dlsteam.on('data', function () {
+				install_logOutput({
+					logfile: logfile,
+					logdata: 'downloading data'
+				});
+				logger.info('downloading data');
+			});
+			dlsteam.on('error', function (err) {
+				install_logErrorOutput({
+					logfile: logfile,
+					logdata: err.message
+				});
+			});
+			dlsteam.on('close', function () {
+				themename = reponame.split('/')[1];
+				asynccallback(err,reponame + ' downloaded');
+			});
+		}
+	});
+};
+
+var setupinstalllog = function(options,asynccallback){
 	install_logOutput({
 		logfile: logfile,
 		logdata: 'beginning theme install: ' + reponame,
@@ -737,14 +919,15 @@ var install = function (req, res) {
 			if (err) {
 				CoreController.handleDocumentQueryErrorResponse({
 					err: err,
-					res: res,
-					req: req
+					res: options.res,
+					req: options.req
 				});
+				asynccallback(err,null);
 			}
 			else {
 				CoreController.handleDocumentQueryRender({
-					res: res,
-					req: req,
+					res: options.res,
+					req: options.req,
 					responseData: {
 						result: 'success',
 						data: {
@@ -754,14 +937,79 @@ var install = function (req, res) {
 						}
 					}
 				});
-				install_viaDownload({
-					themedir: themedir,
-					repourl: repourl,
-					logfile: logfile,
-					reponame: reponame
-				});
+				asynccallback(null,'setup theme install log file');
 			}
 		}
+	});
+};
+
+var installThemeFromGithub = function(options){
+	async.series({
+			installlog: function(asynccallback){
+				setupinstalllog({
+					res:options.res,
+					req: options.req
+				},asynccallback);
+			},
+			downlaod: installdownload,
+			publicdir: installpublicdir,
+			configdir: function(asynccallback){
+				var themedir = path.resolve(__dirname, '../../content/themes/', themename, 'public'),
+				themepublicdir = path.resolve(__dirname, '../../public/themes/', themename);
+				installConfigDirectory({
+					installedthemeconfdir: path.resolve(process.cwd(), 'content/themes/', themename,'config'),
+					themeconfdestinationdir: path.resolve(process.cwd(), 'content/config/themes/', themename)
+				},asynccallback);
+			}
+		},
+		function(err,results){
+			if (err) {
+				install_logErrorOutput({
+					logfile: logfile,
+					logdata: err.message,
+					cli: clitask
+				});
+			}
+			else{
+				console.log('install theme results',results);
+				install_logOutput({
+					logfile: logfile,
+					logdata: themename +' \r\n '+ JSON.stringify(results,null,2) + ' \r\n installed, application restarting \r\n  ====##END##====',
+					callback: function () {}
+				});
+				if (clitask) {
+					logger.info(themename + ' \r\n '+ JSON.stringify(results,null,2) + ' \r\n installed \r\n  ====##END##====');
+					remove_clilog({
+						logfile: logfile,
+						themename: themename
+					});
+					process.exit(0);
+				}
+			}
+	});
+};
+
+var install = function (req, res) {
+	repoversion = req.query.version;
+	reponame = req.query.name;
+	repourl = themeFunctions.getrepourl({
+		repoversion: repoversion,
+		reponame: reponame
+	});
+	timestamp = (new Date()).getTime();
+	logdir = themeFunctions.getlogdir();
+	logfile = themeFunctions.getlogfile({
+		logdir: logdir,
+		userid: req.user._id,
+		reponame: reponame,
+		timestamp: timestamp
+	});
+	themedir = themeFunctions.getthemedir();
+	clitask = false;
+
+	installThemeFromGithub({
+		res: res,
+		req: req
 	});
 };
 
