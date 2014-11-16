@@ -37,11 +37,11 @@
       },
       "usecustomnav": "no",
       "customnav": "",
-      "home cache control settings": "public, max-age=3600",
-      "default cache control settings": "public, max-age=3600",
-      "item cache control settings": "public, max-age=3600",
-      "collection cache control settings": "public, max-age=3600",
-      "browse cache control settings": "public, max-age=3600"
+      "home cache control settings": "private, max-age=0, no-cache",
+      "default cache control settings": "private, max-age=0, no-cache",
+      "item cache control settings": "private, max-age=0, no-cache",
+      "collection cache control settings": "private, max-age=0, no-cache",
+      "browse cache control settings": "private, max-age=0, no-cache"
     },
     "production": {
       "jfe-options-homepage": {
