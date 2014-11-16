@@ -194,7 +194,7 @@ var updateConfigTheme = function (options) {
 		res = options.res,
 		req = options.req,
 		// next = options.next,
-		confFilePath = path.join(process.cwd(), 'content/config/config.json');
+		confFilePath = path.join(process.cwd(), 'content/config/environment/'+appSettings.application.environment+'.json');
 
 	fs.readJson(confFilePath, function (err, configFileJson) {
 		if (err) {
