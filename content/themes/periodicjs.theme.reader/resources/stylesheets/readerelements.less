@@ -36,8 +36,22 @@ a:hover {
 }
 
 #perspective{
-    position:fixed;
-    overflow-y:auto;
+    position:absolute;
+    top: 0;
+    // height: 100%;
+
+    // overflow-y:auto;
+    // position:fixed;
+    &.modalview{
+        position: fixed;
+        overflow-y: auto;
+        height: 100%;
+    }
+}
+.perspective{
+    height: 100%;
+    top:0;
+    position: absolute;
 }
 .reader-container{
     width: 100%;

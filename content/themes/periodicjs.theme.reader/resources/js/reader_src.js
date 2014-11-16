@@ -35,7 +35,7 @@ var detectcss = require('detectcss'),
 	perspectiveWrapper,
 	container,
 	contentWrapper,
-	clickevent = false; // click event (if mobile use touchstart)
+	clickevent = 'click'; // click event (if mobile use touchstart)
 
 var preventFormSubmit = function (e) {
 	e.preventDefault();
@@ -149,7 +149,7 @@ var init = function () {
 	perspectiveWrapper = document.getElementById('perspective');
 	container = perspectiveWrapper.querySelector('.container');
 	contentWrapper = container.querySelector('.wrapper');
-	clickevent = mobilecheck() ? 'touchstart' : 'click'; // click event (if mobile use touchstart)
+	clickevent = 'click'; // mobilecheck() ? 'touchstart' : 'click'; // click event (if mobile use touchstart)
 
 	showMenu.addEventListener(clickevent, showNavMenu, false);
 

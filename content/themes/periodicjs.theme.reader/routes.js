@@ -6,13 +6,13 @@ module.exports = function (periodic) {
 		themeRouter = periodic.express.Router(),
 		envThemeSettings = periodic.settings.themeSettings.settings[periodic.settings.application.environment];
 
-	if(periodic.settings.themeSettings){
+	if (periodic.settings.themeSettings) {
 		periodic.app.locals.showperiodiccredit = envThemeSettings.showperiodiccredit;
 		periodic.app.locals.showadminlink = envThemeSettings.showadminlink;
 		periodic.app.locals.navlinks = envThemeSettings.navlinks;
 		periodic.app.locals.autohidetitle = envThemeSettings.autohidetitle;
 		periodic.app.locals.usecustomnav = envThemeSettings.usecustomnav;
-		periodic.app.locals.customnav = envThemeSettings.customnav;	
+		periodic.app.locals.customnav = envThemeSettings.customnav;
 	}
 
 	if (envThemeSettings.navlinks === 'categories') {
