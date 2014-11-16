@@ -206,6 +206,7 @@ var updateConfigTheme = function (options) {
 			});
 		}
 		else {
+			configFileJson = configFileJson || {};
 			configFileJson.theme = themename;
 
 			fs.outputJson(
