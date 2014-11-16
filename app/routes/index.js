@@ -54,7 +54,7 @@ module.exports = function (periodic) {
 				themeConfigJson = fs.readJsonSync(themeConfig);
 				periodic.settings.themeSettings = themeConfigJson;
 			}
-			// require(themeRoute)(periodic);
+			require(themeRoute)(periodic);
 		}
 	}
 
