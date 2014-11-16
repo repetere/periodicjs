@@ -225,8 +225,6 @@ var controller = function (resources) {
 		appThemeEnvSettings = appSettings.themeSettings.settings[appSettings.application.environment];
 	}
 
-	console.log('appThemeEnvSettings',appThemeEnvSettings);
-
 	return {
 		homepagedata: homepagedata,
 		homepageindex:homepageindex,
