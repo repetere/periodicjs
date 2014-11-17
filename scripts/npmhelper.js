@@ -229,24 +229,33 @@ var installStandardExtensions = function(callback){
 		'save-optional': true,
 		'production': true
 	},
-	currentConfig = fs.readJSONSync(path.resolve(newlocation,'content/config/config.json'));
-	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules) ){
-		standardExtensions = standardExtensions.concat(currentConfig.node_modules);
-	}
-	npm.load(
-		npmconfig,
-		function (err) {
-		if (err) {
-			console.error(err);
-			callback(err);
+	configfile = path.resolve(newlocation,'content/config/config.json'),
+	currentConfig;
+	fs.readJSON(configfile,function(readconfigerr,configjson){
+		if(readconfigerr){
+			console.log('no existing config json');
 		}
-		else {
-		 	npm['save-optional'] = true;
-			npm.commands.install(
-				standardExtensions,
-				callback
-			);
+		if(configjson){
+			currentConfig = configjson;
+			if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules) ){
+				standardExtensions = standardExtensions.concat(currentConfig.node_modules);
+			}
 		}
+		npm.load(
+			npmconfig,
+			function (err) {
+			if (err) {
+				console.error(err);
+				callback(err);
+			}
+			else {
+			 	npm['save-optional'] = true;
+				npm.commands.install(
+					standardExtensions,
+					callback
+				);
+			}
+		});
 	});
 };
 
