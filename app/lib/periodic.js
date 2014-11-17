@@ -113,10 +113,14 @@ var periodic = function (periodicConfigOptions) {
 	 * @todo  load view engine from configuration settings to allow for multiple templating engines
 	 */
 	init.viewSettings = function () {
-		app.set('view engine', 'ejs');
+		var viewengine =  appconfig.settings().templateengine || 'ejs';
+		app.set('view engine', viewengine);
 		app.set('views', path.resolve(__dirname, '../views'));
 		app.engine('html', require('ejs').renderFile);
 		app.engine('ejs', require('ejs').renderFile);
+		if(viewengine !== 'ejs'){
+			app.engine(viewengine, require(appconfig.settings().templatepackage).renderFile);
+		}
 	};
 	/**
 	 * @description sets up standard express settings
@@ -191,7 +195,7 @@ var periodic = function (periodicConfigOptions) {
 			var express_session_config = {};
 			if (appconfig.settings().sessions.type === 'mongo' && appconfig.settings().status !== 'install') {
 				express_session_config = {
-					secret: 'hjoiuu87go9hui',
+					secret: appconfig.settings().session_secret,
 					maxAge: new Date(Date.now() + 3600000),
 					store: new MongoStore({
 						url: database[app.get('env')].url
@@ -200,7 +204,7 @@ var periodic = function (periodicConfigOptions) {
 			}
 			else {
 				express_session_config = {
-					secret: 'hjoiuu87go9hui',
+					secret: appconfig.settings().session_secret,
 					maxAge: new Date(Date.now() + 3600000)
 				};
 			}

@@ -1,7 +1,7 @@
 {
 	"name": "Periodic Enterprise Content Management",
 	"application":{
-		"port": "8283",
+		"port": "8786",
 		"environment": "development"
 	},
 	"cookies":{
@@ -11,8 +11,10 @@
 		"enabled":true,
 		"type":"default"
 	},
+	"session_secret":"hjoiuu87go9hui",
 	"expressCompression": true,
 	"templateengine": "ejs",
+	"templatepackage": "ejs",
 	"templatefileextension": "ejs",
 	"crsf": true,
   "debug": true,
