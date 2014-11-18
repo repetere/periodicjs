@@ -126,7 +126,7 @@ var periodic = function (periodicConfigOptions) {
 	 * @description sets up standard express settings
 	 */
 	init.expressSettings = function () {
-		app.use(responseTime(5));
+		app.use(responseTime({digits:5}));
 		app.use(flash());
 		app.use(bodyParser.urlencoded({
 			extended: true
@@ -178,12 +178,18 @@ var periodic = function (periodicConfigOptions) {
 			});
 			expressAppLogger.format('app', '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m');
 			if (appconfig.settings().status !== 'install') {
-				app.use(expressAppLogger({
-					format: 'app'
-				}));
+				app.use(expressAppLogger( 'app', 
+					{
+						format:'\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m'
+					}
+				));
 			}
 			else {
-				app.use(expressAppLogger());
+				app.use(expressAppLogger( 'app', 
+					{
+						format:'\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m'
+					}
+				));
 			}
 		}
 	};
@@ -199,13 +205,17 @@ var periodic = function (periodicConfigOptions) {
 					maxAge: new Date(Date.now() + 3600000),
 					store: new MongoStore({
 						url: database[app.get('env')].url
-					})
+					}),
+					resave: true,
+					saveUninitialized: true
 				};
 			}
 			else {
 				express_session_config = {
 					secret: appconfig.settings().session_secret,
-					maxAge: new Date(Date.now() + 3600000)
+					maxAge: new Date(Date.now() + 3600000),
+					resave: true,
+					saveUninitialized: true
 				};
 			}
 
