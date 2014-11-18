@@ -874,42 +874,60 @@ var installpublicdir = function(asynccallback){
 
 var installdownload = function(asynccallback){
 	var downloadtothemedir = path.join(themedir, reponame.split('/')[1]),
-		download = require('download'),
-		dlsteam;
-	// console.log('downloadtothemedir',downloadtothemedir);
+		Download = require('download'),
+		themedownload;
 	fs.ensureDir(downloadtothemedir, function (err) {
 		if (err) {
 			asynccallback(err,null);
 		}
 		else {
-			dlsteam = download(repourl, downloadtothemedir, {
+			themedownload = new Download({
 				extract: true,
 				strip: 1
-			});
-			dlsteam.on('response', function () {
-				install_logOutput({
-					logfile: logfile,
-					logdata: reponame + ' starting download'
-				});
-			});
-			dlsteam.on('data', function () {
-				install_logOutput({
-					logfile: logfile,
-					logdata: 'downloading data'
-				});
-				logger.info('downloading data');
-			});
-			dlsteam.on('error', function (err) {
-				install_logErrorOutput({
-					logfile: logfile,
-					logdata: err.message
-				});
-			});
-			dlsteam.on('close', function () {
-				themename = reponame.split('/')[1];
-				asynccallback(err,reponame + ' downloaded');
-			});
-		}
+			})
+			.get(repourl)
+			.dest(downloadtothemedir);
+
+			themedownload.run(function(err,files,dlsteam){
+				console.log('err',err,'files',files,'dlsteam',dlsteam);
+				if(err){
+					asynccallback(err,null);
+				}
+				else{
+					themename = reponame.split('/')[1];
+					asynccallback(err,reponame + ' downloaded -end');
+/*
+					dlsteam.on('response', function () {
+						install_logOutput({
+							logfile: logfile,
+							logdata: reponame + ' starting download'
+						});
+					});
+					dlsteam.on('data', function () {
+						install_logOutput({
+							logfile: logfile,
+							logdata: 'downloading data'
+						});
+						logger.info('downloading data');
+					});
+					dlsteam.on('error', function (err) {
+						install_logErrorOutput({
+							logfile: logfile,
+							logdata: err.message
+						});
+					});
+					dlsteam.on('close', function () {
+						themename = reponame.split('/')[1];
+						asynccallback(err,reponame + ' downloaded -close');
+					});
+					dlsteam.on('end', function () {
+						themename = reponame.split('/')[1];
+						asynccallback(err,reponame + ' downloaded -end');
+					});
+*/
+				}
+			});	
+		}		
 	});
 };
 
