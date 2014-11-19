@@ -78,7 +78,7 @@
     "periodicjs.core.controller": "2.9.5",
     "periodicjs.core.extensions": "1.90.19",
     "periodicjs.core.mailer": "1.90.15",
-    "periodicjs.core.utilities": "1.90.10",
+    "periodicjs.core.utilities": "3.0.0",
     "prompt": "0.2.14",
     "response-time": "2.2.0",
     "semver": ">=2.3.0",
