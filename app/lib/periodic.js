@@ -31,6 +31,9 @@
  * @requires module:../../content/config/logger
  * @requires module:../../content/config/database
  */
+var PeriodicCache = require('periodicjs.core.cache');
+global.CoreCache = new PeriodicCache();
+
 var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
 		path = require('path'),
@@ -340,7 +343,26 @@ var periodic = function (periodicConfigOptions) {
 			}
 		});
 	};
-
+	/**
+	 * @clear periodic cache settings settings
+	 */
+	init.clearPeriodicCache = function () {
+		// console.log('global.CoreCache.clearCache',global.CoreCache.clearCache);
+		console.time('clearing periodic cache');
+		if(appconfig.settings().periodic_cache_settings){
+			global.CoreCache.setOptions(appconfig.settings().periodic_cache_settings);
+		}
+		global.CoreCache.clearCache(function(err,status){
+			console.timeEnd('clearing periodic cache');
+			if(err){
+				logger.error(err);
+			}
+			else{
+				logger.info(status);
+			}
+		});
+	};
+	
 	console.time('Server Starting');
 	init.loadConfiguration();
 	init.useLogger();
@@ -354,6 +376,7 @@ var periodic = function (periodicConfigOptions) {
 	init.applicationRouting();
 	init.serverStatus();
 	init.catchErrors();
+	init.clearPeriodicCache();
 	console.timeEnd('Server Starting');
 
 	return {
