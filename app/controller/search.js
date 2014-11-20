@@ -128,6 +128,7 @@ var browse = function (req, res, next) {
 	async.parallel({
 		searchCompilations: function (callback) {
 			CoreController.searchModel({
+				cached: req.headers.periodicCache !== 'no-periodic-cache',
 				model: Compilation,
 				query: query,
 				sort: sort,
@@ -140,6 +141,7 @@ var browse = function (req, res, next) {
 		},
 		searchCollections: function (callback) {
 			CoreController.searchModel({
+				cached: req.headers.periodicCache !== 'no-periodic-cache',
 				model: Collection,
 				query: query,
 				sort: sort,
@@ -152,6 +154,7 @@ var browse = function (req, res, next) {
 		},
 		searchDocuments: function (callback) {
 			CoreController.searchModel({
+				cached: req.headers.periodicCache !== 'no-periodic-cache',
 				model: Item,
 				query: query,
 				sort: sort,
@@ -272,6 +275,7 @@ var browsetags = function (req, res, next) {
 			var model = options.model,
 				selection = options.selection;
 			CoreController.searchModel({
+				cached: req.headers.periodicCache !== 'no-periodic-cache',
 				model: model,
 				query: query,
 				sort: sort,

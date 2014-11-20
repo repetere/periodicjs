@@ -55,6 +55,7 @@ var update = function (req, res) {
 	}
 
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Tag,
 		id: updatetag.docid,
 		updatedoc: updatetag,
@@ -80,6 +81,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Tag,
 			deleteid: removetag._id,
 			req: req,
@@ -207,6 +209,7 @@ var getTagsData = function(options){
 				};
 				parallelTask.tagsquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Tag,
 						query: query,
 						sort: sort,
@@ -266,6 +269,7 @@ var loadTag = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Tag,
 		population: 'contenttypes parent',

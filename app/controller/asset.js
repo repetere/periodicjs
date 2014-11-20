@@ -151,6 +151,7 @@ var createassetfile = function (req, res) {
 
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: MediaAsset,
 		docid: newasset.name,
 		callback: function (err, assetdoc) {
@@ -196,6 +197,7 @@ var update = function (req, res) {
 	updateasset = str2json.convert(updateasset);
 
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: MediaAsset,
 		id: updateasset.docid,
 		updatedoc: updateasset,
@@ -219,6 +221,7 @@ var remove = function (req, res) {
 			},
 			removeasset: function (callback) {
 				CoreController.deleteModel({
+					cached: req.headers.periodicCache !== 'no-periodic-cache',
 					model: MediaAsset,
 					deleteid: asset._id,
 					req: req,
@@ -371,6 +374,7 @@ var getAssetData = function(options){
 				};
 				parallelTask.assetsquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: MediaAsset,
 						query: query,
 						sort: sort,
@@ -432,6 +436,7 @@ var loadAsset = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: MediaAsset,
 		population: population,

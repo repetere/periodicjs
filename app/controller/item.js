@@ -117,6 +117,7 @@ var update = function (req, res) {
 	updateitem = str2json.convert(updateitem);
 
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Item,
 		id: updateitem.docid,
 		updatedoc: updateitem,
@@ -144,6 +145,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Item,
 			deleteid: removeitem._id,
 			req: req,
@@ -206,6 +208,7 @@ var loadItem = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		population: population,
 		model: Item,
@@ -239,6 +242,7 @@ var loadFullItem = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Item,
 		population: 'tags collections contenttypes categories assets primaryasset authors primaryauthor',
@@ -408,6 +412,7 @@ var getItemsData = function(options){
 				};
 				parallelTask.itemsquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Item,
 						query: query,
 						sort: sort,

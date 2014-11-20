@@ -138,6 +138,7 @@ var update = function (req, res) {
 	}
 	else {
 		CoreController.updateModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: User,
 			id: updateuser.docid,
 			updatedoc: updateuser,
@@ -163,6 +164,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: User,
 			deleteid: userprofile._id,
 			req: req,
@@ -199,6 +201,7 @@ var loadUser = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: User,
 		population: population,
@@ -359,6 +362,7 @@ var getUsersData = function(options){
 				};
 				parallelTask.usersquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: User,
 						query: query,
 						sort: sort,
@@ -421,6 +425,7 @@ var loadUsers = function (req, res, next) {
 	}
 
 	CoreController.searchModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: User,
 		query: query,
 		sort: sort,

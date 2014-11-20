@@ -87,6 +87,7 @@ var customLayout = function (options) {
 		return function (cb) {
 			//console.log('functiondata.search.query', functiondata.search.query);
 			CoreController.searchModel({
+				cached: req.headers.periodicCache !== 'no-periodic-cache',
 				model: getModelFromName(functiondata.model),
 				query: querydata,
 				sort: functiondata.search.sort,

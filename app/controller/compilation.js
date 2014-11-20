@@ -134,6 +134,7 @@ var update = function (req, res) {
 		// console.log('updatecompilation',updatecompilation);
 
 		CoreController.updateModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Compilation,
 			id: updatecompilation.docid,
 			updatedoc: updatecompilation,
@@ -163,6 +164,7 @@ var append = function (req, res) {
 
 	logger.silly('objectToModify', objectToModify);
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Compilation,
 		id: req.controllerData.compilation._id,
 		updatedoc: objectToModify,
@@ -188,6 +190,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Compilation,
 			deleteid: removecompilation._id,
 			req: req,
@@ -420,6 +423,7 @@ var loadCompilation = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Compilation,
 		population: population,
@@ -589,6 +593,7 @@ var getCompilationsData = function(options){
 				};
 				parallelTask.compilationsquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Compilation,
 						query: query,
 						sort: sort,
@@ -681,6 +686,7 @@ var cli = function (argv) {
 		// 		}
 		// 	});
 		CoreController.searchModel({
+			cached: false,
 			model: Compilation,
 			query: query,
 			sort: sort,

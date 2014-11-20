@@ -129,6 +129,7 @@ var update = function (req, res) {
 		updatecollection = str2json.convert(updatecollection);
 
 		CoreController.updateModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Collection,
 			id: updatecollection.docid,
 			updatedoc: updatecollection,
@@ -158,6 +159,7 @@ var append = function (req, res) {
 
 	logger.silly('objectToModify', objectToModify);
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Collection,
 		id: req.controllerData.collection._id,
 		updatedoc: objectToModify,
@@ -183,6 +185,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Collection,
 			deleteid: removecollection._id,
 			req: req,
@@ -339,6 +342,7 @@ var loadCollection = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Collection,
 		population: population,
@@ -508,6 +512,7 @@ var getCollectionsData = function(options){
 				};
 				parallelTask.collectionsquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Collection,
 						query: query,
 						sort: sort,
@@ -600,6 +605,7 @@ var cli = function (argv) {
 		// 		}
 		// 	});
 		CoreController.searchModel({
+			cached: false,
 			model: Collection,
 			query: query,
 			sort: sort,

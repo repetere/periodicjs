@@ -53,6 +53,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Contenttype,
 			deleteid: removecontenttype._id,
 			req: req,
@@ -89,6 +90,7 @@ var append = function (req, res) {
 	};
 
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Contenttype,
 		id: req.controllerData.contenttype._id,
 		updatedoc: objectToModify,
@@ -223,6 +225,7 @@ var getContenttypeData = function(options){
 				};
 				parallelTask.contenttypesquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Contenttype,
 						query: query,
 						sort: sort,
@@ -284,6 +287,7 @@ var loadContenttype = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Contenttype,
 		callback: function (err, doc) {

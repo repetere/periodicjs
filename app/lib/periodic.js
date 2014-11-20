@@ -348,19 +348,21 @@ var periodic = function (periodicConfigOptions) {
 	 */
 	init.clearPeriodicCache = function () {
 		// console.log('global.CoreCache.clearCache',global.CoreCache.clearCache);
-		console.time('clearing periodic cache');
-		if(appconfig.settings().periodic_cache_settings){
-			global.CoreCache.setOptions(appconfig.settings().periodic_cache_settings);
+		if(global.CoreCache){
+			console.time('clearing periodic cache');
+			if(appconfig.settings().periodic_cache_settings){
+				global.CoreCache.setOptions(appconfig.settings().periodic_cache_settings);
+			}
+			global.CoreCache.clearCache(function(err,status){
+				console.timeEnd('clearing periodic cache');
+				if(err){
+					logger.error(err);
+				}
+				else{
+					logger.info(status);
+				}
+			});
 		}
-		global.CoreCache.clearCache(function(err,status){
-			console.timeEnd('clearing periodic cache');
-			if(err){
-				logger.error(err);
-			}
-			else{
-				logger.info(status);
-			}
-		});
 	};
 	
 	console.time('Server Starting');

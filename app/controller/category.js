@@ -55,6 +55,7 @@ var update = function (req, res) {
 	}
 
 	CoreController.updateModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		model: Category,
 		id: updatecategory.docid,
 		updatedoc: updatecategory,
@@ -80,6 +81,7 @@ var remove = function (req, res) {
 	}
 	else {
 		CoreController.deleteModel({
+			cached: req.headers.periodicCache !== 'no-periodic-cache',
 			model: Category,
 			deleteid: removecategory._id,
 			req: req,
@@ -207,6 +209,7 @@ var getCategoriesData = function(options){
 				};
 				parallelTask.categoriesquery = function(cb){
 					CoreController.searchModel({
+						cached: req.headers.periodicCache !== 'no-periodic-cache',
 						model: Category,
 						query: query,
 						sort: sort,
@@ -268,6 +271,7 @@ var loadCategory = function (req, res, next) {
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
 
 	CoreController.loadModel({
+		cached: req.headers.periodicCache !== 'no-periodic-cache',
 		docid: docid,
 		model: Category,
 		population: 'contenttypes parent',
