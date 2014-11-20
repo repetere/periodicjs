@@ -77,7 +77,7 @@
     "periodicjs.core.cache": "3.0.0",
     "periodicjs.core.controller": "3.0.0",
     "periodicjs.core.extensions": "1.90.19",
-    "periodicjs.core.mailer": "1.90.15",
+    "periodicjs.core.mailer": "3.0.0",
     "periodicjs.core.utilities": "3.0.0",
     "prompt": "0.2.14",
     "response-time": "2.2.0",
