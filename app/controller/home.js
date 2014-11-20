@@ -88,7 +88,7 @@ var error404 = function (req, res) {
 
 var catch404 = function (req, res) {
 	var err = new Error('Page not found');
-  res.status(404)
+  res.status(404);
 	// next(err);
 
 	CoreController.handleDocumentQueryErrorResponse({
