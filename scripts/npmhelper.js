@@ -26,12 +26,12 @@ var fs = require('fs-extra'),
 		standardExtensions = [
 			'periodicjs.ext.admin@2.9.2',
 			'periodicjs.ext.dbseed@2.1.1',
-			'periodicjs.ext.default_routes@3.0.0',
+			'periodicjs.ext.default_routes@3.0.1',
 			'periodicjs.ext.install@2.9.0',
-			'periodicjs.ext.login@2.0.0',
-			'periodicjs.ext.mailer@1.90.26',
-			'periodicjs.ext.scheduled_content@2.0.1',
-			'periodicjs.ext.user_access_control@2.0.0',
+			'periodicjs.ext.login@3.0.0',
+			'periodicjs.ext.mailer@3.0.0',
+			'periodicjs.ext.scheduled_content@3.0.0',
+			'periodicjs.ext.user_access_control@3.0.0',
 		];
 
 var moveInstalledPeriodic = function(){
