@@ -25,7 +25,7 @@ var fs = require('fs-extra'),
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
 		standardExtensions = [
 			'periodicjs.ext.cache@3.0.0',
-			'periodicjs.ext.dbseed@3.0.0',
+			'periodicjs.ext.dbseed@3.1.0',
 			'periodicjs.ext.default_routes@3.0.1',
 			'periodicjs.ext.install@3.0.1',
 			'periodicjs.ext.login@3.0.0',
