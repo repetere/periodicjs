@@ -106,6 +106,72 @@ var cli = function (argv) {
 				process.exit(0);
 			}
 		}
+		else if (argv.deploy) {
+			try {
+				var exec = require('child_process').exec,
+					child;
+
+				child = exec('pm2 deploy content/config/deployment/ecosystem.json '+argv.deploy+' ',
+				function (error, stdout, stderr) {
+					console.log('stdout: ' + stdout);
+					console.log('stderr: ' + stderr);
+					if (error !== null) {
+					  console.log('exec error: ' + error);
+					}
+  				process.exit(0);
+				});
+				// console.log(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
+		else if (argv.pm2) {
+			try {
+				var exec = require('child_process').exec,
+					child;
+
+				child = exec('pm2 start content/config/process/'+argv.pm2+'.json  ',
+				function (error, stdout, stderr) {
+					console.log('stdout: ' + stdout);
+					console.log('stderr: ' + stderr);
+					if (error !== null) {
+					  console.log('exec error: ' + error);
+					}
+  				process.exit(0);
+				});
+				// console.log(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
+		else if (argv.nd) {
+			try {
+				var exec = require('child_process').exec,
+					child;
+
+				child = exec('NODE_ENV='+argv.nd+' nodemon --watch app --watch content/extensions/restart.json --watch content/config/database.js index.js',
+				function (error, stdout, stderr) {
+					console.log('stdout: ' + stdout);
+					console.log('stderr: ' + stderr);
+					if (error !== null) {
+					  console.log('exec error: ' + error);
+					}
+  				process.exit(0);
+				});
+				// console.log(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
 		else {
 			logger.error('no valid arguments', argv);
 			process.exit(0);
