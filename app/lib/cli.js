@@ -9,6 +9,36 @@ var config = require('./config'),
 	mongoose,
 	periodicResources,
 	appconfig;
+
+var run_cmd = function (cmd, args, callback) {
+	var spawn = require('child_process').spawn;
+	var child = spawn(cmd, args);
+	// var resp = '';
+
+	child.stdout.on('error', function (err) {
+		console.error(err);
+		process.exit(0);
+	});
+	child.stdout.on('data', function (buffer) {
+		console.log(buffer.toString());
+	});
+	child.stderr.on('data', function (buffer) {
+		console.error(buffer.toString());
+	});
+	//  child.stdout.on('end', function() {
+	// console.log('got stdout end callback');
+	// callback(null,"command run: "+cmd+" "+args);
+	//  });
+	//  child.stderr.on('end', function() {
+	// console.log("got stderr end callback");
+	// callback(null,"command run: "+cmd+" "+args);
+	//  });
+	child.on('exit', function () {
+		callback(null, 'command run: ' + cmd + ' ' + args);
+		process.exit(0);
+	}); 
+};
+
 /**
  * A simple node script for running Command Line Argument based tasks from periodic controllers and extensions
  * @author Yaw Joseph Etse
@@ -108,19 +138,7 @@ var cli = function (argv) {
 		}
 		else if (argv.deploy) {
 			try {
-				var exec = require('child_process').exec,
-					child;
-
-				child = exec('pm2 deploy content/config/deployment/ecosystem.json '+argv.deploy+' ',
-				function (error, stdout, stderr) {
-					console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-					if (error !== null) {
-					  console.log('exec error: ' + error);
-					}
-  				process.exit(0);
-				});
-				// console.log(argv);
+				run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploy], function(err,text) { console.log (text) });
 			}
 			catch (e) {
 				logger.error(e);
@@ -128,43 +146,9 @@ var cli = function (argv) {
 				process.exit(0);
 			}
 		}
-		else if (argv.pm2) {
+		else if (argv.startpm2) {
 			try {
-				var exec = require('child_process').exec,
-					child;
-
-				child = exec('pm2 start content/config/process/'+argv.pm2+'.json  ',
-				function (error, stdout, stderr) {
-					console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-					if (error !== null) {
-					  console.log('exec error: ' + error);
-					}
-  				process.exit(0);
-				});
-				// console.log(argv);
-			}
-			catch (e) {
-				logger.error(e);
-				logger.error(e.stack);
-				process.exit(0);
-			}
-		}
-		else if (argv.nd) {
-			try {
-				var exec = require('child_process').exec,
-					child;
-
-				child = exec('NODE_ENV='+argv.nd+' nodemon --watch app --watch content/extensions/restart.json --watch content/config/database.js index.js',
-				function (error, stdout, stderr) {
-					console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-					if (error !== null) {
-					  console.log('exec error: ' + error);
-					}
-  				process.exit(0);
-				});
-				// console.log(argv);
+				run_cmd( 'pm2', ['start',path.resolve(process.cwd(),'content/config/process/'+argv.startpm2+'.json')], function(err,text) { console.log (text) });
 			}
 			catch (e) {
 				logger.error(e);
