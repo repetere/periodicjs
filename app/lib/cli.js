@@ -165,7 +165,6 @@ var cli = function (argv) {
 		else if (argv.nd) {
 			try {
 				var processEnv = process.env;
-				console.log('argv.e',argv.e);
 				if(argv.e){
 					processEnv.NODE_ENV = argv.e;
 				}
