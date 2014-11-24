@@ -10,9 +10,15 @@ var config = require('./config'),
 	periodicResources,
 	appconfig;
 
-var run_cmd = function (cmd, args, callback) {
+var run_cmd = function (cmd, args, callback,env) {
 	var spawn = require('child_process').spawn;
-	var child = spawn(cmd, args);
+	// console.log('env',env);
+	if(env){
+		var child = spawn(cmd, args, env);		
+	}
+	else{
+		var child = spawn(cmd, args);		
+	}
 	// var resp = '';
 
 	child.stdout.on('error', function (err) {
@@ -156,6 +162,27 @@ var cli = function (argv) {
 				process.exit(0);
 			}
 		}
+		else if (argv.nd) {
+			try {
+				var processEnv = process.env;
+				console.log('argv.e',argv.e);
+				if(argv.e){
+					processEnv.NODE_ENV = argv.e;
+				}
+
+				run_cmd( 
+					'nodemon', 
+					['index.js'], 
+					function(err,text) { console.log (text) }, 
+					{env: processEnv}
+				);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
 		else {
 			logger.error('no valid arguments', argv);
 			process.exit(0);
@@ -176,7 +203,12 @@ var cli = function (argv) {
 		});
 	};
 
-	init(argv);
+	if (argv.nd){
+		loadScript(argv);
+	}
+	else{
+		init(argv);
+	}
 };
 
 module.exports = cli;

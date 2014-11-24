@@ -25,6 +25,11 @@ Applications built with Periodic range from simple blogs, complicated enterprise
 
 [Get started with your first Periodic Application](https://github.com/typesettin/periodicjs/wiki/Getting-Started)
 
+### Quick start guide
+```
+$ npm start --e [name-of-environment (development by default)]
+```
+
 | [![Install home](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png) | [![Admin home](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png) | [![New Item](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png) | [![review revision](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png) |
 |---------------|----------------|--------------------|-----------------|
 | [![View default](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-default.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-default.png) | [![Settings](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-settings-periodic.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-settings-periodic.png) | [![Edit Collection](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection.png) | [![View home](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-home.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-home.png) |
