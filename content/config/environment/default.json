@@ -17,6 +17,7 @@
   },
 	"session_secret":"hjoiuu87go9hui",
 	"expressCompression": true,
+	"use_test_extensions_by_environment": false,
 	"templateengine": "ejs",
 	"templatepackage": "ejs",
 	"templatefileextension": "ejs",

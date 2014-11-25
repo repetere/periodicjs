@@ -36,7 +36,13 @@ module.exports = function (periodic) {
 	var homeController = require('../controller/home')(periodic),
 		appRouter = periodic.express.Router(),
 		ignoreExtensionIndex,
-		ExtensionCore = new Extensions(periodic.settings);
+		ExtensionCore;
+
+	if(periodic.settings.use_test_extensions_by_environment){
+		periodic.settings.extensionFilePath = path.resolve(process.cwd(), 'content/config/process/'+periodic.settings.application.environment+'.extensions.json');
+	}
+	ExtensionCore = new Extensions(periodic.settings);
+
 
 	/** load extensions */
 	periodic.settings.extconf = ExtensionCore.settings();

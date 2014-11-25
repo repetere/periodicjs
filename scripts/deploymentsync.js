@@ -27,9 +27,5 @@ async.waterfall([
 		else{
 			console.log('deployment sync result',result);
 			CoreUtilities.restart_app({});
-			CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
-				console.log (text);
-				process.exit(0);
-			});		
 		}
 });

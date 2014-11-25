@@ -34,6 +34,8 @@ var config = function () {
 		configurationFileJSON,
 		configurationOverrideFileJSON,
 		configurationDefaultFileJSON,
+		lastRuntimeEnvironment,
+		lastRuntimeEnvironmentFilePath = path.resolve(process.cwd(), 'content/config/process/runtime.json'),
 		config = {};
 
 	/** 
@@ -83,6 +85,10 @@ var config = function () {
 	this.init = function () {
 		/** get info from package.json */
 		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		/** get info from last runtime environemnt */
+		if(fs.existsSync(lastRuntimeEnvironmentFilePath)){
+			lastRuntimeEnvironment = fs.readJSONSync(lastRuntimeEnvironmentFilePath).environment;
+		}
 
 		/** load user config file: content/config/config.json */
 		configurationOverrideFileJSON = fs.readJSONSync(configurationOverrideFile);
@@ -95,11 +101,28 @@ var config = function () {
 		if (process.env.NODE_ENV) {
 			appEnvironment = process.env.NODE_ENV;
 		}
-		else {
-			appEnvironment = (argv.e) ?
-				argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
-				configurationOverrideFileJSON.application.environment : 'development';
+		else if(argv.e){
+			appEnvironment = argv.e;
 		}
+		else if(lastRuntimeEnvironment){
+			appEnvironment = lastRuntimeEnvironment;
+		}
+		else if(typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined'){
+			appEnvironment = configurationOverrideFileJSON.application.environment;
+		}
+		else {
+			appEnvironment = 'development';
+		}
+
+		//** save last runtime environment to load as a backup */
+		fs.outputJson(path.resolve(process.cwd(),'content/config/process/runtime.json'),{environment:appEnvironment},function(err){
+			if(err){
+				console.error(err);
+			}
+			else{
+				console.log('saved runtime environment',appEnvironment);
+			}
+		});
 
 		/** set & load file path for base environment config */
 		configurationFile = this.getConfigFilePath(appEnvironment);
