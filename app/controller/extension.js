@@ -16,7 +16,7 @@ var path = require('path'),
 	appSettings,
 	mongoose,
 	logger,
-	restartfile = path.join(process.cwd(), '/content/extensions/restart.json');
+	restartfile = path.join(process.cwd(), '/content/config/restart.json');
 
 var install_logErrorOutput = function (options) {
 	var logfile = options.logfile,
@@ -320,7 +320,7 @@ var upload_install = function (req, res) {
 	var uploadedFile = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData),
 		timestamp = (new Date()).getTime(),
 		extname = path.basename(uploadedFile.filename, path.extname(uploadedFile.filename)),
-		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
+		logdir = path.resolve(__dirname, '../../content/config/log/'),
 		logfile = path.join(logdir, 'install-ext.' + req.user._id + '.' + extname + '.' + timestamp + '.log'),
 		extdir = path.join(process.cwd(), 'content/extensions/node_modules');
 
@@ -363,7 +363,7 @@ var upload_install = function (req, res) {
 };
 
 var cleanup_log = function (req, res) {
-	var logdir = path.resolve(__dirname, '../../content/extensions/log/'),
+	var logdir = path.resolve(__dirname, '../../content/config/log/'),
 		logfile = path.join(logdir, req.query.mode + '-ext.' + req.user._id + '.' + CoreUtilities.makeNiceName(req.params.extension) + '.' + req.params.date + '.log');
 
 	fs.remove(logfile, function (err) {
@@ -394,7 +394,7 @@ var getOutputLog = function (options) {
 		req = options.req,
 		extlogname = options.extlogname,
 		logprefix = options.logprefix,
-		logdir = path.resolve(__dirname, '../../content/extensions/log/'),
+		logdir = path.resolve(__dirname, '../../content/config/log/'),
 		logfile = path.join(logdir, logprefix + req.user._id + '.' + extlogname + '.' + req.params.date + '.log'),
 		stat = fs.statSync(logfile),
 		readStream = fs.createReadStream(logfile);
@@ -442,7 +442,7 @@ var remove = function (req, res) {
 	var extname = req.params.id,
 		extfilename = CoreUtilities.makeNiceName(extname),
 		timestamp = (new Date()).getTime(),
-		logdir = path.resolve(process.cwd(), 'content/extensions/log/'),
+		logdir = path.resolve(process.cwd(), 'content/config/log/'),
 		logfile = extFunctions.getlogfile({
 			logdir: logdir,
 			installprefix: 'remove-ext.',

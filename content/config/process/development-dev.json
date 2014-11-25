@@ -6,7 +6,7 @@
     "min_uptime"        : "1000", 
     "max_restarts"      : "10", 
     "cron_restart"      : "1 * * * * *",
-    "watch"             : ["app","content/config","content/config/database.js","content/extensions","content/themes","content/config/config.json","content/extensions/extensions.json","content/extensions/restart.json","package.json","content/config/config.json", "content/extensions/restart.json"],
+    "watch"             : ["app","content/config","content/config/database.js","content/themes","content/config/config.json","content/config/extensions.json","package.json","content/config/config.json", "content/config/restart.json"],
     "error_file"        : "logs/development-err.log",
     "out_file"          : "logs/development-out.log",
     "pid_file"          : "processes/development-child.pid",

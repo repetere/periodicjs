@@ -24,15 +24,15 @@ var fs = require('fs-extra'),
 		originallocation,
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
 		standardExtensions = [
-			'periodicjs.ext.admin@3.0.1',
-			'periodicjs.ext.cache@3.0.0',
-			'periodicjs.ext.dbseed@3.1.0',
-			'periodicjs.ext.default_routes@3.0.1',
-			'periodicjs.ext.install@3.0.1',
-			'periodicjs.ext.login@3.0.0',
-			'periodicjs.ext.mailer@3.0.0',
-			'periodicjs.ext.scheduled_content@3.0.0',
-			'periodicjs.ext.user_access_control@3.0.2',
+			'periodicjs.ext.admin@3.1.1',
+			'periodicjs.ext.cache@3.1.1',
+			'periodicjs.ext.dbseed@3.1.1',
+			'periodicjs.ext.default_routes@3.1.1',
+			'periodicjs.ext.install@3.1.1',
+			'periodicjs.ext.login@3.1.2',
+			'periodicjs.ext.mailer@3.1.1',
+			'periodicjs.ext.scheduled_content@3.1.1',
+			'periodicjs.ext.user_access_control@3.1.1',
 		];
 
 var moveInstalledPeriodic = function(){
@@ -82,9 +82,9 @@ var moveInstalledPeriodic = function(){
 
 var upgradePeriodic = function(callback){
 
-	var updatedExtensionJsonFile = path.join(originallocation,'content/extensions/extensions.json'),
+	var updatedExtensionJsonFile = path.join(originallocation,'content/config/extensions.json'),
 	updatedPeriodicjsExtJson = fs.readJSONSync(updatedExtensionJsonFile),
-	currentExtensionJsonFile = path.resolve(newlocation,'content/extensions/extensions.json'),
+	currentExtensionJsonFile = path.resolve(newlocation,'content/config/extensions.json'),
 	currentPeriodicjsExtJson = fs.readJSONSync(currentExtensionJsonFile),
 	current_ext_admin,
 	current_ext_dbseed,
@@ -184,7 +184,7 @@ var upgradePeriodic = function(callback){
 	fs.removeSync(path.join(originallocation,'content/config/logger.js')); 
 	fs.removeSync(path.join(originallocation,'content/config/startup.js')); 
 	fs.removeSync(path.join(originallocation,'public/uploads/files')); 
-	// fs.removeSync(path.join(originallocation,'content/extensions/extensions.json'));  
+	// fs.removeSync(path.join(originallocation,'content/config/extensions.json'));  
 	fs.removeSync(path.join(originallocation,'processes'));  
 	fs.removeSync(path.join(originallocation,'logs'));  
 

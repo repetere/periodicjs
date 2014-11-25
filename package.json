@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "3.0.5",
+  "version": "3.1.1",
   "main": "index.js",
   "engines": {
     "node": ">=0.10.x"
@@ -33,7 +33,7 @@
     "url": "git://github.com/typesettin/periodicjs.git"
   },
   "scripts": {
-    "nd": "NODE_ENV=development nodemon --watch app --watch content/extensions/restart.json --watch content/config/database.js index.js ",
+    "nd": "NODE_ENV=development nodemon --watch app --watch content/config/restart.json --watch content/config/database.js index.js ",
     "start": "node index.js --cli --nd --e",
     "stop": "pm2 delete periodicjs",
     "test": "mocha -R spec --recursive",
@@ -69,11 +69,11 @@
     "npm": "2.1.8",
     "optimist": "0.6.1",
     "passport": "~0.2.0",
-    "periodicjs.core.cache": "3.0.0",
-    "periodicjs.core.controller": "3.0.0",
-    "periodicjs.core.extensions": "3.0.0",
-    "periodicjs.core.mailer": "3.0.0",
-    "periodicjs.core.utilities": "3.0.0",
+    "periodicjs.core.cache": "3.1.2",
+    "periodicjs.core.controller": "3.1.1",
+    "periodicjs.core.extensions": "3.1.1",
+    "periodicjs.core.mailer": "3.1.1",
+    "periodicjs.core.utilities": "3.1.1",
     "prompt": "0.2.14",
     "response-time": "2.2.0",
     "semver": ">=2.3.0",
