@@ -202,7 +202,7 @@ var cli = function (argv) {
 		});
 	};
 
-	if (argv.nd){
+	if (argv.nd || argv.deploy || argv.startpm2){
 		loadScript(argv);
 	}
 	else{
