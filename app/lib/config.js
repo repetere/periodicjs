@@ -98,7 +98,7 @@ var config = function () {
 		else {
 			appEnvironment = (argv.e) ?
 				argv.e : (typeof configurationOverrideFileJSON.application !== 'undefined' && typeof configurationOverrideFileJSON.application.environment !== 'undefined') ?
-				configurationOverrideFileJSON.application.environment : null;
+				configurationOverrideFileJSON.application.environment : 'development';
 		}
 
 		/** set & load file path for base environment config */
