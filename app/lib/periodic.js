@@ -97,6 +97,10 @@ var periodic = function (periodicConfigOptions) {
 		if (appconfig.settings().debug) {
 			console.log(appconfig.settings());
 		}
+		/** if cache option is set update cache */
+		if (appconfig.settings().periodic_cache_status) {
+			global.CoreCache.setStatus(appconfig.settings().periodic_cache_status);
+		}
 	};
 	/**
 	 * @description loads application logger configuration
