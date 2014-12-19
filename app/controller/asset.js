@@ -7,6 +7,7 @@ var path = require('path'),
 	formidable = require('formidable'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controller'),
+	extend = require('util-extend'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -21,7 +22,8 @@ var upload = function (req, res, next) {
 		files = [],
 		returnFile,
 		returnFileObj = {},
-		// fields = [],
+		formfields,
+		formfiles,
 		d = new Date(),
 		uploadDirectory = '/public/uploads/files/' + d.getUTCFullYear() + '/' + d.getUTCMonth() + '/' + d.getUTCDate(),
 		fullUploadDir = path.join(process.cwd(), uploadDirectory);
@@ -39,7 +41,9 @@ var upload = function (req, res, next) {
 			form.keepExtensions = true;
 			form.uploadDir = fullUploadDir;
 			form.parse(req, function (err, fields, files) {
-				logger.silly(err, fields, files);
+				formfields = fields;
+				formfiles = files;
+				// logger.silly('formfields', formfields);
 			});
 			form.on('error', function (err) {
 				logger.error(err);
@@ -76,7 +80,7 @@ var upload = function (req, res, next) {
 						returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
 						returnFileObj.attributes.periodicFilename = newfilename;
 						// console.log('returnFileObj',returnFileObj);
-						req.controllerData.fileData = returnFileObj;
+						req.controllerData.fileData = extend(returnFileObj,formfields);
 						next();
 					}
 				});
@@ -129,6 +133,12 @@ var index = function (req, res) {
 	);
 };
 var createassetfile = function (req, res) {
+	// var form = new formidable.IncomingForm();
+	// console.log('create asset file form parse');
+	// form.parse(req, function (err, fields, files) {
+	// 	console.log(err, fields, files);
+	// });
+	// console.log('req',req);
 	var newasset = CoreUtilities.removeEmptyObjectValues(req.controllerData.fileData);
 	newasset.name = CoreUtilities.makeNiceName(newasset.fileurl);
 	newasset.title = newasset.title || newasset.name;
@@ -450,6 +460,7 @@ var loadAsset = function (req, res, next) {
 			}
 			else {
 				req.controllerData.asset = doc;
+				console.log('asset doc',doc);
 				next();
 			}
 		}
