@@ -29,12 +29,33 @@ module.exports = function (periodic) {
 		periodic: periodic
 	});
 
+	/**
+	 * periodic controllers
+	 * @type {Object}
+	 */
+	periodic.app.controller = {
+		native:{
+			asset: require('../controller/asset')(periodic),
+			category: require('../controller/category')(periodic),
+			collection: require('../controller/collection')(periodic),
+			compilation: require('../controller/compilation')(periodic),
+			contenttype: require('../controller/contenttype')(periodic),
+			extension: require('../controller/extension')(periodic),
+			home: require('../controller/home')(periodic),
+			item: require('../controller/item')(periodic),
+			search: require('../controller/search')(periodic),
+			tag: require('../controller/tag')(periodic),
+			theme: require('../controller/theme')(periodic),
+			user: require('../controller/user')(periodic),
+			userhelper: require('../controller/helpers/user')(periodic),
+		},
+		extension:{ }
+	};
 	/** 
 	 * controller for homepage
 	 * @type {function}
 	 */
-	var homeController = require('../controller/home')(periodic),
-		appRouter = periodic.express.Router(),
+	var appRouter = periodic.express.Router(),
 		ignoreExtensionIndex,
 		ExtensionCore;
 
@@ -47,8 +68,9 @@ module.exports = function (periodic) {
 	/** load extensions */
 	periodic.settings.extconf = ExtensionCore.settings();
 	periodic.ignoreExtension = 'periodicjs.ext.default_routes';
-	ignoreExtensionIndex = ExtensionCore.loadExtensions(periodic);
-	console.log('ignoreExtensionIndex',ignoreExtensionIndex);
+	periodic = ExtensionCore.loadExtensions(periodic);
+	ignoreExtensionIndex = periodic.ignoreExtensionIndex;
+	// console.log('ignoreExtensionIndex',ignoreExtensionIndex);
 	
 	/** if there's a theme set in the instance configuration object, load the custom routes if they exist 
 	 */
@@ -60,7 +82,8 @@ module.exports = function (periodic) {
 				themeConfigJson = fs.readJsonSync(themeConfig);
 				periodic.settings.themeSettings = themeConfigJson;
 			}
-			require(themeRoute)(periodic);
+			// require(themeRoute)(periodic);
+			periodic = ExtensionCore.loadExtensionRoute(themeRoute,periodic);
 		}
 	}
 
@@ -68,13 +91,13 @@ module.exports = function (periodic) {
 	 * load default routes last if enabled
 	 */
 	if(typeof ignoreExtensionIndex !== 'undefined'){
-		require(ExtensionCore.files()[ignoreExtensionIndex])(periodic);
+		periodic = ExtensionCore.loadExtensionRoute(ExtensionCore.files()[ignoreExtensionIndex],periodic);
 	}
 
 	/**
 	 * set up default routes if no routes are defined/overwritten in extensions or themes
 	 */
-	appRouter.get('/', homeController.default_view);
-	appRouter.get('*', homeController.catch404);
+	appRouter.get('/', periodic.app.controller.native.home.default_view);
+	appRouter.get('*', periodic.app.controller.native.home.catch404);
 	periodic.app.use(appRouter);
 };
