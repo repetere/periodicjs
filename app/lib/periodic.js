@@ -273,15 +273,19 @@ var periodic = function (periodicConfigOptions) {
 			db: db,
 			mongoose: mngse
 		};
+		periodicObj.app.controller ={
+			native:{},
+			extension:{}
+		};
 		if(periodicConfigOptions && periodicConfigOptions.skiprouting){
 			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
 		}
 		else{
 			if (fs.existsSync(path.resolve(process.cwd(),'node_modules','periodicjs.ext.install')) && appconfig.settings().status === 'install') {
-				require('periodicjs.ext.install')(periodicObj);
+				periodicObj = require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
-				require('../routes/index')(periodicObj);
+				periodicObj = require('../routes/index')(periodicObj);
 			}
 		}
 	};

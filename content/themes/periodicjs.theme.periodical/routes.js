@@ -3,7 +3,7 @@ var path = require('path');
 
 module.exports = function (periodic) {
 	var periodicalController = require('./controller/periodical')(periodic),
-		itemController = require(path.join(process.cwd(), 'app/controller/item'))(periodic),
+		itemController = periodic.app.controller.native.item,
 		themeRouter = periodic.express.Router();
 
 	require('./scripts/setup')(periodic);
@@ -16,4 +16,5 @@ module.exports = function (periodic) {
 	themeRouter.get('/', periodicalController.setCacheHeader, periodicalController.homepage);
 
 	periodic.app.use(themeRouter);
+	return periodic;
 };
