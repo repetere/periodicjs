@@ -64,12 +64,13 @@ var moveInstalledPeriodic = function(){
 							if(upgradeinstall || upgradeinstallalias){
 								console.log('Restart to upgrade Periodicjs');
 								console.log('\u0007');
-								CoreUtilities.run_cmd( 'pm2', ['stop','periodicjs'], function(text) { 
-									console.log (text);
-									CoreUtilities.run_cmd( 'pm2', ['restart','periodicjs'], function(text) { 
-										console.log (text);
+
+								CoreUtilities.restart_app({
+									callback:function(err,text) { 
+										console.log ('err',err);
+										console.log ('moveinstalledperiodic',text);
 										process.exit(0);
-									});	
+									}
 								});
 							}
 						}
