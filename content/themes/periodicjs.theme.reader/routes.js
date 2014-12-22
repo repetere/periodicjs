@@ -25,4 +25,5 @@ module.exports = function (periodic) {
 	themeRouter.get('/', readerthemeController.setCacheHeader, readerthemeController.homepagedata, readerthemeController.homepageindex);
 
 	periodic.app.use(themeRouter);
+	return periodic;
 };
