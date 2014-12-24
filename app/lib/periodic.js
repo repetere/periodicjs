@@ -98,7 +98,7 @@ var periodic = function (periodicConfigOptions) {
 			console.log(appconfig.settings());
 		}
 		/** if cache option is set update cache */
-		if (appconfig.settings().periodic_cache_status) {
+		if (appconfig.settings().periodic_cache_status !== 'undefined') {
 			global.CoreCache.setStatus(appconfig.settings().periodic_cache_status);
 		}
 	};
