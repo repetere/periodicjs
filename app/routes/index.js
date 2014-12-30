@@ -19,6 +19,7 @@ var path = require('path'),
  * @param {object} periodic this is the object passed from lib/periodic.js, it contains the expressjs instance, connection to mongo and others (express,app,logger,settings,db,mongoose)
  */
 module.exports = function (periodic) {
+	var themeRouteTest;
 	/** load mongoose models
 	 * @param {object} periodic the same instance configuration object
 	 */
@@ -28,6 +29,21 @@ module.exports = function (periodic) {
 		debug: periodic.settings.debug,
 		periodic: periodic
 	});
+
+	/** if there's a theme set in the instance configuration object, load theme settings 
+	 */
+	if (periodic.settings.theme) {
+		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
+		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
+		themeRouteTest=fs.existsSync(themeRoute);
+		console.log('themeRouteTest',themeRouteTest);
+		if (themeRouteTest) {
+			if(fs.existsSync(themeConfig)){
+				themeConfigJson = fs.readJsonSync(themeConfig);
+				periodic.settings.themeSettings = themeConfigJson;
+			}
+		}
+	}
 
 	/**
 	 * periodic controllers
@@ -72,19 +88,9 @@ module.exports = function (periodic) {
 	ignoreExtensionIndex = periodic.ignoreExtensionIndex;
 	// console.log('ignoreExtensionIndex',ignoreExtensionIndex);
 	
-	/** if there's a theme set in the instance configuration object, load the custom routes if they exist 
-	 */
-	if (periodic.settings.theme) {
-		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
-		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
-		if (fs.existsSync(themeRoute)) {
-			if(fs.existsSync(themeConfig)){
-				themeConfigJson = fs.readJsonSync(themeConfig);
-				periodic.settings.themeSettings = themeConfigJson;
-			}
-			// require(themeRoute)(periodic);
-			periodic = ExtensionCore.loadExtensionRoute(themeRoute,periodic);
-		}
+	/** load custom theme routes */
+	if (themeRouteTest) {
+		periodic = ExtensionCore.loadExtensionRoute(themeRoute,periodic);
 	}
 
 	/**
