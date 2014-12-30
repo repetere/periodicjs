@@ -1,0 +1,56 @@
+//customizations
+.ts{
+	header{
+		nav{
+			menuitem{
+				max-width: 50%;
+				text-overflow: ellipsis;
+				max-height: 3em;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+		}
+	}
+	.ts-asset-slideshow{
+		padding-bottom: 0;
+		.p_c_fws-slidedots{
+        bottom:1em;
+        span.p_c_fws-cuurentdot {
+            background: @accentColor;
+            box-shadow: 0 0 0 2px @accentColor;
+        }
+    }
+    &:hover,.hover-effect{
+        nav{
+            span{
+
+                &.p_c_fws-slidenext,
+                &.p_c_fws-slideprev {
+                    opacity: 1;
+                }
+            }
+        }
+        #assetInfoButton{
+            opacity: 0;
+        }
+    }
+    #assetInfoButton{
+        position: absolute;
+        bottom: 1em;
+        right: 1em;
+        color: white;
+        border-radius: 50%;
+            background: @accentColor;
+        display: block;
+        width: 1em;
+        text-align: center;
+        font-size: 1em;
+        margin: 4px;
+        opacity: 1;
+        transition: opacity .09s;
+        span{
+            font-size: 100%;
+        }
+    }
+	}	
+}

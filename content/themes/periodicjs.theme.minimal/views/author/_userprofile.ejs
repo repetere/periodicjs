@@ -1,0 +1,15 @@
+<div class="_pea-row">
+	<div class="_pea-col-span4  _pea-text-center">
+    <% if(author.primaryasset && author.primaryasset.assettype && author.primaryasset.assettype.match("image")){%>
+				<img class="_pea-col-span11" src="<%=author.primaryasset.fileurl%>"/>
+		<%} 
+			else{%>
+		   	<img src="/favicon.png" class="_pea-col-span11">
+		<%}%>
+  </div><!--/col-->           
+  <div class="_pea-col-span8">
+    <h2><%= author.username %></h2>
+    <p><strong>Name: </strong> <%- author.firstname %> <%- author.lastname %></p>
+    <p><strong>About: </strong> <%= author.description %></p>
+  </div><!--/col--> 
+</div>

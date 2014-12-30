@@ -1,14 +1,21 @@
 <% include ../shared/header %>
-<% include ../shared/nav %>
-	<div class="width100">
-		<% var fullcollection=false; %>
-		<% if(collections && collections.length>0){
-			collections.forEach(function(collection){%>
-				<% include ../shared/partial/_collection %>
-			<%});
-		}
-		else{%>
-			no collections
-		<%}%>
-	</div>
+<% if(collections && collections.length>0){
+	collections.forEach(function(collection){%>
+		<% include _collection %>
+	<%});
+	%>
+	<% var docscount = collectionscount, 
+			docscountlabel = 'collections',
+			docs = collections,
+			docsrequestperpage = request.query.collectionsperpage || request.query.docsperpage,
+			docpages = collectionpages,
+			editlistingprops= true;  %>
+	<% include ../shared/partial/_pagination %>
+	<%
+}
+else{%>
+	<article class="content _pea-text-center">
+		<h1>no collections</h1>
+	</article>
+<%}%>
 <% include ../shared/footer %>

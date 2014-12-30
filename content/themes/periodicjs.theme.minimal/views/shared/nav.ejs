@@ -1,26 +1,34 @@
-<header>
-	<div id="width100">
-		<nav class="width100">
-			<ul>
-				<li>
-					<a href="/"><img src="/favicon.png" style="height: 1.7em;"></a>
-				</li>
-				<li><a href="/articles">Articles</a></li>
-				<li><a href="/collections">Collections</a></li>
-				<li>Browse
-					<ul>
-						<li><a href="/browse/authors">Authors</a></li>
-						<li><a href="/browse/contenttypes">Content Types</a></li>
-						<li><a href="/browse/categories">Categories</a></li>
-						<li><a href="/browse/tags">Tags</a></li>
-						<li class="text-right">
-							<form action="/search" method="get" class="_pea-form">
-								<input class="header-input" placeholder="Search" type="text" name="search">						
-							</form>
-						</li>
-					</ul>
-				</li>
+<header class="ts-position-fixed ts-width-100 ts-z-index-1000 ts-bg-text-primary-color ts-serif-clean ts-top">
+	<nav class="ts-container ts-top">
+		<menuitem class="ts-pull-right ts-nav-collapse">
+			<div class="ts-nav-collapse-button ts-text-right">
+				[-]
+			</div>
+			<ul class="ts-nav-collapse-dropdown ts-z-index-1000 ts-bg-text-primary-color ts-position-absolute ts-position-right ts-no-padding ts-list-style-none ts-li-horz-spacing">
+				<% if(locals.navlinks ==='categories' && locals.navdata && locals.navdata.categories && locals.navdata.categories.length>0){
+					locals.navdata.categories.forEach(function(category){%>
+						<li><a href="/browse/categories/<%- category.name %>"><%- category.title %></a></li>
+					<%});
+				}
+				else if(locals.usecustomnav ==='yes' && locals.customnav){%>
+					<%- locals.customnav %>
+				<%}
+				else{%>
+					<li><a href="/items">Items</a></li>
+					<li><a href="/collections">Collections</a></li>
+					<li><a href="/compilations">Compilations</a></li>
+					<li><a href="/browse/authors">Authors</a></li>
+					<li><a href="/browse/contenttypes">Content Types</a></li>
+					<li><a href="/browse/categories">Categories</a></li>
+					<li><a href="/browse/tags">Tags</a></li>
+				<%}%>
 			</ul>
-		</nav>
-	</div>
+		</menuitem>
+		<menuitem class="ts-pull-left">
+			<ul class="ts-ul-inline-block ts-no-padding">
+				<li><a href="/" class="ts-text-big ts-text-bold"><% include ../shared/partial/_site_name %></a></li>
+			</ul>
+		</menuitem>
+		
+	</nav>
 </header>

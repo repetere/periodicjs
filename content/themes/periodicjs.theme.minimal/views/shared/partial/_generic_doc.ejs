@@ -1,0 +1,44 @@
+<% if(genericdoc){%>
+<article class="ts-text-container <%- genericdoc.urlslug %>">
+	<section class=" ts-container-margin ts-container-margin-auto ts-width-90">
+		<h3><a href="/<%= genericdoc.urlslug %>/<%= genericdoc.name %>"><%= genericdoc.title %></a></h3>
+		<% include _genericdoc_assets %>
+		<div class=" ts-serif-clean"><%- genericdoc.content %></div>
+	</section>
+	<% if(genericdoc.items && genericdoc.items.length > 0){
+		genericdoc.items.forEach(function(collectionItem){
+			var item = collectionItem.item; 
+			item.urlslug='item';
+			if(item.title){%>
+				<% include _genericdoc_item %>
+			<%} 
+			});%>
+	<%} %>
+	<% if(genericdoc.content_entities && genericdoc.content_entities.length > 0){
+		genericdoc.content_entities.forEach(function(compilationEntity){
+			if(compilationEntity.entitytype==='item'){
+				var item = compilationEntity.entity_item;
+				item.urlslug='item';
+				if(item.title){%>
+					<% include _genericdoc_item %>
+				<%} 
+			}
+			else{
+				var collection = compilationEntity.entity_collection;
+				collection.urlslug='collection'; %>
+				<% include _genericdoc_collection %>
+			<%}
+		});%>
+	<%} %>
+	<% if((genericdoc.tags && genericdoc.tags.length > 0) || (genericdoc.categories && genericdoc.categories.length > 0)){%>
+		<section class="content-meta">
+				<summary class=" ts-container-margin ts-container-margin-auto ts-width-90 ts-row">
+
+			<% include _genericdoc_tags %>
+			<% include _genericdoc_categories %>
+			<% include _genericdoc_authors %>
+			</summary>
+		</section>
+	<%}%>
+</article>
+<%}%>

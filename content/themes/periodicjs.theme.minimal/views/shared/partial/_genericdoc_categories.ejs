@@ -1,0 +1,11 @@
+<% if(genericdoc.categories && genericdoc.categories.length > 0){%>
+	<small>
+		<strong>Categories: </strong> <%
+			genericdoc.categories.forEach(function(category,i){
+				%>
+				<a href="/browse/categories/<%- category.name %>" class="tag">#<%- category.title %></a>
+				<%
+			});
+		%>
+	</small>
+<%}%>

@@ -36,7 +36,6 @@ module.exports = function (periodic) {
 		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
 		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
 		themeRouteTest=fs.existsSync(themeRoute);
-		console.log('themeRouteTest',themeRouteTest);
 		if (themeRouteTest) {
 			if(fs.existsSync(themeConfig)){
 				themeConfigJson = fs.readJsonSync(themeConfig);
