@@ -182,10 +182,10 @@ userSchema.statics.generateRandomTokenStatic = function () {
 userSchema.statics.checkValidation = function (options) {
 	var userdata = options.newuser;
 
-	if (userdata.username === undefined || userdata.username.length < 4) {
+	if ((typeof options.checkusername==='undefined' || options.checkusername ===true) && (userdata.username === undefined || userdata.username.length < 4)) {
 		return new Error('Username is too short');
 	}
-	else if (userdata.email === undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+	else if ( (typeof options.checkemail==='undefined' || options.checkemail===true ) && (userdata.email === undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) ){
 		return new Error('Invalid email');
 	}
 	else if (options.checkpassword && (userdata.password === undefined || userdata.password.length < 8)) {
@@ -222,6 +222,46 @@ userSchema.statics.validApiKey = function (userid, apikey, callback) {
 userSchema.statics.hasPrivilege = function (user, privilege) {
 	// console.log(' hasPrivilege user, privilege',user,privilege);
 	return user.accounttype === 'admin' || user.privileges[privilege];
+};
+
+userSchema.statics.checkExistingUser = function(options,callback){
+	var User = mongoose.model('User'),
+		userdata = options.userdata,
+		searchUsernameRegEx = (userdata.username)? new RegExp(userdata.username, 'gi') : null,
+		searchEmailRegEx = (userdata.email)?  new RegExp(userdata.email, 'gi') : null,
+		query = {};
+
+		if (userdata.username && userdata.email) {
+			query = {
+				$or: [{
+					username: searchUsernameRegEx
+				}, {
+					email: searchEmailRegEx
+				}]
+			};
+		}
+		else if (userdata.username) {
+			query = {
+				username: searchUsernameRegEx
+			};
+		}
+		else {
+			query = {
+				email: searchEmailRegEx
+			};
+		}
+
+	User.findOne(query, function (err, user) {
+		if(err){
+			callback(err);
+		}
+		else if(user){
+			callback(new Error('you already have an account'));
+		}
+		else{
+			callback(null,'no existing user');
+		}
+	});
 };
 
 userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
