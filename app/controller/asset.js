@@ -43,7 +43,7 @@ var upload = function (req, res, next) {
 			form.parse(req, function (err, fields, files) {
 				formfields = fields;
 				formfiles = files;
-				// logger.silly('formfields', formfields);
+				logger.silly('formfields', formfields);
 			});
 			form.on('error', function (err) {
 				logger.error(err);
@@ -54,10 +54,16 @@ var upload = function (req, res, next) {
 				});
 			});
 			form.on('file', function (field, file) {
-				returnFile = file;
-				files.push(file);
+				if(file.size >0 ){
+					returnFile = file;
+					files.push(file);	
+				}
+				else{
+					logger.silly('on file is empty',file);
+				}
 			});
 			form.on('end', function () {
+				logger.silly('TODO: make file uploads async.parallel and rename multiple files');
 				var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
 					newfilepath = path.join(fullUploadDir, newfilename);
 				fs.rename(returnFile.path, newfilepath, function (err) {
