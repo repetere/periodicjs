@@ -64,32 +64,41 @@ var upload = function (req, res, next) {
 			});
 			form.on('end', function () {
 				logger.silly('TODO: make file uploads async.parallel and rename multiple files');
-				var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
+				try{
+					var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
 					newfilepath = path.join(fullUploadDir, newfilename);
-				fs.rename(returnFile.path, newfilepath, function (err) {
-					if (err) {
-						CoreController.handleDocumentQueryErrorResponse({
-							err: err,
-							res: res,
-							req: req
-						});
-					}
-					else {
-						returnFileObj.attributes = {};
-						returnFileObj.size = returnFile.size;
-						returnFileObj.filename = returnFile.name;
-						returnFileObj.assettype = returnFile.type;
-						returnFileObj.path = newfilepath;
-						returnFileObj.locationtype = 'local';
-						returnFileObj.attributes.periodicDirectory = uploadDirectory;
-						returnFileObj.attributes.periodicPath = path.join(uploadDirectory, newfilename);
-						returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
-						returnFileObj.attributes.periodicFilename = newfilename;
-						// console.log('returnFileObj',returnFileObj);
-						req.controllerData.fileData = extend(returnFileObj,formfields);
-						next();
-					}
-				});
+					fs.rename(returnFile.path, newfilepath, function (err) {
+						if (err) {
+							CoreController.handleDocumentQueryErrorResponse({
+								err: err,
+								res: res,
+								req: req
+							});
+						}
+						else {
+							returnFileObj.attributes = {};
+							returnFileObj.size = returnFile.size;
+							returnFileObj.filename = returnFile.name;
+							returnFileObj.assettype = returnFile.type;
+							returnFileObj.path = newfilepath;
+							returnFileObj.locationtype = 'local';
+							returnFileObj.attributes.periodicDirectory = uploadDirectory;
+							returnFileObj.attributes.periodicPath = path.join(uploadDirectory, newfilename);
+							returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
+							returnFileObj.attributes.periodicFilename = newfilename;
+							// console.log('returnFileObj',returnFileObj);
+							req.controllerData.fileData = extend(returnFileObj,formfields);
+							next();
+						}
+					});
+				}
+				catch(e){
+					CoreController.handleDocumentQueryErrorResponse({
+						err: e,
+						res: res,
+						req: req
+					});
+				}
 			});
 		}
 	});
