@@ -360,7 +360,6 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 					options.welcomeemaildata.sendEmailFunction({
 						appenvironment: options.welcomeemaildata.appenvironment,
 						to: options.newuser.email,
-						cc: 'yawetse@gmail.com',
 						replyTo: options.welcomeemaildata.replyto,
 						subject: options.welcomeemaildata.subject || options.welcomeemaildata.appname + ' New User Registration',
 						emailtemplatefilepath: templatepath,
