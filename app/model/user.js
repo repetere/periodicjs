@@ -1,6 +1,9 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+	merge = require('utils-merge'),
+	async = require('async'),
+	path = require('path'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
 	logger = console;
@@ -114,7 +117,7 @@ userSchema.pre('save', function (next, done) {
 	else if (this.username !== undefined && this.username.length < 4) {
 		done(new Error('Username is too short'));
 	}
-	else if (this.email === undefined || this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+	else if (this.email !== undefined && this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
 		done(new Error('Invalid email'));
 	}
 	// else if (this.username !== undefined && badusername.test(this.username)) {
@@ -320,65 +323,130 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	}
 };
 
-var sendUserEmail = function (options, callback) {
-	var mailtransport = options.mailtransport,
-		user = options.user,
-		mailoptions = {};
-
-	mailoptions.to = (options.to) ? options.to : user.email;
-	mailoptions.cc = options.cc;
-	mailoptions.bcc = options.bcc;
-	mailoptions.replyTo = options.replyTo;
-	mailoptions.subject = options.subject;
-	if (options.generatetextemail) {
-		mailoptions.generateTextFromHTML = true;
+userSchema.statics.logInNewUser = function(options, callback){
+	try{
+		var req = options.req;
+		req.login(
+			options.newuser,
+			function(loginerr){
+				if(loginerr){
+					callback(loginerr,null);
+				}
+				else{
+					callback(null,options.newuser);
+				}
+		});
 	}
-	mailoptions.html = options.html;
-	mailoptions.text = options.text;
-
-	mailtransport.sendMail(mailoptions, callback);
-
-	/*
-to - Comma separated list or an array of recipients e-mail addresses that will appear on the To: field
-cc - Comma separated list or an array of recipients e-mail addresses that will appear on the Cc: field
-bcc - Comma separated list or an array of recipients e-mail addresses that will appear on the Bcc: field
-replyTo - An e-mail address that will appear on the Reply-To: field
-inReplyTo - The message-id this message is replying
-references - Message-id list (an array or space separated string)
-subject - The subject of the e-mail
-text - The plaintext version of the message as an Unicode string, Buffer, Stream or an object {path: '...'}
-html - The HTML version of the message as an Unicode string, Buffer, Stream or an object {path: '...'}
-headers - An object of additional header fields {"X-Key-Name": "key value"}
-attachments - An array of attachment objects (see below for details)
-alternatives - An array of alternative text contents (in addition to text and html parts) (see below for details)
-envelope - optional SMTP envelope, if auto generated envelope is not suitable (see below for details)
-messageId - optional Message-Id value, random value will be generated if not set
-date - optional Date value, current UTC string will be used if not set
-encoding - optional transfer encoding for the textual parts (defaults to 'quoted-printable')
-	*/
+	catch(e){
+		callback(e,null);
+	}
 };
 
-userSchema.statics.sendWelcomeUserEmail = function (options, callback) {
-	var ejs = require('ejs'),
-		welcomeemailoptions = options;
-	welcomeemailoptions.subject = (options.subject) ? options.subject : 'New User Registration';
-	welcomeemailoptions.generatetextemail = true;
-	welcomeemailoptions.html = ejs.render(options.emailtemplate, welcomeemailoptions);
-	// console.log('welcomeemailoptions', welcomeemailoptions);
-	sendUserEmail(welcomeemailoptions, callback);
+userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
+	try{
+		options.welcomeemaildata.getEmailTemplateFunction({
+				viewname: options.welcomeemaildata.emailviewname,
+				themefileext: options.welcomeemaildata.themefileext
+			},
+			function (err, templatepath) {
+				if (err) {
+					callback(err);
+				}
+				else {
+					// console.log('user for forgot password', user);
+					if (templatepath === options.welcomeemaildata.emailviewname) {
+						templatepath = path.resolve(process.cwd(), 'app/views', templatepath + '.' + options.welcomeemaildata.themefileext);
+					}
+					options.welcomeemaildata.sendEmailFunction({
+						appenvironment: options.welcomeemaildata.appenvironment,
+						to: options.newuser.email,
+						cc: 'yawetse@gmail.com',
+						replyTo: options.welcomeemaildata.replyto,
+						subject: options.welcomeemaildata.subject || options.welcomeemaildata.appname + ' New User Registration',
+						emailtemplatefilepath: templatepath,
+						emailtemplatedata: {
+							user: options.newuser,
+							hostname: options.welcomeemaildata.hostname,
+							appname: options.welcomeemaildata.appname
+						}
+					}, callback);
+				}
+			}
+		);
+	}
+	catch(e){
+		callback(e,null);
+	}
 };
 
-userSchema.statics.UserEmail = function (options, callback) {
-	sendUserEmail(options, callback);
+userSchema.statics.createNewUserAccount = function(options,callback){
+	var validationErrors,
+		newuseroptions,
+		newelycreateduser,
+		defaultUserOptions = {
+			newuser: {},
+			checkusername: false,
+			checkpassword: true,
+			length_of_username: 4,
+			length_of_password: 8
+		},
+		User = mongoose.model('User');
+
+	newuseroptions = merge(defaultUserOptions, options);
+	validationErrors = User.checkValidation(newuseroptions);
+	if(validationErrors){
+		callback(validationErrors,null);
+	}
+	else{
+		async.series({
+			checkExisitingUser:function(asyncCB){
+				User.checkExistingUser({
+					userdata : newuseroptions.newuser
+				},asyncCB);
+			},
+			fastRegister:function(asyncCB){
+				User.fastRegisterUser(newuseroptions.newuser,function(err,newfastregisteruser){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						newelycreateduser = newfastregisteruser;
+						asyncCB(null,newfastregisteruser);
+					}
+				});
+			},
+			loginNewlyCreatedUser:function(asyncCB){
+				if(newuseroptions.lognewuserin){
+					User.logInNewUser({
+						req: newuseroptions.req,
+						newuser: newelycreateduser
+					},asyncCB);
+				}
+				else{
+					asyncCB(null,'skipping logging in user');
+				}
+			},
+			sendUserWelcomeEmail:function(asyncCB){
+				if(newuseroptions.send_new_user_email && newelycreateduser.email){
+					User.sendNewUserWelcomeEmail({
+						welcomeemaildata: newuseroptions.welcomeemaildata,
+						newuser: newelycreateduser
+					},asyncCB);
+				}
+				else{
+					asyncCB(null,'skipping new user welcome email');
+				}
+			}
+		},
+		function(asyncErr,createduser){
+			if(asyncErr){
+				callback(asyncErr,null);
+			}
+			else{
+				callback(null,createduser);
+			}
+		});
+	}
 };
-
-
-userSchema.statics.getWelcomeEmailTemplate = function (options, callback) {
-	var fs = require('fs-extra'),
-		templatefile = options.templatefile;
-	fs.readFile(templatefile, 'utf8', callback);
-};
-
-
 
 exports = module.exports = userSchema;

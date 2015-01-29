@@ -1,14 +1,14 @@
 'use strict';
 
-var path = require('path'),
-	async = require('async'),
+var async = require('async'),
 	Utilities = require('periodicjs.core.utilities'),
 	ControllerHelper = require('periodicjs.core.controller'),
+	CoreMailer = require('periodicjs.core.mailer'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
+	appenvironment,
 	mongoose,
-	userHelper,
 	User,
 	logger;
 
@@ -76,9 +76,10 @@ var showProfile = function (req, res) {
 var create = function (req, res) {
 	var newuser = CoreUtilities.removeEmptyObjectValues(req.body),
 		err = User.checkValidation({
-			newuser: newuser,
-			checkpassword: true
-		});
+			newuser: newuser /*,
+			checkpassword: true */
+		}),
+		send_new_user_email = (newuser.send_new_user_email === 'false' || (typeof newuser.send_new_user_email === 'boolean' && typeof newuser.send_new_user_email === false)) ? false : true;
 
 	if (err) {
 		CoreController.handleDocumentQueryErrorResponse({
@@ -88,13 +89,35 @@ var create = function (req, res) {
 		});
 	}
 	else {
-		userHelper.createNewUser({
-			userdata: newuser,
-			User: User,
-			res: res,
+
+		User.createNewUserAccount({
+			newuser: newuser,
+			lognewuserin: false,
 			req: req,
-			skiplogin: true,
-			applicationController: CoreController
+			send_new_user_email: send_new_user_email,
+			welcomeemaildata: {
+				getEmailTemplateFunction: CoreController.getPluginViewDefaultTemplate,
+				emailviewname: 'email/user/welcome',
+				themefileext: appSettings.templatefileextension,
+				sendEmailFunction: CoreMailer.sendEmail,
+				subject: appSettings.name + ' New User Registration',
+				replyto: appSettings.adminnotificationemail,
+				hostname: req.headers.host,
+				appenvironment: appenvironment,
+				appname: appSettings.name,
+			}
+		},
+		function (newusererr /*, newuser*/ ) {
+			if (newusererr) {
+				CoreController.handleDocumentQueryErrorResponse({
+					err: newusererr,
+					res: res,
+					req: req
+				});
+			}
+			else {
+				return res.redirect('/p-admin/users/');
+			}
 		});
 	}
 };
@@ -477,7 +500,7 @@ var controller = function (resources) {
 	User = mongoose.model('User');
 	CoreController = new ControllerHelper(resources);
 	CoreUtilities = new Utilities(resources);
-	userHelper = require(path.join(process.cwd(), 'app/controller/helpers/user'))(resources);
+	appenvironment = appSettings.application.environment;
 
 	return {
 		show: show,

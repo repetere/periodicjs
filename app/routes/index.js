@@ -61,8 +61,7 @@ module.exports = function (periodic) {
 			search: require('../controller/search')(periodic),
 			tag: require('../controller/tag')(periodic),
 			theme: require('../controller/theme')(periodic),
-			user: require('../controller/user')(periodic),
-			userhelper: require('../controller/helpers/user')(periodic),
+			user: require('../controller/user')(periodic)
 		},
 		extension:{ }
 	};
