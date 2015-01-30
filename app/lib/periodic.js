@@ -55,6 +55,7 @@ var periodic = function (periodicConfigOptions) {
 		AppLog = require('../../content/config/logger'),
 		Config = require('./config'),
 		appconfig,
+		periodicObj,
 		logger,
 		database = require('../../content/config/database'),
 		db,
@@ -265,7 +266,7 @@ var periodic = function (periodicConfigOptions) {
 		 * @description application reference passed to controllers
 		 * @instance
 		 */
-		var periodicObj = {
+		periodicObj = {
 			express: express,
 			app: app,
 			logger: logger,
@@ -326,8 +327,10 @@ var periodic = function (periodicConfigOptions) {
 	 * @description exception catching settings
 	 */
 	init.catchErrors = function () {
+		var customThemeView = 'home/error500';
 		//log errors
 		app.use(function (err, req, res, next) {
+			// console.log('err',err,'next',next);
 			logger.error(err.message);
 			logger.error(err.stack);
 			next(err);
@@ -335,16 +338,27 @@ var periodic = function (periodicConfigOptions) {
 
 		//send client errors
 		//catch all errors
+		if(appconfig.settings().theme){
+			var custom500errorpage = path.join(path.resolve(process.cwd(), './content/themes'), appconfig.settings().theme, 'views', 'home/error500' + '.' + appconfig.settings().templatefileextension),
+				custom500ErrorPageError,
+				custom500ErrorPageView;
+			try{
+				custom500ErrorPageView = fs.readFileSync(custom500errorpage);
+			}
+			catch(themecustompageerror){
+				custom500ErrorPageError = themecustompageerror;
+			}
+			customThemeView = (custom500ErrorPageView) ? custom500errorpage : customThemeView;
+		}
 		app.use(function (err, req, res, next) {
-			if (req.xhr) {
+			if (req.query.format==='json' || req.is('json') || req.is('application/json')) {
 				res.send(500, {
 					error: 'Something blew up!'
 				});
 			}
 			else {
 				res.status(500);
-				// if(appconfig.settings().theme)
-				res.render('home/error500', {
+				res.render(customThemeView, {
 					message: err.message,
 					error: err
 				});
