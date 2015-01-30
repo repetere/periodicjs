@@ -301,7 +301,7 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 				}
 				var User = mongoose.model('User');
 				userdata.apikey = User.generateRandomTokenStatic();
-				console.log(__dirname, userdata);
+				// console.log(__dirname, userdata);
 
 				var newUser = new User(userdata);
 				newUser.save(function (err, user) {
