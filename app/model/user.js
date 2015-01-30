@@ -344,6 +344,9 @@ userSchema.statics.logInNewUser = function(options, callback){
 
 userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 	try{
+		if(options.requireactivation){
+			options.welcomeemaildata.emailviewname = 'email/user/welcome_with_validation';
+		}
 		options.welcomeemaildata.getEmailTemplateFunction({
 				viewname: options.welcomeemaildata.emailviewname,
 				themefileext: options.welcomeemaildata.themefileext
@@ -429,6 +432,7 @@ userSchema.statics.createNewUserAccount = function(options,callback){
 			sendUserWelcomeEmail:function(asyncCB){
 				if(newuseroptions.send_new_user_email && newelycreateduser.email){
 					User.sendNewUserWelcomeEmail({
+						requireactivation: newuseroptions.requireuseractivation,
 						welcomeemaildata: newuseroptions.welcomeemaildata,
 						newuser: newelycreateduser
 					},asyncCB);

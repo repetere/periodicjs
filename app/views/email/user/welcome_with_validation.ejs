@@ -1,0 +1,19 @@
+<html>
+<body style="background:#ececec; margin:1em; padding:1em;">
+	<div style="margin:1em; background:#fff; padding:0.5em;">
+		<h2>Welcome to <%= appname %></h2>
+		<p>Sign in with your email address (<%= user.email %>)
+		 <% 
+		if(user.username){%> or username (<%= user.username %>)
+		<%}%> 
+		</p>
+		<p>Click here to validate your user account, <a href="http://<%= hostname %>/auth/user/validate/<%- user.attributes.validation_token_link %>">click here</a> or copy this url (http://<%= hostname %>/auth/user/validate/<%- user.attributes.validation_token_link %>) to validate your user account</p>
+		<p>
+			Login to <%- appname %> at 
+			<a href='http://<%= hostname %>/' target='_blank'>
+			http://<%= hostname %>/
+			</a> 
+		</p>
+	</div>
+</body>
+</html>
