@@ -365,6 +365,7 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 						to: options.newuser.email,
 						cc: options.welcomeemaildata.replyto,
 						replyTo: options.welcomeemaildata.replyto,
+						from: options.welcomeemaildata.replyto,
 						subject: options.welcomeemaildata.subject || options.welcomeemaildata.appname + ' New User Registration',
 						emailtemplatefilepath: templatepath,
 						emailtemplatedata: {

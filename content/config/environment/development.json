@@ -4,6 +4,7 @@
 		"port": "8786",
 		"environment": "development"
 	},
+  "periodic_cache_status": false,
 	"sessions":{
 		"enabled":true,
 		"type":"default"
