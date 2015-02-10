@@ -5,6 +5,7 @@ var config = require('./config'),
 	database = require('../../content/config/database'),
 	appLog = require('../../content/config/logger'),
 	logger,
+	child,
 	db,
 	mongoose,
 	periodicResources,
@@ -14,10 +15,10 @@ var run_cmd = function (cmd, args, callback,env) {
 	var spawn = require('child_process').spawn;
 	// console.log('env',env);
 	if(env){
-		var child = spawn(cmd, args, env);		
+		child = spawn(cmd, args, env);		
 	}
 	else{
-		var child = spawn(cmd, args);		
+		child = spawn(cmd, args);		
 	}
 	// var resp = '';
 
@@ -107,7 +108,7 @@ var cli = function (argv) {
 			periodic: periodic
 		});
 	};
-	var setResources = function () {
+	var setResources = function (cb) {
 		/**
 		 * @description application reference passed to controllers
 		 * @instance
@@ -116,8 +117,28 @@ var cli = function (argv) {
 			logger: logger,
 			settings: appconfig.settings(),
 			db: db,
-			mongoose: mongoose
+			mongoose: mongoose,
+			app:{
+				controller:{
+					native:{}
+				},
+				extension:{}
+			}
 		};
+		periodicResources.app.controller.native.asset = require('../controller/asset')(periodicResources);
+		periodicResources.app.controller.native.category = require('../controller/category')(periodicResources);
+		periodicResources.app.controller.native.collection = require('../controller/collection')(periodicResources);
+		periodicResources.app.controller.native.compilation = require('../controller/compilation')(periodicResources);
+		periodicResources.app.controller.native.contenttype = require('../controller/contenttype')(periodicResources);
+		periodicResources.app.controller.native.extension = require('../controller/extension')(periodicResources);
+		periodicResources.app.controller.native.home = require('../controller/home')(periodicResources);
+		periodicResources.app.controller.native.item = require('../controller/item')(periodicResources);
+		periodicResources.app.controller.native.search = require('../controller/search')(periodicResources);
+		periodicResources.app.controller.native.tag = require('../controller/tag')(periodicResources);
+		periodicResources.app.controller.native.theme = require('../controller/theme')(periodicResources);
+		periodicResources.app.controller.native.user = require('../controller/user')(periodicResources);
+		periodicResources.app.controller.extension = {};
+		cb();
 	};
 	var loadScript = function (argv) {
 		if (argv.controller) {
@@ -144,7 +165,7 @@ var cli = function (argv) {
 		}
 		else if (argv.deploy) {
 			try {
-				run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploy], function(err,text) { console.log (text) });
+				run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploy], function(err,text) { console.log (text); });
 			}
 			catch (e) {
 				logger.error(e);
@@ -154,7 +175,7 @@ var cli = function (argv) {
 		}
 		else if (argv.startpm2) {
 			try {
-				run_cmd( 'pm2', ['start',path.resolve(process.cwd(),'content/config/process/'+argv.startpm2+'.json')], function(err,text) { console.log (text) });
+				run_cmd( 'pm2', ['start',path.resolve(process.cwd(),'content/config/process/'+argv.startpm2+'.json')], function(err,text) { console.log (text); });
 			}
 			catch (e) {
 				logger.error(e);
@@ -172,7 +193,7 @@ var cli = function (argv) {
 				run_cmd( 
 					'nodemon', 
 					['index.js'], 
-					function(err,text) { console.log (text) }, 
+					function(err,text) { console.log (text); }, 
 					{env: processEnv}
 				);
 			}
@@ -197,8 +218,9 @@ var cli = function (argv) {
 		useLogger();
 		setupMongoDB();
 		mongoose.connection.on('open', function () {
-			setResources();
+			setResources(function(){
 			loadScript(argv);
+			});
 		});
 	};
 
