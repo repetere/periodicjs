@@ -26,6 +26,7 @@ module.exports = function (periodic) {
 	require('../../content/config/model')({
 		mongoose: periodic.db.mongoose,
 		dburl: periodic.db.url,
+		dboptions: periodic.db.mongooptions,
 		debug: periodic.settings.debug,
 		periodic: periodic
 	});
