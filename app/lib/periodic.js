@@ -224,12 +224,11 @@ var periodic = function (periodicConfigOptions) {
 		if (appconfig.settings().sessions.enabled) {
 			var express_session_config = {};
 			if (appconfig.settings().sessions.type === 'mongo' && appconfig.settings().status !== 'install') {
+				var dbconfig = database[app.get('env')];
 				express_session_config = {
 					secret: appconfig.settings().session_secret,
 					maxAge: new Date(Date.now() + 3600000),
-					store: new MongoStore({
-						url: database[app.get('env')].url
-					}),
+					store: new MongoStore({ mongooseConnection: dbconfig.mongoose.connection }),
 					resave: true,
 					saveUninitialized: true
 				};

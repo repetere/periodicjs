@@ -11,7 +11,7 @@
  */
 module.exports = function(options){
 	var mongoose = options.mongoose;
-		mongoose.connect(options.dburl);
+		mongoose.connect(options.dburl,options.dboptions);
 	var userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
 		collectionSchema = require('../../app/model/collection.js'),
