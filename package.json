@@ -37,6 +37,7 @@
     "forever": "forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js --e",
     "stop": "forever stop -c nodemon index.js",
     "deploy": "node index.js --cli --deploy",
+    "deploysetup": "node index.js --cli --deploysetup",
     "test": "mocha -R spec --recursive",
     "coverage": "mocha -R html-cov --recursive > test/coverage.html",
     "postinstall": "node scripts/install.js",

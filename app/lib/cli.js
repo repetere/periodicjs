@@ -173,6 +173,16 @@ var cli = function (argv) {
 				process.exit(0);
 			}
 		}
+		else if (argv.deploysetup) {
+			try {
+				run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploysetup,'setup'], function(err,text) { console.log (text); });
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
 		else if (argv.startpm2) {
 			try {
 				run_cmd( 'pm2', ['start',path.resolve(process.cwd(),'content/config/process/'+argv.startpm2+'.json')], function(err,text) { console.log (text); });
