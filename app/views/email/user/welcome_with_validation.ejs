@@ -7,7 +7,7 @@
 		if(user.username){%> or username (<%= user.username %>)
 		<%}%> 
 		</p>
-		<p>Click here to validate your user account, <a href="http://<%= hostname %>/auth/user/validate/<%- user.attributes.validation_token_link %>">click here</a> or copy this url (http://<%= hostname %>/auth/user/validate/<%- user.attributes.validation_token_link %>) to validate your user account</p>
+		<p>Click here to validate your user account, <a href="http://<%= hostname %>/auth/user/finishregistration?required=activation&activation_token=<%- user.attributes.user_activation_token_link %>">click here</a> or copy this url (http://<%= hostname %>/auth/user/finishregistration?required=activation&activation_token=<%- user.attributes.user_activation_token_link %>) to validate your user account</p>
 		<p>
 			Login to <%- appname %> at 
 			<a href='http://<%= hostname %>/' target='_blank'>
