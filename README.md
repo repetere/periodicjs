@@ -2,7 +2,7 @@
 
 ## Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications. 
 
-The platform is 100% open source and composed of extremely modular components that enable creating bespoke [Node.js](nodejs.org)/[Express](expressjs.com)/[MongoDB](http://www.mongodb.org/) based applications efficiently with new or existing themes and extensions.
+The platform is 100% open source and composed of extremely modular components that enable creating bespoke [Node.js](http://nodejs.org/)/[Express](http://expressjs.com/)/[MongoDB](http://www.mongodb.org/) based applications efficiently with new or existing themes and extensions.
 
 ### What can I build with Periodic?
 The platform is built with the UNIX / small utility / modular application design philosophy in mind. Content creators, developers, software engineers and entrepreneurs are encouraged to build large robust applications by integrating small single purposed extensions.
