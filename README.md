@@ -34,7 +34,8 @@ $ npm run sync # syncs dependencies
 ```
 
 [Install home]
-<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="500" />
+<a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png">	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="1000" />
+</a>
 
 <img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="500" /> 
 
