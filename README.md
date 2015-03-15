@@ -38,10 +38,6 @@ $ npm run sync # syncs dependencies
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="1000" />
 </a>
 
-<a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png">
-	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="1000" /> 
-</a>
-
 **Admin Home**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png" width="1000" />
