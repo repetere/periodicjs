@@ -33,7 +33,7 @@ $ npm run deploy --e [name-of-environment (development by default)] # deploys wi
 $ npm run sync # syncs dependencies
 ```
 
-[Install home]
+**Install Home**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="1000" />
 </a>
@@ -42,56 +42,56 @@ $ npm run sync # syncs dependencies
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png" width="1000" /> 
 </a>
 
-[Admin home]
+**Admin Home**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png" width="1000" />
 </a>
 
-[New Item]
+**New Item**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png" width="1000" />
 </a>
 
-[Review revision]
+**Review Revision**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png" width="1000" />
 </a>
 
-[View default]
+**View Default**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-default.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-default.png" width="1000" />
 </a>
 
-[Settings]
+**Settings**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-settings-periodic.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-settings-periodic.png" width="1000" />
 </a>
 
-[Edit Collection]
+**Edit Collection**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection.png" width="1000" />
 </a>
 
-[View home]
+**View home**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-home.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/view-home.png" width="1000" />
 </a>
 
-[List extensions]
+**List Extensions**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-extensions.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-extensions.png" width="1000" />
 </a>
 
-[Search extensions]
+**Search Extensions**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-extensions-install.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-extensions-install.png" width="1000" />
 </a>
 
-[New theme install modal]
+**New Theme Install Modal**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-themes-install-modal.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-themes-install-modal.png" width="1000" />
 
-[Assets]
+**Assets**
 <a href="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection-assets-list.png">
 	<img src="https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-collection-assets-list.png" />
 </a>
