@@ -14,6 +14,7 @@ module.exports = function(options){
 		mongoose.connect(options.dburl,options.dboptions);
 	var userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
+		dataSchema = require('../../app/model/data.js'),
 		collectionSchema = require('../../app/model/collection.js'),
 		compilationSchema = require('../../app/model/compilation.js'),
 		categorySchema = require('../../app/model/category.js'),
@@ -32,6 +33,7 @@ module.exports = function(options){
 	}
 	mongoose.model('User',userSchema);
 	mongoose.model('Item',itemSchema);
+	mongoose.model('Data',dataSchema);
 	mongoose.model('Collection',collectionSchema);
 	mongoose.model('Compilation',compilationSchema);
 	mongoose.model('Category',categorySchema);

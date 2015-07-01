@@ -7,3 +7,6 @@
 
 'use strict';
 //custom start up scripts go here
+module.exports = {
+	use_global_socket_io : true
+};

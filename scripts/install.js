@@ -9,81 +9,47 @@
 
 var fs = require('fs-extra'),
 		path = require('path'),
-		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string' ||  typeof process.env.npm_config_update ==='string',
-		upgradeinstallalias = typeof process.env.npm_config_upgrade ==='string',
-		nodemoduleinstall = typeof process.env.npm_config_install_node_module ==='string',
-		originalnodemoduleslocation = path.resolve(process.cwd(),'../../node_modules'),
-		originallocation = path.resolve(process.cwd(),'../../node_modules','periodicjs'),
-		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
-		alreadyInstalledDir = false,
-		dependenciesInstalledDirCheck = false,
-		installeddircheck,
-		npmhelper = require('./npmhelper')({
-			originalnodemoduleslocation : originalnodemoduleslocation,
-			originallocation : originallocation,
-			newlocation : newlocation
-		});
+		npmhelper = require('./npmhelper'),
+		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json'),
+		applicationConfigPath = path.join(process.cwd(),'content/config/config.json'),
+		extensionConfig,
+		applicationConfig,
+		alreadyInstalled= false;
 
 try{
-	installeddircheck = fs.statSync(newlocation,'r');
- 	alreadyInstalledDir=true;
+	extensionConfig = fs.readJsonSync(extensionsConfigPath);
+	applicationConfig = fs.readJsonSync(applicationConfigPath);
+	if(extensionConfig.extensions.length>0){
+	 	alreadyInstalled=true;
+	}
+	else if(applicationConfig.status==='active'){
+	 	alreadyInstalled=true;
+	}
 }
 catch(e){
- 	alreadyInstalledDir=false;
+ 	alreadyInstalled=false;
 }
 
-try{
-	installeddircheck = fs.statSync(originallocation,'r');
- 	dependenciesInstalledDirCheck=false;
-}
-catch(e){
- 	dependenciesInstalledDirCheck=true;
-}
-
+console.log('alreadyInstalled',alreadyInstalled);
 if(process.env.npm_config_skip_post_install){
 	console.log('skip post install');
+	process.exit(0);
 }
-else if(dependenciesInstalledDirCheck){
-	console.log('skip post install because of dependenciesInstalledDirCheck',dependenciesInstalledDirCheck);
+else if(alreadyInstalled){
+	console.log('Periodicjs Already Installed, Upgrade Complete');
+	process.exit(0);
 }
-else{
-	npmhelper.installStandardExtensions(
+else {
+	npmhelper.cleanInstallStandardExtensions(
+		{},
 		function (err) {
-			var currentscriptdirarray = process.cwd().split(path.sep);
 			if (err) {
 				console.error(err);
+				process.exit(0);
 			}
 			else {
-				fs.open(originallocation,'r',function(err){
-					if(err){
-						console.log('Installed Periodicjs Local Dependencies');
-						process.exit(0);
-					}
-					else if(currentscriptdirarray[currentscriptdirarray.length-2]!=='node_modules'){
-						console.warn('Already Installed Periodic');
-						process.exit(0);
-					}
-					else if(alreadyInstalledDir){
-						console.log('Periodicjs Already Installed, Now Upgrading');
-						npmhelper.upgradePeriodic(function(){ 
-							npmhelper.moveInstalledPeriodic(); 
-						});
-					}
-					else if(upgradeinstall || upgradeinstallalias){
-						console.log('Upgrade Periodicjs');
-						npmhelper.upgradePeriodic(function(){ 
-							npmhelper.moveInstalledPeriodic(); 
-						});
-					}
-					else if(nodemoduleinstall){
-						console.log('Installed Periodicjs');
-						process.exit(0);
-					}
-					else{
-						console.log('New Periodicjs Install');
-						npmhelper.moveInstalledPeriodic();
-					}
-				});
+				console.log('Upgraded Periodicjs');
+				process.exit(0);
 			}
 		});	
 }

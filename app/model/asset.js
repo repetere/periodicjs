@@ -31,10 +31,7 @@ var assetSchema = new Schema({
 	},
 	userid: ObjectId,
 	username: String,
-	assettype: {
-		type: String,
-		'default': 'image'
-	},
+	assettype: String,
 	contenttypes: [{
 		type: ObjectId,
 		ref: 'Contenttype'

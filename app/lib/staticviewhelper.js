@@ -7,7 +7,8 @@
 
 'use strict';
 
-var querystring = require('querystring');
+var querystring = require('querystring'),
+	moment = require('moment');
 /**
  * A module that contains view helpers for ejs views.
  * @author Yaw Joseph Etse
@@ -46,6 +47,7 @@ module.exports = {
 				}
 			}
 		},
+		moment: moment,
 		/** helper function exposes a server javascript object to the client
 		 * @param {object} obj server object for the client
 		 * @param {object} nameOfClientObj name of exposed server object for the client

@@ -3,6 +3,10 @@
 var path = require('path'),
 	fs = require('fs-extra'),
 	Extensions = require('periodicjs.core.extensions'),
+	Utilities = require('periodicjs.core.utilities'),
+	Controllers = require('periodicjs.core.controller'),
+	ControllerSettings = require('../controller/controller_settings'),
+	CoreMailer = require('periodicjs.core.mailer'),
 	themeRoute,
 	themeConfig,
 	themeConfigJson;
@@ -19,7 +23,10 @@ var path = require('path'),
  * @param {object} periodic this is the object passed from lib/periodic.js, it contains the expressjs instance, connection to mongo and others (express,app,logger,settings,db,mongoose)
  */
 module.exports = function (periodic) {
-	var themeRouteTest;
+	var themeRouteTest,
+		appRouter = periodic.express.Router(),
+		ignoreExtensionIndex;//,
+		// templatefileextension = periodic.settings.templatefileextension;
 	/** load mongoose models
 	 * @param {object} periodic the same instance configuration object
 	 */
@@ -45,6 +52,21 @@ module.exports = function (periodic) {
 		}
 	}
 
+	if(periodic.settings.use_test_extensions_by_environment){
+		periodic.settings.extensionFilePath = path.resolve(process.cwd(), 'content/config/process/'+periodic.settings.application.environment+'.extensions.json');
+	}
+
+	/**
+	 * periodic core
+	 */
+	periodic.core = {
+		controller: new Controllers(periodic),
+		utilities: new Utilities(periodic)
+	};
+	periodic.core.extension = new Extensions(periodic);
+	periodic.core.extension.mailer = CoreMailer;
+	periodic.core.mailer = CoreMailer;
+
 	/**
 	 * periodic controllers
 	 * @type {Object}
@@ -52,51 +74,44 @@ module.exports = function (periodic) {
 	periodic.app.controller = {
 		native:{
 			asset: require('../controller/asset')(periodic),
-			category: require('../controller/category')(periodic),
-			collection: require('../controller/collection')(periodic),
-			compilation: require('../controller/compilation')(periodic),
+			category: periodic.core.controller.controller_routes(ControllerSettings.category),
+			collection: periodic.core.controller.controller_routes(ControllerSettings.collection),
+			compilation: periodic.core.controller.controller_routes(ControllerSettings.compilation),
 			contenttype: require('../controller/contenttype')(periodic),
 			extension: require('../controller/extension')(periodic),
 			home: require('../controller/home')(periodic),
-			item: require('../controller/item')(periodic),
+			item: periodic.core.controller.controller_routes(ControllerSettings.item),
+			data: periodic.core.controller.controller_routes(ControllerSettings.data),
 			search: require('../controller/search')(periodic),
-			tag: require('../controller/tag')(periodic),
+			tag:  periodic.core.controller.controller_routes(ControllerSettings.tag),
 			theme: require('../controller/theme')(periodic),
 			user: require('../controller/user')(periodic)
 		},
 		extension:{ }
 	};
+	// console.log('	periodic.app.controller.native.tag',periodic.app.controller.native.tag);
 	/** 
 	 * controller for homepage
 	 * @type {function}
 	 */
-	var appRouter = periodic.express.Router(),
-		ignoreExtensionIndex,
-		ExtensionCore;
-
-	if(periodic.settings.use_test_extensions_by_environment){
-		periodic.settings.extensionFilePath = path.resolve(process.cwd(), 'content/config/process/'+periodic.settings.application.environment+'.extensions.json');
-	}
-	ExtensionCore = new Extensions(periodic.settings);
-
 
 	/** load extensions */
-	periodic.settings.extconf = ExtensionCore.settings();
+	periodic.settings.extconf = periodic.core.extension.settings();
 	periodic.ignoreExtension = 'periodicjs.ext.default_routes';
-	periodic = ExtensionCore.loadExtensions(periodic);
+	periodic = periodic.core.extension.loadExtensions(periodic);
 	ignoreExtensionIndex = periodic.ignoreExtensionIndex;
 	// console.log('ignoreExtensionIndex',ignoreExtensionIndex);
 	
 	/** load custom theme routes */
 	if (themeRouteTest) {
-		periodic = ExtensionCore.loadExtensionRoute(themeRoute,periodic);
+		periodic = periodic.core.extension.loadExtensionRoute(themeRoute,periodic);
 	}
 
 	/**
 	 * load default routes last if enabled
 	 */
 	if(typeof ignoreExtensionIndex !== 'undefined'){
-		periodic = ExtensionCore.loadExtensionRoute(ExtensionCore.files()[ignoreExtensionIndex],periodic);
+		periodic = periodic.core.extension.loadExtensionRoute(periodic.core.extension.files()[ignoreExtensionIndex],periodic);
 	}
 
 	/**

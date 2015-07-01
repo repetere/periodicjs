@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 	merge = require('utils-merge'),
 	async = require('async'),
 	path = require('path'),
+	complexity = require('complexity'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
 	logger = console;
@@ -67,8 +68,7 @@ var userSchema = new Schema({
 		'default': 'basic'
 	},
 	gender: {
-		type: String,
-		'default': 'male'
+		type: String
 	},
 	assets: [{
 		type: ObjectId,
@@ -90,6 +90,10 @@ var userSchema = new Schema({
 		type: ObjectId,
 		ref: 'Userrole'
 	}],
+	contenttypes: [{
+		type: ObjectId,
+		ref: 'Contenttype'
+	}],
 	apikey: String,
 	// twitterAccessToken: String,
 	// twitterAccessTokenSecret: String,
@@ -102,6 +106,7 @@ var userSchema = new Schema({
 	// foursquareId: String,
 	// foursquareName: String,
 	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
+	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
 	random: Number
 });
@@ -184,6 +189,7 @@ userSchema.statics.generateRandomTokenStatic = function () {
 
 userSchema.statics.checkValidation = function (options) {
 	var userdata = options.newuser;
+	console.log('user model userdata', options.useComplexity, options.complexity);
 
 	if ((typeof options.checkusername==='undefined' || options.checkusername ===true) && (userdata.username === undefined || userdata.username.length < 4)) {
 		return new Error('Username is too short');
@@ -191,11 +197,14 @@ userSchema.statics.checkValidation = function (options) {
 	else if ( (typeof options.checkemail==='undefined' || options.checkemail===true ) && (userdata.email === undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) ){
 		return new Error('Invalid email');
 	}
+	else if (options.useComplexity && !complexity.check(userdata.password, options.complexity)) {
+		return new Error('Password does not meet complexity requirements');
+	}
 	else if (options.checkpassword && (userdata.password === undefined || userdata.password.length < 8)) {
 		return new Error('Password is too short');
 	}
 	else if (options.checkpassword && (userdata.password !== userdata.passwordconfirm)) {
-		return new Error('Passwords do not match');
+		return new Error('Passwords do not match in user model');
 	}
 	else {
 		return null;
@@ -371,7 +380,8 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 						emailtemplatedata: {
 							user: options.newuser,
 							hostname: options.welcomeemaildata.hostname,
-							appname: options.welcomeemaildata.appname
+							appname: options.welcomeemaildata.appname,
+							filename: templatepath
 						}
 					}, callback);
 				}

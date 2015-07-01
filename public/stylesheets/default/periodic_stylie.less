@@ -1,0 +1,136 @@
+// @import "../../node_modules/stylie.modals/resources/stylesheets/ts.component.modals.less";
+// @import "../../node_modules/stylie.notifications/resources/stylesheets/stylie.notifications.less";
+// @import "../../node_modules/stylie.slideshows/resources/stylesheets/stylie.slideshows.less";
+// @import (inline) "../../node_modules/pikaday/css/pikaday.css";
+// @import "periodic_stylie.less";
+// @errorColor: #FF4000;
+.ts{
+	h1, h2, h3, h4, h5, h6{
+	  margin: @sizelg 0 @sizexs;
+	}
+	.ts-page-content-container {
+      max-width: 68em;
+      margin: auto;
+  }
+	//notifications
+	.ts-ns-box{
+		z-index: 1000;
+		&.ts-ns-bar{
+			top:3em;
+		}
+		&.ts-ns-growl{
+			top:4.5em;
+		  max-width: 94%;
+		  left: 3%;
+		  
+			&.ts-ns-effect-slide{
+					height:auto;
+					top:auto;
+				&.ts-ns-show {
+					height:auto;
+					top:auto;
+				}
+			}
+		}
+		&.ts-ns-effect-jelly{
+			background-color: @accentColor;
+			&.ts-ns-type-error{
+				background-color: @errorColor;
+			}
+		}
+		&.ts-ns-type-error{
+			background-color: @errorColor;
+			.ts-ns-close::before, .ts-ns-close::after{
+				background-color: @textPrimaryColor;
+			}
+		}
+		.ts-ns-close::before, .ts-ns-close::after{
+			background-color: @textPrimaryColor;
+		}
+	}
+	#nav-header{
+		background-color: @primaryTextColor;
+		color: @textPrimaryColor;
+		z-index: 10000;
+		a{
+			color: @textPrimaryColor;
+		}
+		#menu-header-stylie{
+			margin-left: 2.5em;
+		}
+	}
+	#ts-asyncadmin-content-wrapper{
+		margin-top: @sizexl;
+		margin-bottom: @sizexl;
+	}
+	.ts-document{
+		margin-top: @sizexs;
+		margin-bottom: @sizexs;
+		padding: @sizemd;
+		.ts-mardown-document{
+			max-height: 30em;
+			overflow: auto;
+			overflow-x: hidden;
+			border: 1px solid @primaryTextColor;
+			padding: @sizemd;
+			margin-top: @sizexl;
+			h2{
+				display: none;
+			}
+		}
+	}
+	#ts-pushmenu-mp-menu{
+		a{
+			cursor: pointer;
+		}
+	}
+	.ts-preloading{
+		position: fixed;
+		height:100%;
+		width:100%;
+		background-color: rgba(255, 255, 255, 0.8);
+		text-align: center;
+		vertical-align: middle;
+		background-image: url('/images/elements/Preloader_3.gif');
+ 		background-position: 50% 40%;
+ 		background-repeat: no-repeat;
+ 		transition: opacity .3s ease-in-out;
+ 		opacity: 1;
+ 		z-index:990;
+	  top: 0;
+	  left: 0;
+ 		&.hide{
+ 			display: none;
+ 		}
+ 		&.hide-preloading{
+ 			opacity: 0;
+ 		}
+ 		&.show-preloading{
+ 			opacity: 1;
+ 		}
+ 	}
+ 	.ts-form{
+		.ts-form-row{
+			.ts-input{
+				transition: background .2s ease-in-out;
+				background-color: @textPrimaryColor;
+	    	border:1px solid @dividerColor;
+	    	padding: @sizemd;
+	    	&:hover,
+	    	&:focus{
+					background-color: lighten(@dividerColor, 20%);
+	    	}
+	    	&.ts-input-error{
+					background-color: lighten(@lightErrorColor, 10%);
+					border-color: @darkErrorColor;
+					// color: @errorColor;
+	    	}
+	    	&.ts-input-success{
+					background-color: lighten(@accentColor, 45%);
+					border-color: @darkPrimaryColor;
+					// color: @errorColor;
+	    	}
+			}
+		}
+	}
+}

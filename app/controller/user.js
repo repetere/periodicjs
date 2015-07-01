@@ -152,6 +152,30 @@ var update = function (req, res) {
 		updateuser.primaryasset = updateuser.assets[0];
 	}
 
+	var assetids = [];
+
+	if(req.controllerData && req.controllerData.assets && req.controllerData.assets.length >0){
+		for(var x in req.controllerData.assets){
+			assetids.push(req.controllerData.assets[x]._id);
+		}
+		// console.log('assetids',assetids);
+		// if(update_controller_model.assets && update_controller_model.assets){
+
+		// }
+		if(updateuser.assets && updateuser.assets.length >0 && Array.isArray(updateuser.assets) ){
+			updateuser.assets = updateuser.assets.concat(assetids);
+		}
+		else if(updateuser.assets){
+			var tempassetarray = [updateuser.assets];
+			updateuser.assets = tempassetarray.concat(assetids);
+		}
+		else{
+			updateuser.assets = assetids;
+		}
+	}
+
+	console.log('updating user now',updateuser);
+
 	if (err) {
 		CoreController.handleDocumentQueryErrorResponse({
 			err: err,
@@ -217,6 +241,7 @@ var remove = function (req, res) {
 };
 
 var loadUser = function (req, res, next) {
+	// console.log('req.params',req.params);
 	var params = req.params,
 		population = 'assets coverimages primaryasset coverimage extensionattributes userroles',
 		docid = params.id;
@@ -426,7 +451,8 @@ var getUsersData = function(options){
 
 
 var loadUsers = function (req, res, next) {
-	var query,
+	var query ={},
+		andQuery = [],
 		offset = req.query.offset,
 		sort = req.query.sort,
 		limit = req.query.limit,
@@ -434,18 +460,28 @@ var loadUsers = function (req, res, next) {
 		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi');
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
-	if (req.query.search === undefined || req.query.search.length < 1) {
-		query = {};
+	if(req.controllerData.model_query){
+		andQuery.push(req.controllerData.model_query);
 	}
-	else {
-		query = {
-			$or: [{
-				title: searchRegEx
-			}, {
-				'name': searchRegEx
-			}]
-		};
+	
+	if (req.query.search !== undefined && req.query.search.length > 1) {
+		andQuery.push({
+				$or: [{
+							email: searchRegEx
+						}, {
+							'username': searchRegEx
+						}, {
+							'firstname': searchRegEx
+						}, {
+							'lastname': searchRegEx
+						}]
+					
+				});
 	}
+	if(andQuery.length>0){
+		query.$and=andQuery;
+	}
+	logger.silly('query',query);
 
 	CoreController.searchModel({
 		cached: req.headers.periodicCache !== 'no-periodic-cache',

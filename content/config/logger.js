@@ -2,7 +2,7 @@
  * periodic
  * http://github.com/typesettin/periodic
  *
- * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
+ * Copyright (c) 2015 Yaw Joseph Etse. All rights reserved.
  */
 
 'use strict';
@@ -16,7 +16,7 @@ var winston = require('winston'),
  * A module that represents a logger.
  * @{@link https://github.com/typesettin/periodic}
  * @author Yaw Joseph Etse
- * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
+ * @copyright Copyright (c) 2015 Typesettin. All rights reserved.
  * @license MIT
  * @module config
  * @requires module:winston
@@ -26,7 +26,7 @@ var logger = function(env){
 	var d = new Date(),
 		fileNamePathAddition = env+'-'+d.getUTCFullYear()+'.'+(d.getUTCMonth()+1)+'.'+d.getUTCDay();
 
-	if(env === "production"){
+	if(env === 'production'){
 		loggerConfig = {
 			transports:[
 				new (winston.transports.Console)({level:'error',colorize: 'true'}),
@@ -42,11 +42,11 @@ var logger = function(env){
 	else{
 		loggerConfig = {
 			transports:[
-				new (winston.transports.Console)({colorize: 'true',level:'silly'}),
+				new (winston.transports.Console)({colorize: 'true',level:'silly',prettyPrint:true, timestamp:true}),
 				new (winston.transports.File)({ filename: 'logs/'+fileNamePathAddition+'.app.log'})
 			],
 			exceptionHandlers:[
-				new (winston.transports.Console)({colorize: 'true',json:'true'}),
+				new (winston.transports.Console)({colorize: 'true',json:'true',prettyPrint:true, timestamp:true}),
 				new (winston.transports.File)({ filename: 'logs/'+fileNamePathAddition+'.exception-errors.log'})
 			],
 			handleExceptions: true

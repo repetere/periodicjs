@@ -118,6 +118,7 @@ var periodic = function (periodicConfigOptions) {
 			customThemeView = (custom500ErrorPageView) ? custom500errorpage : customThemeView;
 			appconfig.setSetting('customThemeView', customThemeView);
 		}
+		app.enable('trust proxy');
 	};
 	/**
 	 * @description loads application logger configuration
@@ -128,8 +129,9 @@ var periodic = function (periodicConfigOptions) {
 		 */
 		logger = new AppLog(app.get('env'));
 		process.on('uncaughtException', function (err) {
-			logger.error(err.stack);
-			logger.error(err.message);
+			logger.error(err.message,err.stack,{
+				err:err
+			});
 		});
 	};
 	/**
@@ -267,6 +269,8 @@ var periodic = function (periodicConfigOptions) {
 			res.locals.additionalFooterHTML ={};
 			res.locals.additionalPreContentHTML ={};
 			res.locals.additionalPostContentHTML ={};
+			res.locals['x-forwarded-for'] = req.headers['x-forwarded-for'];
+			res.locals.remoteAddress =  req.connection.remoteAddress;
 			app.locals.isLoggedIn = function () {
 				return req.user;
 			};
@@ -309,8 +313,8 @@ var periodic = function (periodicConfigOptions) {
 	 * @description application server status
 	 */
 	init.serverStatus = function () {
-		logger.info('Express server listening on port ' + app.get('port'));
-		logger.info('Running in environment: ' + app.get('env'));
+		logger.debug('Express server listening on port ' + app.get('port'));
+		logger.debug('Running in environment: ' + app.get('env'));
 		request
 			.get('https://registry.npmjs.org/periodicjs')
 			.set('Accept', 'application/json')
@@ -324,16 +328,16 @@ var periodic = function (periodicConfigOptions) {
 				else {
 					var latestPeriodicVersion = res.body['dist-tags'].latest;
 					if (semver.gte(appconfig.settings().version, latestPeriodicVersion)) {
-						logger.info('Your instance of Periodicjs ' + appconfig.settings().version + ' is up to date with the current version ' + latestPeriodicVersion);
+						logger.debug('Your instance of Periodicjs ' + appconfig.settings().version + ' is up to date with the current version ' + latestPeriodicVersion);
 					}
 					else {
 						console.log('\u0007');
-						logger.warn('====================================================');
-						logger.warn('|                                                  |');
-						logger.warn('| Your instance of Periodic is out of date.        |');
-						logger.warn('| Your Version: ' + appconfig.settings().version + ', Current Version: ' + latestPeriodicVersion + '      |');
-						logger.warn('|                                                  |');
-						logger.warn('====================================================');
+						logger.debug('====================================================');
+						logger.debug('|                                                  |');
+						logger.debug('| Your instance of Periodic is out of date.        |');
+						logger.debug('| Your Version: ' + appconfig.settings().version + ', Current Version: ' + latestPeriodicVersion + '      |');
+						logger.debug('|                                                  |');
+						logger.debug('====================================================');
 					}
 				}
 			});
@@ -345,20 +349,32 @@ var periodic = function (periodicConfigOptions) {
 		//log errors
 		app.use(function (err, req, res, next) {
 			// console.log('err',err,'next',next);
-			logger.error(err.message);
-			logger.error(err.stack);
+			logger.error(err.message,err.stack,{
+				err:err,
+				ipinfo:{
+					'x-forwarded-for': req.headers['x-forwarded-for'],
+					remoteAddress: req.connection.remoteAddress,
+					originalUrl: req.originalUrl,
+					headerHost: req.headers.host
+				}
+			});
+			// logger.error(err.stack);
 			next(err);
 		});
 
 		//send client errors
 		//catch all errors
 		app.use(function (err, req, res, next) {
-			if (req.query.format==='json' || req.is('json') || req.is('application/json')) {
-				res.send(500, {
+			if(!err){
+				next();
+			}
+			else if (req.query.format==='json' || req.is('json') || req.is('application/json')) {
+				res.status(500);
+				res.send({
 					error: 'Something blew up!'
 				});
 			}
-			else {
+			else  {
 				res.status(500);
 				res.render(customThemeView, {
 					message: err.message,
@@ -383,7 +399,7 @@ var periodic = function (periodicConfigOptions) {
 					logger.error(err);
 				}
 				else{
-					logger.info(status);
+					logger.debug(status);
 				}
 			});
 		}
@@ -407,6 +423,7 @@ var periodic = function (periodicConfigOptions) {
 
 	return {
 		expressapp: app,
+		appconfig: appconfig,
 		mongoose: mngse,
 		config: periodicConfigOptions,
 		port: app.get('port')

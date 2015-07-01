@@ -1,0 +1,26 @@
+{
+  "name": "Periodic Enterprise Content Management[dev]",
+  "application": {
+    "port": "8787",
+    "https_port":"8788",
+    "environment": "development-ssl"
+  },
+  "ssl":{
+    "ssl_privatekey":"../path/to/ssl_cert.key",
+    "ssl_certauthority":"../path/to/ssl_cert.csr",
+    "ssl_certificate":"../path/to/ssl_cert.pem"
+  },
+  "periodic_cache_status": false,
+  "sessions": {
+    "enabled": true,
+    "type": "mongo"
+  },
+  "cookies": {
+    "cookieParser": "50d8p63zsddndn299s4d40ydhg2e29"
+  },
+  "debug":false,
+  "session_secret": "gft5yrkbuik9a48uzrx3zlkawcdi",
+  "periodic_cache_status":false,
+  "status": "active",  
+  "crsf": true
+}

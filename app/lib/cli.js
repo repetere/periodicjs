@@ -123,8 +123,17 @@ var cli = function (argv) {
 					native:{}
 				},
 				extension:{}
-			}
+			},
+				core:{}
 		};
+		var	Extensions = require('periodicjs.core.extensions'),
+			Utilities = require('periodicjs.core.utilities'),
+			Controllers = require('periodicjs.core.controller'),
+			CoreMailer = require('periodicjs.core.mailer');
+		periodicResources.core.controller =  new Controllers(periodicResources);
+		periodicResources.core.utilities = new Utilities(periodicResources);
+		periodicResources.core.extension = new Extensions(periodicResources);
+		periodicResources.core.mailer = CoreMailer;
 		periodicResources.app.controller.native.asset = require('../controller/asset')(periodicResources);
 		periodicResources.app.controller.native.category = require('../controller/category')(periodicResources);
 		periodicResources.app.controller.native.collection = require('../controller/collection')(periodicResources);

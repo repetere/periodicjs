@@ -3,21 +3,183 @@
 var path = require('path'),
 	async = require('async'),
 	fs = require('fs-extra'),
+	multer = require('multer'),
+	moment = require('moment'),
 	str2json = require('string-to-json'),
 	formidable = require('formidable'),
-	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controller'),
 	extend = require('util-extend'),
+	upload_dir = '/public/uploads/files/',
 	CoreUtilities,
 	CoreController,
 	appSettings,
 	mongoose,
-	MediaAsset,
+	Asset,
 	User,
 	Contenttypes,
+	coreControllerOptions,
+	controllerRoutes,
 	logger;
 
+// var handleFileObjReturn = function(){
+// };
+
+var multiupload_rename = function(fieldname,filename,req,res){
+	if(req.user){
+		return req.user._id+'-'+fieldname+'-'+filename+moment().format('YYYY-MM-DD_HH-m-ss');
+	}
+	else{
+		return fieldname+'-'+filename+moment().format('YYYY-MM-DD_HH-m-ss');
+	}
+};
+
+var multiupload_changeDest = function(dest, req, res) {
+	var current_date = moment().format('YYYY/MM/DD');
+	var	upload_path_dir = (req.localuploadpath) ? req.localuploadpath : path.join(process.cwd(), upload_dir,current_date);
+  		// return upload_path_dir; 
+
+	// logger.debug('upload_path_dir',upload_path_dir);
+	fs.ensureDirSync(upload_path_dir);
+	return upload_path_dir; 
+};
+
+var multiupload_onParseStart = function () {
+  logger.debug('Form parsing started at: ', new Date());
+};
+
+var multiupload = multer({
+	includeEmptyFields: false,
+	putSingleFilesInArray: true,
+	dest:path.join(process.cwd(), upload_dir,'/tmp'),
+	rename: multiupload_rename,
+	changeDest: multiupload_changeDest,
+	onParseStart: multiupload_onParseStart,
+	onParseEnd: function(req,next){
+		logger.debug('req.body',req.body);
+		logger.debug('req.files',req.files);
+		var files = [],
+			file_obj,
+			get_file_obj= function(data){
+				var returndata = data;
+				returndata.uploaddirectory = returndata.path.replace(process.cwd(),'').replace(returndata.name,'');
+				return returndata;
+			};
+		for(var x in req.files){
+			if(Array.isArray(req.files[x])){
+				for (var y in req.files[x]){
+					file_obj = get_file_obj( req.files[x][y]);
+					// file_obj.uploaddirectory = file_obj.path.replace(process.cwd(),'');
+					// file_obj.uploaddirectory = file_obj.uploaddirectory.replace(file_obj.name,'');
+					files.push(file_obj);
+				}
+			}
+			else{
+				file_obj = get_file_obj(req.files[x]);
+				// file_obj.uploaddirectory = file_obj.path.replace(process.cwd(),'');
+				// file_obj.uploaddirectory = file_obj.uploaddirectory.replace(file_obj.name,'');
+				files.push(file_obj);
+			}
+		}
+		req.controllerData = (req.controllerData) ? req.controllerData : {};
+		req.controllerData.files = files;
+		next();
+	}
+});	
+
+var localupload = multiupload;
+var get_asset_object_from_file = function(options){
+	var newasset = {},
+		file = options.file,
+		req = options.req || { user :{}};
+	newasset.attributes = {};
+	newasset.size = file.size;
+	newasset.filename = file.name;
+	newasset.assettype = file.mimetype;
+	// newasset.path = path;
+	newasset.locationtype = file.locationtype || 'local';
+	newasset.attributes.fieldname = file.fieldname;
+	if(newasset.locationtype==='local'){
+		newasset.attributes.periodicDirectory = file.uploaddirectory;
+		newasset.attributes.periodicPath = path.join(file.uploaddirectory, file.name);
+	}
+	newasset.fileurl = file.fileurl || newasset.attributes.periodicPath.replace('/public', '');
+	newasset.attributes.periodicFilename = file.name;
+	newasset.attributes.etag = file.etag || null;
+	newasset.attributes.lastModified = file.lastModified || null;
+	newasset.attributes.delimiter = file.delimiter || null;
+	newasset.attributes.location = file.location || null;
+	if(file.attributes){
+		newasset.attributes = extend(file.attributes,newasset.attributes);
+	}
+	// console.log('newasset',newasset);
+	// newasset = extend(file,newasset);
+	newasset.name = CoreUtilities.makeNiceName(file.name);
+	newasset.title = newasset.title || newasset.name;
+	newasset.author = req.user._id;
+	newasset.changes= [{
+		editor:req.user._id,
+		editor_username:req.user.username,
+		changeset:{
+			title:newasset.title,
+			name:newasset.name,
+			content:newasset.content,
+			tags: (newasset.tags && Array.isArray(newasset.tags)) ? newasset.tags: [newasset.tags],
+			categories: (newasset.tags && Array.isArray(newasset.categories)) ? newasset.categories: [newasset.categories],
+			assets: (newasset.tags && Array.isArray(newasset.assets)) ? newasset.assets: [newasset.assets],
+			contenttypes: (newasset.tags && Array.isArray(newasset.contenttypes)) ? newasset.contenttypes: [newasset.contenttypes],
+			contenttypeattributes:newasset.contenttypeattributes
+		}
+	}];	
+	return newasset;
+};
+
+var create_asset = function(options,callback){
+	// console.log('create_asset options',options);
+	var newasset = get_asset_object_from_file(options);
+	Asset.create(newasset,callback);
+};
+
+var create_assets_from_files = function(req, res, next){
+	var assets=[];
+	if(req.controllerData.files){
+		async.eachSeries(req.controllerData.files,
+			function(file,eachcb){
+					// var newasset = get_asset_object_from_file({file:file,req:req});
+					// console.log('newasset',newasset);
+					// 	Asset.create(newasset,function(err,savednewsset){
+
+					// console.log('create_assets_from_files err',err);
+					// console.log('create_assets_from_files savednewsset',savednewsset);
+					// 	});
+
+
+					// eachcb();
+				create_asset({file:file,req:req},function(err,savedasset){
+					console.log('create_assets_from_files err',err);
+					console.log('create_assets_from_files savedasset',savedasset);
+					assets.push(savedasset);
+					eachcb(err);
+				});
+
+			},
+			function(err){
+			if(err){
+				next(err);
+			}
+			else{
+				req.controllerData = (req.controllerData) ? req.controllerData : {};
+				req.controllerData.assets = assets;
+				next();	
+			}
+		});
+	}
+	else{
+		next();
+	}
+};
+
 var upload = function (req, res, next) {
+	console.log('req.body',req.body);
+	console.log('req.files',req.files);
 	var form = new formidable.IncomingForm(),
 		files = [],
 		returnFile,
@@ -28,6 +190,8 @@ var upload = function (req, res, next) {
 		uploadDirectory = '/public/uploads/files/' + d.getUTCFullYear() + '/' + d.getUTCMonth() + '/' + d.getUTCDate(),
 		fullUploadDir = path.join(process.cwd(), uploadDirectory);
 	req.controllerData = (req.controllerData) ? req.controllerData : {};
+
+	// console.log('form',form);
 	fs.ensureDir(fullUploadDir, function (err) {
 		if (err) {
 			CoreController.handleDocumentQueryErrorResponse({
@@ -44,6 +208,12 @@ var upload = function (req, res, next) {
 				formfields = fields;
 				formfiles = files;
 				logger.silly('formfields', formfields);
+				// console.log('formfiles',formfiles);
+				// console.log('formfiles.length',formfiles.length);
+				// console.log('Object.keys(formfiles).length',Object.keys(formfiles).length);
+				// if(!formfiles || Object.keys(formfiles).length<1){
+				// 	// req.end();
+				// }
 			});
 			form.on('error', function (err) {
 				logger.error(err);
@@ -58,39 +228,46 @@ var upload = function (req, res, next) {
 					returnFile = file;
 					files.push(file);	
 				}
-				else{
-					logger.silly('on file is empty',file);
-				}
+				// else{
+				// 	logger.silly('on file is empty',file);
+				// }
 			});
 			form.on('end', function () {
 				logger.silly('TODO: make file uploads async.parallel and rename multiple files');
 				try{
-					var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
-					newfilepath = path.join(fullUploadDir, newfilename);
-					fs.rename(returnFile.path, newfilepath, function (err) {
-						if (err) {
-							CoreController.handleDocumentQueryErrorResponse({
-								err: err,
-								res: res,
-								req: req
-							});
-						}
-						else {
-							returnFileObj.attributes = {};
-							returnFileObj.size = returnFile.size;
-							returnFileObj.filename = returnFile.name;
-							returnFileObj.assettype = returnFile.type;
-							returnFileObj.path = newfilepath;
-							returnFileObj.locationtype = 'local';
-							returnFileObj.attributes.periodicDirectory = uploadDirectory;
-							returnFileObj.attributes.periodicPath = path.join(uploadDirectory, newfilename);
-							returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
-							returnFileObj.attributes.periodicFilename = newfilename;
-							// console.log('returnFileObj',returnFileObj);
-							req.controllerData.fileData = extend(returnFileObj,formfields);
-							next();
-						}
-					});
+					if(!formfiles || Object.keys(formfiles).length<1 || files <1){
+						console.log('formfields',formfields);
+						req.body = formfields;
+						next();
+					}
+					else{
+						var newfilename = req.user._id.toString() + '-' + CoreUtilities.makeNiceName(path.basename(returnFile.name, path.extname(returnFile.name))) + path.extname(returnFile.name),
+						newfilepath = path.join(fullUploadDir, newfilename);
+						fs.rename(returnFile.path, newfilepath, function (err) {
+							if (err) {
+								CoreController.handleDocumentQueryErrorResponse({
+									err: err,
+									res: res,
+									req: req
+								});
+							}
+							else {
+								returnFileObj.attributes = {};
+								returnFileObj.size = returnFile.size;
+								returnFileObj.filename = returnFile.name;
+								returnFileObj.assettype = returnFile.type;
+								returnFileObj.path = newfilepath;
+								returnFileObj.locationtype = 'local';
+								returnFileObj.attributes.periodicDirectory = uploadDirectory;
+								returnFileObj.attributes.periodicPath = path.join(uploadDirectory, newfilename);
+								returnFileObj.fileurl = returnFileObj.attributes.periodicPath.replace('/public', '');
+								returnFileObj.attributes.periodicFilename = newfilename;
+								// console.log('returnFileObj',returnFileObj);
+								req.controllerData.fileData = extend(returnFileObj,formfields);
+								next();
+							}
+						});
+					}
 				}
 				catch(e){
 					CoreController.handleDocumentQueryErrorResponse({
@@ -104,49 +281,21 @@ var upload = function (req, res, next) {
 	});
 };
 
-var show = function (req, res) {
-	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'asset/show',
-			themefileext: appSettings.templatefileextension
+var assetcreate = function(req,res){
+	var successredirect = req.redirectpath ||  '/p-admin/content/assets/';
+	CoreController.respondInKind({
+		req : req,
+		res : res,
+		redirecturl: successredirect,
+		// err : err,
+		responseData : {
+			asset: req.controllerData.asset,
+			assets: req.controllerData.assets
 		},
-		function (err, templatepath) {
-			CoreController.handleDocumentQueryRender({
-				res: res,
-				req: req,
-				renderView: templatepath,
-				responseData: {
-					pagedata: {
-						title: req.controllerData.asset.title
-					},
-					asset: req.controllerData.asset,
-					user: req.user
-				}
-			});
-		}
-	);
+		// callback : callback
+	});
 };
 
-var index = function (req, res) {
-	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'asset/index',
-			themefileext: appSettings.templatefileextension
-		},
-		function (err, templatepath) {
-			CoreController.handleDocumentQueryRender({
-				res: res,
-				req: req,
-				renderView: templatepath,
-				responseData: {
-					pagedata: {
-						title: 'Assets'
-					},
-					assets: req.controllerData.assets,
-					user: req.user
-				}
-			});
-		}
-	);
-};
 var createassetfile = function (req, res) {
 	// var form = new formidable.IncomingForm();
 	// console.log('create asset file form parse');
@@ -177,7 +326,7 @@ var createassetfile = function (req, res) {
 
 	CoreController.loadModel({
 		cached: req.headers.periodicCache !== 'no-periodic-cache',
-		model: MediaAsset,
+		model: Asset,
 		docid: newasset.name,
 		callback: function (err, assetdoc) {
 			if (err) {
@@ -202,38 +351,15 @@ var createassetfile = function (req, res) {
 			}
 			else {
 				CoreController.createModel({
-					model: MediaAsset,
+					model: Asset,
 					newdoc: newasset,
 					res: res,
 					req: req,
-					successredirect: '/p-admin/media/edit/',
+					successredirect: req.redirectpath ||  '/p-admin/asset/edit/',
 					appendid: true
 				});
 			}
 		}
-	});
-};
-
-var update = function (req, res) {
-	var updateasset = CoreUtilities.removeEmptyObjectValues(req.body),
-		saverevision= (typeof req.saverevision ==='boolean')? req.saverevision : true;
-
-	updateasset.name = CoreUtilities.makeNiceName(updateasset.title);
-	updateasset = str2json.convert(updateasset);
-
-	CoreController.updateModel({
-		cached: req.headers.periodicCache !== 'no-periodic-cache',
-		model: MediaAsset,
-		id: updateasset.docid,
-		updatedoc: updateasset,
-		forceupdate: req.forceupdate,
-		saverevision: saverevision,
-		originalrevision: req.controllerData.asset,
-		population: 'contenttypes parent',
-		res: res,
-		req: req,
-		successredirect: req.redirectpath ||  '/p-admin/mediaasset/edit/',
-		appendid: true
 	});
 };
 
@@ -247,7 +373,7 @@ var remove = function (req, res) {
 			removeasset: function (callback) {
 				CoreController.deleteModel({
 					cached: req.headers.periodicCache !== 'no-periodic-cache',
-					model: MediaAsset,
+					model: Asset,
 					deleteid: asset._id,
 					req: req,
 					res: res,
@@ -268,7 +394,7 @@ var remove = function (req, res) {
 				CoreController.handleDocumentQueryRender({
 					req: req,
 					res: res,
-					redirecturl: '/p-admin/assets',
+					redirecturl: req.redirectpath ||  '/p-admin/content/assets',
 					responseData: {
 						result: 'success',
 						data: asset
@@ -277,211 +403,8 @@ var remove = function (req, res) {
 			}
 		});
 	}
-	console.log('asset', asset);
+	// console.log('asset', asset);
 };
-
-var loadAssetWithCount = function (req, res, next) {
-	req.headers.loadcontenttypecount = true;
-	next();
-};
-
-var loadAssetWithDefaultLimit = function (req, res, next) {
-	req.query.limit = req.query.contenttypesperpage || req.query.limit || 15;
-	req.query.pagenum = (req.query.pagenum && req.query.pagenum >0) ? req.query.pagenum : 1;
-	next();
-};
-
-var getAssetData = function(options){
-	var parallelTask = {},
- 		req = options.req,
-		res = options.res,
- 		pagenum = req.query.pagenum - 1,
-		next = options.next,
-		query = options.query,
-		sort = req.query.sort,
-		callback = options.callback,
-		limit = req.query.limit || req.query.assetsperpage,
-		offset = req.query.offset || (pagenum*limit),
-		population = options.population,
-		orQuery = options.orQuery,
-		searchRegEx = new RegExp(CoreUtilities.stripTags(req.query.search), 'gi'),
-		parallelFilterTask = {};
-
-	req.controllerData = (req.controllerData) ? req.controllerData : {};
-
-	if(req.query.ids){
-		var queryIdArray=[];
-		if(Array.isArray(req.query.ids)){
-			queryIdArray = req.query.ids;
-		}
-		else if(typeof req.query.ids ==='string'){
-			queryIdArray = req.query.ids.split(',');
-		}
-		orQuery.push({
-			'_id': {$in:queryIdArray}
-		});
-	}
-	else if (req.query.search !== undefined && req.query.search.length > 0) {
-		orQuery.push({
-			title: searchRegEx
-		}, {
-			'name': searchRegEx
-		});
-	}
-
-	parallelFilterTask.authors = function(cb){
-		if(req.query.filter_authors){
-			var authorsArray = (typeof req.query.filter_authors==='string') ? req.query.filter_authors.split(',') : req.query.filter_authors;
-
-			User.find({'username':{$in:authorsArray}},'_id', function( err, userids){
-				cb(err, userids);
-			});
-		}
-		else{
-			cb(null,null);
-		}
-	};
-
-	parallelFilterTask.contenttypes = function(cb){
-		if(req.query.filter_contenttypes){
-			var contenttypesArray = (typeof req.query.filter_contenttypes==='string') ? req.query.filter_contenttypes.split(',') : req.query.filter_contenttypes;
-			Contenttypes.find({'name':{$in:contenttypesArray}},'_id', function( err, contenttypeids){
-				cb(err, contenttypeids);
-			});
-		}
-		else{
-			cb(null,null);
-		}
-	};	
-	async.parallel(
-		parallelFilterTask,
-		function(err,filters){
-			if(err){
-				CoreController.handleDocumentQueryErrorResponse({
-					err: err,
-					res: res,
-					req: req
-				});
-			}
-			else{
-				if(filters.authors){
-					var aarray =[];
-					for(var w in filters.authors){
-						aarray.push(filters.authors[w]._id);
-					}
-					// console.log('ctarray',ctarray);
-					orQuery.push({'author':{$in:aarray}});
-				}
-				if(filters.contenttypes){
-					var ctarray =[];
-					for(var z in filters.contenttypes){
-						ctarray.push(filters.contenttypes[z]._id);
-					}
-					// console.log('ctarray',ctarray);
-					orQuery.push({'contenttypes':{$in:ctarray}});
-				}
-				
-				if(orQuery.length>0){
-					query = {
-						$and: orQuery
-					};
-				}
-
-				parallelTask.assetscount = function(cb){
-					if(req.headers.loadcontenttypecount){
-						MediaAsset.count(query, function( err, count){
-							cb(err, count);
-						});
-					}
-					else{
-						cb(null,null);
-					}
-				};
-				parallelTask.assetsquery = function(cb){
-					CoreController.searchModel({
-						cached: req.headers.periodicCache !== 'no-periodic-cache',
-						model: MediaAsset,
-						query: query,
-						sort: sort,
-						limit: limit,
-						offset: offset,
-						population: population,
-						callback: function (err, documents) {
-							cb(err,documents);
-						}
-					});
-				};
-
-				async.parallel(
-					parallelTask,
-					function(err,results){
-						if(err){
-							CoreController.handleDocumentQueryErrorResponse({
-								err: err,
-								res: res,
-								req: req
-							});
-						}
-						else{
-							// console.log(results);
-							req.controllerData.assets = results.assetsquery;
-							req.controllerData.assetscount = results.assetscount;
-							if(callback){
-								callback(req, res);
-							}
-							else{
-								next();								
-							}
-						}
-				});	
-			}
-	});
-};
-
-var loadAssets = function (req, res, next) {
-	var query,
-		population = 'author contenttypes',
-		orQuery = [];
-
-	getAssetData({
-		req: req,
-		res: res,
-		next: next,
-		population: population,
-		query: query,
-		orQuery: orQuery
-	});
-};
-
-var loadAsset = function (req, res, next) {
-	var params = req.params,
-		population = 'author contenttypes tags categories authors',
-		docid = params.id;
-
-	req.controllerData = (req.controllerData) ? req.controllerData : {};
-
-	CoreController.loadModel({
-		cached: req.headers.periodicCache !== 'no-periodic-cache',
-		docid: docid,
-		model: MediaAsset,
-		population: population,
-		callback: function (err, doc) {
-			if (err) {
-				CoreController.handleDocumentQueryErrorResponse({
-					err: err,
-					res: res,
-					req: req
-				});
-			}
-			else {
-				req.controllerData.asset = doc;
-				console.log('asset doc',doc);
-				next();
-			}
-		}
-	});
-};
-
 var searchResults = function (req, res) {
 	CoreController.getPluginViewDefaultTemplate({
 			viewname: 'search/index',
@@ -508,26 +431,33 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	CoreController = new ControllerHelper(resources);
-	CoreUtilities = new Utilities(resources);
-	MediaAsset = mongoose.model('Asset');
+	CoreController = resources.core.controller;
+	CoreUtilities = resources.core.utilities;
+	Asset = mongoose.model('Asset');
 	User = mongoose.model('User');
 	Contenttypes = mongoose.model('Contenttype');
-
-	return {
-		show: show,
-		index: index,
-		remove: remove,
-		upload: upload,
-		createassetfile: createassetfile,
-		update: update,
-		loadAsset: loadAsset,
-		getAssetData: getAssetData,
-		loadAssetWithDefaultLimit: loadAssetWithDefaultLimit,
-		loadAssetWithCount:loadAssetWithCount,
-		loadAssets: loadAssets,
-		searchResults: searchResults
+	coreControllerOptions = {
+		model_name:'asset',
+		load_model_population:'author contenttypes tags categories authors' ,
+		load_multiple_model_population:'author contenttypes tags categories authors',
+		use_full_data:false,
 	};
+	controllerRoutes = CoreController.controller_routes(coreControllerOptions);
+	controllerRoutes.upload = upload;
+	controllerRoutes.multiupload = multiupload;
+	controllerRoutes.localupload = localupload;
+	controllerRoutes.createassetfile = createassetfile;
+	controllerRoutes.create_asset = create_asset;
+	controllerRoutes.assetcreate = assetcreate;
+	controllerRoutes.create_assets_from_files = create_assets_from_files;
+	controllerRoutes.rename = multiupload_rename;
+	controllerRoutes.searchResults = searchResults;
+	controllerRoutes.remove = remove;
+	controllerRoutes.changeDest = multiupload_changeDest;
+	controllerRoutes.onParseStart = multiupload_onParseStart;
+	controllerRoutes.upload_dir = upload_dir;
+	controllerRoutes.get_asset_object_from_file = get_asset_object_from_file;
+	return controllerRoutes;
 };
 
 module.exports = controller;

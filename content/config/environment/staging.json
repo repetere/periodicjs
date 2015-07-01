@@ -1,8 +1,8 @@
 {
-  "name": "Periodic Enterprise Content Management[dev]",
+  "name": "Periodic Enterprise Content Management[staging]",
   "application":{
     "port": "8786",
-    "environment": "development"
+    "environment": "staging"
   },
   "periodic_cache_status": false,
   "sessions":{

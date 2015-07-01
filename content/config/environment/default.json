@@ -15,7 +15,7 @@
     "prevent_clear_data_cache_on_start":false,
     "prevent_clear_view_cache_on_start":false
   },
-  "periodic_cache_status":"active",
+  "periodic_cache_status":false,
 	"session_secret":"hjoiuu87go9hui",
 	"expressCompression": true,
 	"use_test_extensions_by_environment": false,
@@ -25,5 +25,6 @@
 	"crsf": true,
   "debug": true,
   "status":"install",
-  "serverfromemail": "periodic@localhost"
+  "serverfromemail": "Local Perodic App <hello@localhost>",
+  "adminnotificationemail": "Local Perodic App <hello@localhost>"
 }

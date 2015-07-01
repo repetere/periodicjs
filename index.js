@@ -5,9 +5,17 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 'use strict';
-require('./content/config/startup');
-var argv = require('optimist').argv;
+var periodicStartupOptions = require('./content/config/startup'),
+	extend = require('utils-merge'),
+	argv = require('optimist').argv,
+	periodicSettings;
 
+periodicStartupOptions = extend(periodicStartupOptions,argv);
+
+if(periodicStartupOptions.use_global_socket_io){
+	global.io = require('socket.io')();
+}
+global.periodicExpressApp ={};
 /**
  * @description the script that starts the periodic express application.
  * @author Yaw Joseph Etse
@@ -25,13 +33,42 @@ else {
 	 * @global
 	 * @type {object}
 	 */
-	var periodic = require('./app/lib/periodic')();
-	if(argv.waitformongo || (periodic.config && periodic.config.waitformongo)){
+	var periodic = require('./app/lib/periodic')(periodicStartupOptions);
+	periodicSettings = periodic.appconfig.settings();
+	if(periodicSettings.application.https_port){
+		var https = require('https'),
+			fs = require('fs'), 
+			path = require('path'), 
+			server_options = {};
+      server_options.key = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_privatekey));
+      server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
+      server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
+	}
+	if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
 		periodic.mongoose.connection.on('open',function(){
-			periodic.expressapp.listen(periodic.port);
+			global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
 		});	
+		if(periodicSettings.application.https_port){
+			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
+		}
 	}
 	else{
-		periodic.expressapp.listen(periodic.port);
+		global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
+		if(periodicSettings.application.https_port){
+			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
+		}
+	}
+
+	if(periodicStartupOptions.use_global_socket_io){
+		var mongoIoAdapter = require('socket.io-adapter-mongo');
+		global.io.adapter(mongoIoAdapter(periodicSettings.dburl));
+		global.io.attach(global.periodicExpressApp, {
+			logger: periodic.logger
+		});
+		if(periodicSettings.application.https_port){
+			global.io.attach(global.periodicHTTPSExpressApp, {
+				logger: periodic.logger
+			});
+		}
 	}
 }

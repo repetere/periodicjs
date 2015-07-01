@@ -581,9 +581,9 @@ var controller = function (resources) {
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
 	// applicationController = new appController(resources);
-	CoreController = new CoreControllerHelper(resources);
-	CoreExtension = new Extensions(appSettings);
-	CoreUtilities = new Utilities(resources);
+	CoreExtension = resources.core.extension;
+	CoreController = resources.core.controller;
+	CoreUtilities = resources.core.utilities;
 	extFunctions = CoreExtension.extFunctions();
 
 	return {

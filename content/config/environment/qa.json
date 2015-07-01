@@ -1,8 +1,8 @@
 {
-  "name": "Periodic Enterprise Content Management[dev]",
+  "name": "Periodic Enterprise Content Management[qa]",
   "application":{
     "port": "8786",
-    "environment": "development"
+    "environment": "qa"
   },
   "periodic_cache_status": false,
   "sessions":{

@@ -26,7 +26,9 @@ var contenttypeSchema = new Schema({
 	attributes: [{
 		title: String,
 		name: String,
+		description: String,
 		datatype: String,
+		data: Schema.Types.Mixed,
 		defaultvalue: String
 	}],
 	extensionattributes: Schema.Types.Mixed
