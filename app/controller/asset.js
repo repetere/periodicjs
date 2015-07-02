@@ -24,11 +24,17 @@ var path = require('path'),
 // };
 
 var multiupload_rename = function(fieldname,filename,req,res){
-	if(req.user){
-		return req.user._id+'-'+fieldname+'-'+filename+moment().format('YYYY-MM-DD_HH-m-ss');
+	// console.log('multiupload_rename req.body', req.body);
+	// console.log('multiupload_rename req', req);
+	// console.log('fieldname,filename,',fieldname,filename);
+	var userstampstring=(!req.body['exclude-userstamp'] && req.user)? req.user._id+'-' : '',
+		timestampstringformat = req.body['ts-format'] || 'YYYY-MM-DD_HH-m-ss',
+		timestampstring = (!req.body['exclude-timestamp'] )? '-'+moment().format(timestampstringformat) : '';
+	if(req.body['existing-file-name']){
+		return filename;
 	}
 	else{
-		return fieldname+'-'+filename+moment().format('YYYY-MM-DD_HH-m-ss');
+		return userstampstring+filename+timestampstring;
 	}
 };
 
@@ -143,19 +149,9 @@ var create_assets_from_files = function(req, res, next){
 	if(req.controllerData.files){
 		async.eachSeries(req.controllerData.files,
 			function(file,eachcb){
-					// var newasset = get_asset_object_from_file({file:file,req:req});
-					// console.log('newasset',newasset);
-					// 	Asset.create(newasset,function(err,savednewsset){
-
-					// console.log('create_assets_from_files err',err);
-					// console.log('create_assets_from_files savednewsset',savednewsset);
-					// 	});
-
-
-					// eachcb();
 				create_asset({file:file,req:req},function(err,savedasset){
-					console.log('create_assets_from_files err',err);
-					console.log('create_assets_from_files savedasset',savedasset);
+					// console.log('create_assets_from_files err',err);
+					// console.log('create_assets_from_files savedasset',savedasset);
 					assets.push(savedasset);
 					eachcb(err);
 				});
