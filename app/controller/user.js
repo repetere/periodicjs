@@ -243,7 +243,7 @@ var remove = function (req, res) {
 var loadUser = function (req, res, next) {
 	// console.log('req.params',req.params);
 	var params = req.params,
-		population = 'assets coverimages primaryasset coverimage extensionattributes userroles',
+		population = 'assets coverimages primaryasset coverimage  userroles',
 		docid = params.id;
 
 	req.controllerData = (req.controllerData) ? req.controllerData : {};

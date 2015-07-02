@@ -95,16 +95,6 @@ var userSchema = new Schema({
 		ref: 'Contenttype'
 	}],
 	apikey: String,
-	// twitterAccessToken: String,
-	// twitterAccessTokenSecret: String,
-	// twitterUsername: String,
-	// twitterId: String,
-	// facebookaccesstoken: String,
-	// facebookusername: String,
-	// facebookid: String,
-	// foursquareAccessToken: String,
-	// foursquareId: String,
-	// foursquareName: String,
 	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
