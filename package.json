@@ -100,10 +100,6 @@
     "util-extend": "1.0.1",
     "utils-merge": "1.0.0",
     "winston": "^1.0.1",
-    "newrelic": "^1.20.0",
-    "winston-dynamodb-update": "^0.1.5",
-    "winston-newrelic-update": "^0.1.5",
-    "winston-sns": "^0.2.0"
   },
   "devDependencies": {
     "browserify": "^10.2.4",
