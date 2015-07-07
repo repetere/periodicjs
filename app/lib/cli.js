@@ -126,7 +126,8 @@ var cli = function (argv) {
 			},
 				core:{}
 		};
-		var	Extensions = require('periodicjs.core.extensions'),
+		var	ControllerSettings = require('../controller/controller_settings'),
+			Extensions = require('periodicjs.core.extensions'),
 			Utilities = require('periodicjs.core.utilities'),
 			Controllers = require('periodicjs.core.controller'),
 			CoreMailer = require('periodicjs.core.mailer');
@@ -135,15 +136,16 @@ var cli = function (argv) {
 		periodicResources.core.extension = new Extensions(periodicResources);
 		periodicResources.core.mailer = CoreMailer;
 		periodicResources.app.controller.native.asset = require('../controller/asset')(periodicResources);
-		periodicResources.app.controller.native.category = require('../controller/category')(periodicResources);
-		periodicResources.app.controller.native.collection = require('../controller/collection')(periodicResources);
-		periodicResources.app.controller.native.compilation = require('../controller/compilation')(periodicResources);
+		periodicResources.app.controller.native.category = periodicResources.core.controller.controller_routes(ControllerSettings.category);
+		periodicResources.app.controller.native.collection = periodicResources.core.controller.controller_routes(ControllerSettings.collection);
+		periodicResources.app.controller.native.compilation =  periodicResources.core.controller.controller_routes(ControllerSettings.compilation);
 		periodicResources.app.controller.native.contenttype = require('../controller/contenttype')(periodicResources);
 		periodicResources.app.controller.native.extension = require('../controller/extension')(periodicResources);
 		periodicResources.app.controller.native.home = require('../controller/home')(periodicResources);
-		periodicResources.app.controller.native.item = require('../controller/item')(periodicResources);
+		periodicResources.app.controller.native.item = periodicResources.core.controller.controller_routes(ControllerSettings.item);
+		periodicResources.app.controller.native.data = periodicResources.core.controller.controller_routes(ControllerSettings.data);
 		periodicResources.app.controller.native.search = require('../controller/search')(periodicResources);
-		periodicResources.app.controller.native.tag = require('../controller/tag')(periodicResources);
+		periodicResources.app.controller.native.tag = periodicResources.core.controller.controller_routes(ControllerSettings.tag);
 		periodicResources.app.controller.native.theme = require('../controller/theme')(periodicResources);
 		periodicResources.app.controller.native.user = require('../controller/user')(periodicResources);
 		periodicResources.app.controller.extension = {};
