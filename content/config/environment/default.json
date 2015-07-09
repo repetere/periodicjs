@@ -7,6 +7,18 @@
 	"cookies":{
 		"cookieParser":"defaultcookiejson"
 	},
+	"express_settings":{
+		"responseTime":{
+			"digits":5
+		},
+		"bodyParser_urlencoded":{
+			"limit": "1mb",
+			"extended": true
+		},
+		"bodyParser_json":{
+			"limit": "1mb"
+		}
+	},
 	"sessions":{
 		"enabled":true,
 		"type":"default"
