@@ -60,8 +60,9 @@ else {
 	}
 
 	if(periodicStartupOptions.use_global_socket_io){
-		var mongoIoAdapter = require('socket.io-adapter-mongo');
-		global.io.adapter(mongoIoAdapter(extend(periodicSettings.dburl, { return_buffers: true })));
+		var mongoIoAdapter = require('socket.io-adapter-mongo'),
+			additionalIOConfigs = { return_buffers: true, detect_buffers: true };
+		global.io.adapter(mongoIoAdapter(extend(periodicSettings.dburl, additionalIOConfigs)));
 		global.io.attach(global.periodicExpressApp, {
 			logger: periodic.logger
 		});
