@@ -37,6 +37,7 @@ global.CoreCache = new PeriodicCache();
 var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
 		EJS = require('ejs'),
+		os = require('os'),
 		path = require('path'),
 		bodyParser = require('body-parser'),
 		methodOverride = require('method-override'),
@@ -355,7 +356,8 @@ var periodic = function (periodicConfigOptions) {
 					'x-forwarded-for': req.headers['x-forwarded-for'],
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
-					headerHost: req.headers.host
+					headerHost: req.headers.host,
+					osHostname: os.hostname()
 				}
 			});
 			// logger.error(err.stack);
