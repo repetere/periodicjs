@@ -152,7 +152,7 @@ var periodic = function (periodicConfigOptions) {
 	 * @description sets up standard express settings
 	 */
 	init.expressSettings = function () {
-		console.log('appconfig.settings().express_settings',appconfig.settings().express_settings);
+		// console.log('appconfig.settings().express_settings',appconfig.settings().express_settings);
 		app.use(responseTime(appconfig.settings().express_settings.responseTime));
 		app.use(flash());
 		app.use(bodyParser.urlencoded(appconfig.settings().express_settings.bodyParser_urlencoded));
