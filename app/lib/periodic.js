@@ -36,6 +36,7 @@ global.CoreCache = new PeriodicCache();
 
 var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
+		EJS = require('ejs'),
 		path = require('path'),
 		bodyParser = require('body-parser'),
 		methodOverride = require('method-override'),
