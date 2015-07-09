@@ -199,6 +199,7 @@ var upload = function (req, res, next) {
 		else {
 			// http://stackoverflow.com/questions/20553575/how-to-cancel-user-upload-in-formidable-node-js
 			form.keepExtensions = true;
+			form.maxFieldsSize = 50000000;
 			form.uploadDir = fullUploadDir;
 			form.parse(req, function (err, fields, files) {
 				formfields = fields;

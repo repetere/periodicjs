@@ -155,9 +155,12 @@ var periodic = function (periodicConfigOptions) {
 		app.use(responseTime({digits:5}));
 		app.use(flash());
 		app.use(bodyParser.urlencoded({
+			limit: '1mb',
 			extended: true
 		}));
-		app.use(bodyParser.json());
+		app.use(bodyParser.json({
+			limit: '1mb'
+		}));
 		app.use(methodOverride());
 		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
 		app.use(favicon(path.resolve(__dirname, '../../public/favicon.png')));
