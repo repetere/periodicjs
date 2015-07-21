@@ -152,6 +152,12 @@ var cli = function (argv) {
 		cb();
 	};
 	var loadScript = function (argv) {
+		if(argv.controller || argv.extension || argv.theme){
+			periodicResources.settings.extconf = periodicResources.core.extension.settings();
+			if(!argv.skipextensions){
+				periodicResources = periodicResources.core.extension.loadExtensions(periodicResources);
+			}
+		}
 		if (argv.controller) {
 			try {
 				var cliController = require('../controller/' + argv.controller)(periodicResources);
@@ -167,6 +173,20 @@ var cli = function (argv) {
 			try {
 				var cliExtension = require(path.resolve(process.cwd(), './node_modules/periodicjs.ext.' + argv.extension + '/cli'))(periodicResources);
 				cliExtension.cli(argv);
+			}
+			catch (e) {
+				logger.error(e);
+				logger.error(e.stack);
+				process.exit(0);
+			}
+		}
+		else if (argv.theme) {
+			// console.log(periodicResources.settings.theme,argv);
+			// 	process.exit(0);
+			periodicResources.argv = argv;
+			try {
+				var cliTheme = require(path.resolve(process.cwd(), 'content/themes/' + periodicResources.settings.theme + '/cli'))(periodicResources);
+				cliTheme.run(argv);
 			}
 			catch (e) {
 				logger.error(e);
