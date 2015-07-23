@@ -36,9 +36,9 @@ global.CoreCache = new PeriodicCache();
 
 var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
-		EJS = require('ejs'),
-		os = require('os'),
 		path = require('path'),
+		os = require('os'),
+		EJS = require('ejs'),
 		bodyParser = require('body-parser'),
 		methodOverride = require('method-override'),
 		cookieParser = require('cookie-parser'),
@@ -154,7 +154,6 @@ var periodic = function (periodicConfigOptions) {
 	 * @description sets up standard express settings
 	 */
 	init.expressSettings = function () {
-		// console.log('appconfig.settings().express_settings',appconfig.settings().express_settings);
 		app.use(responseTime(appconfig.settings().express_settings.responseTime));
 		app.use(flash());
 		app.use(bodyParser.urlencoded(appconfig.settings().express_settings.bodyParser_urlencoded));
@@ -314,6 +313,9 @@ var periodic = function (periodicConfigOptions) {
 	 * @description application server status
 	 */
 	init.serverStatus = function () {
+		if(appconfig.settings().application.https_port){
+			logger.debug('Express HTTPS server listening on port ' + appconfig.settings().application.https_port);
+		}
 		logger.debug('Express server listening on port ' + app.get('port'));
 		logger.debug('Running in environment: ' + app.get('env'));
 		request
