@@ -30,14 +30,26 @@ catch(e){
  	alreadyInstalled=false;
 }
 
+var restoreExtensionBackup = function(){
+	fs.copy(extensionsConfigPath+'.backup',extensionsConfigPath,function(err){
+		if(err){
+			console.log('restoring extensions.json.backup error',err);
+		}
+		else{
+			console.log('restored extensions.json');
+		}
+		process.exit(0);
+	});
+};
+
 console.log('alreadyInstalled',alreadyInstalled);
 if(process.env.npm_config_skip_post_install){
 	console.log('skip post install');
-	process.exit(0);
+	restoreExtensionBackup();
 }
 else if(alreadyInstalled){
 	console.log('Periodicjs Already Installed, Upgrade Complete');
-	process.exit(0);
+	restoreExtensionBackup();
 }
 else {
 	npmhelper.cleanInstallStandardExtensions(
