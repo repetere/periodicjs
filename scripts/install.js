@@ -31,14 +31,22 @@ catch(e){
 }
 
 var restoreExtensionBackup = function(){
-	fs.copy(extensionsConfigPath+'.backup',extensionsConfigPath,function(err){
+	fs.readFile(extensionsConfigPath+'.dat',{encoding :'utf8'},function(err,filedata){
 		if(err){
-			console.log('restoring extensions.json.backup error',err);
+			console.log('restoring extensions.json.dat error',err);
+			process.exit(0);
 		}
 		else{
-			console.log('restored extensions.json');
+			fs.writeFile(extensionsConfigPath,filedata,function(err){
+				if(err){
+					console.log('writing extensions.json from backup .dat error',err);
+				}
+				else{
+					console.log('restored extensions.json');
+				}
+				process.exit(0);
+			});
 		}
-		process.exit(0);
 	});
 };
 

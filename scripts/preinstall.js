@@ -7,16 +7,24 @@
 
 'use strict';
 
-var fs = require('fs-extra'),
+var fs = require('fs'),
 		path = require('path'),
 		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json');
 
-fs.copy(extensionsConfigPath,extensionsConfigPath+'.backup',function(err){
+fs.readFile(extensionsConfigPath,{encoding :'utf8'},function(err,filedata){
 	if(err){
-		console.log('copying extensions.json backup error',err);
+		console.log('reading extensions.json backup error',err);
+		process.exit(0);
 	}
 	else{
-		console.log('created extensions.json backup');
+		fs.writeFile(extensionsConfigPath+'.dat',filedata,function(err){
+			if(err){
+				console.log('writing extensions.json.dat backup error',err);
+			}
+			else{
+				console.log('created extensions.json backup');
+			}
+			process.exit(0);
+		});
 	}
-	process.exit(0);
 });
