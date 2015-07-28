@@ -95,7 +95,7 @@
     "socket.io-adapter-mongo": "^0.1.4",
     "string-to-json": "^0.1.0",
     "stylie": "^2.0.0",
-    "stylie.modals": "^1.0.3",
+    "stylie.modals": "^1.2.0",
     "stylie.notifications": "^2.0.0",
     "stylie.pushmenu": "^2.0.1",
     "stylie.tabs": "^1.0.0",
