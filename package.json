@@ -88,6 +88,7 @@
     "periodicjs.core.extensions": "5.9.1",
     "periodicjs.core.mailer": "5.9.0",
     "periodicjs.core.utilities": "5.9.0",
+    "pluralize": "^1.1.2",
     "prompt": "0.2.14",
     "response-time": "^2.3.0",
     "semver": ">=2.3.0",
