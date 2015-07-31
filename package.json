@@ -57,6 +57,7 @@
     "bcrypt": "~0.8.3",
     "bluebird": "^2.9.34",
     "body-parser": "^1.13.1",
+    "capitalize": "^1.0.0",
     "complexity": "0.0.3",
     "compression": "^1.4.2",
     "connect-flash": "0.1.1",
@@ -173,6 +174,5 @@
   "_resolved": "file:../../promise/promise-internal-server/periodicjs",
   "_nodeVersion": "0.10.33",
   "readme": "ERROR: No README data found!",
-  "optionalDependencies": {
-  }
+  "optionalDependencies": {}
 }
