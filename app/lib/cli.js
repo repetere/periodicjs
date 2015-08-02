@@ -148,7 +148,8 @@ var cli = function (argv) {
 		periodicResources.app.controller.native.tag = periodicResources.core.controller.controller_routes(ControllerSettings.tag);
 		periodicResources.app.controller.native.theme = require('../controller/theme')(periodicResources);
 		periodicResources.app.controller.native.user = periodicResources.core.controller.controller_routes(ControllerSettings.user);
-
+		periodicResources.app.controller.native.userrole = periodicResources.core.controller.controller_routes(ControllerSettings.userrole);
+		periodicResources.app.controller.native.userprivilege = periodicResources.core.controller.controller_routes(ControllerSettings.userprivilege);
 		periodicResources.app.controller.extension = {};
 		cb();
 	};

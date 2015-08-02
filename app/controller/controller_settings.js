@@ -9,6 +9,20 @@ module.exports.user = {
 	use_full_data:true
 };
 
+module.exports.userrole = {
+	model_name:'userrole',
+	load_model_population:'userprivileges',
+	load_multiple_model_population:'userprivileges',
+	searchFields : ['title','name','userroleid'],
+	use_full_data:false
+};
+
+module.exports.userprivilege = {
+	model_name:'userprivilege',
+	searchFields : ['title','name','userprivilegeid'],
+	use_full_data:false
+};
+
 module.exports.item = {
 	model_name:'item',
 	load_model_population:'tags contenttypes categories assets primaryasset authors primaryauthor',
