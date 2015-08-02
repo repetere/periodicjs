@@ -85,15 +85,17 @@ module.exports = function (periodic) {
 			search: require('../controller/search')(periodic),
 			tag:  periodic.core.controller.controller_routes(ControllerSettings.tag),
 			theme: require('../controller/theme')(periodic),
-			user: require('../controller/user')(periodic)
+			user: periodic.core.controller.controller_routes(ControllerSettings.user)//require('../controller/user')(periodic)
 		},
 		extension:{ }
 	};
+	// console.log('periodic.app.controller.native.user',periodic.app.controller.native.user);
 	// console.log('	periodic.app.controller.native.tag',periodic.app.controller.native.tag);
 	/** 
 	 * controller for homepage
 	 * @type {function}
 	 */
+	// console.log('routes periodic.core',periodic.core);
 
 	/** load extensions */
 	periodic.settings.extconf = periodic.core.extension.settings();
@@ -101,6 +103,7 @@ module.exports = function (periodic) {
 	periodic = periodic.core.extension.loadExtensions(periodic);
 	ignoreExtensionIndex = periodic.ignoreExtensionIndex;
 	// console.log('ignoreExtensionIndex',ignoreExtensionIndex);
+	// console.log('routes after ext periodic.core',periodic.core);
 	
 	/** load custom theme routes */
 	if (themeRouteTest) {

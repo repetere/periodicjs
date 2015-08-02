@@ -1,5 +1,14 @@
 'use strict';
 
+module.exports.user = {
+	model_name:'user',
+	load_model_population:'assets coverimages primaryasset coverimage userroles',
+	load_multiple_model_population:'assets coverimages primaryasset coverimage userroles',
+	docnamelookup : 'username',
+	searchFields : ['username','firstname','lastname','email'],
+	use_full_data:true
+};
+
 module.exports.item = {
 	model_name:'item',
 	load_model_population:'tags contenttypes categories assets primaryasset authors primaryauthor',
