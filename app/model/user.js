@@ -106,13 +106,14 @@ userSchema.pre('save', function (next, done) {
 	this.random = Math.random();
 
 	// var badusername = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	if (this.password !== undefined && this.password.length < 8) {
-		done(new Error('Password is too short'));
-	}
-	else if (this.username !== undefined && this.username.length < 4) {
-		done(new Error('Username is too short'));
-	}
-	else if (this.email !== undefined && this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+	// if (this.password !== undefined && this.password.length < 8) {
+	// 	done(new Error('Password is too short'));
+	// }
+	// else if (this.username !== undefined && this.username.length < 4) {
+	// 	done(new Error('Username is too short'));
+	// }
+	// else 
+	if (this.email !== undefined && this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
 		done(new Error('Invalid email'));
 	}
 	// else if (this.username !== undefined && badusername.test(this.username)) {
@@ -284,9 +285,9 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 			callback(new Error('missing password'), userdata);
 		}
 	}
-	else if (userdata.password.length < 6) {
+	else if (userdata.password.length < 1) {
 		if (callback) {
-			callback(new Error('password is too short - min 6 characters'), userdata);
+			callback(new Error('password is too short'), userdata);
 		}
 	}
 	else {
