@@ -179,23 +179,25 @@ userSchema.statics.generateRandomTokenStatic = function () {
 };
 
 userSchema.statics.checkValidation = function (options) {
-	var userdata = options.newuser;
-	console.log('user model userdata', options.useComplexity, options.complexity);
+	var userdata = options.newuser,
+	min_username_length = (options && options.length_of_username) ? options.length_of_username : 4,
+	min_password_length = (options && options.length_of_password) ? options.length_of_password : 8;
+	console.log('user model userdata',options, options.useComplexity, options.complexity);
 
-	if ((typeof options.checkusername==='undefined' || options.checkusername ===true) && (userdata.username === undefined || userdata.username.length < 4)) {
+	if ((typeof options.checkusername==='undefined' || options.checkusername ===true) && (userdata.username === undefined || userdata.username.length < min_username_length)) {
 		return new Error('Username is too short');
 	}
 	else if ( (typeof options.checkemail==='undefined' || options.checkemail===true ) && (userdata.email === undefined || userdata.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) ){
 		return new Error('Invalid email');
 	}
-	else if (options.useComplexity && !complexity.check(userdata.password, options.complexity)) {
+	else if (options.useComplexity && userdata.password && !complexity.check(userdata.password, options.complexity)) {
 		return new Error('Password does not meet complexity requirements');
 	}
-	else if (options.checkpassword && (userdata.password === undefined || userdata.password.length < 8)) {
+	else if (typeof userdata.password !=='undefined' && options.checkpassword && (userdata.password === undefined || userdata.password.length < min_password_length)) {
 		return new Error('Password is too short');
 	}
 	else if (options.checkpassword && (userdata.password !== userdata.passwordconfirm)) {
-		return new Error('Passwords do not match in user model');
+		return new Error('Passwords do not match');
 	}
 	else {
 		return null;
