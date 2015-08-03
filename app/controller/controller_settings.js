@@ -11,10 +11,10 @@ module.exports.user = {
 
 module.exports.userrole = {
 	model_name:'userrole',
-	load_model_population:'userprivileges',
-	load_multiple_model_population:'userprivileges',
+	load_model_population:'privileges',
+	load_multiple_model_population:'privileges',
 	searchFields : ['title','name','userroleid'],
-	use_full_data:false
+	use_full_data:true
 };
 
 module.exports.userprivilege = {
