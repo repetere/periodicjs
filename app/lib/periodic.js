@@ -375,7 +375,7 @@ var periodic = function (periodicConfigOptions) {
 			else if (req.query.format==='json' || req.is('json') || req.is('application/json')) {
 				res.status(500);
 				res.send({
-					error: 'Something blew up!'
+					error: err
 				});
 			}
 			else  {
