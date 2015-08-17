@@ -156,7 +156,7 @@ var cli = function (argv) {
 	var loadScript = function (argv) {
 		if(argv.controller || argv.extension || argv.theme){
 			periodicResources.settings.extconf = periodicResources.core.extension.settings();
-			if(!argv.skipextensions){
+			if(!argv.skipextensions || argv.includeextensions){
 				periodicResources = periodicResources.core.extension.loadExtensions(periodicResources);
 			}
 		}

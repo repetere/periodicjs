@@ -3,7 +3,7 @@
     "enabled": true,
     "type": "mongo"
   },
-  "status": "active",
+  "status": "install",
   "session_secret": "gft5yrkbuik9a48uzrx3zlkawcdi",
   "cookies": {
     "cookieParser": "50d8p63zsddndn299s4d40ydhg2e29"
