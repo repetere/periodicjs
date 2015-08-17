@@ -9,7 +9,7 @@
 
 var fs = require('fs-extra'),
 		path = require('path'),
-		npmhelper = require('./npmhelper'),
+		npmhelper = require('./npmhelper')({}),
 		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json'),
 		applicationConfigPath = path.join(process.cwd(),'content/config/config.json'),
 		extensionConfig,
