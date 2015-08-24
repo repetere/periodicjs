@@ -5,7 +5,7 @@ module.exports.user = {
 	load_model_population:'assets coverimages primaryasset coverimage userroles',
 	load_multiple_model_population:'assets coverimages primaryasset coverimage userroles',
 	docnamelookup : 'username',
-	searchFields : ['username','firstname','lastname','email'],
+	searchfields : ['username','firstname','lastname','email'],
 	use_full_data:true
 };
 
@@ -13,13 +13,13 @@ module.exports.userrole = {
 	model_name:'userrole',
 	load_model_population:'privileges',
 	load_multiple_model_population:'privileges',
-	searchFields : ['title','name','userroleid'],
+	searchfields : ['title','name','userroleid'],
 	use_full_data:true
 };
 
 module.exports.userprivilege = {
 	model_name:'userprivilege',
-	searchFields : ['title','name','userprivilegeid'],
+	searchfields : ['title','name','userprivilegeid'],
 	use_full_data:false
 };
 
