@@ -60,6 +60,10 @@ else if(alreadyInstalled){
 	restoreExtensionBackup();
 }
 else {
+	fs.copy(path.join(process.cwd(),'.npmignore'), path.join(process.cwd(),'.gitignore'), function (err) {
+	  if (err) {return console.error(err);}
+	  console.log('copied ignore file!');
+	}); // copies file
 	npmhelper.cleanInstallStandardExtensions(
 		{},
 		function (err) {
