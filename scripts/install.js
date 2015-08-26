@@ -77,3 +77,8 @@ else {
 			}
 		});	
 }
+fs.ensureDir(path.join(process.cwd(),'logs'), function (err) {
+	if(err){
+	  console.log('creating log directory err',err); // => null
+	}
+});

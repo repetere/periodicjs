@@ -1,0 +1,27 @@
+#!/bin/sh -e
+#
+###
+# Forever start script - Executes on boot - copy of /etc/rc.local
+###
+
+WEB_APP="periodic-5-baseline"
+TIMESTAMP=$(date +"%x %r %Z")
+
+if [ -d "/var/www/${WEB_APP}/source/node_modules/periodicjs" ]; then
+  cd /var/www/${WEB_APP}/source/node_modules/periodicjs
+  sudo /usr/local/bin/forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js
+  echo "${TIMESTAMP} : Success - forever running on restart."
+  exit 0
+else
+  echo "Is the EBS volume mounted? Attempting to mount..."
+  mount -a
+  if [ -d "/var/www/${WEB_APP}/source/node_modules/periodicjs" ]; then
+    cd /var/www/${WEB_APP}/source/node_modules/periodicjs
+    sudo /usr/local/bin/forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js
+    echo "${TIMESTAMP} : Success - mounted EBS volume, forever running on restart."
+    exit 0
+  else
+    echo "${TIMESTAMP} : MOUNT ERROR: EBS volumes failed to mount or mount point does not exist. Exiting."
+    exit 0
+  fi
+fi
