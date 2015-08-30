@@ -362,11 +362,11 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 					if (templatepath === options.welcomeemaildata.emailviewname) {
 						templatepath = path.resolve(process.cwd(), 'app/views', templatepath + '.' + options.welcomeemaildata.themefileext);
 					}
-					options.welcomeemaildata.sendEmailFunction({
+					var sendemailoptions = {
 						appenvironment: options.welcomeemaildata.appenvironment,
 						to: options.newuser.email,
-						cc: options.welcomeemaildata.replyto,
-						replyTo: options.welcomeemaildata.replyto,
+						// cc: options.welcomeemaildata.replyto,
+						// replyTo: options.welcomeemaildata.replyto,
 						from: options.welcomeemaildata.replyto,
 						subject: options.welcomeemaildata.subject || options.welcomeemaildata.appname + ' New User Registration',
 						emailtemplatefilepath: templatepath,
@@ -376,7 +376,12 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 							appname: options.welcomeemaildata.appname,
 							filename: templatepath
 						}
-					}, callback);
+					};
+					if(options.welcomeemaildata.replyto !=='Local Perodic App <hello@localhost>'){
+						sendemailoptions.cc = options.welcomeemaildata.replyto;
+						sendemailoptions.replyTo = options.welcomeemaildata.replyto;
+					}
+					options.welcomeemaildata.sendEmailFunction(sendemailoptions, callback);
 				}
 			}
 		);
