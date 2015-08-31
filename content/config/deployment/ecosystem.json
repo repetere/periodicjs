@@ -18,58 +18,40 @@
     }
   }],
   "deploy" : {
-    "prod1" : {
-      "key" : "../otherdocs/pf-ils.pem",
+    "production" : {
+      "key" : "../../../periodic-baseline-5.pem",
       "user" : "ubuntu",
-      "host" : "ils-app1-prod.promisefinancial.net",
+      "host" : "52.25.36.183",
       "ref"  : "origin/deploy_production",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
+      "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
+      "path" : "/var/www/periodic-5-baseline",
       "post-deploy" : "cd periodicjs && sudo npm run deploysync"
     },
-    "prod2" : {
-      "key" : "../otherdocs/pf-ils.pem",
+    "staging" : {
+      "key" : "../../../periodic-baseline-5.pem",
       "user" : "ubuntu",
-      "host" : "ils-app2-prod.promisefinancial.net",
-      "ref"  : "origin/deploy_production",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
-    },
-    "staging1" : {
-      "key" : "../otherdocs/pf-ils.pem",
-      "user" : "ubuntu",
-      "host" : "ils-app1-staging.promisefinancial.net",
+      "host" : "52.25.36.183",
       "ref"  : "origin/deploy_staging",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
-    },
-    "staging2" : {
-      "key" : "../otherdocs/pf-ils.pem",
-      "user" : "ubuntu",
-      "host" : "ils-app2-staging.promisefinancial.net",
-      "ref"  : "origin/deploy_staging",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
-    },
-    "qa1" : {
-      "key" : "../otherdocs/pf-ils.pem",
-      "user" : "ubuntu",
-      "host" : "ils-app1-qa.promisefinancial.net",
-      "ref"  : "origin/deploy_qa",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
+      "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
+      "path" : "/var/www/periodic-5-baseline",
       "post-deploy" : "cd periodicjs && sudo npm run deploysync"
     },
     "qa" : {
-      "key" : "../otherdocs/pf-ils.pem",
+      "key" : "../../../periodic-baseline-5.pem",
       "user" : "ubuntu",
-      "host" : "ils-qa.promisefinancial.net",
+      "host" : "52.25.36.183",
       "ref"  : "origin/deploy_qa",
-      "repo" : "git@github.com:PromiseFinancial/promise-internal-server.git",
-      "path" : "/var/www/promise-internal-server",
+      "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
+      "path" : "/var/www/periodic-5-baseline",
+      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
+    },
+    "development" : {
+      "key" : "../../../periodic-baseline-5.pem",
+      "user" : "ubuntu",
+      "host" : "52.25.36.183",
+      "ref"  : "origin/deploy_dev",
+      "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
+      "path" : "/var/www/periodic-5-baseline",
       "post-deploy" : "cd periodicjs && sudo npm run deploysync"
     }
   }
