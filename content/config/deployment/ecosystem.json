@@ -19,40 +19,40 @@
   }],
   "deploy" : {
     "production" : {
-      "key" : "../../../periodic-baseline-5.pem",
+      "key" : "../../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
-      "host" : "52.25.36.183",
+      "host" : "your.server.com",
       "ref"  : "origin/deploy_production",
       "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
       "path" : "/var/www/periodic-5-baseline",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
+      "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "staging" : {
-      "key" : "../../../periodic-baseline-5.pem",
+      "key" : "../../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
-      "host" : "52.25.36.183",
+      "host" : "your.server.com",
       "ref"  : "origin/deploy_staging",
       "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
       "path" : "/var/www/periodic-5-baseline",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
+      "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "qa" : {
-      "key" : "../../../periodic-baseline-5.pem",
+      "key" : "../../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
-      "host" : "52.25.36.183",
+      "host" : "your.server.com",
       "ref"  : "origin/deploy_qa",
       "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
       "path" : "/var/www/periodic-5-baseline",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
+      "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "development" : {
-      "key" : "../../../periodic-baseline-5.pem",
+      "key" : "../../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
-      "host" : "52.25.36.183",
+      "host" : "your.server.com",
       "ref"  : "origin/deploy_dev",
       "repo" : "git@github.com:typesettin/periodic-5-baseline.git",
       "path" : "/var/www/periodic-5-baseline",
-      "post-deploy" : "cd periodicjs && sudo npm run deploysync"
+      "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     }
   }
 }
