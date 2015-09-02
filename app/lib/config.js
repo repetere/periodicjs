@@ -87,7 +87,10 @@ var config = function () {
 		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
 		/** get info from last runtime environemnt */
 		if(fs.existsSync(lastRuntimeEnvironmentFilePath)){
-			lastRuntimeEnvironment = fs.readJSONSync(lastRuntimeEnvironmentFilePath).environment;
+			var runtimeJSON = fs.readJSONSync(lastRuntimeEnvironmentFilePath, {throws: false});
+			if(runtimeJSON){
+				lastRuntimeEnvironment = runtimeJSON.environment;
+			}
 		}
 
 		/** load user config file: content/config/config.json */
