@@ -1,16 +1,16 @@
 <% include ../shared/header %>
 <% include ../shared/nav %>
-	<div class="_pea-container _pea-theme">
+	<div class="ts-container ts-theme">
 		<h1> Browse <a href="/browse/<%= request.params.entitytype %>"><%= request.params.entitytype %></a> <%= request.params.entityitems %>
 		</h1>
-		<div class=" _pea-form">
+		<div class=" ts-form">
 			<% if(tags && tags.length>0){
 				tags.forEach(function(tag){
 					if(request.params.entitytype==="authors"){
-						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="_pea-button _pea-color-info"><%= tag.username %></a> <%
+						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.username %>" class="ts-button ts-color-info"><%= tag.username %></a> <%
 					}
 					else{
-						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="_pea-button _pea-color-info"><%= tag.title %></a> <%
+						%> <a href="/browse/<%= request.params.entitytype %>/<%= tag.name %>" class="ts-button ts-color-info"><%= tag.title %></a> <%
 					}
 				});
 				} %>

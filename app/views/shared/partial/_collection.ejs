@@ -1,5 +1,5 @@
-<div class="_pea-row">
-	<div class="_pea-document">
+<div class="ts-row">
+	<div class="ts-document">
 		<h2><a href="/collection/<%= collection.name %>"><%= collection.title %></a></h2>
 		
 		<% var metaauthor = collection.primaryauthor;
@@ -19,7 +19,7 @@
 		}
 		else{
 			%>
-			<div class="_pea-content"><%= collection.content %></div>
+			<div class="ts-content"><%- collection.content %></div>
 			<%
 		}
 		if(fullcollection){%>

@@ -1,7 +1,7 @@
-<div class="_pea-row">
+<div class="ts-row">
 	<%
 	 if(!collectionitem){%>
-	<div class="_pea-document">
+	<div class="ts-document">
 		<h2>
 		<% if(item.entitytype && item.entitytype==="collection"){%>
 		<a href="/collection/<%= item.name %>">
@@ -23,13 +23,13 @@
 		<% include _itemmeta %>
 		<%
 	 if(fullitem){%>
-		<div class="_pea-content"><%- item.content %></div>
+		<div class="ts-content"><%- item.content %></div>
 	<%}
 	else if(!fullitem && item.contenttypeattributes && item.contenttypeattributes.blog && item.contenttypeattributes.blog.summary){%>
-		<div class="_pea-content"><%- item.contenttypeattributes.blog.summary %></div>
+		<div class="ts-content"><%- item.contenttypeattributes.blog.summary %></div>
 	<%}
 	else{%>
-		<div class="_pea-content"><%- item.content %></div>
+		<div class="ts-content"><%- item.content %></div>
 	<%}%>
 	</div>
 </div>
