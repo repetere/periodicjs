@@ -359,6 +359,12 @@ var periodic = function (periodicConfigOptions) {
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
+					user: {
+						email:req.user.email,
+						username:req.user.username,
+						firstname:req.user.firstname,
+						lastname:req.user.lastname
+					},
 					osHostname: os.hostname()
 				}
 			});
@@ -381,6 +387,7 @@ var periodic = function (periodicConfigOptions) {
 			else  {
 				res.status(500);
 				res.render(customThemeView, {
+					user: req.user,
 					message: err.message,
 					error: err
 				});
