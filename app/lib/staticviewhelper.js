@@ -8,6 +8,9 @@
 'use strict';
 
 var querystring = require('querystring'),
+	numeral = require('numeral'),
+	json2html = require('node-json2html'),
+	capitalize = require('capitalize'),
 	moment = require('moment');
 /**
  * A module that contains view helpers for ejs views.
@@ -48,6 +51,9 @@ module.exports = {
 			}
 		},
 		moment: moment,
+		numeral : numeral,
+		json2html : json2html,
+		capitalize : capitalize,
 		/** helper function exposes a server javascript object to the client
 		 * @param {object} obj server object for the client
 		 * @param {object} nameOfClientObj name of exposed server object for the client
