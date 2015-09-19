@@ -87,7 +87,8 @@ module.exports = function (periodic) {
 			theme: require('../controller/theme')(periodic),
 			userrole: periodic.core.controller.controller_routes(ControllerSettings.userrole),
 			userprivilege: periodic.core.controller.controller_routes(ControllerSettings.userprivilege),
-			user: periodic.core.controller.controller_routes(ControllerSettings.user)//require('../controller/user')(periodic)
+			user: periodic.core.controller.controller_routes(ControllerSettings.user),
+			ControllerSettings: ControllerSettings//require('../controller/user')(periodic)
 		},
 		extension:{ }
 	};
