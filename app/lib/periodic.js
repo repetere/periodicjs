@@ -351,6 +351,15 @@ var periodic = function (periodicConfigOptions) {
 	init.catchErrors = function () {
 		//log errors
 		app.use(function (err, req, res, next) {
+			var userdata = {};
+			if(req && req.user && req.user.email){
+				userdata = {
+					email:req.user.email,
+					username:req.user.username,
+					firstname:req.user.firstname,
+					lastname:req.user.lastname
+				};
+			}
 			// console.log('err',err,'next',next);
 			logger.error(err.message,err.stack,{
 				err:err,
@@ -359,12 +368,7 @@ var periodic = function (periodicConfigOptions) {
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
-					user: {
-						email:req.user.email,
-						username:req.user.username,
-						firstname:req.user.firstname,
-						lastname:req.user.lastname
-					},
+					user: userdata,
 					osHostname: os.hostname()
 				}
 			});
