@@ -19,7 +19,7 @@
   }],
   "deploy" : {
     "production" : {
-      "key" : "../../../otherdocs/you-pem-file.pem",
+      "key" : "../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
       "host" : "your.server.com",
       "ref"  : "origin/deploy_production",
@@ -28,7 +28,7 @@
       "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "staging" : {
-      "key" : "../../../otherdocs/you-pem-file.pem",
+      "key" : "../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
       "host" : "your.server.com",
       "ref"  : "origin/deploy_staging",
@@ -37,7 +37,7 @@
       "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "qa" : {
-      "key" : "../../../otherdocs/you-pem-file.pem",
+      "key" : "../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
       "host" : "your.server.com",
       "ref"  : "origin/deploy_qa",
@@ -46,7 +46,7 @@
       "post-deploy" : "cd node_modules/periodicjs && sudo npm run deploysync"
     },
     "development" : {
-      "key" : "../../../otherdocs/you-pem-file.pem",
+      "key" : "../../otherdocs/you-pem-file.pem",
       "user" : "ubuntu",
       "host" : "your.server.com",
       "ref"  : "origin/deploy_dev",
