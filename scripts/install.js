@@ -9,6 +9,9 @@
 
 var fs = require('fs-extra'),
 		path = require('path'),
+		async = require('async'),
+ 		Utilities = require('periodicjs.core.utilities'),
+		CoreUtilities = new Utilities({}),
 		npmhelper = require('./npmhelper')({}),
 		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json'),
 		applicationConfigPath = path.join(process.cwd(),'content/config/config.json'),
@@ -58,6 +61,24 @@ if(process.env.npm_config_skip_post_install){
 else if(alreadyInstalled){
 	console.log('Periodicjs Already Installed, Upgrade Complete');
 	restoreExtensionBackup();
+	//deploy sync
+	async.waterfall([
+		npmhelper.getInstalledExtensions,
+		npmhelper.getMissingExtensionsFromConfig,
+		npmhelper.installMissingExtensions,
+		npmhelper.installMissingNodeModules,
+		npmhelper.getThemeName,
+		npmhelper.installThemeModules
+		],
+		function(err,result){	
+			if(err){
+				throw new Error(err);
+			}
+			else{
+				console.log('post install deploysync result',result);
+				CoreUtilities.restart_app({});
+			}
+	});
 }
 else {
 	fs.copy(path.join(process.cwd(),'.npmignore'), path.join(process.cwd(),'.gitignore'), function (err) {
