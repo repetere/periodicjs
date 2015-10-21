@@ -16,11 +16,11 @@ var assetSchema = new Schema({
 		type: Date,
 		'default': Date.now
 	},
-	updated: {
+	updatedat: {
 		type: Date,
 		'default': Date.now
 	},
-	// size: Number,
+	size: Number,
 	author: {
 		type: ObjectId,
 		ref: 'User'
