@@ -14,6 +14,10 @@ var categorySchema = new Schema({
 	},
 	dek: String,
 	content: String,
+	entitytype: {
+		type: String,
+		'default': 'category'
+	},
 	author: {
 		type: ObjectId,
 		ref: 'User'

@@ -23,6 +23,10 @@ var contenttypeSchema = new Schema({
 		type: Date,
 		'default': Date.now
 	},
+	entitytype: {
+		type: String,
+		'default': 'contenttype'
+	},
 	attributes: [{
 		title: String,
 		name: String,

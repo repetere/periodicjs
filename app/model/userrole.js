@@ -15,6 +15,10 @@ var userroleSchema = new Schema({
 		type: String,
 		unique: true
 	},
+	entitytype: {
+		type: String,
+		'default': 'userrole'
+	},
 	privileges: [{
 		type: ObjectId,
 		ref: 'Userprivilege'

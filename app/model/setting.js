@@ -10,6 +10,10 @@ var settingSchema = new Schema({
 		type: String,
 		unique: true
 	},
+	entitytype: {
+		type: String,
+		'default': 'setting'
+	},
 	value: Schema.Types.Mixed,
 	attributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,

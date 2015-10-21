@@ -9,9 +9,11 @@
 
 var querystring = require('querystring'),
 	numeral = require('numeral'),
+	pluralize = require('pluralize'),
 	json2html = require('node-json2html'),
 	capitalize = require('capitalize'),
 	moment = require('moment');
+	pluralize.addIrregularRule('data','datas');
 /**
  * A module that contains view helpers for ejs views.
  * @author Yaw Joseph Etse
@@ -51,6 +53,7 @@ module.exports = {
 			}
 		},
 		moment: moment,
+		pluralize: pluralize,
 		numeral : numeral,
 		json2html : json2html,
 		capitalize : capitalize,

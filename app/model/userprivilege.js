@@ -11,6 +11,10 @@ var userprivilegeSchema = new Schema({
 		unique: true
 	},
 	title: String,
+	entitytype: {
+		type: String,
+		'default': 'userprivilege'
+	},
 	name: {
 		type: String,
 		unique: true

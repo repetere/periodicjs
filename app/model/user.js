@@ -95,6 +95,10 @@ var userSchema = new Schema({
 		ref: 'Contenttype'
 	}],
 	apikey: String,
+	entitytype: {
+		type: String,
+		'default': 'user'
+	},
 	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,
@@ -362,11 +366,11 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 					if (templatepath === options.welcomeemaildata.emailviewname) {
 						templatepath = path.resolve(process.cwd(), 'app/views', templatepath + '.' + options.welcomeemaildata.themefileext);
 					}
-					var sendemailoptions = {
+					options.welcomeemaildata.sendEmailFunction({
 						appenvironment: options.welcomeemaildata.appenvironment,
 						to: options.newuser.email,
-						// cc: options.welcomeemaildata.replyto,
-						// replyTo: options.welcomeemaildata.replyto,
+						cc: options.welcomeemaildata.replyto,
+						replyTo: options.welcomeemaildata.replyto,
 						from: options.welcomeemaildata.replyto,
 						subject: options.welcomeemaildata.subject || options.welcomeemaildata.appname + ' New User Registration',
 						emailtemplatefilepath: templatepath,
@@ -376,12 +380,7 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 							appname: options.welcomeemaildata.appname,
 							filename: templatepath
 						}
-					};
-					if(options.welcomeemaildata.replyto !=='Local Perodic App <hello@localhost>'){
-						sendemailoptions.cc = options.welcomeemaildata.replyto;
-						sendemailoptions.replyTo = options.welcomeemaildata.replyto;
-					}
-					options.welcomeemaildata.sendEmailFunction(sendemailoptions, callback);
+					}, callback);
 				}
 			}
 		);

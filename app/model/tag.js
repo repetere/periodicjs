@@ -14,6 +14,10 @@ var tagSchema = new Schema({
 	},
 	dek: String,
 	content: String,
+	entitytype: {
+		type: String,
+		'default': 'tag'
+	},
 	author: {
 		type: ObjectId,
 		ref: 'User'

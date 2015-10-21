@@ -15,6 +15,10 @@ var usergroupSchema = new Schema({
 		type: String,
 		unique: true
 	},
+	entitytype: {
+		type: String,
+		'default': 'usergroup'
+	},
 	roles: [{
 		type: ObjectId,
 		ref: 'Userrole'
