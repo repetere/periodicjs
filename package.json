@@ -88,7 +88,7 @@
     "periodicjs.core.cache": "5.9.0",
     "periodicjs.core.controller": "5.9.96",
     "periodicjs.core.extensions": "5.9.1",
-    "periodicjs.core.mailer": "5.9.0",
+    "periodicjs.core.mailer": "5.9.1",
     "periodicjs.core.utilities": "5.9.0",
     "pluralize": "^1.1.2",
     "prompt": "0.2.14",
