@@ -42,7 +42,7 @@ module.exports = function (periodic) {
 	 */
 	if (periodic.settings.theme) {
 		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
-		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
+		themeConfig = path.join(__dirname,'../../content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
 		themeRouteTest=fs.existsSync(themeRoute);
 		if (themeRouteTest) {
 			if(fs.existsSync(themeConfig)){
@@ -53,7 +53,7 @@ module.exports = function (periodic) {
 	}
 
 	if(periodic.settings.use_test_extensions_by_environment){
-		periodic.settings.extensionFilePath = path.resolve(process.cwd(), 'content/config/process/'+periodic.settings.application.environment+'.extensions.json');
+		periodic.settings.extensionFilePath = path.resolve(__dirname, '../../content/config/process/'+periodic.settings.application.environment+'.extensions.json');
 	}
 
 	/**
@@ -85,20 +85,15 @@ module.exports = function (periodic) {
 			search: require('../controller/search')(periodic),
 			tag:  periodic.core.controller.controller_routes(ControllerSettings.tag),
 			theme: require('../controller/theme')(periodic),
-			userrole: periodic.core.controller.controller_routes(ControllerSettings.userrole),
-			userprivilege: periodic.core.controller.controller_routes(ControllerSettings.userprivilege),
-			user: periodic.core.controller.controller_routes(ControllerSettings.user),
-			ControllerSettings: ControllerSettings//require('../controller/user')(periodic)
+			user: require('../controller/user')(periodic)
 		},
 		extension:{ }
 	};
-	// console.log('periodic.app.controller.native.user',periodic.app.controller.native.user);
 	// console.log('	periodic.app.controller.native.tag',periodic.app.controller.native.tag);
 	/** 
 	 * controller for homepage
 	 * @type {function}
 	 */
-	// console.log('routes periodic.core',periodic.core);
 
 	/** load extensions */
 	periodic.settings.extconf = periodic.core.extension.settings();
@@ -106,7 +101,6 @@ module.exports = function (periodic) {
 	periodic = periodic.core.extension.loadExtensions(periodic);
 	ignoreExtensionIndex = periodic.ignoreExtensionIndex;
 	// console.log('ignoreExtensionIndex',ignoreExtensionIndex);
-	// console.log('routes after ext periodic.core',periodic.core);
 	
 	/** load custom theme routes */
 	if (themeRouteTest) {
@@ -126,4 +120,5 @@ module.exports = function (periodic) {
 	appRouter.get('/', periodic.app.controller.native.home.default_view);
 	appRouter.get('*', periodic.app.controller.native.home.catch404);
 	periodic.app.use(appRouter);
+	return periodic;
 };
