@@ -126,4 +126,5 @@ module.exports = function (periodic) {
 	appRouter.get('/', periodic.app.controller.native.home.default_view);
 	appRouter.get('*', periodic.app.controller.native.home.catch404);
 	periodic.app.use(appRouter);
+	return periodic;
 };
