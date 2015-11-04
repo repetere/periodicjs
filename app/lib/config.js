@@ -35,7 +35,7 @@ var config = function () {
 		configurationOverrideFileJSON,
 		configurationDefaultFileJSON,
 		lastRuntimeEnvironment,
-		lastRuntimeEnvironmentFilePath = path.resolve(process.cwd(), 'content/config/process/runtime.json'),
+		lastRuntimeEnvironmentFilePath = path.resolve(__dirname, '../../content/config/process/runtime.json'),
 		config = {};
 
 	/** 
@@ -84,7 +84,7 @@ var config = function () {
 	 */
 	this.init = function () {
 		/** get info from package.json */
-		packagejsonFileJSON = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		packagejsonFileJSON = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
 		/** get info from last runtime environemnt */
 		if(fs.existsSync(lastRuntimeEnvironmentFilePath)){
 			var runtimeJSON = fs.readJSONSync(lastRuntimeEnvironmentFilePath, {throws: false});
@@ -118,7 +118,7 @@ var config = function () {
 		}
 
 		//** save last runtime environment to load as a backup */
-		fs.outputJson(path.resolve(process.cwd(),'content/config/process/runtime.json'),{environment:appEnvironment},function(err){
+		fs.outputJson(path.resolve(__dirname,'../../content/config/process/runtime.json'),{environment:appEnvironment},function(err){
 			if(err){
 				console.error(err);
 			}
