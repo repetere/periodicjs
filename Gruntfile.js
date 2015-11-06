@@ -6,7 +6,33 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 
-var path = require('path');
+var path = require('path'),
+	Config = require('./app/lib/config'),
+	config = new Config(),
+	fs = require('fs-extra'),
+	themename = config.settings().theme,
+	testPaths = [];
+
+if (typeof themename === 'string') {
+	try {
+		var themePath = path.join(__dirname, './content/themes/' + themename + '/test');
+		console.log(themePath);
+		var dirResults = fs.readdirSync(themePath);
+		if (dirResults instanceof Error) {
+			throw dirResults;
+		}
+		else if (Array.isArray(dirResults)) {
+			var themeTestPath = themePath + '/**/*.js';
+			testPaths.push(themeTestPath);
+		}
+	}
+	catch (e) {
+		console.log('Theme test path does not exist', e);
+	}
+}
+
+var periodicTestPath = path.join(__dirname, './test') + '/**/*.js';
+testPaths.push(periodicTestPath);
 
 module.exports = function (grunt) {
 	grunt.initConfig({
@@ -15,6 +41,20 @@ module.exports = function (grunt) {
 			options: {
 				config: '.jsbeautify'
 			}
+		},
+		mochacov: {
+			// coverage: {
+			// 	options: {
+			// 		coveralls: {}
+			// 	}
+			// },
+			options: {
+				reporter: 'spec'
+			},
+			all: testPaths
+			// options: {
+			// 	files: ''
+			// }
 		},
 		simplemocha: {
 			options: {
@@ -176,4 +216,5 @@ module.exports = function (grunt) {
 	grunt.registerTask('test', 'simplemocha');
 	grunt.registerTask('lint', 'jshint');
 	grunt.registerTask('default', ['lint', 'browserify', 'doc', 'uglify', 'test', 'less']);
+	grunt.registerTask('cov', ['mochacov']);
 };

@@ -37,6 +37,13 @@
     "type": "git",
     "url": "git://github.com/typesettin/periodicjs.git"
   },
+   "config": {
+    "blanket": {
+      "pattern": [
+        "content/themes"
+      ]
+    }
+  },
   "license": "MIT",
   "scripts": {
     "coverage": "mocha -R html-cov --recursive > test/coverage.html",

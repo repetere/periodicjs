@@ -60,7 +60,7 @@ var periodic = function (periodicConfigOptions) {
 		periodicObj,
 		customThemeView = 'home/error500',
 		logger,
-		database = require('../../content/config/database'),
+		database = require(path.join(__dirname, '../../content/config/database')),
 		db,
 		dburl,
 		mngse;
@@ -301,7 +301,7 @@ var periodic = function (periodicConfigOptions) {
 			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
 		}
 		else{
-			if (fs.existsSync(path.resolve(__dirname,'../../node_modules','periodicjs.ext.install')) && appconfig.settings().status === 'install') {
+			if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && appconfig.settings().status === 'install') {
 				periodicObj = require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
@@ -351,15 +351,6 @@ var periodic = function (periodicConfigOptions) {
 	init.catchErrors = function () {
 		//log errors
 		app.use(function (err, req, res, next) {
-			var userdata = {};
-			if(req && req.user && req.user.email){
-				userdata = {
-					email:req.user.email,
-					username:req.user.username,
-					firstname:req.user.firstname,
-					lastname:req.user.lastname
-				};
-			}
 			// console.log('err',err,'next',next);
 			logger.error(err.message,err.stack,{
 				err:err,
@@ -368,7 +359,12 @@ var periodic = function (periodicConfigOptions) {
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
-					user: userdata,
+					user: {
+						email:req.user.email,
+						username:req.user.username,
+						firstname:req.user.firstname,
+						lastname:req.user.lastname
+					},
 					osHostname: os.hostname()
 				}
 			});
@@ -439,6 +435,7 @@ var periodic = function (periodicConfigOptions) {
 	return {
 		expressapp: app,
 		appconfig: appconfig,
+		periodic: periodicObj,
 		mongoose: mngse,
 		config: periodicConfigOptions,
 		port: app.get('port')
