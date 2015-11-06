@@ -108,7 +108,7 @@ var periodic = function (periodicConfigOptions) {
 
 		/** if custom error page */
 		if(appconfig.settings().theme){
-			var custom500errorpage = path.join(path.resolve(process.cwd(), './content/themes'), appconfig.settings().theme, 'views', 'home/error500' + '.' + appconfig.settings().templatefileextension),
+			var custom500errorpage = path.join(path.resolve(__dirname, '../../content/themes'), appconfig.settings().theme, 'views', 'home/error500' + '.' + appconfig.settings().templatefileextension),
 				custom500ErrorPageError,
 				custom500ErrorPageView;
 			try{
@@ -301,7 +301,7 @@ var periodic = function (periodicConfigOptions) {
 			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
 		}
 		else{
-			if (fs.existsSync(path.resolve(process.cwd(),'node_modules','periodicjs.ext.install')) && appconfig.settings().status === 'install') {
+			if (fs.existsSync(path.resolve(__dirname,'../../node_modules','periodicjs.ext.install')) && appconfig.settings().status === 'install') {
 				periodicObj = require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
