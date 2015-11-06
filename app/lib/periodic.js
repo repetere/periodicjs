@@ -352,6 +352,15 @@ var periodic = function (periodicConfigOptions) {
 		//log errors
 		app.use(function (err, req, res, next) {
 			// console.log('err',err,'next',next);
+			var userdata = {};		
+-			if(req && req.user && req.user.email){		
+-				userdata = {		
+-					email:req.user.email,		
+-					username:req.user.username,		
+-					firstname:req.user.firstname,		
+-					lastname:req.user.lastname		
+-				};		
+-			}
 			logger.error(err.message,err.stack,{
 				err:err,
 				ipinfo:{
@@ -359,12 +368,7 @@ var periodic = function (periodicConfigOptions) {
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
-					user: {
-						email:req.user.email,
-						username:req.user.username,
-						firstname:req.user.firstname,
-						lastname:req.user.lastname
-					},
+					user: userdata,
 					osHostname: os.hostname()
 				}
 			});
