@@ -11,6 +11,7 @@ var winston = require('winston'),
 	logger,
 	winstonLogger,
 	path = require('path'),
+	fs = require('fs-extra'),
 	loggerConfig={};
 
 /**
@@ -26,6 +27,8 @@ var winston = require('winston'),
 var logger = function(env){
 	var d = new Date(),
 		fileNamePathAddition = env+'-'+d.getUTCFullYear()+'.'+(d.getUTCMonth()+1)+'.'+d.getUTCDay();
+	
+	fs.ensureDirSync(path.join(__dirname, '../../logs'));
 
 	if(env === 'production'){
 		loggerConfig = {
