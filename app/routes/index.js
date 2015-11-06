@@ -42,7 +42,7 @@ module.exports = function (periodic) {
 	 */
 	if (periodic.settings.theme) {
 		themeRoute = path.join(periodic.settings.themepath, 'routes.js');
-		themeConfig = path.join(process.cwd(),'content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
+		themeConfig = path.join(__dirname, '../../content/config/themes',periodic.settings.theme, 'periodicjs.theme.json');
 		themeRouteTest=fs.existsSync(themeRoute);
 		if (themeRouteTest) {
 			if(fs.existsSync(themeConfig)){
@@ -53,7 +53,7 @@ module.exports = function (periodic) {
 	}
 
 	if(periodic.settings.use_test_extensions_by_environment){
-		periodic.settings.extensionFilePath = path.resolve(process.cwd(), 'content/config/process/'+periodic.settings.application.environment+'.extensions.json');
+		periodic.settings.extensionFilePath = path.resolve(__dirname, '../../content/config/process/'+periodic.settings.application.environment+'.extensions.json');
 	}
 
 	/**
