@@ -65,7 +65,7 @@ module.exports = function (grunt) {
 				reporter: 'spec'
 			},
 			all: {
-				src: 'test/**/*.js'
+				src: testPaths
 			}
 		},
 		jshint: {
