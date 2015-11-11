@@ -2,10 +2,10 @@
 /*jshint expr: true*/
 
 var path = require('path'),
-  periodicjs = require(path.resolve(process.cwd(), 'app/lib/periodic.js')),
-  chai = require('chai'),
+  periodicjs = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
+  // chai = require('chai'),
   expect = require('chai').expect;
-chai.use(require('chai-fs'));
+// chai.use(require('chai-fs'));
 
 describe('A module that represents a periodic app', function () {
   this.timeout(5000);
@@ -22,9 +22,9 @@ describe('A module that represents a periodic app', function () {
     });
 
     it('uses express methods', function () {
-      //console.log( periodicjs().init.loadConfiguration() )
-      //console.log( periodicjs().app.get('env') )
-      //expect(periodicjs().app.get('env')).to.eql('development');
+      // console.log( periodicjs() )
+      // console.log( periodicjs().expressapp.get('env') );
+      expect(periodicjs().expressapp.get('env')).to.eql('development' || 'dev_remote');
     });
   });
 });
