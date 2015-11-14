@@ -13,8 +13,8 @@ var fs = require('fs-extra'),
  		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		npmhelper = require('./npmhelper')({}),
-		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json'),
-		applicationConfigPath = path.join(process.cwd(),'content/config/config.json'),
+		extensionsConfigPath = path.join(process.cwd(),'node_modules/periodicjs/content/config/extensions.json'),
+		applicationConfigPath = path.join(process.cwd(),'node_modules/periodicjs/content/config/config.json'),
 		extensionConfig,
 		applicationConfig,
 		alreadyInstalled= false;
@@ -81,7 +81,7 @@ else if(alreadyInstalled){
 	});
 }
 else {
-	fs.copy(path.join(process.cwd(),'.npmignore'), path.join(process.cwd(),'.gitignore'), function (err) {
+	fs.copy(path.join(__dirname,'../.npmignore'), path.join(__dirname,'../.gitignore'), function (err) {
 	  if (err) {return console.error(err);}
 	  console.log('copied ignore file!');
 	}); // copies file
@@ -98,7 +98,7 @@ else {
 			}
 		});	
 }
-fs.ensureDir(path.join(process.cwd(),'logs'), function (err) {
+fs.ensureDir(path.join(__dirname,'../logs'), function (err) {
 	if(err){
 	  console.log('creating log directory err',err); // => null
 	}
