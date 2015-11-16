@@ -25,8 +25,8 @@ var fs = require('fs'),
 // console.log('preuninstall.js extensionsConfigPath',extensionsConfigPath);
 // console.log('preuninstall.js appContentPath',appContentPath);
 // console.log('preuninstall.js appContentPathBackupDir',appContentPathBackupDir);
-console.log('preuninstall.js customFilesPath',customFilesPath);
-console.log('preuninstall.js customFilesPathBackupDir',customFilesPathBackupDir);
+// console.log('preuninstall.js customFilesPath',customFilesPath);
+// console.log('preuninstall.js customFilesPathBackupDir',customFilesPathBackupDir);
 // console.log('preuninstall.js publicPath',publicPath);
 // console.log('preuninstall.js publicPathBackupDir',publicPathBackupDir);
 // console.log('path.join(process.cwd(),node_modules/async)',path.join(process.cwd(),'node_modules/async'));
@@ -45,12 +45,12 @@ try{
 				fs_extra.copy(publicPath, publicPathBackupDir,asyncCB);
 			},
 			copy_custom_files:	function(asyncCB){
-				fs.copy(customFilesPath,customFilesPathBackupDir,{
+				fs_extra.copy(customFilesPath,customFilesPathBackupDir,{
 					filter:function(file){
 						// console.log('file',file);
 						if(file.match(/node_modules\/periodicjs\/app/gi) ||
 							file.match(/node_modules\/periodicjs\/.DS_Store/gi) ||
-							file.match(/node_modules\/periodicjs\/.gitignore/gi) ||
+							// file.match(/node_modules\/periodicjs\/.gitignore/gi) ||
 							file.match(/node_modules\/periodicjs\/.gitmodules/gi) ||
 							file.match(/node_modules\/periodicjs\/.jsbeautify/gi) ||
 							file.match(/node_modules\/periodicjs\/.jshintrc/gi) ||
