@@ -13,19 +13,42 @@ var fs = require('fs-extra'),
  		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		npmhelper = require('./npmhelper')({}),
-		extensionsConfigPath = path.join(process.cwd(),'content/config/extensions.json'),
-		applicationConfigPath = path.join(process.cwd(),'content/config/config.json'),
+		extensionsConfigPath = path.join(process.cwd(),'/content/config/extensions.json'),
+		applicationConfigPath = path.join(process.cwd(),'/content/config/config.json'),
+		appContentPath = path.join(process.cwd(),'/content/'),	
+		appContentPathBackupDir = path.join(process.cwd(),'../periodic_content_backup/'),
+		publicPath = path.join(process.cwd(),'/public/'),	
+		publicPathBackupDir = path.join(process.cwd(),'../periodic_public_backup/'),
 		extensionConfig,
 		applicationConfig,
+		backupDir,
 		alreadyInstalled= false;
+
+
+
+// console.log('install.js process.cwd()',process.cwd());
+// console.log('install.js __dirname',__dirname);
+// console.log('install.js extensionsConfigPath',extensionsConfigPath);
+// console.log('install.js applicationConfigPath',applicationConfigPath);
+// console.log('install.js appContentPath',appContentPath);
+// console.log('install.js appContentPathBackupDir',appContentPathBackupDir);
+// console.log('install.js publicPath',publicPath);
+// console.log('install.js publicPathBackupDir',publicPathBackupDir);
+try{
+	backupDir = fs.statSync(publicPathBackupDir);
+	alreadyInstalled = true;
+}
+catch(e){
+	console.log('there is no backup dir',publicPathBackupDir,e);
+}
 
 try{
 	extensionConfig = fs.readJsonSync(extensionsConfigPath);
 	applicationConfig = fs.readJsonSync(applicationConfigPath);
-	if(extensionConfig.extensions.length>0){
+	if(alreadyInstalled || extensionConfig.extensions.length>0){
 	 	alreadyInstalled=true;
 	}
-	else if(applicationConfig.status==='active'){
+	else if(alreadyInstalled ||applicationConfig.status==='active'){
 	 	alreadyInstalled=true;
 	}
 }
@@ -34,22 +57,35 @@ catch(e){
 }
 
 var restoreExtensionBackup = function(){
-	fs.readFile(extensionsConfigPath+'.dat',{encoding :'utf8'},function(err,filedata){
-		if(err){
-			console.log('restoring extensions.json.dat error',err);
+	async.parallel({
+			copy_content:	function(asyncCB){
+				fs.copy( appContentPathBackupDir,appContentPath,function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(appContentPathBackupDir,asyncCB);
+					}
+				});
+			},
+			copy_public:	function(asyncCB){
+				fs.copy(publicPathBackupDir,publicPath, function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(publicPathBackupDir,asyncCB);
+					}
+				});
+			}
+		},function(err,result){
+		  if (err){
+				console.log('copying appContentPathBackupDir & publicPathBackupDir backup error',err);
+			}
+			else{
+				console.log('successful appContentPathBackupDir & publicPathBackupDir backup',result);
+			}
 			process.exit(0);
-		}
-		else{
-			fs.writeFile(extensionsConfigPath,filedata,function(err){
-				if(err){
-					console.log('writing extensions.json from backup .dat error',err);
-				}
-				else{
-					console.log('restored extensions.json');
-				}
-				process.exit(0);
-			});
-		}
 	});
 };
 
@@ -81,7 +117,7 @@ else if(alreadyInstalled){
 	});
 }
 else {
-	fs.copy(path.join(process.cwd(),'.npmignore'), path.join(process.cwd(),'.gitignore'), function (err) {
+	fs.copy(path.join(__dirname,'../.npmignore'), path.join(__dirname,'../.gitignore'), function (err) {
 	  if (err) {return console.error(err);}
 	  console.log('copied ignore file!');
 	}); // copies file
@@ -98,7 +134,7 @@ else {
 			}
 		});	
 }
-fs.ensureDir(path.join(process.cwd(),'logs'), function (err) {
+fs.ensureDir(path.join(__dirname,'../logs'), function (err) {
 	if(err){
 	  console.log('creating log directory err',err); // => null
 	}
