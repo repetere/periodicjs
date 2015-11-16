@@ -19,6 +19,8 @@ var fs = require('fs-extra'),
 		appContentPathBackupDir = path.join(process.cwd(),'../periodic_content_backup/'),
 		publicPath = path.join(process.cwd(),'/public/'),	
 		publicPathBackupDir = path.join(process.cwd(),'../periodic_public_backup/'),
+		customFilesPath = path.join(process.cwd()),	
+		customFilesPathBackupDir = path.join(process.cwd(),'../periodic_customfiles_backup/'),
 		extensionConfig,
 		applicationConfig,
 		backupDir,
@@ -75,6 +77,16 @@ var restoreExtensionBackup = function(){
 					}
 					else{
 						fs.remove(publicPathBackupDir,asyncCB);
+					}
+				});
+			},
+			copy_custom_files:	function(asyncCB){
+				fs.copy(customFilesPathBackupDir,customFilesPath, function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(customFilesPathBackupDir,asyncCB);
 					}
 				});
 			}
