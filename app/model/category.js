@@ -44,6 +44,18 @@ var categorySchema = new Schema({
 		index: true
 	}], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
 	//http://www.codeproject.com/Articles/521713/Storing-Tree-like-Hierarchy-Structures-With-MongoD
+	changes: [{
+		createdat: {
+			type: Date,
+			'default': Date.now
+		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
+		editor_username: String,
+		changeset: Schema.Types.Mixed
+	}],
 	attributes: Schema.Types.Mixed,
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,

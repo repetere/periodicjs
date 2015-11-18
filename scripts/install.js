@@ -41,7 +41,7 @@ try{
 	alreadyInstalled = true;
 }
 catch(e){
-	console.log('there is no backup dir',publicPathBackupDir,e);
+	console.log('there is no backup dir',publicPathBackupDir);
 }
 
 try{
