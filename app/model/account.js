@@ -97,7 +97,7 @@ var userSchema = new Schema({
 	apikey: String,
 	entitytype: {
 		type: String,
-		'default': 'user'
+		'default': 'account'
 	},
 	changes: [{
 		createdat: {

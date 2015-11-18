@@ -42,6 +42,18 @@ var tagSchema = new Schema({
 		type: ObjectId,
 		ref: 'Tag'
 	}], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
+	changes: [{
+		createdat: {
+			type: Date,
+			'default': Date.now
+		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
+		editor_username: String,
+		changeset: Schema.Types.Mixed
+	}],
 	attributes: Schema.Types.Mixed,
 	contenttypeattributes: Schema.Types.Mixed,
 	extensionattributes: Schema.Types.Mixed,

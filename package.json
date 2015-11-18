@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "5.0.33",
+  "version": "5.0.4",
   "main": "index.js",
   "engines": {
     "node": ">=0.12.x"
@@ -94,7 +94,7 @@
     "optimist": "0.6.1",
     "passport": "~0.2.0",
     "periodicjs.core.cache": "5.9.1",
-    "periodicjs.core.controller": "5.9.982",
+    "periodicjs.core.controller": "5.9.983",
     "periodicjs.core.extensions": "5.9.2",
     "periodicjs.core.mailer": "5.9.2",
     "periodicjs.core.utilities": "5.9.0",

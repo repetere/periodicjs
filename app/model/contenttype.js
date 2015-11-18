@@ -35,6 +35,18 @@ var contenttypeSchema = new Schema({
 		data: Schema.Types.Mixed,
 		defaultvalue: String
 	}],
+	changes: [{
+		createdat: {
+			type: Date,
+			'default': Date.now
+		},
+		editor: {
+			type: ObjectId,
+			ref: 'User'
+		},
+		editor_username: String,
+		changeset: Schema.Types.Mixed
+	}],
 	extensionattributes: Schema.Types.Mixed
 });
 
