@@ -60,9 +60,9 @@ else {
 	}
 
 	if(periodicStartupOptions.use_global_socket_io){
-		var mongoIoAdapter = require('socket.io-adapter-mongo'),
+		var mongoIoAdapter = require('@yawetse/socket.io-adapter-mongo'),
 			additionalIOConfigs = { return_buffers: true, detect_buffers: true };
-		global.io.adapter(mongoIoAdapter(extend(periodicSettings.dburl, additionalIOConfigs)));
+		global.io.adapter(mongoIoAdapter(periodicSettings.dburl,additionalIOConfigs));
 		global.io.attach(global.periodicExpressApp, {
 			logger: periodic.logger
 		});
