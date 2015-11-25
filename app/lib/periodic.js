@@ -364,10 +364,12 @@ var periodic = function (periodicConfigOptions) {
 			logger.error(err.message,err.stack,{
 				err:err,
 				ipinfo:{
+					date: new Date(),
 					'x-forwarded-for': req.headers['x-forwarded-for'],
 					remoteAddress: req.connection.remoteAddress,
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
+					userAgent: req.headers['user-agent'],
 					user: userdata,
 					osHostname: os.hostname()
 				}
