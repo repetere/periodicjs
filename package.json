@@ -94,7 +94,7 @@
     "optimist": "0.6.1",
     "passport": "~0.2.0",
     "periodicjs.core.cache": "5.9.1",
-    "periodicjs.core.controller": "5.9.991",
+    "periodicjs.core.controller": "5.9.992",
     "periodicjs.core.extensions": "5.9.2",
     "periodicjs.core.mailer": "5.9.2",
     "periodicjs.core.utilities": "5.9.0",
