@@ -37,6 +37,21 @@ module.exports.data = {
 	use_full_data:true
 };
 
+module.exports.contenttype = {
+	model_name:'contenttype',
+	load_model_population:'author' ,
+	load_multiple_model_population:'author',
+	use_full_data:false,
+	use_taxonomy_controllers:true,
+};
+
+module.exports.asset = {
+		model_name:'asset',
+		load_model_population:'author contenttypes tags categories authors' ,
+		load_multiple_model_population:'author contenttypes tags categories authors',
+		use_full_data:false,
+	};
+
 module.exports.collection = {
 	model_name:'collection',
 	load_model_population:'tags categories contenttypes assets primaryasset authors primaryauthor  items.item' ,
