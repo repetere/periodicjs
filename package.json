@@ -95,7 +95,7 @@
     "passport": "~0.2.0",
     "periodicjs.core.cache": "5.9.1",
     "periodicjs.core.controller": "5.9.992",
-    "periodicjs.core.extensions": "5.9.2",
+    "periodicjs.core.extensions": "5.9.3",
     "periodicjs.core.mailer": "5.9.2",
     "periodicjs.core.utilities": "5.9.0",
     "pluralize": "^1.1.2",
