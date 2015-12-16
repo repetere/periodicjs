@@ -4,6 +4,7 @@
 // @import (inline) "../../node_modules/pikaday/css/pikaday.css";
 // @import "periodic_stylie.less";
 // @errorColor: #FF4000;
+
 .ts{
 	h1, h2, h3, h4, h5, h6{
 	  margin: @sizelg 0 @sizexs;
@@ -131,6 +132,28 @@
 					// color: @errorColor;
 	    	}
 			}
+		}
+	}
+	.ts-button-icon{
+		&[class^="flaticon-"]:before, &[class*=" flaticon-"]:before,
+		&[class^="flaticon-"]:after, &[class*=" flaticon-"]:after {   
+			font-size:14px;
+			margin-left: 0px;
+		}
+	}
+	.ts-button{
+		&.ts-button-transparent{
+			background-color: transparent;
+			border: none;
+			background: none;
+			&.bottom-border{
+				border-bottom:1px solid black;
+			}
+		}
+		&[class^="flaticon-"]:before, &[class*=" flaticon-"]:before,
+		&[class^="flaticon-"]:after, &[class*=" flaticon-"]:after {   
+			font-size:14px;
+			margin-left: 0px;
 		}
 	}
 }
