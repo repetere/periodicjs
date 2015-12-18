@@ -92,7 +92,7 @@ var restoreExtensionBackup = function(){
 			}
 		},function(err,result){
 		  if (err){
-				console.log('copying appContentPathBackupDir & publicPathBackupDir backup error',err);
+				console.log('copying appContentPathBackupDir & publicPathBackupDir backup error (directories do not exist)',err.message);
 			}
 			else{
 				console.log('successful appContentPathBackupDir & publicPathBackupDir backup',result);
