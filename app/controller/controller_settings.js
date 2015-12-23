@@ -72,8 +72,8 @@ module.exports.compilation = {
 
 module.exports.tag = {
 	model_name:'tag',
-	load_model_population:'contenttypes parent' ,
-	load_multiple_model_population:'contenttypes parent',
+	load_model_population:'contenttypes parent primaryasset' ,
+	load_multiple_model_population:'contenttypes parent primaryasset',
 	use_full_data:false,
 	use_children_parent_controllers:true,
 	use_taxonomy_controllers:true,
@@ -81,8 +81,8 @@ module.exports.tag = {
 
 module.exports.category = {
 	model_name:'category',
-	load_model_population:'contenttypes parent' ,
-	load_multiple_model_population:'contenttypes parent',
+	load_model_population:'contenttypes parent primaryasset' ,
+	load_multiple_model_population:'contenttypes parent primaryasset',
 	use_full_data:false,
 	use_children_parent_controllers:true,
 	use_taxonomy_controllers:true,
