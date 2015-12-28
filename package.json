@@ -4,7 +4,7 @@
   "version": "5.1.22",
   "main": "index.js",
   "engines": {
-    "node": ">=0.12.x"
+    "node": ">=4.0.0"
   },
   "author": {
     "name": "Yaw Joseph Etse",
@@ -61,15 +61,16 @@
     "stop": "forever stop -c nodemon index.js"
   },
   "dependencies": {
+    "@yawetse/socket.io-adapter-mongo": "^0.1.5",
     "async": "^1.2.1",
     "bcrypt": "~0.8.3",
-    "bluebird": "^2.9.34",
+    "bluebird": "^3.1.1",
     "body-parser": "^1.13.1",
     "capitalize": "^1.0.0",
     "complexity": "0.0.3",
     "compression": "^1.4.2",
     "connect-flash": "0.1.1",
-    "connect-mongo": "^0.8.1",
+    "connect-mongo": "^1.1.0",
     "cookie-parser": "^1.3.4",
     "cron": "^1.0.9",
     "csurf": "^1.8.3",
@@ -92,7 +93,7 @@
     "npm": "^2.12.0",
     "numeral": "^1.5.3",
     "optimist": "0.6.1",
-    "passport": "~0.2.0",
+    "passport": "^0.3.2",
     "periodicjs.core.cache": "5.9.1",
     "periodicjs.core.controller": "5.9.992",
     "periodicjs.core.extensions": "5.9.31",
@@ -104,7 +105,6 @@
     "semver": ">=2.3.0",
     "serve-favicon": "^2.2.0",
     "socket.io": "^1.3.5",
-    "@yawetse/socket.io-adapter-mongo": "^0.1.5",
     "socket.io-adapter-mongo": "^0.1.4",
     "string-to-json": "^0.1.0",
     "superagent": "^1.2.0",
@@ -113,7 +113,7 @@
     "winston": "^1.0.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.4",
+    "browserify": "^12.0.1",
     "chai": "^3.0.0",
     "chai-spies": "^0.7.1",
     "grunt": "^0.4.5",
@@ -122,23 +122,23 @@
     "grunt-contrib-cssmin": "^0.12.3",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-less": "^1.0.1",
-    "grunt-mocha-cov": "^0.4.0",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-jsbeautifier": "~0.2.7",
     "grunt-jsdoc": "~0.6.0",
+    "grunt-mocha-cov": "^0.4.0",
     "grunt-newer": "^1.1.1",
     "grunt-simple-mocha": "~0.4.0",
     "jsdoc": "^3.3.2",
     "mocha": "^2.2.5",
-    "pow-mongodb-fixtures": "^0.11.0",
     "node-mocks-http": "^1.5.0",
-    "supertest": "^1.0.1",
+    "pow-mongodb-fixtures": "^0.11.0",
     "stylie": "^2.0.0",
     "stylie.modals": "^2.0.1",
     "stylie.notifications": "^2.0.1",
     "stylie.pushmenu": "^2.0.2",
     "stylie.tabs": "^2.0.1",
+    "supertest": "^1.0.1",
     "uglify-js": "^2.4.15",
     "uglifyify": "^3.0.1"
   },
@@ -167,27 +167,12 @@
     "url": "https://github.com/typesettin/periodicjs/issues"
   },
   "homepage": "https://github.com/typesettin/periodicjs",
-  "_id": "periodicjs@5.0.0",
-  "_shasum": "c06ec62efa704144a0f86f99fad8ce8c362046f9",
-  "_from": "../../promise/promise-internal-server/periodicjs",
-  "_npmVersion": "2.1.9",
-  "_npmUser": {
-    "name": "yawetse",
-    "email": "yaw.etse@gmail.com"
-  },
   "maintainers": [
     {
       "name": "yawetse",
       "email": "yaw.etse@gmail.com"
     }
   ],
-  "dist": {
-    "shasum": "f79646cc8b2dce2466e04920e11f5754299a008c",
-    "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-4.3.0.tgz"
-  },
   "directories": {},
-  "_resolved": "file:../../promise/promise-internal-server/periodicjs",
-  "_nodeVersion": "0.10.33",
-  "readme": "ERROR: No README data found!",
   "optionalDependencies": {}
 }
