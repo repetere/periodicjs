@@ -20,13 +20,8 @@ notifications:
     use_notice: true
     skip_join: false
 
-  
-
-
 install: 
-  - npm install --prefix ./
-  - sleep 10
-  - npm run postinstall
+  - npm install 
 
 branches:
   only:
