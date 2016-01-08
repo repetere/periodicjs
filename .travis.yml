@@ -1,6 +1,14 @@
 language: node_js
 node_js:
-  - "0.12.7"
+  - "4.2.4"
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 services:
   - mongodb
@@ -20,13 +28,8 @@ notifications:
     use_notice: true
     skip_join: false
 
-  
-
-
 install: 
-  - npm install --prefix ./
-  - sleep 10
-  - npm run postinstall
+  - npm install 
 
 branches:
   only:
