@@ -13,7 +13,8 @@
   "periodic_cache_status": false,
   "sessions": {
     "enabled": true,
-    "type": "mongo"
+    "type": "mongo",
+    "ttl_in_seconds":300
   },
   "cookies": {
     "cookieParser": "50d8p63zsddndn299s4d40ydhg2e29"

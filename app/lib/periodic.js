@@ -37,6 +37,7 @@ global.CoreCache = new PeriodicCache();
 var periodic = function (periodicConfigOptions) {
 	var express = require('express'),
 		path = require('path'),
+		extend = require('utils-merge'),
 		os = require('os'),
 		EJS = require('ejs'),
 		bodyParser = require('body-parser'),
@@ -52,7 +53,8 @@ var periodic = function (periodicConfigOptions) {
 		request = require('superagent'),
 		semver = require('semver'),
 		app = express(),
-		MongoStore = require('connect-mongo')(session),
+		MongoStore,
+		RedisStore,
 		expressAppLogger = require('morgan'),
 		AppLog = require('../../content/config/logger'),
 		Config = require('./config'),
@@ -225,22 +227,51 @@ var periodic = function (periodicConfigOptions) {
 	init.useSessions = function () {
 		if (appconfig.settings().sessions.enabled) {
 			var express_session_config = {};
+			var secure_cookie = (appconfig.settings().sessions.secure_cookie) ? {secure:true}: {secure:'auto'};
+			var maxage_in_milliseconds = appconfig.settings().sessions.maxage_in_milliseconds || 3600000;
+			var session_ttl_in_seconds = appconfig.settings().sessions.ttl_in_seconds ||300;
 			if (appconfig.settings().sessions.type === 'mongo' && appconfig.settings().status !== 'install') {
+				MongoStore = require('connect-mongo')(session);
 				var dbconfig = database[app.get('env')];
 				express_session_config = {
 					secret: appconfig.settings().session_secret,
-					maxAge: new Date(Date.now() + 3600000),
-					store: new MongoStore({ mongooseConnection: dbconfig.mongoose.connection }),
+					maxAge: new Date(Date.now() + maxage_in_milliseconds),
+					store: new MongoStore({ mongooseConnection: dbconfig.mongoose.connection,ttl:session_ttl_in_seconds }),
 					resave: true,
-					saveUninitialized: true
+					saveUninitialized: true,
+					cookie: secure_cookie
+				};
+			}
+			else 
+			if (appconfig.settings().sessions.type === 'redis' && appconfig.settings().status !== 'install') {
+				RedisStore = require('connect-redis')(session);
+				var redisconfig  = appconfig.settings().redis_config;
+				if((!redisconfig.port || !redisconfig.host) ){
+					var redis_url = require('redis-url');
+					redisconfig = extend(redisconfig,redis_url.parse(redisconfig.url));
+					if(redisconfig.password){
+						redisconfig.pass = redisconfig.password;
+					}
+					redisconfig.host = redisconfig.hostname;
+
+				}
+				redisconfig.ttl = (typeof redisconfig.ttl !=='undefined')? redisconfig.ttl : session_ttl_in_seconds;
+				express_session_config = {
+					secret: appconfig.settings().session_secret,
+					maxAge: new Date(Date.now() + maxage_in_milliseconds),
+					store: new RedisStore(redisconfig),
+					resave: true,
+					saveUninitialized: true,
+					cookie: secure_cookie
 				};
 			}
 			else {
 				express_session_config = {
 					secret: appconfig.settings().session_secret,
-					maxAge: new Date(Date.now() + 3600000),
+					maxAge: new Date(Date.now() + maxage_in_milliseconds),
 					resave: true,
-					saveUninitialized: true
+					saveUninitialized: true,
+					cookie: secure_cookie
 				};
 			}
 

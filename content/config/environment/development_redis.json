@@ -5,9 +5,14 @@
     "environment": "development"
   },
   "periodic_cache_status": false,
+  "socketio_type":"redis",
   "sessions":{
     "enabled":true,
     "type":"default",
     "ttl_in_seconds":300
+  },
+  "redis_config":{
+    "url":"redis://localhost:6379",
+    "ttl":1800
   }
 }

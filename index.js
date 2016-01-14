@@ -60,9 +60,31 @@ else {
 	}
 
 	if(periodicStartupOptions.use_global_socket_io){
-		var mongoIoAdapter = require('@yawetse/socket.io-adapter-mongo'),
-			additionalIOConfigs = { return_buffers: true, detect_buffers: true };
-		global.io.adapter(mongoIoAdapter(periodicSettings.dburl,additionalIOConfigs));
+		if(periodicSettings.socketio_type && periodicSettings.socketio_type==='redis'){
+			var redisIoAdapater = require('socket.io-redis');
+			var redis_config_obj = periodicSettings.redis_config;
+			if((!periodicSettings.redis_config.port || !periodicSettings.redis_config.host) ){
+				var redis_url = require('redis-url');
+				redis_config_obj = extend(redis_config_obj,redis_url.parse(periodicSettings.redis_config.url));
+			}
+			if(redis_config_obj.pass || redis_config_obj.password){
+				if(redis_config_obj.password){
+					redis_config_obj.pass = redis_config_obj.password;
+				}
+				var redis = require('redis').createClient;
+				var pub = redis(redis_config_obj.port, redis_config_obj.host, { auth_pass: redis_config_obj.pass });
+				var sub = redis(redis_config_obj.port, redis_config_obj.host, { return_buffers: true, auth_pass: redis_config_obj.pass });
+				global.io.adapter(redisIoAdapater({ pubClient: pub, subClient: sub }));
+			}
+			else{
+				global.io.adapter(redisIoAdapater({ host: redis_config_obj.host, port: redis_config_obj.port }));				
+			}
+		}
+		else{
+			var mongoIoAdapter = require('@yawetse/socket.io-adapter-mongo'),
+				additionalIOConfigs = { return_buffers: true, detect_buffers: true };
+			global.io.adapter(mongoIoAdapter(periodicSettings.dburl,additionalIOConfigs));
+		}
 		global.io.attach(global.periodicExpressApp, {
 			logger: periodic.logger
 		});
