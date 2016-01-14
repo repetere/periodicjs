@@ -253,7 +253,7 @@ var periodic = function (periodicConfigOptions) {
 						redisconfig.pass = redisconfig.password;
 					}
 					redisconfig.host = redisconfig.hostname;
-
+					redisconfig.ttl = session_ttl_in_seconds;
 				}
 				redisconfig.ttl = (typeof redisconfig.ttl !=='undefined')? redisconfig.ttl : session_ttl_in_seconds;
 				express_session_config = {
