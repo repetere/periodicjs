@@ -16,6 +16,7 @@ if(periodicStartupOptions.use_global_socket_io){
 	global.io = require('socket.io')();
 }
 global.periodicExpressApp ={};
+
 /**
  * @description the script that starts the periodic express application.
  * @author Yaw Joseph Etse
@@ -44,6 +45,32 @@ else {
       server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
       server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
 	}
+
+
+
+if(periodicSettings.cluster_process){
+	var cluster = require('cluster');
+}
+
+if(cluster.isMaster && periodicSettings.cluster_process) {
+    var numWorkers = require('os').cpus().length;
+
+    console.log('Master cluster setting up ' + numWorkers + ' workers...');
+
+    for(var i = 0; i < numWorkers; i++) {
+        cluster.fork();
+    }
+
+    cluster.on('online', function(worker) {
+        console.log('Worker ' + worker.process.pid + ' is online');
+    });
+
+    cluster.on('exit', function(worker, code, signal) {
+        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+        console.log('Starting a new worker');
+        cluster.fork();
+    });
+} else {
 	if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
 		periodic.mongoose.connection.on('open',function(){
 			global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
@@ -58,6 +85,10 @@ else {
 			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
 		}
 	}
+}
+
+
+
 
 	if(periodicStartupOptions.use_global_socket_io){
 		if(periodicSettings.socketio_type && periodicSettings.socketio_type==='redis'){

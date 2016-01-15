@@ -22,7 +22,9 @@
 	"sessions":{
 		"enabled":true,
 		"type":"default",
-    "ttl_in_seconds":86400
+    "ttl_in_seconds":86400,
+    "ignore_session_with_api":true,
+    "maxage_in_milliseconds":3600000
 	},
   "periodic_cache_settings":{
     "prevent_clear_data_cache_on_start":false,
