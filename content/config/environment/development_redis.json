@@ -9,10 +9,10 @@
   "sessions":{
     "enabled":true,
     "type":"default",
-    "ttl_in_seconds":300
+    "ttl_in_seconds":86400
   },
+  "socketio_type":"redis",
   "redis_config":{
-    "url":"redis://localhost:6379",
-    "ttl":1800
+    "url":"redis://localhost:6379"
   }
 }

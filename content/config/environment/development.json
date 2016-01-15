@@ -8,6 +8,6 @@
   "sessions":{
     "enabled":true,
     "type":"default",
-    "ttl_in_seconds":300
+    "ttl_in_seconds":86400
   }
 }
