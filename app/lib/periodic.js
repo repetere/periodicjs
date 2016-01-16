@@ -342,13 +342,14 @@ var periodic = function (periodicConfigOptions) {
 			}
 			else if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && application_settings.status === 'install') {
 				periodicObj = require('periodicjs.ext.install')(periodicObj);
+				extension_helper = require('./extensionhelper')(periodicObj);
+				extension_helper.useCronTasks();
 			}
 			else {
 				periodicObj = require('../routes/index')(periodicObj);
+				extension_helper = require('./extensionhelper')(periodicObj);
+				extension_helper.useCronTasks();
 			}
-			extension_helper = require('./extensionhelper')(periodicObj);
-			// extension_helper.useCronTasks();
-
 		}
 	};
 	/**
