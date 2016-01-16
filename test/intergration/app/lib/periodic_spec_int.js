@@ -84,11 +84,16 @@ describe('the default routes when no modules are installed', function(){
       }
     });
     it('should respond with json when requesting json', function (done){
-      request
-      .get('/')
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200,done);
+      if(install_extension_enabled===false){
+        request
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200,done);
+       }
+      else{
+        done();
+      }
     });
   });
   describe('Default Routes are configured correctly',function(){
