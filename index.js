@@ -46,10 +46,13 @@ else {
 	}
 	if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
 		periodic.mongoose.connection.on('open',function(){
-			global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
+			global.periodicExpressApp = periodic.expressapp.listen(periodic.port,function(){
+				console.log('HTTP Server listening on port',periodic.port);
+			});
 		});	
 		if(periodicSettings.application.https_port){
 			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
+				console.log('HTTPS Server listening on port',periodic.port);
 		}
 	}
 	else{

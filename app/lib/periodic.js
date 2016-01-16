@@ -353,10 +353,6 @@ var periodic = function (periodicConfigOptions) {
 	 */
 	init.serverStatus = function () {
 		if(application_settings.debug){
-			if(application_settings.application.https_port){
-				logger.debug('Express HTTPS server listening on port ' + application_settings.application.https_port);
-			}
-			logger.debug('Express server listening on port ' + app.get('port'));
 			logger.debug('Running in environment: ' + app.get('env'));
 		}
 		request
