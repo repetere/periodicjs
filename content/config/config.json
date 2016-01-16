@@ -9,5 +9,5 @@
     "cookieParser": "50d8p63zsddndn299s4d40ydhg2e29"
   },
   "use_global_socket_io":true,
-  "node_modules":["newrelic@1.20.0","winston-sns@0.2.0","winston-dynamodb-update@0.1.5","winston-newrelic-update@0.1.5"]
+  "node_modules":[]
 }

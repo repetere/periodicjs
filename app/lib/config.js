@@ -24,7 +24,7 @@ var fs = require('fs-extra'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var config = function () {
+var config = function (periodicConfigOptions) {
 	var appEnvironment = argv.e,
 		appPort = argv.p,
 		packagejsonFileJSON,
@@ -104,6 +104,9 @@ var config = function () {
 		if (process.env.NODE_ENV) {
 			appEnvironment = process.env.NODE_ENV;
 		}
+		else if(periodicConfigOptions && periodicConfigOptions.env){
+			appEnvironment = periodicConfigOptions.env;
+		}
 		else if(argv.e){
 			appEnvironment = argv.e;
 		}
@@ -121,9 +124,6 @@ var config = function () {
 		fs.outputJson(path.resolve(__dirname,'../../content/config/process/runtime.json'),{environment:appEnvironment},function(err){
 			if(err){
 				console.error(err);
-			}
-			else{
-				console.log('saved runtime environment',appEnvironment);
 			}
 		});
 
@@ -145,6 +145,10 @@ var config = function () {
 		/** if theme is set in configuration, set filepath */
 		if (config.theme) {
 			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
+		}
+
+		if(config.debug){
+			console.log('saved runtime environment',appEnvironment);
 		}
 	}.bind(this);
 

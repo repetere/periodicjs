@@ -337,7 +337,10 @@ var periodic = function (periodicConfigOptions) {
 			}
 		}
 		else{
-			if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && application_settings.status === 'install') {
+			if ( periodicConfigOptions!=='undefined' && typeof periodicConfigOptions.skip_install_check!=='undefined' && periodicConfigOptions.skip_install_check===true){
+				periodicObj = require('../routes/index')(periodicObj);
+			}
+			else if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && application_settings.status === 'install') {
 				periodicObj = require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
