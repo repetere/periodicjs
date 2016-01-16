@@ -3,6 +3,11 @@
 var mongoose = require('mongoose');
 
 module.exports = {
+	'test':{
+		url: 'mongodb://localhost:27017/periodic_test',
+		mongoose: mongoose,
+		mongooptions:{}
+	},
 	'development':{
 		url: 'mongodb://localhost:27017/periodic_development',
 		mongoose: mongoose,

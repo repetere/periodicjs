@@ -2,149 +2,113 @@
 /*jshint expr: true*/
 
 var path       = require('path'),
-    periodicjs = require(path.resolve(process.cwd(), 'app/lib/periodic.js'))({waitformongo:true}),
-    chai       = require('chai'),
+    // chai       = require('chai'),
+    periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
+    periodicjs = periodic({waitformongo:true,env:'test'}),
+    periodicExpressApp,
     expect     = require('chai').expect,
     context    = describe,
-    request    = require('supertest'),
+    supertest  = require('supertest'),
+    request  = supertest('http://localhost:'+periodicjs.port),
+    http  = require('http'),
+    request    = supertest('http://localhost:'+periodicjs.port),
     number_of_extensions,
+    number_of_enabled_extensions = 0,
     default_routes_installed = false,
     admin_installed = false;
 
-function getCookie(res) {
-  return res.headers['set-cookie'][0].split(';')[0];
-}
+// function getCookie(res) {
+//   return res.headers['set-cookie'][0].split(';')[0];
+// }
 
 describe('the default routes when no modules are installed', function(){
   this.timeout(5000);
 
-  before(function(done){
-    periodicjs.mongoose.connection.on('open',function(){
-      number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
-      for (var x in periodicjs.periodic.settings.extconf.extensions) {
-        if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes') {
-          default_routes_installed = true;
-        }        
-        if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.admin') {
-          admin_installed = true;
+  // console.log('new ddr')
+  // it('should return an object', function (done) {
+  //   expect(periodicjs).to.be.an('object');
+  //   done();
+  // });
+  before('connect to mongo',function (done){
+    periodicjs.mongoose.connection.on('connected',function(){
+      periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function() {
+        number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
+        for (var x in periodicjs.periodic.settings.extconf.extensions) {
+          if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled===true) {
+            default_routes_installed = true;
+          }        
+          if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled===true) {
+            admin_installed = true;
+          }        
+          if (periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
+            number_of_enabled_extensions++;
+          }
         }
-      }
- 
-      done();
+        console.log('number_of_extensions',number_of_extensions);
+        console.log('number_of_enabled_extensions',number_of_enabled_extensions);
+        console.log('default_routes_installed',default_routes_installed);
+        console.log('admin_installed',admin_installed);
+        done();
+      });
     });
   });
-  context('GET /', function(){
-    if(number_of_extensions===0){
-      it('should show the views/home page', function(done){
-        request(periodicjs.expressapp)
+  context('GET /', function (){
+    if(number_of_enabled_extensions===0){
+      it('should show the views/home page', function (done){
+        request
         .get('/')
         .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(/Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture./)
         .expect(200,done);
       });
-      it('should respond with 404 it given an unknown route', function(done){
-        request(periodicjs.expressapp)
-        .get('/missing')
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(/Sorry page not found!/)
-        .expect(/page: \/missing/)
-        .expect(404,done);
-      });
     }
+    it('should respond with 404 it given an unknown route', function (done){
+      request
+      .get('/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound')
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      // .expect(/Sorry page not found!/)
+      .expect(/page: \/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound/)
+      .expect(404,done);
+    });
+    it('should respond with json when requesting json', function (done){
+      request
+      .get('/')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200,done);
+    });
   });
   describe('Default Routes are configured correctly',function(){
-    if(default_routes_installed===0){
-      context('Get /articles',function() {
-        it('should not have the route article installed', function(done){
-          request(periodicjs.expressapp)
+    context('Get /articles',function() {
+      it('should have the route article installed', function (done){
+        if(default_routes_installed){
+          request
           .get('/articles')
           .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/articles/)
-          .expect(404,done);
-
-        });
+          .expect(200,done);
+        }
+        else{
+          done();
+        }
       });
-      context('Get /user',function() {
-        it('should not have a user route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/user')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/user/)
-          .expect(404,done);
-        });
-      });
-      context('Get /collections',function() {
-        it('should not have a collections route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/collections')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/collections/)
-          .expect(404,done);
-        });
-
-      });
-      context('Get /browse/authors',function() {
-        it('should not have a collections route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/browse/authors')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/browse\/authors/)
-          .expect(404,done);
-        });
-
-      });
-      context('Get /browse/contenttypes',function() {
-        it('should not have a collections route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/browse/contenttypes')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/browse\/contenttypes/)
-          .expect(404,done);
-        });
-
-      });
-      context('Get /browse/categories',function() {
-        it('should not have a collections route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/browse/categories')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/browse\/categories/)
-          .expect(404,done);
-        });
-
-      });
-      context('Get /browse/tags',function() {
-        it('should not have a collections route defined', function(done){
-          request(periodicjs.expressapp)
-          .get('/browse/tags')
-          .expect('Content-Type', 'text/html; charset=utf-8')
-          .expect(/Sorry page not found!/)
-          .expect(/page: \/browse\/tags/)
-          .expect(404,done);
-        });
-
-      });
-    }
+    });
   });
  
   context('Get /p-admin',function() {
-    if(admin_installed){
-      
-      it('should not have a collections route defined', function(done){
-        request(periodicjs.expressapp)
+    it('should redirect to login', function (done){
+      if(admin_installed){
+        request
         .get('/p-admin')
-        .expect('Content-Type', 'text/html; charset=utf-8')
-        .expect(/Sorry page not found!/)
-        .expect(/page: \/p-admin/)
-        .expect(404,done);
-      });
-    }
-
+        .expect('Content-Type', 'text/plain; charset=utf-8')
+        .expect(302,function(err,res){
+          expect(err).to.be.a('null');
+          expect(res).to.be.an('object');
+          done();
+        });
+      }
+      else{
+        done();
+      }
+    });
   });
 });

@@ -55,6 +55,8 @@ var periodic = function (periodicConfigOptions) {
 		app = express(),
 		MongoStore,
 		RedisStore,
+		application_settings,
+		extension_helper,
 		expressAppLogger = require('morgan'),
 		AppLog = require('../../content/config/logger'),
 		Config = require('./config'),
@@ -82,9 +84,10 @@ var periodic = function (periodicConfigOptions) {
 		/** creates instance of configuration object
 		 * @instance
 		 */
-		appconfig = new Config();
-		app.set('port', appconfig.settings().application.port);
-		app.set('env', appconfig.settings().application.environment);
+		appconfig = new Config(periodicConfigOptions);
+		application_settings =  appconfig.settings();
+		app.set('port', application_settings.application.port);
+		app.set('env', application_settings.application.environment);
 		/** environment based database configuration
 		 * @instance
 		 */
@@ -100,17 +103,17 @@ var periodic = function (periodicConfigOptions) {
 		 */
 		mngse = db.mongoose;
 		/** if debug option is set output instance configuration */
-		if (appconfig.settings().debug) {
-			console.log(appconfig.settings());
+		if (application_settings.debug) {
+			console.log(application_settings);
 		}
 		/** if cache option is set update cache */
-		if (appconfig.settings().periodic_cache_status !== 'undefined') {
-			global.CoreCache.setStatus(appconfig.settings().periodic_cache_status);
+		if (application_settings.periodic_cache_status !== 'undefined') {
+			global.CoreCache.setStatus(application_settings.periodic_cache_status);
 		}
 
 		/** if custom error page */
-		if(appconfig.settings().theme){
-			var custom500errorpage = path.join(path.resolve(__dirname, '../../content/themes'), appconfig.settings().theme, 'views', 'home/error500' + '.' + appconfig.settings().templatefileextension),
+		if(application_settings.theme){
+			var custom500errorpage = path.join(path.resolve(__dirname, '../../content/themes'), application_settings.theme, 'views', 'home/error500' + '.' + application_settings.templatefileextension),
 				custom500ErrorPageError,
 				custom500ErrorPageView;
 			try{
@@ -143,25 +146,25 @@ var periodic = function (periodicConfigOptions) {
 	 * @todo  load view engine from configuration settings to allow for multiple templating engines
 	 */
 	init.viewSettings = function () {
-		var viewengine =  appconfig.settings().templateengine || 'ejs';
+		var viewengine =  application_settings.templateengine || 'ejs';
 		app.set('view engine', viewengine);
 		app.set('views', path.resolve(__dirname, '../views'));
 		app.engine('html', EJS.renderFile);
 		app.engine('ejs',EJS.renderFile);
-		if(appconfig.settings().templatepackage!=='ejs'){
-			app.engine(appconfig.settings().templatepackage, require(appconfig.settings().templatepackage).renderFile);
+		if(application_settings.templatepackage!=='ejs'){
+			app.engine(application_settings.templatepackage, require(application_settings.templatepackage).renderFile);
 		}
 	};
 	/**
 	 * @description sets up standard express settings
 	 */
 	init.expressSettings = function () {
-		app.use(responseTime(appconfig.settings().express_settings.responseTime));
+		app.use(responseTime(application_settings.express_settings.responseTime));
 		app.use(flash());
-		app.use(bodyParser.urlencoded(appconfig.settings().express_settings.bodyParser_urlencoded));
-		app.use(bodyParser.json(appconfig.settings().express_settings.bodyParser_json));
+		app.use(bodyParser.urlencoded(application_settings.express_settings.bodyParser_urlencoded));
+		app.use(bodyParser.json(application_settings.express_settings.bodyParser_json));
 		app.use(methodOverride());
-		app.use(cookieParser(appconfig.settings().cookies.cookieParser));
+		app.use(cookieParser(application_settings.cookies.cookieParser));
 		app.use(favicon(path.resolve(__dirname, '../../public/favicon.png')));
 	};
 	/**
@@ -171,7 +174,7 @@ var periodic = function (periodicConfigOptions) {
 		/** static asset cache settings, in dev mode, disable caching
 		 * @instance
 		 */
-		var expressStaticOptions = (app.get('env') !== 'development' || appconfig.settings().overrideStaticCache === true) ? {
+		var expressStaticOptions = (app.get('env') !== 'development' || application_settings.overrideStaticCache === true) ? {
 			maxAge: 86400000
 		} : {};
 		app.use(express.static(path.resolve(__dirname, '../../public'), expressStaticOptions));
@@ -180,7 +183,7 @@ var periodic = function (periodicConfigOptions) {
 	 * @description use gzip compression if enabled in configuration options
 	 */
 	init.pageCompression = function () {
-		if (appconfig.settings().expressCompression) {
+		if (application_settings.expressCompression) {
 			app.use(compress());
 		}
 	};
@@ -188,7 +191,7 @@ var periodic = function (periodicConfigOptions) {
 	 * @description set application logging options
 	 */
 	init.appLogging = function () {
-		if (appconfig.settings().debug) {
+		if (application_settings.debug) {
 			expressAppLogger.token('colorstatus', function (req, res) {
 				var color = 32; // green
 				var status = res.statusCode;
@@ -205,7 +208,7 @@ var periodic = function (periodicConfigOptions) {
 				return '\x1b[' + color + 'm' + status + '\x1b[90m';
 			});
 			expressAppLogger.format('app', '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m');
-			if (appconfig.settings().status !== 'install') {
+			if (application_settings.status !== 'install') {
 				app.use(expressAppLogger( 'app', 
 					{
 						format:'\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m'
@@ -225,16 +228,16 @@ var periodic = function (periodicConfigOptions) {
 	 * @description set up express application session configuration
 	 */
 	init.useSessions = function () {
-		if (appconfig.settings().sessions.enabled) {
+		if (application_settings.sessions.enabled) {
 			var express_session_config = {};
-			var secure_cookie = (appconfig.settings().sessions.secure_cookie) ? {secure:true}: {secure:'auto'};
-			var maxage_in_milliseconds = appconfig.settings().sessions.maxage_in_milliseconds || 3600000;
-			var session_ttl_in_seconds = appconfig.settings().sessions.ttl_in_seconds ||300;
-			if (appconfig.settings().sessions.type === 'mongo' && appconfig.settings().status !== 'install') {
+			var secure_cookie = (application_settings.sessions.secure_cookie) ? {secure:true}: {secure:'auto'};
+			var maxage_in_milliseconds = application_settings.sessions.maxage_in_milliseconds || 3600000;
+			var session_ttl_in_seconds = application_settings.sessions.ttl_in_seconds ||300;
+			if (application_settings.sessions.type === 'mongo' && application_settings.status !== 'install') {
 				MongoStore = require('connect-mongo')(session);
 				var dbconfig = database[app.get('env')];
 				express_session_config = {
-					secret: appconfig.settings().session_secret,
+					secret: application_settings.session_secret,
 					maxAge: new Date(Date.now() + maxage_in_milliseconds),
 					store: new MongoStore({ mongooseConnection: dbconfig.mongoose.connection,ttl:session_ttl_in_seconds }),
 					resave: true,
@@ -243,9 +246,9 @@ var periodic = function (periodicConfigOptions) {
 				};
 			}
 			else 
-			if (appconfig.settings().sessions.type === 'redis' && appconfig.settings().status !== 'install') {
+			if (application_settings.sessions.type === 'redis' && application_settings.status !== 'install') {
 				RedisStore = require('connect-redis')(session);
-				var redisconfig  = appconfig.settings().redis_config;
+				var redisconfig  = application_settings.redis_config;
 				if((!redisconfig.port || !redisconfig.host) ){
 					var redis_url = require('redis-url');
 					redisconfig = extend(redisconfig,redis_url.parse(redisconfig.url));
@@ -257,7 +260,7 @@ var periodic = function (periodicConfigOptions) {
 				}
 				redisconfig.ttl = (typeof redisconfig.ttl !=='undefined')? redisconfig.ttl : session_ttl_in_seconds;
 				express_session_config = {
-					secret: appconfig.settings().session_secret,
+					secret: application_settings.session_secret,
 					maxAge: new Date(Date.now() + maxage_in_milliseconds),
 					store: new RedisStore(redisconfig),
 					resave: true,
@@ -267,7 +270,7 @@ var periodic = function (periodicConfigOptions) {
 			}
 			else {
 				express_session_config = {
-					secret: appconfig.settings().session_secret,
+					secret: application_settings.session_secret,
 					maxAge: new Date(Date.now() + maxage_in_milliseconds),
 					resave: true,
 					saveUninitialized: true,
@@ -280,7 +283,7 @@ var periodic = function (periodicConfigOptions) {
 			/**
 			 * @description cross site request forgery settings
 			 */
-			if (appconfig.settings().crsf) {
+			if (application_settings.crsf) {
 				app.use(csrf());
 			}
 		}
@@ -292,7 +295,7 @@ var periodic = function (periodicConfigOptions) {
 		app.locals = require('./staticviewhelper');
 		app.locals.additionalHTMLFunctions =[];
 		app.use(function (req, res, next) {
-			app.locals.token = (appconfig.settings().crsf) ? req.csrfToken() : '';
+			app.locals.token = (application_settings.crsf) ? req.csrfToken() : '';
 			next();
 		});
 		app.use(function (req, res, next) {
@@ -320,7 +323,7 @@ var periodic = function (periodicConfigOptions) {
 			express: express,
 			app: app,
 			logger: logger,
-			settings: appconfig.settings(),
+			settings: application_settings,
 			db: db,
 			mongoose: mngse
 		};
@@ -329,26 +332,33 @@ var periodic = function (periodicConfigOptions) {
 			extension:{}
 		};
 		if(periodicConfigOptions && periodicConfigOptions.skiprouting){
-			logger.silly('skipping routing',periodicConfigOptions.skiprouting);
+			if(application_settings.debug){
+				logger.silly('skipping routing',periodicConfigOptions.skiprouting);
+			}
 		}
 		else{
-			if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && appconfig.settings().status === 'install') {
+			if (fs.existsSync(path.resolve(__dirname, '../../node_modules/periodicjs.ext.install')) && application_settings.status === 'install') {
 				periodicObj = require('periodicjs.ext.install')(periodicObj);
 			}
 			else {
 				periodicObj = require('../routes/index')(periodicObj);
 			}
+			extension_helper = require('./extensionhelper')(periodicObj);
+			// extension_helper.useCronTasks();
+
 		}
 	};
 	/**
 	 * @description application server status
 	 */
 	init.serverStatus = function () {
-		if(appconfig.settings().application.https_port){
-			logger.debug('Express HTTPS server listening on port ' + appconfig.settings().application.https_port);
+		if(application_settings.debug){
+			if(application_settings.application.https_port){
+				logger.debug('Express HTTPS server listening on port ' + application_settings.application.https_port);
+			}
+			logger.debug('Express server listening on port ' + app.get('port'));
+			logger.debug('Running in environment: ' + app.get('env'));
 		}
-		logger.debug('Express server listening on port ' + app.get('port'));
-		logger.debug('Running in environment: ' + app.get('env'));
 		request
 			.get('https://registry.npmjs.org/periodicjs')
 			.set('Accept', 'application/json')
@@ -361,15 +371,17 @@ var periodic = function (periodicConfigOptions) {
 				}
 				else {
 					var latestPeriodicVersion = res.body['dist-tags'].latest;
-					if (semver.gte(appconfig.settings().version, latestPeriodicVersion)) {
-						logger.debug('Your instance of Periodicjs ' + appconfig.settings().version + ' is up to date with the current version ' + latestPeriodicVersion);
+					if (semver.gte(application_settings.version, latestPeriodicVersion)) {
+						if(application_settings.debug){
+							logger.debug('Your instance of Periodicjs ' + application_settings.version + ' is up to date with the current version ' + latestPeriodicVersion);
+						}
 					}
 					else {
 						console.log('\u0007');
 						logger.debug('====================================================');
 						logger.debug('|                                                  |');
 						logger.debug('| Your instance of Periodic is out of date.        |');
-						logger.debug('| Your Version: ' + appconfig.settings().version + ', Current Version: ' + latestPeriodicVersion + '      |');
+						logger.debug('| Your Version: ' + application_settings.version + ', Current Version: ' + latestPeriodicVersion + '      |');
 						logger.debug('|                                                  |');
 						logger.debug('====================================================');
 					}
@@ -438,22 +450,23 @@ var periodic = function (periodicConfigOptions) {
 		// console.log('global.CoreCache.clearCache',global.CoreCache.clearCache);
 		if(global.CoreCache){
 			console.time('clearing periodic cache');
-			if(appconfig.settings().periodic_cache_settings){
-				global.CoreCache.setOptions(appconfig.settings().periodic_cache_settings);
+			if(application_settings.periodic_cache_settings){
+				application_settings.periodic_cache_settings.debug = application_settings.debug;
+				global.CoreCache.setOptions(application_settings.periodic_cache_settings);
 			}
 			global.CoreCache.clearCache(function(err,status){
 				console.timeEnd('clearing periodic cache');
 				if(err){
 					logger.error(err);
 				}
-				else{
+				else if(application_settings.debug){
 					logger.debug(status);
 				}
 			});
 		}
 	};
 	
-	console.time('Server Starting');
+	console.time('Application Starting');
 	init.loadConfiguration();
 	init.useLogger();
 	init.viewSettings();
@@ -467,7 +480,7 @@ var periodic = function (periodicConfigOptions) {
 	init.serverStatus();
 	init.catchErrors();
 	init.clearPeriodicCache();
-	console.timeEnd('Server Starting');
+	console.timeEnd('Application Starting');
 
 	return {
 		expressapp: app,

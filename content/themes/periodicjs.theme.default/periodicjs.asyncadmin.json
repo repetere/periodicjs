@@ -1,0 +1,49 @@
+{
+	"periodicjs.ext.asyncadmin": {
+		"menu": {
+			"Global":{
+				"defaulttheme": {
+					"tree-item":"folder",
+				  "tree-item-label": "Default Theme", 
+				  "tree-item-id": "promise_ils",
+			    "tree-item-input-attributes":{
+			    	"checked":"checked"
+			    },
+				  "tree-item-folder-contents":[{
+				  	"tree-item":"file",
+				    "tree-item-label":"Dashboard",
+				    "tree-item-link": "/%locals.adminPath%/dashboard",
+  				  "tree-item-id": "default-theme.dashboard",
+				    "tree-item-attributes":{
+				    	"class":"async-admin-ajax-link"
+				    }
+			  	},{
+				  	"tree-item":"file",
+				    "tree-item-label":"Sample Page",
+				    "tree-item-link": "/%locals.adminPath%/#samplepage",
+  				  "tree-item-id": "default-theme.samplepage",
+				    "tree-item-attributes":{
+				    	"class":"async-admin-ajax-link"
+				    }
+			  	},{
+						"tree-item":"folder",
+				    "tree-item-label":"Sample Section Folder",
+					  "tree-item-id": "default-theme.ssf",
+				    "tree-item-link": "/%locals.adminPath%/ils/extras",
+				    "tree-item-attributes":{
+				    },
+				    "tree-item-folder-contents":[{
+							"tree-item":"file",
+					    "tree-item-label":"Sample Section",
+					  	"tree-item-id": "default-theme.samplesection",
+					    "tree-item-link": "/%locals.adminPath%/#samplesection",
+					    "tree-item-attributes":{
+					    	"class":"async-admin-ajax-link"
+					    }
+						}]
+				  }]
+				}
+			}
+		}
+	}
+}

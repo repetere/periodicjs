@@ -32,7 +32,7 @@ if (typeof themename === 'string') {
 }
 
 var periodicTestPath = path.join(__dirname, './test') + '/**/*.js';
-testPaths.push(periodicTestPath);
+testPaths.unshift(periodicTestPath);
 
 module.exports = function (grunt) {
 	grunt.initConfig({
@@ -58,7 +58,7 @@ module.exports = function (grunt) {
 		},
 		simplemocha: {
 			options: {
-				globals: ['should', 'navigator'],
+				globals: ['should', 'navigator','x'],
 				timeout: 3000,
 				ignoreLeaks: false,
 				ui: 'bdd',

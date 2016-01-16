@@ -1,0 +1,45 @@
+{
+	"name": "Periodic Enterprise Content Management",
+	"application":{
+		"port": "8786",
+		"environment": "test"
+	},
+	"cookies":{
+		"cookieParser":"defaultcookiejson"
+	},
+	"express_settings":{
+		"responseTime":{
+			"digits":5
+		},
+		"bodyParser_urlencoded":{
+			"limit": "1mb",
+			"extended": true
+		},
+		"bodyParser_json":{
+			"limit": "1mb"
+		}
+	},
+	"sessions":{
+		"enabled":true,
+		"type":"default",
+    "ttl_in_seconds":300
+	},
+  "periodic_cache_settings":{
+    "prevent_clear_data_cache_on_start":false,
+    "prevent_clear_view_cache_on_start":false
+  },
+  "periodic_cache_status":false,
+	"session_secret":"hjoiuu87go9hui",
+	"expressCompression": true,
+	"use_test_extensions_by_environment": false,
+	"templateengine": "ejs",
+	"templatepackage": "ejs",
+	"templatefileextension": "ejs",
+	"crsf": true,
+  "debug": false,
+    "theme": "periodicjs.theme.default",
+
+  "status":"install",
+  "serverfromemail": "Local Perodic App <hello@localhost>",
+  "adminnotificationemail": "Local Perodic App <hello@localhost>"
+}
