@@ -278,7 +278,21 @@ var periodic = function (periodicConfigOptions) {
 				};
 			}
 
-			app.use(session(express_session_config));
+			// app.use(session(express_session_config));
+
+			var sessionMiddleware = session(express_session_config);
+
+			app.use(function(req, res, next) {
+				if (req.headers.authorization) {
+					return next();
+				}
+				else if (req.query && req.query.skip_session && req.query.skip_session==='true') {
+					return next();
+				}
+				else{
+					return sessionMiddleware(req, res, next);
+				}
+			});
 
 			/**
 			 * @description cross site request forgery settings
@@ -295,7 +309,7 @@ var periodic = function (periodicConfigOptions) {
 		app.locals = require('./staticviewhelper');
 		app.locals.additionalHTMLFunctions =[];
 		app.use(function (req, res, next) {
-			app.locals.token = (application_settings.crsf) ? req.csrfToken() : '';
+			res.locals.token = (application_settings.crsf) ? req.csrfToken() : '';
 			next();
 		});
 		app.use(function (req, res, next) {
