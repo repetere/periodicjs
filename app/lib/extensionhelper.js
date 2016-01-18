@@ -115,6 +115,8 @@ var checkOutdatedModulesAndPeriodic = function (options, callback) {
 				callback(null, result);
 			}
 			logger.warn('asyncadmin - WARNING: Your Instance is out of date', result.calculate_outdated_versions);
+		}
+		if(!err){
 			fs.writeJson(periodic_outdated_log_file_path, result);
 		}
 	});
