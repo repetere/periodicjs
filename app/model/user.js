@@ -94,6 +94,14 @@ var userSchema = new Schema({
 		type: ObjectId,
 		ref: 'Contenttype'
 	}],
+	tags: [{
+		type: ObjectId,
+		ref: 'Tag'
+	}],
+	categories: [{
+		type: ObjectId,
+		ref: 'Category'
+	}],
 	apikey: String,
 	entitytype: {
 		type: String,
