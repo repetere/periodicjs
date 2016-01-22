@@ -307,6 +307,8 @@ var periodic = function (periodicConfigOptions) {
 	 */
 	init.useLocals = function () {
 		app.locals = require('./staticviewhelper');
+		app.locals.appenvironment = application_settings.application.environment;
+		app.locals.appname = application_settings.name;
 		app.locals.additionalHTMLFunctions =[];
 		app.use(function (req, res, next) {
 			res.locals.token = (application_settings.crsf) ? req.csrfToken() : '';

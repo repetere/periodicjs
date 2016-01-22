@@ -1,10 +1,26 @@
 <% include ../shared/error_header %>
-	<div class="_pea-container _pea-theme">
-		<div class="_pea-row">
-			<div class="_pea-document">
-					<h3 style="word-wrap:break-word;"><%- error.message %></h3>
-					<pre style="overflow:auto"><%- error.stack %></pre>
+<% include ../shared/error_nav %>
+<section class=" ts-container-margin-xl">
+	<div class="ts-container ts-theme">
+		<div class="ts-text-container">
+			<div class="ts-row">
+				<div class="ts-document">
+					<% if(appenvironment!=='production'){%>
+					<details open="open">
+						<summary>
+							<span class="ts-text-bold ts-text-xx" style="word-wrap:break-word;"><%- error.message %></span>
+						</summary>
+						<aside>
+							<pre class=" ts-text-xs ts-padding-md" style="overflow:auto; word-wrap:break-word; border:1px solid black;"><%- error.stack %></pre>
+						</aside>
+					</details>
+					<%} 
+					else{%>
+						<h3 class="ts-text-center" style="word-wrap:break-word;">Internal Server Error</h3>
+					<%} %>
+				</div>
 			</div>
 		</div>
 	</div>
+</section>
 <% include ../shared/error_footer %>
