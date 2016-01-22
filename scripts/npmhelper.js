@@ -31,9 +31,9 @@ var fs = require('fs-extra'),
 			'periodicjs.ext.login@6.0.3',
 			'periodicjs.ext.user_access_control@5.9.3',
 			'periodicjs.ext.scheduled_content@6.0.0',
-			'periodicjs.ext.asyncadmin@6.9.5',
+			'periodicjs.ext.asyncadmin@6.9.51',
 			'periodicjs.ext.async_cms@6.9.0',
-			'periodicjs.ext.dbseed@5.9.3',
+			'periodicjs.ext.dbseed@5.9.4',
 		],	
 		extension_config_path = path.join(process.cwd(),'content/config/extensions.json');
 

@@ -68,6 +68,18 @@ module.exports = function (periodic) {
 	periodic.core.mailer = CoreMailer;
 
 	/**
+	 * test the extension config
+	 */
+	periodic.core.extension.testConfig({},function(err,result){
+		if(err){
+			periodic.logger.error(err);
+		}
+		else if(periodic.settings.debug){
+			periodic.logger.debug(result);
+		}
+	});
+
+	/**
 	 * periodic controllers
 	 * @type {Object}
 	 */
