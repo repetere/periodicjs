@@ -24,8 +24,7 @@ describe('A module that represents a periodic app', function () {
 
     it('uses express methods', function () {
       // console.log( periodicjs() )
-      // console.log( periodicjs().expressapp.get('env') );
-      expect(periodicjs.expressapp.get('env')).to.eql('test');
+      expect(periodicjs.expressapp.get('env')).to.eql(periodicjs.periodic.settings.application.environment);
     });
   });
 });

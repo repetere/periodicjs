@@ -15,6 +15,7 @@ var path       = require('path'),
     number_of_extensions,
     number_of_enabled_extensions = 0,
     install_extension_enabled = false,
+    has_custom_theme = false,
     default_routes_extension_enabled = false,
     admin_extension_enabled = false;
 
@@ -47,7 +48,9 @@ describe('the default routes when no modules are installed', function(){
           if (periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
             number_of_enabled_extensions++;
           }
-
+        }
+        if(periodicjs.periodic.settings.theme){
+          has_custom_theme = true;
         }
         console.log('number_of_extensions',number_of_extensions);
         console.log('number_of_enabled_extensions',number_of_enabled_extensions);
@@ -71,9 +74,9 @@ describe('the default routes when no modules are installed', function(){
       }
     });
     it('should respond with 404 it given an unknown route', function (done){
-      if(install_extension_enabled===false){
+      if(install_extension_enabled===false && !has_custom_theme){
         request
-        .get('/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound')
+        .get('/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound'+new Date())
         .expect('Content-Type', 'text/html; charset=utf-8')
         // .expect(/Sorry page not found!/)
         .expect(/page: \/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound/)
@@ -84,7 +87,7 @@ describe('the default routes when no modules are installed', function(){
       }
     });
     it('should respond with json when requesting json', function (done){
-      if(install_extension_enabled===false){
+      if(number_of_enabled_extensions===0 && !has_custom_theme){
         request
         .get('/')
         .set('Accept', 'application/json')
