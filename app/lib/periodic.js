@@ -429,6 +429,7 @@ var periodic = function (periodicConfigOptions) {
 					originalUrl: req.originalUrl,
 					headerHost: req.headers.host,
 					userAgent: req.headers['user-agent'],
+					referer: req.headers.referer,
 					user: userdata,
 					osHostname: os.hostname()
 				}
