@@ -62,7 +62,7 @@ describe('the default routes when no modules are installed', function(){
   });
   context('GET /', function (){
     it('should show the views/home page', function (done){
-      if(number_of_enabled_extensions===0){
+      if(number_of_enabled_extensions===0 && !has_custom_theme){
         request
         .get('/')
         .expect('Content-Type', 'text/html; charset=utf-8')
