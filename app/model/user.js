@@ -206,7 +206,7 @@ userSchema.statics.checkValidation = function (options) {
 	var userdata = options.newuser,
 	min_username_length = (options && options.length_of_username) ? options.length_of_username : 4,
 	min_password_length = (options && options.length_of_password) ? options.length_of_password : 8;
-	console.log('user model userdata',options, options.useComplexity, options.complexity);
+	// console.log('user model userdata',options, options.useComplexity, options.complexity);
 
 	if ((typeof options.checkusername==='undefined' || options.checkusername ===true) && (userdata.username === undefined || userdata.username.length < min_username_length)) {
 		return new Error('Username is too short');
