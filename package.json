@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "6.4.3",
+  "version": "6.4.4",
   "main": "index.js",
   "engines": {
     "node": ">=4.2.x"
@@ -144,6 +144,7 @@
     "stylie.pushmenu": "^2.0.2",
     "stylie.tabs": "^2.0.1",
     "supertest": "^1.0.1",
+    "supertest-session": "^2.0.1",
     "uglify-js": "^2.4.15",
     "uglifyify": "^3.0.1",
     "zombie": "^4.2.1"
