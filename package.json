@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "6.4.5",
+  "version": "6.5.0",
   "main": "index.js",
   "engines": {
     "node": ">=4.2.x"
@@ -96,9 +96,9 @@
     "optimist": "0.6.1",
     "passport": "^0.3.2",
     "periodicjs.core.cache": "6.0.0",
-    "periodicjs.core.controller": "6.2.0",
+    "periodicjs.core.controller": "7.0.0",
     "periodicjs.core.extensions": "5.9.5",
-    "periodicjs.core.mailer": "5.9.2",
+    "periodicjs.core.mailer": "5.9.3",
     "periodicjs.core.utilities": "6.0.0",
     "pluralize": "^1.1.2",
     "prompt": "0.2.14",
@@ -174,14 +174,6 @@
     "url": "https://github.com/typesettin/periodicjs/issues"
   },
   "homepage": "https://github.com/typesettin/periodicjs",
-  "_id": "periodicjs@5.1.22",
-  "_shasum": "9087b685c4f3d5e7738114c5f21b4ddeefcf9aac",
-  "_from": "periodicjs@latest",
-  "_npmVersion": "2.11.2",
-  "_npmUser": {
-    "name": "yawetse",
-    "email": "yaw.etse@gmail.com"
-  },
   "maintainers": [
     {
       "name": "yawetse",
@@ -193,7 +185,5 @@
     "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-5.1.22.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/periodicjs/-/periodicjs-5.1.22.tgz",
-  "_nodeVersion": "0.12.6",
   "optionalDependencies": {}
 }
