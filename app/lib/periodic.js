@@ -286,7 +286,10 @@ var periodic = function (periodicConfigOptions) {
 				if (req.headers.authorization) {
 					return next();
 				}
-				else if (req.query && req.query.skip_session && req.query.skip_session==='true') {
+				else if (req.query && req.query.skip_session && (req.query.skip_session==='true' || req.query.skip_session===true)) {
+					return next();
+				}
+				else if (req.controllerData && req.controllerData.skip_session && (req.controllerData.skip_session==='true' || req.controllerData.skip_session===true)) {
 					return next();
 				}
 				else{

@@ -2,8 +2,6 @@
 
 var path = require('path'),
 	fs = require('fs-extra'),
-	Utilities = require('periodicjs.core.utilities'),
-	ControllerHelper = require('periodicjs.core.controller'),
 	CoreUtilities,
 	CoreController,
 	appSettings,
@@ -12,46 +10,34 @@ var path = require('path'),
 
 var index = function (req, res) {
 	var recentitems = req.controllerData.items || {};
-	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'home/index',
-			themefileext: appSettings.templatefileextension
+	var viewtemplate = {
+		viewname: 'home/index',
+		themefileext: appSettings.templatefileextension
+	},
+	viewdata = {
+		pagedata: {
+			title: 'homepage'
 		},
-		function (err, templatepath) {
-			CoreController.handleDocumentQueryRender({
-				res: res,
-				req: req,
-				renderView: templatepath,
-				responseData: {
-					pagedata: {
-						title: 'homepage'
-					},
-					items: recentitems,
-					user: req.user
-				}
-			});
-		}
-	);
+		items: recentitems,
+		user: req.user
+	};
+	CoreController.renderView(req, res, viewtemplate, viewdata);
 };
+
 var default_view = function (req, res) {
-	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'home/default',
-			themefileext: appSettings.templatefileextension
+	var viewtemplate = {
+		viewname: 'home/default',
+		themefileext: appSettings.templatefileextension
+	},
+	viewdata = {
+		pagedata: {
+			title: 'default'
 		},
-		function (err, templatepath) {
-			CoreController.handleDocumentQueryRender({
-				res: res,
-				req: req,
-				renderView: templatepath,
-				responseData: {
-					pagedata: {
-						title: 'default'
-					},
-					user: req.user
-				}
-			});
-		}
-	);
+		user: req.user
+	};
+	CoreController.renderView(req, res, viewtemplate, viewdata);
 };
+
 var get_installoutputlog = function (req, res) {
 	var logfile = path.resolve(process.cwd(), 'logs/install-periodicjs.log'),
 		stat = fs.statSync(logfile),
@@ -63,27 +49,21 @@ var get_installoutputlog = function (req, res) {
 	});
 	readStream.pipe(res);
 };
+
 var error404 = function (req, res) {
 	res.status(404);
-	CoreController.getPluginViewDefaultTemplate({
-			viewname: 'home/error404',
-			themefileext: appSettings.templatefileextension
+	var viewtemplate = {
+		viewname: 'home/error404',
+		themefileext: appSettings.templatefileextension
+	},
+	viewdata = {
+		pagedata: {
+			title: 'Not Found'
 		},
-		function (err, templatepath) {
-			CoreController.handleDocumentQueryRender({
-				res: res,
-				req: req,
-				renderView: templatepath,
-				responseData: {
-					pagedata: {
-						title: 'Not Found'
-					},
-					user: req.user,
-					url: req.url
-				}
-			});
-		}
-	);
+		user: req.user,
+		url: req.url
+	};
+	CoreController.renderView(req, res, viewtemplate, viewdata);
 };
 
 var catch404 = function (req, res) {
@@ -95,6 +75,7 @@ var catch404 = function (req, res) {
 		err: err,
 		req: req,
 		res: res,
+		use_warning: true,
 		errorflash: err.message + ', ' + req.url
 	});
 };
@@ -103,8 +84,8 @@ var controller = function (resources) {
 	logger = resources.logger;
 	mongoose = resources.mongoose;
 	appSettings = resources.settings;
-	CoreController = new ControllerHelper(resources);
-	CoreUtilities = new Utilities(resources);
+	CoreController = resources.core.controller;
+	CoreUtilities = resources.core.utilities;
 
 	return {
 		index: index,
