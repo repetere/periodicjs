@@ -1,5 +1,7 @@
 #Periodic [![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs)
 
+[![Join the chat at https://gitter.im/typesettin/periodicjs](https://badges.gitter.im/typesettin/periodicjs.svg)](https://gitter.im/typesettin/periodicjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications. 
 
 The platform is 100% open source and composed of extremely modular components that enable creating bespoke [Node.js](nodejs.org)/[Express](expressjs.com)/[MongoDB](http://www.mongodb.org/) based applications efficiently with new or existing themes and extensions.
