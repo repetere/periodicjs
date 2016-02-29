@@ -290,40 +290,36 @@ var cleanInstallStandardExtensions = function(options,callback){
  * @description get list of installed extensions to test against extensions.json to see if during deployment, new extensions were added, if so, then install them
  */
 var getInstalledExtensions = function(callback){
-	// console.log('got to getInstalledExtensions');
-	npm.load({
-		'strict-ssl': false,
-		'production': true,
-		'no-optional': true,
-		'quiet': true,
-		'silent': true,
-		'json': true,
-		'depth': 0,
-		'skip_post_install':true,
-		'prefix':process.cwd(),
-		// 'skip-install-periodic-ext': true
-	},function (err) {
-		if (err) {
-			callback(err,null);
-		}
-		else {
-		 	npm['no-optional'] = true;
-		 	npm.skip_post_install = true;
-		 	npm.silent = true;
-		 	npm.quiet = true;
-			npm.commands.list([],
-			function (err,data) {
-				var installedmod =[];
-				for(var x in data.dependencies){
-					if(data.dependencies[x].name && data.dependencies[x].name.match(/periodicjs.ext/gi)){
-						installedmod.push(data.dependencies[x].name+'@'+data.dependencies[x].version);					
-					}
+	try{
+		fs.readdir(path.join(__dirname,'../node_modules'),function(err,files){
+			var installedmod =[];
+			var get_private_dir =function(file_parent_dir){
+				return function(privatedir){
+						return file_parent_dir+'/'+privatedir;
+					};
+			};
+			for(let x in files){
+				if(files[x].match(/@/gi)){
+					let privatemodules = fs.readdirSync(path.join(__dirname,'../node_modules',files[x]));
+					// console.log('privatemodules',privatemodules);
+					privatemodules = privatemodules.map(get_private_dir(files[x]));
+					files = files.concat(privatemodules);
 				}
-				console.log('installed modules',installedmod);
-				callback(null,installedmod);
-			});	
-		}
-	});
+			}
+				// console.log('files',files);
+			for(let x in files){
+				if(files[x].match(/periodicjs\.ext/gi)){
+					let ext_package_json = fs.readJsonSync(path.join(__dirname,'../node_modules',files[x],'/package.json'));
+					installedmod.push(files[x]+'@'+ext_package_json.version);					
+				}
+			}
+			console.log('installed modules',installedmod);
+			callback(err,installedmod);
+		});
+	}
+	catch(e){
+		callback(e);
+	}
 };
 
 var getMissingExtensionsFromConfig = function(installedExtensions,callback){
@@ -364,7 +360,7 @@ var getMissingExtensionsFromConfig = function(installedExtensions,callback){
 				}
 				else{
 					if(allExtensionsFromConf[a].name.match('@')){
-						console.log('allExtensionsFromConf[a].name has a @ - private repo ',allExtensionsFromConf[a].name);
+						console.log(`allExtensionsFromConf[${a}].name is private repo `,allExtensionsFromConf[a].name);
 						missingExtensionsInstallList.push(allExtensionsFromConf[a].name+'@'+allExtensionsFromConf[a].version);
 					}
 					else if(allExtensionsFromConf[a].name.match('/')){
@@ -484,7 +480,7 @@ var installMissingNodeModulesAsync = function(missingExtensions,callback){
 			callback(err);
 		}
 		else{
-			console.log('customcallbackstatus length',customcallbackstatus.length);
+			console.log('number of custom node modules and extensions',customcallbackstatus.length);
 			// callback(null,missingExtensions);
 
 			npm.load({
@@ -542,6 +538,12 @@ var installMissingNodeModules = function(missingExtensionStatus,missingExtension
 	installMissingNodeModulesAsync(missingExtensions,callback);
 };
 
+/**
+ * TODO: get themename of last run process
+ * @param  {object}   options  options parameter
+ * @param  {function} callback async callback function
+ * @return {string}            return the name of the theme for npm modules to install
+ */
 var getThemeNameAsync = function(options,callback){
 	console.log('tyring to getThemeNameAsync');
 	var themename;

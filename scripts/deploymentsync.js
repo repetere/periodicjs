@@ -27,5 +27,6 @@ async.waterfall([
 		else{
 			console.log('deployment sync result',result);
 			CoreUtilities.restart_app({});
+			process.exit(0);
 		}
 });
