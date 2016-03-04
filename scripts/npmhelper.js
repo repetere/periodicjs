@@ -200,11 +200,13 @@ var installCustomConfigNodeModules = function(callback){
 		npmconfig ={
 			'strict-ssl': false,
 			'save-optional': true,
+			'no-optional': true,
 			'production': true
 		};
 
 	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules)  && currentConfig.node_modules.length >0 ){
 	 	npm['save-optional'] = true;
+	 	npm['no-optional'] = true;
 		//console.log('install these modules',currentConfig.node_modules)
 		npm.load(
 			npmconfig,
@@ -215,6 +217,7 @@ var installCustomConfigNodeModules = function(callback){
 			}
 			else {
 			 	npm['save-optional'] = true;
+			 	npm['no-optional'] = true;
 				npm.commands.install(
 					currentConfig.node_modules,
 					callback
@@ -230,6 +233,7 @@ var installCustomConfigNodeModules = function(callback){
 var installStandardExtensions = function(callback){
 	var npmconfig ={
 		'strict-ssl': false,
+		'no-optional': true,
 		'save-optional': true,
 		'production': true
 	},
@@ -254,6 +258,7 @@ var installStandardExtensions = function(callback){
 			}
 			else {
 			 	npm['save-optional'] = true;
+	 			npm['no-optional'] = true;
 				npm.commands.install(
 					standardExtensions,
 					callback
@@ -267,6 +272,7 @@ var cleanInstallStandardExtensions = function(options,callback){
 	var npmconfig = {
 		'strict-ssl': false,
 		'save-optional': false,
+		'no-optional': false,
 		'production': true
 	};
 	npm.load(
@@ -277,6 +283,7 @@ var cleanInstallStandardExtensions = function(options,callback){
 			callback(err);
 		}
 		else {
+ 			npm['no-optional'] = true;
 		 	// npm['save-optional'] = true;
 			npm.commands.install(
 				standardExtensions,
@@ -398,14 +405,15 @@ var installMissingExtensions = function(missingExtensions,callback){
 			'strict-ssl': false,
 			'production': true,
 			'silent': true,
-			'save-optional': true
+			'no-optional': true
 			// 'skip_ext_conf': true
 		},function (err) {
 			if (err) {
 				callback(err,null);
 			}
 			else {
-			 	npm['save-optional'] = true;
+ 				npm['no-optional'] = true;
+			 	// npm['save-optional'] = true;
 			 	npm.silent = true;
 			 	npm.quiet = true;
 				npm.commands.install(missingExtensions,
