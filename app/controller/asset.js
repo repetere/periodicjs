@@ -1,10 +1,14 @@
 'use strict';
 
+const crypto = require('crypto');
 var path = require('path'),
 	async = require('async'),
-	fs = require('fs-extra'),
 	multer = require('multer'),
 	moment = require('moment'),
+	Promisie = require('promisie'),
+	fs = require('fs-extra'),
+	fsRemoveAsync = Promisie.promisify(fs.remove),
+	fsRenameAsync = Promisie.promisify(fs.rename),
 	str2json = require('string-to-json'),
 	formidable = require('formidable'),
 	extend = require('util-extend'),
@@ -18,7 +22,9 @@ var path = require('path'),
 	Contenttypes,
 	coreControllerOptions,
 	controllerRoutes,
+	client_encryption_key_string=false,
 	logger;
+
 
 // var handleFileObjReturn = function(){
 // };
@@ -52,6 +58,85 @@ var multiupload_onParseStart = function () {
   logger.debug('Form parsing started at: ', new Date());
 };
 
+var get_client_encryption_key_string = function(){
+	console.log('path.resolve(__dirname,"../../")',path.resolve(__dirname,'../../'));
+	if(!client_encryption_key_string){
+		client_encryption_key_string = fs.readFileSync(path.join(path.resolve(__dirname,'../../'),appSettings.client_side_encryption_key_path),'utf8');
+	}
+	return client_encryption_key_string;
+};
+
+var use_client_file_encryption = function(options){
+	console.log('appSettings.client_side_encryption_key_path',appSettings.client_side_encryption_key_path);
+	return options.req.controllerData && options.req.controllerData.encryptfiles && options.req.controllerData.encryptfiles===true && appSettings.client_side_encryption_key_path;
+};
+
+var encrypt_file_chain = function(file,eachcb){
+		var filepath =file.path;
+		var encrypted_file_path=file.path+'.enc';
+		file.path = encrypted_file_path;
+		(function(){
+			return new Promise(function(resolve,reject){
+				var encryption_key_password = get_client_encryption_key_string();
+				// console.log('encrypt this file',file);
+				// console.log('with this string',get_client_encryption_key_string());
+				var cipher = crypto.createCipher('aes192', encryption_key_password);
+
+				var input = fs.createReadStream(filepath);
+				var output = fs.createWriteStream(encrypted_file_path);
+
+				input.pipe(cipher).pipe(output);
+				output.on('finish', () => {
+				  console.log('there will be no more data.');
+					resolve();
+				});
+				input.on('error',(e)=>{
+				  console.log('error encrypting file.');
+					reject(e);
+				});
+			});
+		})()
+		.then(()=>{
+			//delete orignal
+			return fsRemoveAsync(filepath); 
+		})
+		.then(()=>{
+			eachcb(null,file);
+		})
+		.catch((e)=>{
+			eachcb(e);
+		});
+				//encrypt file
+				//rename file
+				//delete original file
+};
+
+var decryptAsset = function(req,res){
+	var asset = req.controllerData.asset;
+	var filename = req.params.filename;
+	res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+	res.setHeader('Content-type', asset.assettype);
+	var encryption_key_password = get_client_encryption_key_string();
+	// console.log('encrypt this file',file);
+	// console.log('with this string',get_client_encryption_key_string());
+	var decipher = crypto.createDecipher('aes192', encryption_key_password);
+
+	var input = fs.createReadStream(path.join(process.cwd(),asset.fileurl+'.enc'));
+
+	input.pipe(decipher).pipe(res);
+	res.on('finish', () => {
+	  logger.silly('decrypted file');
+	});
+	input.on('error',(e)=>{
+	  logger.error('error decrypting file.',e);
+		CoreController.handleDocumentQueryErrorResponse({
+				err: e,
+				res: res,
+				req: req
+			});
+	});
+};
+
 var multiupload = multer({
 	includeEmptyFields: false,
 	putSingleFilesInArray: true,
@@ -60,13 +145,22 @@ var multiupload = multer({
 	changeDest: multiupload_changeDest,
 	onParseStart: multiupload_onParseStart,
 	onParseEnd: function(req,next){
-		logger.debug('req.body',req.body);
+		logger.warn('remove setting encryptfiles');
+		req.controllerData =  req.controllerData || {};
+		req.controllerData.encryptfiles=true;
+		// logger.debug('req.body',req.body);
 		logger.debug('req.files',req.files);
 		var files = [],
 			file_obj,
+			use_file_encryption = use_client_file_encryption({req:req}),
 			get_file_obj= function(data){
 				var returndata = data;
 				returndata.uploaddirectory = returndata.path.replace(process.cwd(),'').replace(returndata.name,'');
+				if(use_file_encryption){
+					returndata.attributes = returndata.attributes || {};
+					returndata.attributes.encrypted_client_side = true;
+					returndata.encrypted_client_side = true;
+				}
 				return returndata;
 			};
 		for(var x in req.files){
@@ -87,7 +181,20 @@ var multiupload = multer({
 		}
 		req.controllerData = (req.controllerData) ? req.controllerData : {};
 		req.controllerData.files = files;
-		next();
+		console.log('use_file_encryption',use_file_encryption);
+		if(use_file_encryption){
+			async.map(
+				req.controllerData.files,
+				encrypt_file_chain,
+				function(err,encrypted_files){
+					// console.log('encrypted_files',encrypted_files);
+					req.controllerData.files = encrypted_files;
+					next(err);
+				});
+		}
+		else{
+			next();			
+		}
 	}
 });	
 
@@ -442,7 +549,11 @@ var controller = function (resources) {
 	controllerRoutes = CoreController.controller_routes(coreControllerOptions);
 	controllerRoutes.upload = upload;
 	controllerRoutes.multiupload = multiupload;
+	controllerRoutes.use_client_file_encryption = use_client_file_encryption;
+	controllerRoutes.get_client_encryption_key_string = get_client_encryption_key_string;
+	controllerRoutes.encrypt_file_chain = encrypt_file_chain;
 	controllerRoutes.localupload = localupload;
+	controllerRoutes.decryptAsset = decryptAsset;
 	controllerRoutes.createassetfile = createassetfile;
 	controllerRoutes.create_asset = create_asset;
 	controllerRoutes.assetcreate = assetcreate;

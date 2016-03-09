@@ -102,6 +102,7 @@
     "periodicjs.core.utilities": "6.0.0",
     "pluralize": "^1.1.2",
     "prompt": "0.2.14",
+    "promisie": "1.0.4",
     "redis": "^2.4.2",
     "redis-url": "^1.2.1",
     "response-time": "^2.3.0",
