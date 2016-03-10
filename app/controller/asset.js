@@ -59,7 +59,7 @@ var multiupload_onParseStart = function () {
 };
 
 var get_client_encryption_key_string = function(){
-	console.log('path.resolve(__dirname,"../../")',path.resolve(__dirname,'../../'));
+	// console.log('path.resolve(__dirname,"../../")',path.resolve(__dirname,'../../'));
 	if(!client_encryption_key_string){
 		client_encryption_key_string = fs.readFileSync(path.join(path.resolve(__dirname,'../../'),appSettings.client_side_encryption_key_path),'utf8');
 	}
@@ -68,7 +68,9 @@ var get_client_encryption_key_string = function(){
 
 var use_client_file_encryption = function(options){
 	console.log('appSettings.client_side_encryption_key_path',appSettings.client_side_encryption_key_path);
-	return options.req.controllerData && options.req.controllerData.encryptfiles && options.req.controllerData.encryptfiles===true && appSettings.client_side_encryption_key_path;
+	return ((options.req.controllerData && options.req.controllerData.encryptfiles && options.req.controllerData.encryptfiles===true ) || (
+			options.req.body && options.req.body.encryptfiles && (options.req.body.encryptfiles===true || options.req.body.encryptfiles==='on' || options.req.body.encryptfiles==='true')
+		)) && appSettings.client_side_encryption_key_path;
 };
 
 var encrypt_file_chain = function(file,eachcb){
@@ -112,29 +114,48 @@ var encrypt_file_chain = function(file,eachcb){
 };
 
 var decryptAsset = function(req,res){
+	req.controllerData = req.controllerData || {};
 	var asset = req.controllerData.asset;
-	var filename = req.params.filename;
-	res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-	res.setHeader('Content-type', asset.assettype);
-	var encryption_key_password = get_client_encryption_key_string();
-	// console.log('encrypt this file',file);
-	// console.log('with this string',get_client_encryption_key_string());
-	var decipher = crypto.createDecipher('aes192', encryption_key_password);
-
-	var input = fs.createReadStream(path.join(process.cwd(),asset.fileurl+'.enc'));
-
-	input.pipe(decipher).pipe(res);
-	res.on('finish', () => {
-	  logger.silly('decrypted file');
-	});
-	input.on('error',(e)=>{
-	  logger.error('error decrypting file.',e);
+	var encrypted_file_path = path.join(process.cwd(),asset.attributes.periodicPath+'.enc');
+	// res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+	res.setHeader('Content-Type', asset.assettype);
+	if(asset.size){
+		res.setHeader('Content-Length', asset.size);
+	}
+	if(!req.query.nocache || !req.body.nocache || !req.controllerData.nocache){
+		res.setHeader('Content-Control', 'public, max-age=86400');
+	}
+	if(req.params.filename !== asset.attributes.periodicFilename){
+		res.status(406);
+		var invalid_file_request_error = new Error('Invalid file request');
 		CoreController.handleDocumentQueryErrorResponse({
-				err: e,
-				res: res,
-				req: req
-			});
-	});
+			err: invalid_file_request_error,
+			res: res,
+			req: req
+		});
+	}
+	else{
+		var encryption_key_password = get_client_encryption_key_string();
+		// console.log('decrypt this file',encrypted_file_path);
+		// console.log('with this string',get_client_encryption_key_string());
+		var decipher = crypto.createDecipher('aes192', encryption_key_password);
+
+		var input = fs.createReadStream(encrypted_file_path);
+
+		input.pipe(decipher).pipe(res);
+		res.on('finish', () => {
+		  logger.silly('decrypted file');
+		});
+		input.on('error',(e)=>{
+		  logger.error('error decrypting file.',e);
+			res.status(500);
+			CoreController.handleDocumentQueryErrorResponse({
+					err: e,
+					res: res,
+					req: req
+				});
+		});
+	}
 };
 
 var multiupload = multer({
@@ -146,9 +167,9 @@ var multiupload = multer({
 	onParseStart: multiupload_onParseStart,
 	onParseEnd: function(req,next){
 		logger.warn('remove setting encryptfiles');
-		req.controllerData =  req.controllerData || {};
-		req.controllerData.encryptfiles=true;
-		// logger.debug('req.body',req.body);
+		// req.controllerData =  req.controllerData || {};
+		// req.controllerData.encryptfiles=true;
+		logger.debug('req.body',req.body);
 		logger.debug('req.files',req.files);
 		var files = [],
 			file_obj,
