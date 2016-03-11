@@ -8,7 +8,7 @@ var path = require('path'),
 	Promisie = require('promisie'),
 	fs = require('fs-extra'),
 	fsRemoveAsync = Promisie.promisify(fs.remove),
-	fsRenameAsync = Promisie.promisify(fs.rename),
+	// fsRenameAsync = Promisie.promisify(fs.rename),
 	str2json = require('string-to-json'),
 	formidable = require('formidable'),
 	extend = require('util-extend'),
@@ -55,7 +55,7 @@ var multiupload_changeDest = function(dest, req, res) {
 };
 
 var multiupload_onParseStart = function () {
-  logger.debug('Form parsing started at: ', new Date());
+  logger.debug('Form parsing started now at: ', new Date());
 };
 
 var get_client_encryption_key_string = function(){
@@ -166,11 +166,11 @@ var multiupload = multer({
 	changeDest: multiupload_changeDest,
 	onParseStart: multiupload_onParseStart,
 	onParseEnd: function(req,next){
-		logger.warn('remove setting encryptfiles');
-		// req.controllerData =  req.controllerData || {};
-		// req.controllerData.encryptfiles=true;
-		logger.debug('req.body',req.body);
-		logger.debug('req.files',req.files);
+		// logger.warn('remove setting encryptfiles');
+		// // req.controllerData =  req.controllerData || {};
+		// // req.controllerData.encryptfiles=true;
+		// logger.debug('req.body',req.body);
+		// logger.debug('req.files',req.files);
 		var files = [],
 			file_obj,
 			use_file_encryption = use_client_file_encryption({req:req}),
