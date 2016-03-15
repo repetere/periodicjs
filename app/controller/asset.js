@@ -22,6 +22,7 @@ var path = require('path'),
 	Contenttypes,
 	coreControllerOptions,
 	controllerRoutes,
+	client_encryption_algo='aes192',
 	client_encryption_key_string=false,
 	logger;
 
@@ -181,6 +182,7 @@ var multiupload = multer({
 					returndata.attributes = returndata.attributes || {};
 					returndata.attributes.encrypted_client_side = true;
 					returndata.encrypted_client_side = true;
+					returndata.attributes.client_encryption_algo = client_encryption_algo;
 				}
 				return returndata;
 			};
@@ -302,8 +304,8 @@ var create_assets_from_files = function(req, res, next){
 };
 
 var upload = function (req, res, next) {
-	console.log('req.body',req.body);
-	console.log('req.files',req.files);
+	// console.log('req.body',req.body);
+	// console.log('req.files',req.files);
 	var form = new formidable.IncomingForm(),
 		files = [],
 		returnFile,
@@ -561,12 +563,14 @@ var controller = function (resources) {
 	Asset = mongoose.model('Asset');
 	User = mongoose.model('User');
 	Contenttypes = mongoose.model('Contenttype');
+	client_encryption_algo = appSettings.client_encryption_algo || client_encryption_algo;
 	coreControllerOptions = {
 		model_name:'asset',
 		load_model_population:'author contenttypes tags categories authors' ,
 		load_multiple_model_population:'author contenttypes tags categories authors',
 		use_full_data:false,
 	};
+	// console.log('client_encryption_algo',client_encryption_algo);
 	controllerRoutes = CoreController.controller_routes(coreControllerOptions);
 	controllerRoutes.upload = upload;
 	controllerRoutes.multiupload = multiupload;
@@ -584,6 +588,7 @@ var controller = function (resources) {
 	controllerRoutes.remove = remove;
 	controllerRoutes.changeDest = multiupload_changeDest;
 	controllerRoutes.onParseStart = multiupload_onParseStart;
+	controllerRoutes.client_encryption_algo = client_encryption_algo;
 	controllerRoutes.upload_dir = upload_dir;
 	controllerRoutes.get_asset_object_from_file = get_asset_object_from_file;
 	return controllerRoutes;
