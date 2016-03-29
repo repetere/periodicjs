@@ -8,7 +8,12 @@
 var periodicStartupOptions = require('./content/config/startup'),
 	extend = require('utils-merge'),
 	argv = require('optimist').argv,
+	periodic,
 	periodicSettings;
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+var server_options = {};
 
 periodicStartupOptions = extend(periodicStartupOptions,argv);
 
@@ -33,13 +38,15 @@ else {
 	 * @global
 	 * @type {object}
 	 */
-	var periodic = require('./app/lib/periodic')(periodicStartupOptions);
-	periodicSettings = periodic.appconfig.settings();
+	var libPeriodic = require('./app/lib/periodic')(periodicStartupOptions);
+	libPeriodic.init({},function(err,periodicInitialized){
+		periodic = periodicInitialized;
+		// console.log('periodic',periodic);
+
+
+			periodicSettings = periodic.appconfig.settings();
 	if(periodicSettings.application.https_port){
-		var https = require('https'),
-			fs = require('fs'), 
-			path = require('path'), 
-			server_options = {};
+
       server_options.key = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_privatekey));
       server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
       server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
@@ -97,4 +104,5 @@ else {
 			});
 		}
 	}
+	});
 }
