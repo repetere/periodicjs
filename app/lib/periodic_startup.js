@@ -9,6 +9,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const EJS = require('ejs');
+const LRU = require('lru-cache');
 const responseTime = require('response-time');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
@@ -141,6 +142,9 @@ exports.viewSettings = function (options,callback) {
 		let viewengine =  application_settings.templateengine || 'ejs';
 		app.set('view engine', viewengine);
 		app.set('views', path.resolve(__dirname, '../views'));
+		if(application_settings.template_lru_cache===true){
+			EJS.cache = LRU(100);
+		}
 		app.engine('html', EJS.renderFile);
 		app.engine('ejs',EJS.renderFile);
 		if(application_settings.templatepackage!=='ejs'){
