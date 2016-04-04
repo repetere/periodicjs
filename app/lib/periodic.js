@@ -125,6 +125,7 @@ var periodic = function (periodicConfigOptions) {
 			})
 			.catch((e)=>{
 				console.timeEnd('Application Starting');
+				console.error(e.stack);
 				callback(e);
 			});
 	};
