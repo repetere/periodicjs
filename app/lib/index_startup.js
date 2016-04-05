@@ -64,7 +64,7 @@ exports.setupPeriodicSettings = function (options,callback) {
 				let server_options = options.server_options;
 
 				if( periodicSettings.cluster_process && cluster.isMaster) {
-	        var numWorkers = require('os').cpus().length;
+	        var numWorkers = periodicSettings.cluster_numWorkers || require('os').cpus().length;
 
 	        console.log('Master cluster setting up ' + numWorkers + ' workers...');
 
