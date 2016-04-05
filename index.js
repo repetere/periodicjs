@@ -12,10 +12,12 @@ const	argv = require('optimist').argv;
 var index_startup = require('./app/lib/index_startup');
 var periodicStartupOptions = require('./content/config/startup');
 var periodic;
+var cluster = require('cluster');
 var periodicSettings;
 var server_options = {};
 var libPeriodic = {};
 var init=index_startup;
+
 
 periodicStartupOptions = extend(periodicStartupOptions,argv);
 
@@ -31,7 +33,8 @@ var periodic_configure_obj={
 	libPeriodic: libPeriodic,
 	periodic: periodic,
 	periodicSettings: periodicSettings,
-	server_options: server_options
+	server_options: server_options,
+	cluster: cluster
 };
 
 Promisie.promisify(init.loadCustomStartupConfigurations)(periodic_configure_obj)
@@ -43,6 +46,11 @@ Promisie.promisify(init.loadCustomStartupConfigurations)(periodic_configure_obj)
 		console.log('initialized Periodic',Object.keys(intialized_return_object));
 	})
 	.catch((e)=>{
-		console.error('Could not initialize Periodic');
-		console.error(e.stack);
+		if(e.message==='Leave Promise Chain: CLI Process' || e.message==='Leave Promise Chain: Forking Process'){
+			console.log(e.message);
+		}
+		else{
+			console.error('Could not initialize Periodic');
+			console.error(e.stack);
+		}
 	});

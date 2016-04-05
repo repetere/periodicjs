@@ -315,7 +315,7 @@ exports.useSessions = function (options,callback) {
 				};
 			}
 			else 
-			if (application_settings.sessions.type === 'redis' && application_settings.status !== 'install') {
+			if (application_settings.sessions.type === 'redis') {
 				RedisStore = require('connect-redis')(session);
 				var redisconfig  = application_settings.redis_config;
 				if((!redisconfig.port || !redisconfig.host) ){

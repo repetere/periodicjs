@@ -17,22 +17,7 @@ const extend = require('utils-merge');
  */
 exports.loadCustomStartupConfigurations = function (options,callback) {
 	try{
-		let periodicStartupOptions = options.periodicStartupOptions;
 
-		global.periodicExpressApp ={};
-		/**
-		 * @description the script that starts the periodic express application.
-		 * @author Yaw Joseph Etse
-		 * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
-		 * @license MIT
-		 * @requires module:optimist
-		 */
-
-		if(periodicStartupOptions.use_global_socket_io){
-			global.io = require('socket.io')();
-		}
-
-		options.periodicStartupOptions = periodicStartupOptions;
 		callback(null,options);
 	}
 	catch(err){
@@ -43,9 +28,9 @@ exports.loadCustomStartupConfigurations = function (options,callback) {
 exports.useCLI = function (options,callback) {
 	try{
 		let argv = options.argv;
-
 		if (argv.cli) {
-			require('./app/lib/cli')(argv);
+			require('./cli')(argv);
+    	throw (new Error('Leave Promise Chain: CLI Process'));
 		}
 		else{
 			options.argv = argv;
@@ -66,23 +51,70 @@ exports.setupPeriodicSettings = function (options,callback) {
 	 */
 	try{
 		let periodicStartupOptions = options.periodicStartupOptions;
+		let cluster = options.cluster;
 		let libPeriodic = require('./periodic')(periodicStartupOptions);
 		libPeriodic.init({},function(err,periodicInitialized){
-		let periodic = periodicInitialized;
-		let periodicSettings = periodic.appconfig.settings();
-		let server_options = options.server_options;
-		if(periodicSettings.application.https_port){
-      server_options.key = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_privatekey));
-      server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
-      server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
-		}
-		options.periodic = periodic;
-		options.server_options = server_options;
-		options.periodicSettings = periodicSettings;
-		options.periodicStartupOptions = periodicStartupOptions;
-		options.libPeriodic = libPeriodic;
-		callback(null,options);
-	});
+			if(err){
+				callback(err);
+			}
+			else{
+				let periodicStartupOptions = options.periodicStartupOptions;
+				let periodic = periodicInitialized;
+				let periodicSettings = periodic.appconfig.settings();
+				let server_options = options.server_options;
+
+				if( periodicSettings.cluster_process && cluster.isMaster) {
+	        var numWorkers = require('os').cpus().length;
+
+	        console.log('Master cluster setting up ' + numWorkers + ' workers...');
+
+	        for(var i = 0; i < numWorkers; i++) {
+	            cluster.fork();
+	        }
+
+	        cluster.on('online', function(worker) {
+	            console.log('Worker ' + worker.process.pid + ' is online');
+	        });
+
+	        cluster.on('exit', function(worker, code, signal) {
+	            console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+	            console.log('Starting a new worker');
+	            cluster.fork();
+	        });
+	      	callback(new Error('Leave Promise Chain: Forking Process'));
+        }
+				else{
+					global.periodicExpressApp ={};
+					/**
+					 * @description the script that starts the periodic express application.
+					 * @author Yaw Joseph Etse
+					 * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
+					 * @license MIT
+					 * @requires module:optimist
+					 */
+
+					if(periodicStartupOptions.use_global_socket_io){
+						global.io = require('socket.io')();
+					}
+
+					if(periodicSettings.application.https_port){
+			      server_options.key = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_privatekey));
+			      server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
+			      server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
+					}
+					options.periodic = periodic;
+					options.server_options = server_options;
+					options.periodicSettings = periodicSettings;
+					options.periodicStartupOptions = periodicStartupOptions;
+					options.cluster = cluster;
+					options.libPeriodic = libPeriodic;
+					callback(null,options);
+				}
+
+
+
+			}
+		});
 	}
 	catch(err){
 		callback(err);
@@ -150,7 +182,7 @@ exports.useSocketIO = function(options, callback){
 					global.io.adapter(redisIoAdapater({ pubClient: pub, subClient: sub }));
 				}
 				else{
-					global.io.adapter(redisIoAdapater({ host: redis_config_obj.host, port: redis_config_obj.port }));				
+					global.io.adapter(redisIoAdapater({ host: redis_config_obj.hostname || redis_config_obj.host, port: redis_config_obj.port }));				
 				}
 			}
 			else{
