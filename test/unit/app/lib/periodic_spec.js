@@ -3,13 +3,25 @@
 
 var path = require('path'),
   periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
-  periodicjs = periodic({skiprouting:true,env:'test'}),
+  periodicLib = periodic({skiprouting:true,env:'test'}),
+  periodicjs,
   // chai = require('chai'),
   expect = require('chai').expect;
 // chai.use(require('chai-fs'));
 
 describe('A module that represents a periodic app', function () {
   this.timeout(5000);
+  before('initialize periodic',function(done){
+    periodicLib.init({},function(err,periodicInitialized){
+      if(err){
+        done(err);
+      }
+      else{
+        periodicjs = periodicInitialized;
+        done();
+      }
+    });
+  });
   describe('The periodic object', function () {
     it('should return an object', function (done) {
       expect(periodicjs).to.be.an('object');

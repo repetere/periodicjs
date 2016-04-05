@@ -30,6 +30,7 @@
     "prevent_clear_data_cache_on_start":false,
     "prevent_clear_view_cache_on_start":false
   },
+  "template_lru_cache":true,
   "cluster_process":false,
   "periodic_cache_status":false,
 	"session_secret":"hjoiuu87go9hui",

@@ -5,96 +5,52 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 'use strict';
-var periodicStartupOptions = require('./content/config/startup'),
-	extend = require('utils-merge'),
-	argv = require('optimist').argv,
-	periodicSettings;
+
+const Promisie = require('promisie');
+const extend = require('utils-merge');
+const	argv = require('optimist').argv;
+var index_startup = require('./app/lib/index_startup');
+var periodicStartupOptions = require('./content/config/startup');
+var periodic;
+var cluster = require('cluster');
+var periodicSettings;
+var server_options = {};
+var libPeriodic = {};
+var init=index_startup;
+
 
 periodicStartupOptions = extend(periodicStartupOptions,argv);
 
-if(periodicStartupOptions.use_global_socket_io){
-	global.io = require('socket.io')();
-}
-global.periodicExpressApp ={};
-/**
- * @description the script that starts the periodic express application.
- * @author Yaw Joseph Etse
- * @copyright Copyright (c) 2014 Typesettin. All rights reserved.
- * @license MIT
- * @requires module:optimist
- */
-if (argv.cli) {
-	require('./app/lib/cli')(argv);
-}
-else {
-	/**
-	 * @description periodic express application
-	 * @instance express app
-	 * @global
-	 * @type {object}
-	 */
-	var periodic = require('./app/lib/periodic')(periodicStartupOptions);
-	periodicSettings = periodic.appconfig.settings();
-	if(periodicSettings.application.https_port){
-		var https = require('https'),
-			fs = require('fs'), 
-			path = require('path'), 
-			server_options = {};
-      server_options.key = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_privatekey));
-      server_options.ca = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certauthority));
-      server_options.cert = fs.readFileSync(path.resolve(periodicSettings.ssl.ssl_certificate));
-	}
-	if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
-		periodic.mongoose.connection.on('open',function(){
-			global.periodicExpressApp = periodic.expressapp.listen(periodic.port,function(){
-				console.log('HTTP Server listening on port',periodic.port);
-			});
-		});	
-		if(periodicSettings.application.https_port){
-			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
-				console.log('HTTPS Server listening on port',periodic.port);
-		}
-	}
-	else{
-		global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
-		if(periodicSettings.application.https_port){
-			global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
-		}
-	}
 
-	if(periodicStartupOptions.use_global_socket_io){
-		if(periodicSettings.socketio_type && periodicSettings.socketio_type==='redis'){
-			var redisIoAdapater = require('socket.io-redis');
-			var redis_config_obj = periodicSettings.redis_config;
-			if((!periodicSettings.redis_config.port || !periodicSettings.redis_config.host) ){
-				var redis_url = require('redis-url');
-				redis_config_obj = extend(redis_config_obj,redis_url.parse(periodicSettings.redis_config.url));
-			}
-			if(redis_config_obj.pass || redis_config_obj.password){
-				if(redis_config_obj.password){
-					redis_config_obj.pass = redis_config_obj.password;
-				}
-				var redis = require('redis').createClient;
-				var pub = redis(redis_config_obj.port, redis_config_obj.host, { auth_pass: redis_config_obj.pass });
-				var sub = redis(redis_config_obj.port, redis_config_obj.host, { return_buffers: true, auth_pass: redis_config_obj.pass });
-				global.io.adapter(redisIoAdapater({ pubClient: pub, subClient: sub }));
-			}
-			else{
-				global.io.adapter(redisIoAdapater({ host: redis_config_obj.host, port: redis_config_obj.port }));				
-			}
+if(periodicStartupOptions.index_startup){
+	console.log('using custom initializing');
+	init = extend(index_startup,periodicStartupOptions.index_startup);
+}
+
+var periodic_configure_obj={
+	periodicStartupOptions : periodicStartupOptions,
+	argv: argv,
+	libPeriodic: libPeriodic,
+	periodic: periodic,
+	periodicSettings: periodicSettings,
+	server_options: server_options,
+	cluster: cluster
+};
+
+Promisie.promisify(init.loadCustomStartupConfigurations)(periodic_configure_obj)
+	.then((loadconfiguration_return_object)=>Promisie.promisify(init.useCLI)(loadconfiguration_return_object))
+	.then((cli_return_object)=>Promisie.promisify(init.setupPeriodicSettings)(cli_return_object))
+	.then((setupperiodic_return_object)=>Promisie.promisify(init.startWebServer)(setupperiodic_return_object))
+	.then((startwebserver_return_object)=>Promisie.promisify(init.useSocketIO)(startwebserver_return_object))
+	.then((intialized_return_object)=>{
+		console.log('initialized Periodic',Object.keys(intialized_return_object));
+	})
+	.catch((e)=>{
+		if(e.message==='Leave Promise Chain: CLI Process' || e.message==='Leave Promise Chain: Forking Process'){
+			console.log(e.message);
 		}
 		else{
-			var mongoIoAdapter = require('@yawetse/socket.io-adapter-mongo'),
-				additionalIOConfigs = { return_buffers: true, detect_buffers: true };
-			global.io.adapter(mongoIoAdapter(periodicSettings.dburl,additionalIOConfigs));
+			console.error('Could not initialize Periodic');
+			console.error(e.stack);
 		}
-		global.io.attach(global.periodicExpressApp, {
-			logger: periodic.logger
-		});
-		if(periodicSettings.application.https_port){
-			global.io.attach(global.periodicHTTPSExpressApp, {
-				logger: periodic.logger
-			});
-		}
-	}
-}
+	});
