@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "main": "index.js",
   "engines": {
     "node": "~4.x"

@@ -11,7 +11,9 @@
  */
 module.exports = function(options){
 	var mongoose = options.mongoose;
+	if(mongoose.Connection.STATES.connected !== mongoose.connection.readyState){
 		mongoose.connect(options.dburl,options.dboptions);
+	}
 	var userSchema = require('../../app/model/user.js'),
 		itemSchema = require('../../app/model/item.js'),
 		dataSchema = require('../../app/model/data.js'),

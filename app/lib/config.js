@@ -26,7 +26,7 @@ var fs = require('fs-extra'),
  */
 var config = function (periodicConfigOptions) {
 	var appEnvironment = argv.e,
-		appPort = argv.p,
+		appPort = (periodicConfigOptions && periodicConfigOptions.port) ? periodicConfigOptions.port : argv.p,
 		packagejsonFileJSON,
 		configurationFile,
 		configurationOverrideFile = path.join(path.resolve(__dirname, '../../content/config/'), 'config.json'),
