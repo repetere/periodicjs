@@ -84,7 +84,7 @@ var periodic = function (periodicConfigOptions) {
 	var initializeApp = function(options,callback){
 
 		// console.log('initialize',initialize);
-		console.time('Application Starting');
+		console.time('Application Configured');
 		Promisie.promisify(initialize.loadConfiguration)(periodic_configure_obj)
 			.then((loadconfiguration_return_object)=>Promisie.promisify(initialize.useLogger)(loadconfiguration_return_object))
 			.then((logger_return_object)=>Promisie.promisify(initialize.viewSettings)(logger_return_object))
@@ -121,10 +121,10 @@ var periodic = function (periodicConfigOptions) {
 					port: intialized_return_object.app.get('port')
 				};
 				callback(null,periodic_return_obj);
-				console.timeEnd('Application Starting');
+				console.timeEnd('Application Configured');
 			})
 			.catch((e)=>{
-				console.timeEnd('Application Starting');
+				console.timeEnd('Application Configured');
 				console.error(e.stack);
 				callback(e);
 			});

@@ -24,7 +24,7 @@ var path       = require('path'),
 // }
 
 describe('the default routes when no modules are installed', function(){
-  this.timeout(5000);
+  this.timeout(10000);
   before('connect to mongo',function (done){
     periodicLib.init({},function(err,periodicInitialized){
       if(err){

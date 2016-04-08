@@ -10,7 +10,7 @@ var path = require('path'),
 // chai.use(require('chai-fs'));
 
 describe('A module that represents a periodic app', function () {
-  this.timeout(5000);
+  this.timeout(10000);
   before('initialize periodic',function(done){
     periodicLib.init({},function(err,periodicInitialized){
       if(err){

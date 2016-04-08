@@ -1,11 +1,11 @@
 'use strict';
 /*jshint expr: true*/
 var path = require('path'),
-  config = require(path.resolve(process.cwd(), 'app/lib/config.js')),
+  Config = require(path.resolve(process.cwd(), 'app/lib/config.js')),
   chai = require('chai'),
   expect = require('chai').expect,
   defaultPath,
-  configuration = new config({env:'test'});
+  configuration = new Config({env:'test'});
   chai.use(require('@yawetse/chai-fs'));
 
 
