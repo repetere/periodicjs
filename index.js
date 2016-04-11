@@ -43,7 +43,7 @@ Promisie.promisify(init.loadCustomStartupConfigurations)(periodic_configure_obj)
 	.then((setupperiodic_return_object)=>Promisie.promisify(init.startWebServer)(setupperiodic_return_object))
 	.then((startwebserver_return_object)=>Promisie.promisify(init.useSocketIO)(startwebserver_return_object))
 	.then((intialized_return_object)=>{
-		console.log('initialized Periodic',Object.keys(intialized_return_object));
+		console.log(`Application Running [ Environment: ${ intialized_return_object.periodicSettings.application.environment } | Port:${ intialized_return_object.periodicSettings.application.port }${(intialized_return_object.periodicSettings.application.https_port) ? ' | HTTPS Port '+intialized_return_object.periodicSettings.application.https_port :''} ]`);
 	})
 	.catch((e)=>{
 		if(e.message==='Leave Promise Chain: CLI Process' || e.message==='Leave Promise Chain: Forking Process'){

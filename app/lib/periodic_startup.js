@@ -191,6 +191,24 @@ exports.expressSettings = function (options,callback) {
 /**
  * @description set reponse cache settings for static assets, in dev mode disable caching
  */
+exports.customexpresssettings_return_object = function (options,callback) {
+	/** static asset cache settings, in dev mode, disable caching
+	 * @instance
+	 */
+	try{
+		let app = options.app;
+		let application_settings = options.application_settings;
+
+		callback(null,options);
+	}
+	catch(e){
+		callback(e);
+	}
+};
+
+/**
+ * @description set reponse cache settings for static assets, in dev mode disable caching
+ */
 exports.staticCaching = function (options,callback) {
 	/** static asset cache settings, in dev mode, disable caching
 	 * @instance
