@@ -48,7 +48,7 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'Category'
 	}],
-	assets: [{
+	related_assets: [{
 		type: ObjectId,
 		ref: 'Asset'
 	}],
