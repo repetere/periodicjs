@@ -48,6 +48,10 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'Category'
 	}],
+	assets: [{
+		type: ObjectId,
+		ref: 'Asset'
+	}],
 	changes: [{
 		createdat: {
 			type: Date,
