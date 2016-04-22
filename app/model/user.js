@@ -255,11 +255,10 @@ userSchema.statics.hasPrivilege = function (user, privilege) {
 
 userSchema.statics.checkExistingUser = function(options,callback){
 	var User = mongoose.model('User'),
-		userdata = options.userdata,
-		searchUsernameRegEx = (userdata.username)? new RegExp(userdata.username, 'gi') : null,
-		searchEmailRegEx = (userdata.email)?  new RegExp(userdata.email, 'gi') : null,
+		userdata = options.userdata;
+	var searchUsernameRegEx = (userdata.username) ? new RegExp(`^${ userdata.username.replace(/([^\w\d\s])/g, '\\$1') }$`, 'i') : null,
+		searchEmailRegEx = (userdata.email) ? new RegExp(`^${ userdata.email.replace(/([^\w\d\s])/g, '\\$1') }$`, 'i') : null,
 		query = {};
-
 		if (userdata.username && userdata.email) {
 			query = {
 				$or: [{
