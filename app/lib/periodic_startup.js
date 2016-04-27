@@ -643,22 +643,24 @@ exports.clearPeriodicCache = function (options,callback) {
 		let application_settings = options.application_settings;
 		let logger = options.logger;
 
-		if(global.CoreCache){
-			console.time('clearing periodic cache');
-			if(application_settings.periodic_cache_settings){
-				application_settings.periodic_cache_settings.debug = application_settings.debug;
-				global.CoreCache.setOptions(application_settings.periodic_cache_settings);
+		var t = setTimeout(function(){
+			if(global.CoreCache){
+				console.time('clearing periodic cache');
+				if(application_settings.periodic_cache_settings){
+					application_settings.periodic_cache_settings.debug = application_settings.debug;
+					global.CoreCache.setOptions(application_settings.periodic_cache_settings);
+				}
+				global.CoreCache.clearCache(function(err,status){
+					console.timeEnd('clearing periodic cache');
+					if(err){
+						logger.error(err);
+					}
+					else if(application_settings.debug){
+						logger.debug(status);
+					}
+				});
 			}
-			global.CoreCache.clearCache(function(err,status){
-				console.timeEnd('clearing periodic cache');
-				if(err){
-					logger.error(err);
-				}
-				else if(application_settings.debug){
-					logger.debug(status);
-				}
-			});
-		}
+		},3000);
 
 		options.logger = logger;
 		options.application_settings = application_settings;
