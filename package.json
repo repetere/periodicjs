@@ -61,7 +61,7 @@
     "stop": "forever stop -c nodemon index.js"
   },
   "dependencies": {
-    "@yawetse/socket.io-adapter-mongo": "^1.2.0",
+    "@yawetse/socket.io-adapter-mongo": "^0.1.7",
     "async": "^1.5.1",
     "bcrypt": "~0.8.3",
     "bluebird": "^3.1.1",
