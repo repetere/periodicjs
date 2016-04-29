@@ -1,10 +1,10 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "main": "index.js",
   "engines": {
-    "node": "~4.x"
+    "node": "~6.x"
   },
   "author": {
     "name": "Yaw Joseph Etse",
@@ -61,8 +61,8 @@
     "stop": "forever stop -c nodemon index.js"
   },
   "dependencies": {
-    "@yawetse/socket.io-adapter-mongo": "^0.1.7",
-    "async": "^1.5.1",
+    "@yawetse/socket.io-adapter-mongo": "^0.1.8",
+    "async": "^2.0.0-rc.3",
     "bcrypt": "~0.8.3",
     "bluebird": "^3.1.1",
     "body-parser": "^1.13.1",
@@ -82,13 +82,13 @@
     "express": "^4.13.0",
     "express-session": "^1.11.3",
     "formidable": "^1.0.17",
-    "fs-extra": "^0.26.4",
+    "fs-extra": "^0.30.0",
     "lru-cache": "^4.0.1",
     "marked": "^0.3.3",
     "method-override": "^2.3.1",
     "mime": "^1.3.4",
     "moment": "^2.11.0",
-    "mongoose": "^4.0.6",
+    "mongoose": "^4.4.14",
     "morgan": "^1.5.1",
     "ms": "^0.7.1",
     "multer": "^0.1.8",
@@ -121,7 +121,7 @@
   },
   "devDependencies": {
     "@yawetse/chai-fs": "^0.4.0-rc.0",
-    "browserify": "^12.0.1",
+    "browserify": "^13.0.0",
     "chai": "^3.0.0",
     "chai-spies": "^0.7.1",
     "grunt": "^0.4.5",
