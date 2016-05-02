@@ -58,50 +58,8 @@ catch(e){
  	alreadyInstalled=false;
 }
 
-var restoreExtensionBackup = function(){
-	async.parallel({
-			copy_content:	function(asyncCB){
-				fs.copy( appContentPathBackupDir,appContentPath,function(err){
-					if(err){
-						asyncCB(err);
-					}
-					else{
-						fs.remove(appContentPathBackupDir,asyncCB);
-					}
-				});
-			},
-			copy_public:	function(asyncCB){
-				fs.copy(publicPathBackupDir,publicPath, function(err){
-					if(err){
-						asyncCB(err);
-					}
-					else{
-						fs.remove(publicPathBackupDir,asyncCB);
-					}
-				});
-			},
-			copy_custom_files:	function(asyncCB){
-				fs.copy(customFilesPathBackupDir,customFilesPath, function(err){
-					if(err){
-						asyncCB(err);
-					}
-					else{
-						fs.remove(customFilesPathBackupDir,asyncCB);
-					}
-				});
-			}
-		},function(err,result){
-		  if (err){
-				console.log('copying appContentPathBackupDir & publicPathBackupDir backup error (directories do not exist)',err.message);
-			}
-			else{
-				console.log('successful appContentPathBackupDir & publicPathBackupDir backup',result);
-			}
-			process.exit(0);
-	});
-};
-
-console.log('alreadyInstalled',alreadyInstalled);
+try{
+	console.log('alreadyInstalled',alreadyInstalled);
 if(process.env.npm_config_skip_post_install){
 	console.log('skip post install');
 	restoreExtensionBackup();
@@ -151,3 +109,50 @@ fs.ensureDir(path.join(__dirname,'../logs'), function (err) {
 	  console.log('creating log directory err',err); // => null
 	}
 });
+}
+catch(installerr){
+	console.error(installerr,installerr.stack);
+}
+var restoreExtensionBackup = function(){
+	async.parallel({
+			copy_content:	function(asyncCB){
+				fs.copy( appContentPathBackupDir,appContentPath,function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(appContentPathBackupDir,asyncCB);
+					}
+				});
+			},
+			copy_public:	function(asyncCB){
+				fs.copy(publicPathBackupDir,publicPath, function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(publicPathBackupDir,asyncCB);
+					}
+				});
+			},
+			copy_custom_files:	function(asyncCB){
+				fs.copy(customFilesPathBackupDir,customFilesPath, function(err){
+					if(err){
+						asyncCB(err);
+					}
+					else{
+						fs.remove(customFilesPathBackupDir,asyncCB);
+					}
+				});
+			}
+		},function(err,result){
+		  if (err){
+				console.log('copying appContentPathBackupDir & publicPathBackupDir backup error (directories do not exist)',err.message);
+			}
+			else{
+				console.log('successful appContentPathBackupDir & publicPathBackupDir backup',result);
+			}
+			process.exit(0);
+	});
+};
+
