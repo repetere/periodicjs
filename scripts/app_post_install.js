@@ -11,6 +11,7 @@ const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
 const application_root = path.resolve(__dirname,'../../../');
 const installation_resources = path.join(__dirname,'install_resources');
+const periodic_module_resources = path.join(__dirname,'../');
 
 /**
  * create git ignore file if one doesnt exist, based off of the npm ignore file
@@ -25,7 +26,10 @@ let create_project_files = function(){
  * @return {[type]} [description]
  */
 let create_log_directory = function(){
-	return fs.ensureDirAsync(path.join(application_root,'logs'));
+	return Promise.all([
+		fs.ensureDirAsync(path.join(application_root,'logs')),
+		fs.ensureDirAsync(path.join(application_root,'cache')),
+		fs.ensureDirAsync(path.join(application_root,'process'))]);
 };
 
 /**
@@ -47,11 +51,20 @@ let project_package_json = function(){
  * @param  {[type]} reject){} [description]
  * @return {[type]}             [description]
  */
-let project_index_js = function(){
+let project_files_copy = function(){
 	let project_index_filename = 'index.js';
-	let project_index_path = path.join(installation_resources,project_index_filename);
+	let project_index_path = path.join(periodic_module_resources,project_index_filename);
 	let application_root_path = path.join(application_root,project_index_filename);
-	return fs.copyAsync(project_index_path,application_root_path,{clobber:false});
+	return Promise.all([
+			fs.copyAsync(project_index_path,application_root_path,{clobber:true}), //index.js
+			fs.copyAsync( path.join(periodic_module_resources,'scripts'),path.join(application_root,'scripts'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'nodemon.json'),path.join(application_root,'nodemon.json'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'test'),path.join(application_root,'test'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'content'),path.join(application_root,'content'),{clobber:false}),
+			fs.copyAsync( path.join(periodic_module_resources,'public'),path.join(application_root,'public'),{clobber:false}),
+			fs.copyAsync( path.join(periodic_module
+				_resources,'app'),path.join(application_root,'app'),{clobber:true}),
+		]);
 };
 
 //install the new periodic
@@ -67,7 +80,7 @@ create_log_directory()
 	 * if note installed, clean install standard extensions and copy content and public folders
 	 */
 	.then(()=>{
-		return project_index_js();
+		return project_files_copy();
 	})
 	.then(()=>{
 		console.log('Installed Periodic');
