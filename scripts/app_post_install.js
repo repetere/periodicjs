@@ -42,7 +42,20 @@ let project_package_json = function(){
 	let install_package_filename = 'package.json';
 	let install_package_path = path.join(installation_resources,install_package_filename);
 	let application_root_path = path.join(application_root,install_package_filename);
-	return fs.copyAsync(install_package_path,application_root_path,{clobber:false});
+	let original_project_package_json = {};
+	try{
+		original_project_package_json = fs.readJsonSync(application_root_path,{throws: false}) || fs.readJsonSync(install_package_path,{throws:false}) || {};
+	}
+	catch(e){
+	};
+	let periodicjs_package_json = fs.readJsonSync(path.join(periodic_module_resources,'package.json'));
+	let custom_app_package_json = Object.assign({},original_project_package_json,periodicjs_package_json);
+	custom_app_package_json.name = original_project_package_json.name;
+	custom_app_package_json.license = original_project_package_json.license;
+	custom_app_package_json.readme = original_project_package_json.readme;
+	custom_app_package_json.description = original_project_package_json.description;
+	custom_app_package_json.repository = original_project_package_json.repository;
+	return fs.outputJsonAsync(application_root_path,custom_app_package_json, {spaces: 2});
 };
 
 /**
@@ -62,8 +75,7 @@ let project_files_copy = function(){
 			fs.copyAsync( path.join(periodic_module_resources,'test'),path.join(application_root,'test'),{clobber:true}),
 			fs.copyAsync( path.join(periodic_module_resources,'content'),path.join(application_root,'content'),{clobber:false}),
 			fs.copyAsync( path.join(periodic_module_resources,'public'),path.join(application_root,'public'),{clobber:false}),
-			fs.copyAsync( path.join(periodic_module
-				_resources,'app'),path.join(application_root,'app'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'app'),path.join(application_root,'app'),{clobber:true}),
 		]);
 };
 
