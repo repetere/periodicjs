@@ -1,7 +1,7 @@
 {
 	"name": "my-periodic-application",
   "license": "UNLICENSED",
-  "private": false,
+  "private": true,
   "readme": "My Custom PeriodicJS / Express Applcation",
   "description": "My Custom PeriodicJS / Express Applcation",
   "repository": "npm/npm"
