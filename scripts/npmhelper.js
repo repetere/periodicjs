@@ -196,6 +196,23 @@ var upgradePeriodic = function(callback){
 	callback(); 
 };
 
+var remove_installed_periodic_from_node_modules = function(options,callback){
+	var prefixpath = options.prefixpath;
+	var originalpath = path.join(prefixpath,'node_modules/periodicjs');
+	var newpath = path.join(prefixpath,'cache/installed_periodicjs');
+	// try{
+	// 	fs.removeSync(originalpath);
+	// }
+	// catch(e){
+	// 	console.log('fs.removeSync err',err)
+	// 	console.log(e);
+	// }
+	fs.remove(originalpath,(err)=>{
+		console.log('remove_installed_periodic_from_node_modules fs.remove err',err);
+		callback(null);
+	});
+};
+
 var installCustomConfigNodeModules = function(callback){
 	try{
 		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
@@ -206,16 +223,14 @@ var installCustomConfigNodeModules = function(callback){
 				'no-optional': true,
 				'production': true
 			};
-			if(npmhelper_from_installer){
-				npmconfig.prefix = prefixpath;
-			}
-
-			// console.log('currentConfig',currentConfig)
+		if(npmhelper_from_installer){
+			npmconfig.prefix = prefixpath;
+		}
 
 		if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules)  && currentConfig.node_modules.length >0 ){
 		 	npm['save-optional'] = true;
 		 	npm['no-optional'] = true;
-			//console.log('install these modules',currentConfig.node_modules)
+			console.log('custom config.json node_modules',currentConfig.node_modules.length);
 			npm.load(
 				npmconfig,
 				function (err) {
@@ -228,10 +243,19 @@ var installCustomConfigNodeModules = function(callback){
 				 	npm['no-optional'] = true;
 				 	npm['prefix'] = prefixpath;
 
-					npm.commands.install(
-						currentConfig.node_modules,
-						callback
-					);
+				 				// callback(null,'no custom node modules');
+					remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+				 		if(err){callback(err);}
+				 		else{
+							npm.commands.i(
+									currentConfig.node_modules,
+									callback
+								);
+				 		}
+				 	});
+
+
+
 				}
 			});
 		}
@@ -477,113 +501,115 @@ var installPeriodicNodeModules = function(options,callback){
 	var initialExtensionConf = 	fs.readJsonSync(extension_config_path),
 		installPeriodicNodeModulesCallback = callback;
 		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
-				installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+				// installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
 
-	// npm.load({
-	// 		'strict-ssl': false,
-	// 		'production': true,
-	// 		'silent': true,
-	// 		'no-optional': true,
-	// 		'save-optional': false,
-	// 		'skip_post_install':true,
-	// 		'skip_ext_conf': true,
-	// 		'prefix':prefixpath,
-	// 	},function (err) {
-	// 		if (err) {
-	// 			installPeriodicNodeModulesCallback(err,null);
-	// 		}
-	// 		else {
-	// 			installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
-
-	// 		 // 	npm['no-optional'] = true;
-	// 		 // 	npm['save-optional'] = false;
-	// 		 // 	npm.production = true;
-	// 		 // 	npm.silent = true;
-	// 		 // 	npm.skip_post_install = true;
-	// 		 // 	npm.quiet = true;
-	// 		 // 	npm.prefix = prefixpath;
-	// 		 // 						npm.commands.i([],
-	// 			// 	function (err ) {
-	// 			// 		fs.writeJSONSync(extension_config_path,initialExtensionConf);
-	// 			// 		if (err) {
-	// 			// 			installPeriodicNodeModulesCallback(err,null);
-	// 			// 		}
-	// 			// 		else {
-	// 			// 			installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
-	// 			// 		}
-	// 			// 	});
-	// 			// // callback(null,missingExtensions);
-					
-	// 		}
-	// 	});
+		npm.load({
+			'strict-ssl': false,
+			'production': true,
+			'silent': true,
+			'no-optional': true,
+			'save-optional': false,
+			'skip_post_install':true,
+			'skip_ext_conf': true,
+			'prefix':prefixpath,
+		},function (err) {
+			if (err) {
+				installPeriodicNodeModulesCallback(err,null);
+			}
+			else {
+				// installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+			 	remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+			 		if(err){callback(err);}
+			 		else{
+					 	npm['no-optional'] = true;
+					 	npm['save-optional'] = false;
+					 	npm.production = true;
+					 	npm.silent = true;
+					 	npm.skip_post_install = true;
+					 	npm.quiet = true;
+					 	npm.prefix = prefixpath;
+						npm.commands.i([],
+							function (err ) {
+								fs.writeJSONSync(extension_config_path,initialExtensionConf);
+								if (err) {
+									installPeriodicNodeModulesCallback(err,null);
+								}
+								else {
+									installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+								}
+							});
+			 		}
+			 	});
+				// callback(null,missingExtensions);
+			}
+		});
 };
 
 var installMissingNodeModulesAsync = function(missingExtensions,callback){
 
-		var initialExtensionConf = (npmhelper_from_installer) ? fs.readJsonSync(path.resolve(__dirname,'../../../content/config/extensions.json')) :	fs.readJsonSync(extension_config_path);
-
-		console.log('extension_config_path',extension_config_path);
-	
-		if(npmhelper_from_installer){
-			extension_config_path = path.resolve(__dirname,'../../../content/config/extensions.json');
-		}
-
-		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
-		console.log('installMissingNodeModules initialExtensionConf',initialExtensionConf);
+	var initialExtensionConf = (npmhelper_from_installer) ? fs.readJsonSync(path.resolve(__dirname,'../../../content/config/extensions.json')) :	fs.readJsonSync(extension_config_path);
+	var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
+	if(npmhelper_from_installer){
+		extension_config_path = path.resolve(__dirname,'../../../content/config/extensions.json');
+	}
+		
 	installCustomConfigNodeModules(function(err,customcallbackstatus){
 		if(err){
 			callback(err);
 		}
 		else{
 			console.log('number of custom node modules and extensions',customcallbackstatus.length);
-				callback(null,missingExtensions);
+				// callback(null,missingExtensions);
 
-			// npm.load({
-			// 	'strict-ssl': false,
-			// 	'production': true,
-			// 	'silent': true,
-			// 	'no-optional': true,
-			// 	'save-optional': false,
-			// 	'skip_post_install':true,
-			// 	'skip_ext_conf': true,
-			// 	'prefix':prefixpath,
-			// },function (err) {
-			// 	if (err) {
-			// 		callback(err,null);
-			// 	}
-			// 	else {
-			// 	 	npm['no-optional'] = true;
-			// 	 	npm['save-optional'] = false;
-			// 	 	npm.production = true;
-			// 	 	npm.silent = true;
-			// 	 	npm.skip_post_install = true;
-			// 	 	npm.quiet = true;
-			// 	 	npm.prefix = prefixpath;
-			// 	 	// console.log('installMissingNodeModules npm',npm);
-			// 	 	try{
-			// 			npm.commands.i([],
-			// 			function (err,data ) {
-			// 				console.log('trying to restore conf in installMissingNodeModules',data);
+			npm.load({
+				'strict-ssl': false,
+				'production': true,
+				'silent': true,
+				'no-optional': true,
+				'save-optional': false,
+				'skip_post_install':true,
+				'skip_ext_conf': true,
+				'prefix':prefixpath,
+			},function (err) {
+				if (err) {
+					callback(err,null);
+				}
+				else {
+				 	npm['no-optional'] = true;
+				 	npm['save-optional'] = false;
+				 	npm.production = true;
+				 	npm.silent = true;
+				 	npm.skip_post_install = true;
+				 	npm.quiet = true;
+				 	npm.prefix = prefixpath;
+				 	remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+				 		if (err){ throw err;}
+				 						 	// console.log('installMissingNodeModules npm',npm);
+					 	try{
+							npm.commands.i([],
+							function (err,data ) {
+								console.log('trying to restore conf in installMissingNodeModules',data);
 
-			// 				fs.writeJSONSync(extension_config_path,initialExtensionConf);
-			// 				console.log('restored conf in installMissingNodeModules');
-			// 				if (err) {
-			// 					console.log('installMissingNodeModules err',err);
-			// 					callback(err,null);
-			// 				}
-			// 				else {
-			// 					console.log('installMissingNodeModules no errors');
-			// 					callback(null,missingExtensions);
-			// 				}
-			// 			});
-			// 	 	}
-			// 	 	catch(e){
-			// 	 		console.log('installMissingNodeModules e',e);
-			// 			callback(e,null);
-			// 	 	}
-			// 		// callback(null,missingExtensions);
-			// 	}
-			// });
+								fs.writeJSONSync(extension_config_path,initialExtensionConf);
+								console.log('restored conf in installMissingNodeModules');
+								if (err) {
+									console.log('installMissingNodeModules err',err);
+									callback(err,null);
+								}
+								else {
+									console.log('installMissingNodeModules no errors');
+									callback(null,missingExtensions);
+								}
+							});
+					 	}
+					 	catch(e){
+					 		console.log('installMissingNodeModules e',e);
+							callback(e,null);
+					 	}
+						// callback(null,missingExtensions);
+				 	});
+				}
+			});
 		}
 	});
 };

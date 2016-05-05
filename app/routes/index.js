@@ -31,6 +31,10 @@ module.exports = function (periodic) {
 		/** load mongoose models
 		 * @param {object} periodic the same instance configuration object
 		 */
+		
+		// initial_install is now used to state whether this process is running during the install process
+		periodic.initial_install=false;
+
 		require('../../content/config/model')({
 			mongoose: periodic.db.mongoose,
 			dburl: periodic.db.url,
