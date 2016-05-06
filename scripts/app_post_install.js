@@ -24,7 +24,10 @@ var already_installed = false;
  * @return {[type]} [description]
  */
 let create_project_files = function(){
-	return 	fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.gitignore'),{clobber:false}); 
+	return Promise.all([
+		fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.gitignore'),{clobber:false}),
+		fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.npmignore'),{clobber:false}),
+	]);
 };
 
 /**
@@ -45,17 +48,25 @@ let create_log_directory = function(){
  * @return {Promise}             package check promise
  */
 let project_package_json = function(){
-	let install_package_json_filename = 'package.json';
-	let install_package_path = path.join(installation_resources,install_package_json_filename);
-	let application_package_json_root_path = path.join(application_root,install_package_json_filename);
-	let original_project_package_json = {};
-	let application_root_path = path.join(application_root,install_package_json_filename);
+	let package_json_filename = 'package.json';
+	let node_modules_scripts_resources_package_file_path = path.join(installation_resources,package_json_filename);
+	let node_modules_package_file_path = path.join(periodic_module_resources,package_json_filename);
+	let application_package_file_path = path.join(application_root,package_json_filename);
+	
+	let node_modules_scripts_resources_package_data ={};
+	let node_modules_package_data ={};
+	let application_package_file_data=false;
+	let original_project_package_json ={};
+
+	node_modules_scripts_resources_package_data = fs.readJsonSync(node_modules_scripts_resources_package_file_path,{throws: false});
+	node_modules_package_data = fs.readJsonSync(path.join(node_modules_package_file_path),{throws:false});
+
 	try{
-		let project_package_json_data = fs.readJsonSync(application_package_json_root_path,{throws: false});
-		let periodic_package_json_data = fs.readJsonSync(path.join(periodic_module_resources,install_package_json_filename),{throws:false});
-		let sample_project_package_json_data = fs.readJsonSync(install_package_path,{throws:false});
-		original_project_package_json = Object.assign({},periodic_package_json_data,sample_project_package_json_data,project_package_json_data);
-		already_installed = true;
+		application_package_file_data = fs.readJsonSync(application_package_file_path,{throws:false});
+
+		if(application_package_file_data){
+			already_installed = true;
+		}
 	}
 	catch(e){
 		let errorRegExp = /no such file or directory/gi;
@@ -63,13 +74,15 @@ let project_package_json = function(){
 			install_errors.push(e);
 		}
 	};
-	let periodicjs_package_json = fs.readJsonSync(path.join(periodic_module_resources,'package.json'));
-	let custom_app_package_json = Object.assign({},original_project_package_json,periodicjs_package_json);
-	custom_app_package_json.name = (original_project_package_json.name) ? original_project_package_json.name : custom_app_package_json.name;
-	custom_app_package_json.license = (original_project_package_json.license) ? original_project_package_json.license : custom_app_package_json.license;
-	custom_app_package_json.readme = (original_project_package_json.readme) ? original_project_package_json.readme : custom_app_package_json.readme;
-	custom_app_package_json.description = (original_project_package_json.description) ? original_project_package_json.description : custom_app_package_json.description;
-	custom_app_package_json.repository = (original_project_package_json.repository) ? original_project_package_json.repository : custom_app_package_json.repository;
+
+	let custom_app_package_json = Object.assign({},node_modules_package_data,node_modules_scripts_resources_package_data);
+	if(application_package_file_data && application_package_file_data.name){
+		custom_app_package_json.name = (application_package_file_data.name) ? application_package_file_data.name : custom_app_package_json.name;
+		custom_app_package_json.license = (application_package_file_data.license) ? application_package_file_data.license : custom_app_package_json.license;
+		custom_app_package_json.readme = (application_package_file_data.readme) ? application_package_file_data.readme : custom_app_package_json.readme;
+		custom_app_package_json.description = (application_package_file_data.description) ? application_package_file_data.description : custom_app_package_json.description;
+		custom_app_package_json.repository = (application_package_file_data.repository) ? application_package_file_data.repository : custom_app_package_json.repository;
+	}
 	
 	Object.keys(custom_app_package_json).forEach((prop)=>{
 		if(prop.charAt(0)==='_'){
@@ -77,7 +90,7 @@ let project_package_json = function(){
 		}
 	});
 
-	return fs.outputJsonAsync(application_root_path,custom_app_package_json, {spaces: 2});
+	return fs.outputJsonAsync(application_package_file_path,custom_app_package_json, {spaces: 2});
 };
 
 /**
@@ -129,8 +142,10 @@ let install_extensions = function(){
 	}
 	else{
 		console.log('New Periodic Installation');
-		return Promisie.promisify(npmhelper.cleanInstallStandardExtensions)(
-		{});
+		// return Promisie.promisify(npmhelper.cleanInstallStandardExtensions)({});
+		return new Promise((resolve,reject)=>{
+			resolve();
+		});
 	}
 };
 

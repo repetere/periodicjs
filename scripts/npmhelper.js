@@ -17,7 +17,6 @@ var fs = require('fs-extra'),
 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		Extensions = require('periodicjs.core.extensions'),
-		CoreExtensions = new Extensions({}),
 		npm = require('npm'),
 		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string' ||  typeof process.env.npm_config_update ==='string',
 		upgradeinstallalias = typeof process.env.npm_config_upgrade ==='string',
@@ -200,17 +199,36 @@ var remove_installed_periodic_from_node_modules = function(options,callback){
 	var prefixpath = options.prefixpath;
 	var originalpath = path.join(prefixpath,'node_modules/periodicjs');
 	var newpath = path.join(prefixpath,'cache/installed_periodicjs');
-	// try{
-	// 	fs.removeSync(originalpath);
-	// }
-	// catch(e){
-	// 	console.log('fs.removeSync err',err)
-	// 	console.log(e);
-	// }
-	fs.remove(originalpath,(err)=>{
-		console.log('remove_installed_periodic_from_node_modules fs.remove err',err);
-		callback(null);
-	});
+	var original_scripts = path.join(originalpath,'scripts');
+	var original_content = path.join(originalpath,'content');
+	var original_cache = path.join(originalpath,'cache');
+	var original_node_modules = path.join(originalpath,'node_modules');
+	var original_package_json = path.join(originalpath,'package.json');
+		console.log('prefixpath',prefixpath);
+		console.log('originalpath',originalpath);
+		console.log('------------------------------------');
+		console.log('original_scripts',original_scripts);
+		console.log('original_content',original_content);
+		console.log('original_cache',original_cache);
+		console.log('original_node_modules',original_node_modules);
+		console.log('original_package_json',original_package_json);
+	try{
+		fs.removeSync(original_scripts,{throws:false});
+		fs.removeSync(original_content,{throws:false});
+		fs.removeSync(original_cache,{throws:false});
+		fs.removeSync(original_node_modules,{throws:false});
+		fs.removeSync(original_package_json,{throws:false});
+	}
+	catch(e){
+		console.log('fs.removeSync err',err)
+		console.log(e);
+	}
+	callback(null);
+
+	// fs.rename(originalpath,newpath,(err)=>{
+	// 	console.log('remove_installed_periodic_from_node_modules fs.remove err',err);
+	// 	callback(null);
+	// });
 };
 
 var installCustomConfigNodeModules = function(callback){
@@ -309,6 +327,7 @@ var installStandardExtensions = function(callback){
 };
 
 var cleanInstallStandardExtensions = function(options,callback){
+	console.log('about to install standard clean install');
 	var npmconfig = {
 		'strict-ssl': false,
 		'save-optional': false,
@@ -443,7 +462,7 @@ var getMissingExtensionsFromConfig = function(installedExtensions,callback){
 		fs.readJSON(path.resolve(__dirname,'../../../content/config/extensions.json'),checkMissingExtensionsCallback);
 	}
 	else{
-		CoreExtensions.getExtensions(null,checkMissingExtensionsCallback);
+		fs.readJSON(path.resolve(process.cwd(),'content/config/extensions.json'),checkMissingExtensionsCallback);
 	}
 };
 
@@ -590,6 +609,8 @@ var installMissingNodeModulesAsync = function(missingExtensions,callback){
 							function (err,data ) {
 								console.log('trying to restore conf in installMissingNodeModules',data);
 
+								// console.log('installMissingNodeModulesAsync extension_config_path',extension_config_path);
+								// console.log('installMissingNodeModulesAsync initialExtensionConf',initialExtensionConf);
 								fs.writeJSONSync(extension_config_path,initialExtensionConf);
 								console.log('restored conf in installMissingNodeModules');
 								if (err) {

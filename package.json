@@ -55,8 +55,8 @@
     "deploy-sync": "node scripts/deploymentsync.js",
     "forever": "forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js --e",
     "test": "mocha -R spec --recursive",
-    "preinstall": "node scripts/preinstall.js",
-    "preuninstall": "node scripts/preuninstall.js",
+    "preinstall__old": "node scripts/preinstall.js",
+    "preuninstall__old": "node scripts/preuninstall.js",
     "postinstall": "node scripts/app_post_install.js",
     "start": "node index.js --cli --nd --e",
     "stop": "forever stop -c nodemon index.js"
