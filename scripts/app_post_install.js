@@ -13,6 +13,7 @@ const application_root = path.resolve(__dirname,'../../../');
 const installation_resources = path.join(__dirname,'install_resources');
 const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
+const npmcleaninstall = require('./npm_clean_install');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
@@ -143,9 +144,7 @@ let install_extensions = function(){
 	else{
 		console.log('New Periodic Installation');
 		// return Promisie.promisify(npmhelper.cleanInstallStandardExtensions)({});
-		return new Promise((resolve,reject)=>{
-			resolve();
-		});
+		return npmcleaninstall.installStandardExtensionsAsync;
 	}
 };
 
