@@ -9,7 +9,7 @@
 const Promisie = require('promisie');
 const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
-const application_root = path.resolve(__dirname,'../../../');
+const application_root = process.cwd();// path.resolve(__dirname,'../../../');
 const installation_resources = path.join(__dirname,'install_resources');
 const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
@@ -27,7 +27,7 @@ var already_installed = false;
 let create_project_files = function(){
 	return Promise.all([
 		fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.gitignore'),{clobber:false}),
-		fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.npmignore'),{clobber:false}),
+		// fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.npmignore'),{clobber:false}),
 	]);
 };
 
@@ -66,6 +66,8 @@ let project_package_json = function(){
 		application_package_file_data = fs.readJsonSync(application_package_file_path,{throws:false});
 
 		if(application_package_file_data){
+			console.log('application_package_file_path',application_package_file_path)
+			console.log('application_package_file_data',application_package_file_data)
 			already_installed = true;
 		}
 	}
@@ -128,7 +130,8 @@ let install_extensions = function(){
 	catch(e){
 		install_errors.push(e);
 	};
-	// console.log('application_extensions',application_extensions);
+	console.log('application_extensions',application_extensions);
+	console.log('already_installed',already_installed)
 
 	if(application_extensions && already_installed){
 		console.log('Periodic Already Installed, Upgrading');
@@ -144,7 +147,7 @@ let install_extensions = function(){
 	else{
 		console.log('New Periodic Installation');
 		// return Promisie.promisify(npmhelper.cleanInstallStandardExtensions)({});
-		return npmcleaninstall.installStandardExtensionsAsync;
+		return npmcleaninstall.installStandardExtensionsAsync({});
 	}
 };
 

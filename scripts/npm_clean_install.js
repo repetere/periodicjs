@@ -14,19 +14,20 @@ const path = require('path');
 const promisie = require('promisie');
 /**
  * This is the directory path within your project where periodic is installed into node_modules. 
- * When installing from scratch, __dirname refers to the original location of periodic within node modules
+ * When installing from scratch, process.cwd() refers to the original location of periodic within node modules
  * @type {[type]}
  */
-const prefixpath = path.resolve(__dirname,'../../../');
+const prefixpath = path.resolve(process.cwd());
 
 console.log('npm clean_install prefixpath',prefixpath);
 
-var installStandardExtensions = function(callback){
+var installStandardExtensions = function(options,callback){
 	let npmconfig ={
 		'strict-ssl': false,
 		'no-optional': true,
 		'save-optional': true,
-		'production': true
+		'production': true,
+		'prefix': prefixpath
 	};
 	npm.load(
 		npmconfig,
@@ -38,6 +39,7 @@ var installStandardExtensions = function(callback){
 			else {
 			 	npm['save-optional'] = true;
 	 			npm['no-optional'] = true;
+	 			npm['prefix'] = prefixpath;
 				npm.commands.install(
 					standardExtensions,
 					callback
