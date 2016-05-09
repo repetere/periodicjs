@@ -114,6 +114,8 @@ let project_files_copy = function(){
 			fs.copyAsync(project_index_path,application_root_path,{clobber:true}), //index.js
 			fs.copyAsync( path.join(periodic_module_resources,'scripts'),path.join(application_root,'scripts'),{clobber:true}),
 			fs.copyAsync( path.join(periodic_module_resources,'nodemon.json'),path.join(application_root,'nodemon.json'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'Gruntfile.js'),path.join(application_root,'Gruntfile.js'),{clobber:true}),
+			fs.copyAsync( path.join(periodic_module_resources,'jsdoc.json'),path.join(application_root,'jsdoc.json'),{clobber:true}),
 			fs.copyAsync( path.join(periodic_module_resources,'test'),path.join(application_root,'test'),{clobber:true}),
 			fs.copyAsync( path.join(periodic_module_resources,'content'),path.join(application_root,'content'),{clobber:false}),
 			fs.copyAsync( path.join(periodic_module_resources,'public'),path.join(application_root,'public'),{clobber:false}),
