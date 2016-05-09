@@ -8,7 +8,7 @@
 'use strict';
 
 let standardExtensions = [
-	'periodicjs.ext.install@7.0.0',
+	'periodicjs.ext.install@7.1.0',
 	'periodicjs.ext.default_routes@5.9.11',
 	'periodicjs.ext.mailer@6.0.0',
 	'periodicjs.ext.login@7.3.2',

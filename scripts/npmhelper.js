@@ -194,14 +194,14 @@ var remove_installed_periodic_from_node_modules = function(options,callback){
 	var original_cache = path.join(originalpath,'cache');
 	var original_node_modules = path.join(originalpath,'node_modules');
 	var original_package_json = path.join(originalpath,'package.json');
-		console.log('prefixpath',prefixpath);
-		console.log('originalpath',originalpath);
-		console.log('------------------------------------');
-		console.log('original_scripts',original_scripts);
-		console.log('original_content',original_content);
-		console.log('original_cache',original_cache);
-		console.log('original_node_modules',original_node_modules);
-		console.log('original_package_json',original_package_json);
+		// console.log('prefixpath',prefixpath);
+		// console.log('originalpath',originalpath);
+		// console.log('------------------------------------');
+		// console.log('original_scripts',original_scripts);
+		// console.log('original_content',original_content);
+		// console.log('original_cache',original_cache);
+		// console.log('original_node_modules',original_node_modules);
+		// console.log('original_package_json',original_package_json);
 	try{
 		fs.removeSync(original_scripts,{throws:false});
 		fs.removeSync(original_content,{throws:false});

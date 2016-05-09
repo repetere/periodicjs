@@ -9,7 +9,7 @@
 const Promisie = require('promisie');
 const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
-const application_root = process.cwd();// path.resolve(__dirname,'../../../');
+const application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
 const installation_resources = path.join(__dirname,'install_resources');
 const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
@@ -19,6 +19,10 @@ const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
 var install_errors=[];
 var already_installed = false;
+
+// console.log('__dirname',__dirname);
+// console.log('process.cwd()',process.cwd());
+// console.log('application_root',application_root);
 
 /**
  * create git ignore file if one doesnt exist, based off of the npm ignore file
@@ -66,8 +70,8 @@ let project_package_json = function(){
 		application_package_file_data = fs.readJsonSync(application_package_file_path,{throws:false});
 
 		if(application_package_file_data){
-			console.log('application_package_file_path',application_package_file_path)
-			console.log('application_package_file_data',application_package_file_data)
+			// console.log('application_package_file_path',application_package_file_path)
+			// console.log('application_package_file_data',application_package_file_data)
 			already_installed = true;
 		}
 	}
@@ -130,8 +134,8 @@ let install_extensions = function(){
 	catch(e){
 		install_errors.push(e);
 	};
-	console.log('application_extensions',application_extensions);
-	console.log('already_installed',already_installed)
+	// console.log('application_extensions',application_extensions);
+	// console.log('already_installed',already_installed)
 
 	if(application_extensions && already_installed){
 		console.log('Periodic Already Installed, Upgrading');

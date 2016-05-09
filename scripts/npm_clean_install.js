@@ -17,7 +17,7 @@ const promisie = require('promisie');
  * When installing from scratch, process.cwd() refers to the original location of periodic within node modules
  * @type {[type]}
  */
-const prefixpath = path.resolve(process.cwd());
+const prefixpath = path.resolve(process.cwd(),'../../');//path.resolve(process.cwd());
 
 console.log('npm clean_install prefixpath',prefixpath);
 

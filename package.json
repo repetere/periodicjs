@@ -100,7 +100,7 @@
     "passport": "^0.3.2",
     "periodicjs.core.cache": "6.9.1",
     "periodicjs.core.controller": "7.3.0",
-    "periodicjs.core.extensions": "6.3.4",
+    "periodicjs.core.extensions": "6.3.5",
     "periodicjs.core.mailer": "^6.0.0",
     "periodicjs.core.utilities": "^6.1.1",
     "pluralize": "^1.1.2",
