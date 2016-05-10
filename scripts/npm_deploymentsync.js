@@ -405,4 +405,14 @@ var deploy_sync_promise = function(options={}){
 	});
 };
 
+exports.create_copy_of_extension_json_backup = create_copy_of_extension_json_backup;
+exports.restore_copy_of_extension_json_backup = restore_copy_of_extension_json_backup;
+exports.get_installed_extensions = get_installed_extensions;
+exports.get_missing_extensions = get_missing_extensions;
+exports.install_node_modules = install_node_modules;
+exports.install_missing_extensions = install_missing_extensions;
+exports.remove_periodicjs_node_module = remove_periodicjs_node_module;
+exports.install_custom_config_node_modules = install_custom_config_node_modules;
+exports.get_theme_name = get_theme_name;
+exports.install_theme_node_modules = install_theme_node_modules;
 exports.deploy_sync_promise = deploy_sync_promise;
