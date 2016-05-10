@@ -367,11 +367,14 @@ let install_theme_node_modules = function(periodic_theme){
  */
 var deploy_sync_promise = function(options={}){
 	application_root = (options.application_root) ? options.application_root : application_root;
-	if(options.application_root){
-		console.log('custom options.application_root',options.application_root);
-	}
+
+	console.log('using application_root',application_root);
+
 	return new Promise((resolve,reject)=>{
 		create_copy_of_extension_json_backup()
+			.then(()=>{
+				return remove_periodicjs_node_module();
+			})
 			.then(()=>{
 				return get_installed_extensions();
 			})
