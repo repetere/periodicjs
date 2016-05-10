@@ -347,7 +347,7 @@ var cleanInstallStandardExtensions = function(options,callback){
  */
 var getInstalledExtensions = function(callback){
 	try{
-		var project_periodic_directory = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../node_modules') : path.join(__dirname,'node_modules');
+		var project_periodic_directory = path.join(__dirname,'../node_modules');
 
 		fs.readdir(project_periodic_directory,function(err,files){
 			var installedmod =[];
@@ -468,8 +468,8 @@ var installMissingExtensions = function(missingExtensions,callback){
 		};
 		if(npmhelper_from_installer){
 			extension_config_path = path.resolve(__dirname,'../../../content/config/extensions.json');
-			npmloadoptions.prefix = path.resolve(__dirname,'../../../');
 		}
+		npmloadoptions.prefix = path.resolve(__dirname,'../');
 		// console.log('installMissingExtensions initialExtensionConf length',initialExtensionConf.length);
 		npm.load(npmloadoptions,
 			function (err) {
@@ -489,6 +489,7 @@ var installMissingExtensions = function(missingExtensions,callback){
 						fs.writeJSONSync(extension_config_path,initialExtensionConf);
 						console.log('restored conf in installMissingExtensions');
 					if (err) {
+						console.log('ERROR ERROR ERROR', err.stack);
 						callback(err,null);
 					}
 					else {
