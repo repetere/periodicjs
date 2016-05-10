@@ -147,7 +147,7 @@ let install_extensions = function(){
 
 	if(application_extensions && already_installed){
 		console.log('Periodic Already Installed, Upgrading');
-		return deploy_sync.deploy_sync_promise();
+		return deploy_sync.deploy_sync_promise({application_root:application_root});
 	}
 	else{
 		console.log('New Periodic Installation');
