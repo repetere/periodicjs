@@ -44,7 +44,7 @@ let restore_copy_of_extension_json_backup = function(){
  */
 let get_installed_extensions = function(options){
 	try{
-		let project_periodic_directory = path.join(__dirname,'../node_modules');
+		let project_periodic_directory = path.join(application_root,'node_modules');
 
 		return new Promise((resolve,reject)=>{
 			fs.readdirAsync(project_periodic_directory)
