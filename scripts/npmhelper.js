@@ -17,25 +17,15 @@ var fs = require('fs-extra'),
 		Utilities = require('periodicjs.core.utilities'),
 		CoreUtilities = new Utilities({}),
 		Extensions = require('periodicjs.core.extensions'),
-		CoreExtensions = new Extensions({}),
 		npm = require('npm'),
 		upgradeinstall = typeof process.env.npm_config_upgrade_install_periodic ==='string' ||  typeof process.env.npm_config_update ==='string',
 		upgradeinstallalias = typeof process.env.npm_config_upgrade ==='string',
 		originalnodemoduleslocation,
 		originallocation,
 		newlocation = path.resolve(process.cwd(),'../../periodicjs'),
-		standardExtensions = [
-			'periodicjs.ext.install@7.0.0',
-			'periodicjs.ext.default_routes@5.9.11',
-			'periodicjs.ext.mailer@6.0.0',
-			'periodicjs.ext.login@7.3.2',
-			'periodicjs.ext.user_access_control@7.0.0',
-			'periodicjs.ext.scheduled_content@6.0.0',
-			'periodicjs.ext.asyncadmin@7.3.2',
-			'periodicjs.ext.async_cms@7.1.0',
-			'periodicjs.ext.dbseed@6.0.1',
-		],	
+		standardExtensions = require('./standard_extensions'),	
 		extension_config_path = path.join(process.cwd(),'content/config/extensions.json');
+var npmhelper_from_installer = false;
 
 var moveInstalledPeriodic = function(){
 	fs.copySync(path.join(originallocation,'.npmignore'),path.join(originallocation,'.gitignore'));  
@@ -195,38 +185,96 @@ var upgradePeriodic = function(callback){
 	callback(); 
 };
 
-var installCustomConfigNodeModules = function(callback){
-	var currentConfig = fs.readJSONSync(path.resolve(process.cwd(),'content/config/config.json')),
-		npmconfig ={
-			'strict-ssl': false,
-			'save-optional': true,
-			'no-optional': true,
-			'production': true
-		};
-
-	if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules)  && currentConfig.node_modules.length >0 ){
-	 	npm['save-optional'] = true;
-	 	npm['no-optional'] = true;
-		//console.log('install these modules',currentConfig.node_modules)
-		npm.load(
-			npmconfig,
-			function (err) {
-			if (err) {
-				console.error(err);
-				callback(err);
-			}
-			else {
-			 	npm['save-optional'] = true;
-			 	npm['no-optional'] = true;
-				npm.commands.install(
-					currentConfig.node_modules,
-					callback
-				);
-			}
-		});
+var remove_installed_periodic_from_node_modules = function(options,callback){
+	var prefixpath = options.prefixpath;
+	var originalpath = path.join(prefixpath,'node_modules/periodicjs');
+	var newpath = path.join(prefixpath,'cache/installed_periodicjs');
+	var original_scripts = path.join(originalpath,'scripts');
+	var original_content = path.join(originalpath,'content');
+	var original_cache = path.join(originalpath,'cache');
+	var original_node_modules = path.join(originalpath,'node_modules');
+	var original_package_json = path.join(originalpath,'package.json');
+		// console.log('prefixpath',prefixpath);
+		// console.log('originalpath',originalpath);
+		// console.log('------------------------------------');
+		// console.log('original_scripts',original_scripts);
+		// console.log('original_content',original_content);
+		// console.log('original_cache',original_cache);
+		// console.log('original_node_modules',original_node_modules);
+		// console.log('original_package_json',original_package_json);
+	try{
+		fs.removeSync(original_scripts,{throws:false});
+		fs.removeSync(original_content,{throws:false});
+		fs.removeSync(original_cache,{throws:false});
+		fs.removeSync(original_node_modules,{throws:false});
+		fs.removeSync(original_package_json,{throws:false});
 	}
-	else{
-		callback(null,'no custom node modules');
+	catch(e){
+		console.log('fs.removeSync err',err)
+		console.log(e);
+	}
+	callback(null);
+
+	// fs.rename(originalpath,newpath,(err)=>{
+	// 	console.log('remove_installed_periodic_from_node_modules fs.remove err',err);
+	// 	callback(null);
+	// });
+};
+
+var installCustomConfigNodeModules = function(callback){
+	try{
+		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
+		var currentConfig = fs.readJSONSync(path.resolve(prefixpath,'content/config/config.json')),
+			npmconfig ={
+				'strict-ssl': false,
+				'save-optional': true,
+				'no-optional': true,
+				'production': true
+			};
+		if(npmhelper_from_installer){
+			npmconfig.prefix = prefixpath;
+		}
+
+		if(currentConfig && currentConfig.node_modules && Array.isArray(currentConfig.node_modules)  && currentConfig.node_modules.length >0 ){
+		 	npm['save-optional'] = true;
+		 	npm['no-optional'] = true;
+			console.log('custom config.json node_modules',currentConfig.node_modules.length);
+			npm.load(
+				npmconfig,
+				function (err) {
+				if (err) {
+					console.error(err);
+					callback(err);
+				}
+				else {
+				 	npm['save-optional'] = true;
+				 	npm['no-optional'] = true;
+				 	npm['prefix'] = prefixpath;
+
+				 				// callback(null,'no custom node modules');
+					remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+				 		if(err){callback(err);}
+				 		else{
+							npm.commands.i(
+									currentConfig.node_modules,
+									callback
+								);
+				 		}
+				 	});
+
+
+
+				}
+			});
+		}
+		else{
+			callback(null,'no custom node modules');
+		}
+
+	}
+	catch(e){
+		console.error('installCustomConfigNodeModules e',e);
+		callback(e);
 	}
 };
 
@@ -269,6 +317,7 @@ var installStandardExtensions = function(callback){
 };
 
 var cleanInstallStandardExtensions = function(options,callback){
+	console.log('about to install standard clean install');
 	var npmconfig = {
 		'strict-ssl': false,
 		'save-optional': false,
@@ -298,7 +347,9 @@ var cleanInstallStandardExtensions = function(options,callback){
  */
 var getInstalledExtensions = function(callback){
 	try{
-		fs.readdir(path.join(__dirname,'../node_modules'),function(err,files){
+		var project_periodic_directory = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../node_modules') : path.join(__dirname,'node_modules');
+
+		fs.readdir(project_periodic_directory,function(err,files){
 			var installedmod =[];
 			var get_private_dir =function(file_parent_dir){
 				return function(privatedir){
@@ -307,7 +358,7 @@ var getInstalledExtensions = function(callback){
 			};
 			for(let x in files){
 				if(files[x].match(/@/gi)){
-					let privatemodules = fs.readdirSync(path.join(__dirname,'../node_modules',files[x]));
+					let privatemodules = fs.readdirSync(path.join(project_periodic_directory,files[x]));
 					// console.log('privatemodules',privatemodules);
 					privatemodules = privatemodules.map(get_private_dir(files[x]));
 					files = files.concat(privatemodules);
@@ -316,7 +367,7 @@ var getInstalledExtensions = function(callback){
 				// console.log('files',files);
 			for(let x in files){
 				if(files[x].match(/periodicjs\.ext/gi)){
-					let ext_package_json = fs.readJsonSync(path.join(__dirname,'../node_modules',files[x],'/package.json'));
+					let ext_package_json = fs.readJsonSync(path.join(project_periodic_directory,files[x],'/package.json'));
 					installedmod.push(files[x]+'@'+ext_package_json.version);					
 				}
 			}
@@ -384,35 +435,50 @@ var getMissingExtensionsFromConfig = function(installedExtensions,callback){
 	},
 	missingExtensions=[];
 
-
-	CoreExtensions.getExtensions(null,function(err,currentextensions){
+	var checkMissingExtensionsCallback = function(err,currentextensions){
 		if(err){
 			callback(err,null);
 		}
 		else{
-			missingExtensions = getMissingExtensions(installedExtensions,currentextensions);
+			// console.log('currentextensions',currentextensions);
+			missingExtensions = getMissingExtensions(installedExtensions,(currentextensions && currentextensions.extensions && Array.isArray(currentextensions.extensions))? currentextensions.extensions : currentextensions);
 			console.log('missingExtensions',missingExtensions);		
 			callback(null,missingExtensions);
 		}
-	});
+	};
+
+
+	if(npmhelper_from_installer){
+		fs.readJSON(path.resolve(__dirname,'../../../content/config/extensions.json'),checkMissingExtensionsCallback);
+	}
+	else{
+		fs.readJSON(path.resolve(process.cwd(),'content/config/extensions.json'),checkMissingExtensionsCallback);
+	}
 };
 
 var installMissingExtensions = function(missingExtensions,callback){
 	if(missingExtensions && missingExtensions.length>0){
-		var initialExtensionConf = 	fs.readJsonSync(extension_config_path);
-		// console.log('installMissingExtensions initialExtensionConf length',initialExtensionConf.length);
-		npm.load({
+		var initialExtensionConf = (npmhelper_from_installer) ? fs.readJsonSync(path.resolve(__dirname,'../../../content/config/extensions.json')) :	fs.readJsonSync(extension_config_path);
+		var npmloadoptions = {
 			'strict-ssl': false,
 			'production': true,
 			'silent': true,
 			'no-optional': true
 			// 'skip_ext_conf': true
-		},function (err) {
+		};
+		if(npmhelper_from_installer){
+			extension_config_path = path.resolve(__dirname,'../../../content/config/extensions.json');
+			npmloadoptions.prefix = path.resolve(__dirname,'../../../');
+		}
+		// console.log('installMissingExtensions initialExtensionConf length',initialExtensionConf.length);
+		npm.load(npmloadoptions,
+			function (err) {
 			if (err) {
 				callback(err,null);
 			}
 			else {
  				npm['no-optional'] = true;
+ 				npm.prefix = npmloadoptions.prefix;
 			 	// npm['save-optional'] = true;
 			 	npm.silent = true;
 			 	npm.quiet = true;
@@ -443,7 +509,10 @@ var installMissingExtensions = function(missingExtensions,callback){
 var installPeriodicNodeModules = function(options,callback){
 	var initialExtensionConf = 	fs.readJsonSync(extension_config_path),
 		installPeriodicNodeModulesCallback = callback;
-	npm.load({
+		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
+				// installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+
+		npm.load({
 			'strict-ssl': false,
 			'production': true,
 			'silent': true,
@@ -451,45 +520,55 @@ var installPeriodicNodeModules = function(options,callback){
 			'save-optional': false,
 			'skip_post_install':true,
 			'skip_ext_conf': true,
-			'prefix':process.cwd(),
+			'prefix':prefixpath,
 		},function (err) {
 			if (err) {
 				installPeriodicNodeModulesCallback(err,null);
 			}
 			else {
-			 	npm['no-optional'] = true;
-			 	npm['save-optional'] = false;
-			 	npm.production = true;
-			 	npm.silent = true;
-			 	npm.skip_post_install = true;
-			 	npm.quiet = true;
-			 	npm.prefix = process.cwd();
-			 						npm.commands.i([],
-					function (err ) {
-						fs.writeJSONSync(extension_config_path,initialExtensionConf);
-						if (err) {
-							installPeriodicNodeModulesCallback(err,null);
-						}
-						else {
-							installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
-						}
-					});
+				// installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+			 	remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+			 		if(err){callback(err);}
+			 		else{
+					 	npm['no-optional'] = true;
+					 	npm['save-optional'] = false;
+					 	npm.production = true;
+					 	npm.silent = true;
+					 	npm.skip_post_install = true;
+					 	npm.quiet = true;
+					 	npm.prefix = prefixpath;
+						npm.commands.i([],
+							function (err ) {
+								fs.writeJSONSync(extension_config_path,initialExtensionConf);
+								if (err) {
+									installPeriodicNodeModulesCallback(err,null);
+								}
+								else {
+									installPeriodicNodeModulesCallback(null,'installed PeriodicNodeModules with no errors');
+								}
+							});
+			 		}
+			 	});
 				// callback(null,missingExtensions);
-					
 			}
 		});
 };
 
 var installMissingNodeModulesAsync = function(missingExtensions,callback){
-	var initialExtensionConf = 	fs.readJsonSync(extension_config_path);
-		console.log('installMissingNodeModules initialExtensionConf',initialExtensionConf);
+
+	var initialExtensionConf = (npmhelper_from_installer) ? fs.readJsonSync(path.resolve(__dirname,'../../../content/config/extensions.json')) :	fs.readJsonSync(extension_config_path);
+	var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
+	if(npmhelper_from_installer){
+		extension_config_path = path.resolve(__dirname,'../../../content/config/extensions.json');
+	}
+		
 	installCustomConfigNodeModules(function(err,customcallbackstatus){
 		if(err){
 			callback(err);
 		}
 		else{
 			console.log('number of custom node modules and extensions',customcallbackstatus.length);
-			// callback(null,missingExtensions);
+				// callback(null,missingExtensions);
 
 			npm.load({
 				'strict-ssl': false,
@@ -499,7 +578,7 @@ var installMissingNodeModulesAsync = function(missingExtensions,callback){
 				'save-optional': false,
 				'skip_post_install':true,
 				'skip_ext_conf': true,
-				'prefix':process.cwd(),
+				'prefix':prefixpath,
 			},function (err) {
 				if (err) {
 					callback(err,null);
@@ -511,30 +590,35 @@ var installMissingNodeModulesAsync = function(missingExtensions,callback){
 				 	npm.silent = true;
 				 	npm.skip_post_install = true;
 				 	npm.quiet = true;
-				 	npm.prefix = process.cwd();
-				 	// console.log('installMissingNodeModules npm',npm);
-				 	try{
-						npm.commands.i([],
-						function (err,data ) {
-							console.log('trying to restore conf in installMissingNodeModules',data);
+				 	npm.prefix = prefixpath;
+				 	remove_installed_periodic_from_node_modules({prefixpath:prefixpath},(err)=>{
+				 		if (err){ throw err;}
+				 						 	// console.log('installMissingNodeModules npm',npm);
+					 	try{
+							npm.commands.i([],
+							function (err,data ) {
+								console.log('trying to restore conf in installMissingNodeModules',data);
 
-							fs.writeJSONSync(extension_config_path,initialExtensionConf);
-							console.log('restored conf in installMissingNodeModules');
-							if (err) {
-								console.log('installMissingNodeModules err',err);
-								callback(err,null);
-							}
-							else {
-								console.log('installMissingNodeModules no errors');
-								callback(null,missingExtensions);
-							}
-						});
-				 	}
-				 	catch(e){
-				 		console.log('installMissingNodeModules e',e);
-						callback(e,null);
-				 	}
-					// callback(null,missingExtensions);
+								// console.log('installMissingNodeModulesAsync extension_config_path',extension_config_path);
+								// console.log('installMissingNodeModulesAsync initialExtensionConf',initialExtensionConf);
+								fs.writeJSONSync(extension_config_path,initialExtensionConf);
+								console.log('restored conf in installMissingNodeModules');
+								if (err) {
+									console.log('installMissingNodeModules err',err);
+									callback(err,null);
+								}
+								else {
+									console.log('installMissingNodeModules no errors');
+									callback(null,missingExtensions);
+								}
+							});
+					 	}
+					 	catch(e){
+					 		console.log('installMissingNodeModules e',e);
+							callback(e,null);
+					 	}
+						// callback(null,missingExtensions);
+				 	});
 				}
 			});
 		}
@@ -554,8 +638,9 @@ var installMissingNodeModules = function(missingExtensionStatus,missingExtension
  */
 var getThemeNameAsync = function(options,callback){
 	console.log('tyring to getThemeNameAsync');
+		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
 	var themename;
-	fs.readJSON(path.resolve(process.cwd(),'content/config/config.json'),function(err,confJSON){
+	fs.readJSON(path.resolve(prefixpath,'content/config/config.json'),function(err,confJSON){
 		if(err){
 			console.log('install theme modules err',err);
 			callback(null,null);
@@ -566,7 +651,7 @@ var getThemeNameAsync = function(options,callback){
 		}
 		else{
 			// getThemeNameCallback(null,missingExtensionResult,null);
-			fs.readJSON(path.resolve(process.cwd(),'content/config/environment/default.json'),function(err,defaultConfJSON){
+			fs.readJSON(path.resolve(prefixpath,'content/config/environment/default.json'),function(err,defaultConfJSON){
 					// console.log('defaultConfJSON',defaultConfJSON);
 				if(defaultConfJSON && defaultConfJSON.theme){
 					themename =  defaultConfJSON.theme;
@@ -588,8 +673,9 @@ var getThemeName = function(missingExtensionResult,getThemeNameCallback){
 };
 
 var installThemeModulesAsync = function(themename,callback){
+		var prefixpath = (npmhelper_from_installer) ? path.resolve(__dirname,'../../../') : process.cwd();
 	if(themename){
-		var themedir = path.resolve('content/themes',themename);
+		var themedir = path.resolve(prefixpath,'content/themes',themename);
 		console.log('themename',themename);
 		console.log('themedir',themedir);
 		fs.open(path.join(themedir,'package.json'),'r',function(err){
@@ -676,6 +762,7 @@ var npmhelper = function(options){
 	originalnodemoduleslocation = options.originalnodemoduleslocation;
 	originallocation = options.originallocation;
 	newlocation = options.newlocation;
+	npmhelper_from_installer = options.npmhelper_from_installer;
 
 	return {
 		standardExtensions:standardExtensions,
