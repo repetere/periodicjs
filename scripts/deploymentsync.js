@@ -7,26 +7,18 @@
 
 'use strict';
 
-var async = require('async'),
- 		Utilities = require('periodicjs.core.utilities'),
-		CoreUtilities = new Utilities({}),
-		npmhelper = require('./npmhelper')({});
+const deploy_sync = require('./npm_deploymentsync');
+const Utilities = require('periodicjs.core.utilities');
+const CoreUtilities = new Utilities({});
 
-async.waterfall([
-	npmhelper.getInstalledExtensions,
-	npmhelper.getMissingExtensionsFromConfig,
-	npmhelper.installMissingExtensions,
-	npmhelper.installMissingNodeModules,
-	npmhelper.getThemeName,
-	npmhelper.installThemeModules
-	],
-	function(err,result){	
-		if(err){
-			throw new Error(err);
-		}
-		else{
-			console.log('deployment sync result',result);
-			CoreUtilities.restart_app({});
-			process.exit(0);
-		}
-});
+deploy_sync.deploy_sync_promise()
+	.then((result)=>{
+		console.log('Syncronized Periodic Dependencies',result);
+		CoreUtilities.restart_app({});
+		process.exit(0);	
+	})
+	.catch((e)=>{
+		console.error('Could not run deply sync');
+		console.error(e,e.stack);
+		process.exit(0);
+	});

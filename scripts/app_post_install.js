@@ -14,6 +14,7 @@ const installation_resources = path.join(__dirname,'install_resources');
 const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
 const npmcleaninstall = require('./npm_clean_install');
+const deploy_sync = require('./npm_deploymentsync');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
@@ -89,6 +90,11 @@ let project_package_json = function(){
 		custom_app_package_json.readme = (application_package_file_data.readme) ? application_package_file_data.readme : custom_app_package_json.readme;
 		custom_app_package_json.description = (application_package_file_data.description) ? application_package_file_data.description : custom_app_package_json.description;
 		custom_app_package_json.repository = (application_package_file_data.repository) ? application_package_file_data.repository : custom_app_package_json.repository;
+		custom_app_package_json.author = (application_package_file_data.author) ? application_package_file_data.author : custom_app_package_json.author;
+		custom_app_package_json.contributors = (application_package_file_data.contributors) ? application_package_file_data.contributors : custom_app_package_json.contributors;
+		custom_app_package_json.keywords = (application_package_file_data.keywords) ? application_package_file_data.keywords : custom_app_package_json.keywords;
+		custom_app_package_json.maintainers = (application_package_file_data.maintainers) ? application_package_file_data.maintainers : custom_app_package_json.maintainers;
+		custom_app_package_json.optionalDependencies = (application_package_file_data.optionalDependencies) ? application_package_file_data.optionalDependencies : custom_app_package_json.optionalDependencies;
 	}
 	
 	Object.keys(custom_app_package_json).forEach((prop)=>{
@@ -141,14 +147,7 @@ let install_extensions = function(){
 
 	if(application_extensions && already_installed){
 		console.log('Periodic Already Installed, Upgrading');
-		return Promisie.promisify(async.waterfall)([
-			npmhelper.getInstalledExtensions,
-			npmhelper.getMissingExtensionsFromConfig,
-			npmhelper.installMissingExtensions,
-			npmhelper.installMissingNodeModules,
-			npmhelper.getThemeName,
-			npmhelper.installThemeModules
-			]);
+		return deploy_sync.deploy_sync_promise();
 	}
 	else{
 		console.log('New Periodic Installation');

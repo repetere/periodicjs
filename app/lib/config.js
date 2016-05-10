@@ -24,18 +24,18 @@ var fs = require('fs-extra'),
  * @throws {Error} If missing configuration files
  * @todo to do later
  */
-var config = function (periodicConfigOptions) {
+var config = function (periodicConfigOptions={}) {
 	var appEnvironment = argv.e,
 		appPort = (periodicConfigOptions && periodicConfigOptions.port) ? periodicConfigOptions.port : argv.p,
 		packagejsonFileJSON,
 		configurationFile,
-		configurationOverrideFile = path.join(path.resolve(__dirname, '../../content/config/'), 'config.json'),
+		configurationOverrideFile = periodicConfigOptions.configurationOverrideFile || path.join(path.resolve(__dirname, '../../content/config/'), 'config.json'),
 		configurationDefaultFile,
 		configurationFileJSON,
 		configurationOverrideFileJSON,
 		configurationDefaultFileJSON,
 		lastRuntimeEnvironment,
-		lastRuntimeEnvironmentFilePath = path.resolve(__dirname, '../../content/config/process/runtime.json'),
+		lastRuntimeEnvironmentFilePath = periodicConfigOptions.lastRuntimeEnvironmentFilePath || path.resolve(__dirname, '../../content/config/process/runtime.json'),
 		config = {};
 
 	/** 
@@ -72,7 +72,7 @@ var config = function (periodicConfigOptions) {
 	 * @return { string } file path for config file
 	 */
 	this.getConfigFilePath = function (config) {
-		var directory = path.resolve(__dirname, '../../content/config/environment/'),
+		var directory = periodicConfigOptions.configurationDefaultFileDIRECTORY ||  path.resolve(__dirname, '../../content/config/environment/'),
 			file = config + '.json';
 		return path.join(directory, file);
 	};
@@ -84,7 +84,7 @@ var config = function (periodicConfigOptions) {
 	 */
 	this.init = function () {
 		/** get info from package.json */
-		packagejsonFileJSON = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
+		packagejsonFileJSON =  periodicConfigOptions.packagejsonFileJSON || fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
 		/** get info from last runtime environemnt */
 		if(fs.existsSync(lastRuntimeEnvironmentFilePath)){
 			var runtimeJSON = fs.readJSONSync(lastRuntimeEnvironmentFilePath, {throws: false});
@@ -121,7 +121,7 @@ var config = function (periodicConfigOptions) {
 		}
 
 		//** save last runtime environment to load as a backup */
-		fs.outputJson(path.resolve(__dirname,'../../content/config/process/runtime.json'),{environment:appEnvironment},function(err){
+		fs.outputJson(periodicConfigOptions.last_runtime_path || path.resolve(__dirname,'../../content/config/process/runtime.json'),{environment:appEnvironment},function(err){
 			if(err){
 				console.error(err);
 			}
@@ -144,7 +144,7 @@ var config = function (periodicConfigOptions) {
 
 		/** if theme is set in configuration, set filepath */
 		if (config.theme) {
-			config.themepath = path.join(__dirname, '../../content/themes', config.theme);
+			config.themepath = (periodicConfigOptions.themepath_root) ? path.join(periodicConfigOptions.themepath_app_root, 'content/themes', config.theme) : path.join(__dirname, '../../content/themes', config.theme);
 		}
 
 		if(config.debug){
