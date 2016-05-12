@@ -115,16 +115,18 @@ exports.useLogger = function (options,callback) {
 		let logger = options.logger;
 		let AppLog = options.AppLog;
 		let app = options.app;
-		logger = new AppLog(app.get('env'));
-		process.on('uncaughtException', function (err) {
-			logger.error(err.message,err.stack,{
-				err:err
+		fs.ensureDir(path.join(process.cwd(),'logs'),(err)=>{
+			logger = new AppLog(app.get('env'));
+			process.on('uncaughtException', function (err) {
+				logger.error(err.message,err.stack,{
+					err:err
+				});
 			});
+			options.logger = logger;
+			options.AppLog = AppLog;
+			options.app = app;
+			callback(err,options);
 		});
-		options.logger = logger;
-		options.AppLog = AppLog;
-		options.app = app;
-		callback(null,options);
 	}
 	catch(e){
 		callback(e);
