@@ -110,7 +110,7 @@ let get_installed_extensions = function(options){
 			})
 			.catch((err)=>{
 				reject(err);
-			})
+			});
 		});
 	}
 	catch(e){
@@ -219,30 +219,36 @@ let install_node_modules = function(options = {
 	let node_modules_to_install = options.node_modules_to_install;
 
 	return new Promise((resolve,reject)=>{
-		if(Array.isArray(node_modules_to_install) && node_modules_to_install.length>0){
-			npm.load(npm_load_options,(err)=>{
-				if(err){
-					console.error('install_node_modules err',err);
-					reject(err);
-				}
-				else{
-					Object.keys(npm_install_options).forEach((npm_install_option_item)=>{
-						npm[npm_install_option_item] = npm_install_options[npm_install_option_item];
-					});
-					npm.commands.install(node_modules_to_install,(err)=>{
-						if(err){
-							console.error('commands install install_node_modules err',err);
-							reject(err);
-						}
-						else{
-							resolve('installed node modules: '+node_modules_to_install);
-						}
-					});
-				}
-			});
+		try{
+			if(Array.isArray(node_modules_to_install) && node_modules_to_install.length>0){
+				npm.load(npm_load_options,(err)=>{
+					if(err){
+						console.error('install_node_modules err',err);
+						reject(err);
+					}
+					else{
+						Object.keys(npm_install_options).forEach((npm_install_option_item)=>{
+							npm[npm_install_option_item] = npm_install_options[npm_install_option_item];
+						});
+						npm.commands.install(node_modules_to_install,(err)=>{
+							if(err){
+								console.error('commands install install_node_modules err',err);
+								reject(err);
+							}
+							else{
+								resolve('installed node modules: '+node_modules_to_install);
+							}
+						});
+					}
+				});
+			}
+			else{
+				resolve('no modules to install');
+			}
 		}
-		else{
-			resolve('no modules to install');
+		catch(e){
+			console.error('install_node_modules e',e.stack);
+			reject(e);
 		}
 	});
 };
@@ -254,7 +260,6 @@ let install_node_modules = function(options = {
  */
 let install_missing_extensions = function(missing_extensions){
 	let install_prefix = application_root;
-	let node_modules_to_install = missing_extensions;
 	let npm_load_options = {
 		prefix: install_prefix
 	};
@@ -335,7 +340,7 @@ let install_custom_config_node_modules = function(){
  * @param  {function} callback async callback function
  * @return {string}            return the name of the theme for npm modules to install
  */
-let get_theme_name = function(options){
+let get_theme_name = function(){
 	return new Promise((resolve,reject)=>{
 		try{
 			if(application_config_override_data.theme){
@@ -344,7 +349,7 @@ let get_theme_name = function(options){
 			else{
 				application_themename = fs.readJSONSync(path.resolve(application_root,'content/config/environment/default.json')).theme;
 			}
-			console.log('application_themename',application_themename);
+			// console.log('application_themename',application_themename);
 			resolve(application_themename);
 		}
 		catch(e){
@@ -379,46 +384,49 @@ let install_theme_node_modules = function(periodic_theme){
 	};
 	try{
 		let files = fs.readdirSync(project_periodic_directory);
-		let theme_dir_path = path.resolve(application_root,'content/themes',periodic_theme);
-		let theme_package_json = fs.readJSONSync(path.resolve(theme_dir_path,'package.json'),{throws:false});
-		let installed_node_modules_folder_names=[];
-		if(theme_package_json && theme_package_json.dependencies){
-			for(let x in files){
-				if(files[x].match(/@/gi)){
-					let privatemodules = fs.readdirSync(path.join(project_periodic_directory,files[x]));
-					privatemodules = privatemodules.map(get_private_dir(files[x]));
-					// console.log('privatemodules',privatemodules);
-					installed_node_modules_folder_names = installed_node_modules_folder_names.concat(privatemodules);
-				}
-			}
-			installed_node_modules_folder_names = installed_node_modules_folder_names.concat(files);
-
-			let theme_config_node_modules = Object.keys(theme_package_json.dependencies);
-				// console.log('installed_node_modules_folder_names',installed_node_modules_folder_names)
-			theme_config_node_modules.forEach((theme_package)=>{
-				// console.log('theme_package',theme_package);
-				if(!installed_node_modules_folder_names.includes(theme_package)){
-				
-						node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
-				}
-				else{
-					let installed_theme_node_module_version = fs.readJsonSync(path.join(project_periodic_directory,theme_package,'/package.json'),{throws:false}).version;
-					// console.log('theme_package',theme_package,theme_package_json.dependencies[theme_package],installed_theme_node_module_version)
-					if(!semver.satisfies(installed_theme_node_module_version,theme_package_json.dependencies[theme_package])){
-
-						node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
-					
-				
+		if(periodic_theme){
+			
+			let theme_dir_path = path.resolve(application_root,'content/themes',periodic_theme);
+			let theme_package_json = fs.readJSONSync(path.resolve(theme_dir_path,'package.json'),{throws:false});
+			let installed_node_modules_folder_names=[];
+			if(periodic_theme && theme_package_json && theme_package_json.dependencies){
+				for(let x in files){
+					if(files[x].match(/@/gi)){
+						let privatemodules = fs.readdirSync(path.join(project_periodic_directory,files[x]));
+						privatemodules = privatemodules.map(get_private_dir(files[x]));
+						// console.log('privatemodules',privatemodules);
+						installed_node_modules_folder_names = installed_node_modules_folder_names.concat(privatemodules);
 					}
 				}
-					
-			// console.log('theme_package_json.dependencies',theme_package_json.dependencies);
-			// console.log('theme_config_node_modules',theme_config_node_modules);
-			// theme_config_node_modules.forEach((theme_config_module_folder_name)=>{
-			
-			// });
+				installed_node_modules_folder_names = installed_node_modules_folder_names.concat(files);
 
-			});
+				let theme_config_node_modules = Object.keys(theme_package_json.dependencies);
+					// console.log('installed_node_modules_folder_names',installed_node_modules_folder_names)
+				theme_config_node_modules.forEach((theme_package)=>{
+					// console.log('theme_package',theme_package);
+					if(!installed_node_modules_folder_names.includes(theme_package)){
+					
+							node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
+					}
+					else{
+						let installed_theme_node_module_version = fs.readJsonSync(path.join(project_periodic_directory,theme_package,'/package.json'),{throws:false}).version;
+						// console.log('theme_package',theme_package,theme_package_json.dependencies[theme_package],installed_theme_node_module_version)
+						if(!semver.satisfies(installed_theme_node_module_version,theme_package_json.dependencies[theme_package])){
+
+							node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
+						
+					
+						}
+					}
+						
+				// console.log('theme_package_json.dependencies',theme_package_json.dependencies);
+				// console.log('theme_config_node_modules',theme_config_node_modules);
+				// theme_config_node_modules.forEach((theme_config_module_folder_name)=>{
+				
+				// });
+
+				});
+			}
 			
 		}
 		console.log('theme modules to install: ',node_modules_to_install);

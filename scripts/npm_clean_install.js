@@ -22,30 +22,35 @@ const prefixpath = path.resolve(process.cwd(),'../../');//path.resolve(process.c
 console.log('npm clean_install prefixpath',prefixpath);
 
 var installStandardExtensions = function(options,callback){
-	let npmconfig ={
-		'strict-ssl': false,
-		'no-optional': true,
-		'save-optional': true,
-		'production': true,
-		'prefix': prefixpath
-	};
-	npm.load(
-		npmconfig,
-		function (err) {
-			if (err) {
-				console.error(err,err.stack);
-				callback(err);
-			}
-			else {
-			 	npm['save-optional'] = true;
-	 			npm['no-optional'] = true;
-	 			npm['prefix'] = prefixpath;
-				npm.commands.install(
-					standardExtensions,
-					callback
-				);
-			}
-	});
+	try{
+		let npmconfig ={
+			'strict-ssl': false,
+			'no-optional': true,
+			'save-optional': true,
+			'production': true,
+			'prefix': prefixpath
+		};
+		npm.load(
+			npmconfig,
+			function (err) {
+				if (err) {
+					console.error(err,err.stack);
+					callback(err);
+				}
+				else {
+				 	npm['save-optional'] = true;
+		 			npm['no-optional'] = true;
+		 			npm['prefix'] = prefixpath;
+					npm.commands.install(
+						standardExtensions,
+						callback
+					);
+				}
+		});
+	}
+	catch(e){
+		callback(e);
+	}
 };
 
 var installStandardExtensionsAsync = promisie.promisify(installStandardExtensions);
