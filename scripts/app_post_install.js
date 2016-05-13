@@ -9,14 +9,14 @@
 const Promisie = require('promisie');
 const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
-const installation_resources = path.join(__dirname,'install_resources');
-const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
 const npmcleaninstall = require('./npm_clean_install');
 const deploy_sync = require('./npm_deploymentsync');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
+var periodic_module_resources = path.join(__dirname,'../');
+var installation_resources = path.join(__dirname,'install_resources');
 var application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
 var install_errors=[];
 var already_installed = false;
@@ -30,8 +30,10 @@ var already_installed = false;
  * @return {[type]} [description]
  */
 let create_project_files = function(){
+	let dir_root = (already_installed) ? path.join(process.cwd(),'node_modules/periodicjs/scripts') : __dirname ;
+
 	return Promise.all([
-		fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.gitignore'),{clobber:false}),
+		fs.copyAsync(path.join(dir_root,'../.npmignore'), path.join(application_root,'./.gitignore'),{clobber:false}),
 		// fs.copyAsync(path.join(__dirname,'../.npmignore'), path.join(application_root,'./.npmignore'),{clobber:false}),
 	]);
 };
@@ -58,7 +60,11 @@ let create_log_directory = function(){
  * @return {Promise}             package check promise
  */
 let project_package_json = function(){
+	let dir_root = (already_installed) ? path.join(process.cwd(),'node_modules/periodicjs/scripts') : __dirname ;
 	let package_json_filename = 'package.json';
+	periodic_module_resources = (already_installed) ? path.join(process.cwd(),'node_modules/periodicjs') : periodic_module_resources ;
+	installation_resources = (already_installed) ? path.join(dir_root,'install_resources') : installation_resources ;
+	application_root= (alread_installed) ? process.cwd() : application_root;
 	let node_modules_scripts_resources_package_file_path = path.join(installation_resources,package_json_filename);
 	let node_modules_package_file_path = path.join(periodic_module_resources,package_json_filename);
 	let application_package_file_path = path.join(application_root,package_json_filename);
@@ -182,25 +188,16 @@ let install_error_callback = function(error){
 //install the new periodic
 create_log_directory()
 	.then(()=>{
-		console.log('create log already_installed',already_installed)
-		if(already_installed){
-			install_extensions()
-			.then(install_complete_callback)
-			.catch(install_error_callback);
-		}
-		else{
-			create_project_files()
-				.then(()=>{
-					return project_package_json();
-				})
-				.then(()=>{
-					return project_files_copy();
-				})
-				.then(()=>{
-					return install_extensions();
-				})
-				.then(install_complete_callback)
-				.catch(install_error_callback);
-		}
+		return create_project_files();
 	})
+	.then(()=>{
+		return project_package_json();
+	})
+	.then(()=>{
+		return project_files_copy();
+	})
+	.then(()=>{
+		return install_extensions();
+	})
+	.then(install_complete_callback)
 	.catch(install_error_callback);
