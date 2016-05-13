@@ -9,7 +9,6 @@
 const Promisie = require('promisie');
 const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
-const application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
 const installation_resources = path.join(__dirname,'install_resources');
 const periodic_module_resources = path.join(__dirname,'../');
 const npmhelper = require('./npmhelper')({npmhelper_from_installer:true});
@@ -18,6 +17,7 @@ const deploy_sync = require('./npm_deploymentsync');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
+var application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
 var install_errors=[];
 var already_installed = false;
 
@@ -41,6 +41,10 @@ let create_project_files = function(){
  * @return {[type]} [description]
  */
 let create_log_directory = function(){
+	if(fs.readJsonSync(path.join(process.cwd(),'package.json')).name!=='periodicjs'){
+		already_installed=true;
+		application_root=process.cwd();
+	}
 	return Promise.all([
 		fs.ensureDirAsync(path.join(application_root,'logs')),
 		fs.ensureDirAsync(path.join(application_root,'cache')),
@@ -74,6 +78,7 @@ let project_package_json = function(){
 			// console.log('application_package_file_path',application_package_file_path)
 			// console.log('application_package_file_data',application_package_file_data)
 			already_installed = true;
+			application_root=process.cwd();
 		}
 	}
 	catch(e){
@@ -143,7 +148,7 @@ let install_extensions = function(){
 		install_errors.push(e);
 	};
 	// console.log('application_extensions',application_extensions);
-	// console.log('already_installed',already_installed)
+	console.log('already_installed',already_installed)
 
 	if(application_extensions && already_installed){
 		console.log('Periodic Already Installed, Upgrading');
@@ -156,33 +161,46 @@ let install_extensions = function(){
 	}
 };
 
+let install_complete_callback = function(result){
+	if(already_installed){
+		console.log('post install deploysync result',result);
+		CoreUtilities.restart_app({});
+	}
+	console.log('Installed Periodic');
+	if(install_errors.length >0){
+		console.log('Install Warnings',install_errors);
+	}
+	process.exit(0);	
+};
+
+let install_error_callback = function(error){
+	console.error('Could not install Periodic');
+	console.error(e,e.stack);
+	process.exit(0);
+};
+
 //install the new periodic
 create_log_directory()
 	.then(()=>{
-		return create_project_files();
-	})
-	.then(()=>{
-		return project_package_json();
-	})
-	.then(()=>{
-		return project_files_copy();
-	})
-	.then(()=>{
-		return install_extensions();
-	})
-	.then((result)=>{
+		console.log('create log already_installed',already_installed)
 		if(already_installed){
-			console.log('post install deploysync result',result);
-			CoreUtilities.restart_app({});
+			install_extensions()
+			.then(install_complete_callback)
+			.catch(install_error_callback);
 		}
-		console.log('Installed Periodic');
-		if(install_errors.length >0){
-			console.log('Install Warnings',install_errors);
+		else{
+			create_project_files()
+				.then(()=>{
+					return project_package_json();
+				})
+				.then(()=>{
+					return project_files_copy();
+				})
+				.then(()=>{
+					return install_extensions();
+				})
+				.then(install_complete_callback)
+				.catch(install_error_callback);
 		}
-		process.exit(0);	
 	})
-	.catch((e)=>{
-		console.error('Could not install Periodic');
-		console.error(e,e.stack);
-		process.exit(0);
-	});
+	.catch(install_error_callback);

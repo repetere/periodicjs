@@ -11,6 +11,7 @@ const Promisie = require('promisie');
 const fs =  Promisie.promisifyAll(require('fs-extra'));
 const path = require('path');
 const npm = require('npm');
+const semver = require('semver');
 // const PeriodicConfig = require('../app/lib/config');
 const EXTENSION_JSON_PATH = 'content/config/extensions.json';
 
@@ -20,6 +21,13 @@ var extensions_json_data;
 var application_config_override_data;
 var extensions_json_backup_path;
 var application_themename;
+var installed_config_override_node_modules = [];
+
+let get_private_dir =function(file_parent_dir){
+	return function(privatedir){
+		return file_parent_dir+'/'+privatedir;
+	};
+};
 
 /**
  * creates a backup copy of extensions.json
@@ -45,16 +53,13 @@ let restore_copy_of_extension_json_backup = function(){
 let get_installed_extensions = function(options){
 	try{
 		let project_periodic_directory = path.join(application_root,'node_modules');
+		application_config_override_data = fs.readJSONSync(path.resolve(application_root,'content/config/config.json'),{throws:false});
 
 		return new Promise((resolve,reject)=>{
 			fs.readdirAsync(project_periodic_directory)
 				.then((files)=>{
 					let installedmod =[];
-					let get_private_dir =function(file_parent_dir){
-						return function(privatedir){
-							return file_parent_dir+'/'+privatedir;
-						};
-					};
+				
 					for(let x in files){
 						if(files[x].match(/@/gi)){
 							let privatemodules = fs.readdirSync(path.join(project_periodic_directory,files[x]));
@@ -64,11 +69,41 @@ let get_installed_extensions = function(options){
 						}
 					}
 					// console.log('files',files);
+					// try{
+					// 	installed_node_modules_folder_names = files;
+					// }
+					// catch(e){
+					// 	console.error('file assign error',e,e.stack)
+
+					// 	throw new Error(e);
+					// }
+					// console.log('()*(#*@)(#*@)*$)@#($*@)#$*installed_node_modules_folder_names',installed_node_modules_folder_names)
 					for(let x in files){
 						if(files[x].match(/periodicjs\.ext/gi)){
 							let ext_package_json = fs.readJsonSync(path.join(project_periodic_directory,files[x],'/package.json'));
 							installedmod.push(files[x]+'@'+ext_package_json.version);					
 						}
+					}
+					if(application_config_override_data && application_config_override_data.node_modules && Array.isArray(application_config_override_data.node_modules)){
+						// console.log('application_config_override_data.node_modules',application_config_override_data.node_modules);
+						// console.log('files',files);
+						let app_config_node_modules = application_config_override_data.node_modules.map((app_conf_node_module)=>{
+							return app_conf_node_module.split('@')[0];
+						});
+						// console.log('app_config_node_modules',app_config_node_modules);
+						files.forEach((npm_module_folder_name)=>{
+							if(app_config_node_modules.includes(npm_module_folder_name)){
+								let installed_custom_mode_name_and_version = npm_module_folder_name+'@'+fs.readJsonSync(path.join(project_periodic_directory,npm_module_folder_name,'/package.json'),{throws:false}).version;
+								
+								if(application_config_override_data.node_modules.includes(installed_custom_mode_name_and_version)){
+
+									installed_config_override_node_modules.push(installed_custom_mode_name_and_version);
+								}
+							}
+						});
+						// console.log('installed_node_modules_folder_names',installed_node_modules_folder_names);
+					// installed_node_modules_folder_names = files.concat([]);
+						// console.log('installed_config_override_node_modules',installed_config_override_node_modules);
 					}
 					console.log('installed modules',installedmod);
 					resolve(installedmod);
@@ -261,9 +296,11 @@ let remove_periodicjs_node_module = function(){
  */
 let install_custom_config_node_modules = function(){
 	try{
-		application_config_override_data = fs.readJSONSync(path.resolve(application_root,'content/config/config.json'),{throws:false});
 		let install_prefix = application_root;
-		let node_modules_to_install = application_config_override_data.node_modules;
+		let node_modules_to_install = application_config_override_data.node_modules.filter((app_config_node_module_name)=>{
+			return !installed_config_override_node_modules.includes(app_config_node_module_name);
+		});
+
 		let npm_load_options = {
 			'strict-ssl': false,
 			'save-optional': true,
@@ -323,27 +360,67 @@ let get_theme_name = function(options){
  * @return {[type]}         [description]
  */
 let install_theme_node_modules = function(periodic_theme){
+	let project_periodic_directory = path.join(application_root,'node_modules');
+	let install_prefix = application_root;
+	let node_modules_to_install = [];
+	let npm_load_options = {
+		'strict-ssl': false,
+		'save-optional': true,
+		'no-optional': true,
+		'production': true,
+		prefix: install_prefix
+	};
+	let npm_install_options = {
+		'strict-ssl': false,
+		'save-optional': true,
+		'no-optional': true,
+		'production': true,
+		prefix: install_prefix
+	};
 	try{
+		let files = fs.readdirSync(project_periodic_directory);
 		let theme_dir_path = path.resolve(application_root,'content/themes',periodic_theme);
 		let theme_package_json = fs.readJSONSync(path.resolve(theme_dir_path,'package.json'),{throws:false});
-		let install_prefix = application_root;
-		let node_modules_to_install = Object.keys(theme_package_json.dependencies).map((theme_package)=>{
-			return `${theme_package}@${theme_package_json.dependencies[theme_package]}`;
-		});
-		let npm_load_options = {
-			'strict-ssl': false,
-			'save-optional': true,
-			'no-optional': true,
-			'production': true,
-			prefix: install_prefix
-		};
-		let npm_install_options = {
-			'strict-ssl': false,
-			'save-optional': true,
-			'no-optional': true,
-			'production': true,
-			prefix: install_prefix
-		};
+		let installed_node_modules_folder_names=[];
+		if(theme_package_json && theme_package_json.dependencies){
+			for(let x in files){
+				if(files[x].match(/@/gi)){
+					let privatemodules = fs.readdirSync(path.join(project_periodic_directory,files[x]));
+					privatemodules = privatemodules.map(get_private_dir(files[x]));
+					// console.log('privatemodules',privatemodules);
+					installed_node_modules_folder_names = installed_node_modules_folder_names.concat(privatemodules);
+				}
+			}
+			installed_node_modules_folder_names = installed_node_modules_folder_names.concat(files);
+
+			let theme_config_node_modules = Object.keys(theme_package_json.dependencies);
+				// console.log('installed_node_modules_folder_names',installed_node_modules_folder_names)
+			theme_config_node_modules.forEach((theme_package)=>{
+				// console.log('theme_package',theme_package);
+				if(!installed_node_modules_folder_names.includes(theme_package)){
+				
+						node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
+				}
+				else{
+					let installed_theme_node_module_version = fs.readJsonSync(path.join(project_periodic_directory,theme_package,'/package.json'),{throws:false}).version;
+					// console.log('theme_package',theme_package,theme_package_json.dependencies[theme_package],installed_theme_node_module_version)
+					if(!semver.satisfies(installed_theme_node_module_version,theme_package_json.dependencies[theme_package])){
+
+						node_modules_to_install.push(`${theme_package}@${theme_package_json.dependencies[theme_package]}`);
+					
+				
+					}
+				}
+					
+			// console.log('theme_package_json.dependencies',theme_package_json.dependencies);
+			// console.log('theme_config_node_modules',theme_config_node_modules);
+			// theme_config_node_modules.forEach((theme_config_module_folder_name)=>{
+			
+			// });
+
+			});
+			
+		}
 		console.log('theme modules to install: ',node_modules_to_install);
 		return install_node_modules({
 			npm_load_options: npm_load_options,
@@ -353,7 +430,7 @@ let install_theme_node_modules = function(periodic_theme){
 	}
 	catch(e){
 		return new Promise((resolve,reject)=>{
-			console.error('WARNING - COULD NOT INSTALL CUSTOM NODE MODULES',e.stack);
+			console.error('WARNING - COULD NOT INSTALL THEME NODE MODULES',e.stack);
 			resolve(e);
 		});
 
