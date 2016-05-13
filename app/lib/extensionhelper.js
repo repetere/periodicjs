@@ -96,7 +96,7 @@ var checkOutdatedModulesAndPeriodic = function (options, callback) {
 				});
 		},
 		calculate_outdated_versions: function (asyncCB) {
-			if(list_of_extensions_current_data && list_of_extensions_current_data.length>0){
+			if(list_of_extensions_current_data && (list_of_extensions_current_data.length>0 || Object.keys(list_of_extensions_current_data).length>0)){
 				for (var key in list_of_extensions_current_data) {
 					if (semver.lt(list_of_extensions_current_data[key].installed_version, list_of_extensions_current_data[key].latest_version)) {
 						list_of_extensions_outdated_data[key] = list_of_extensions_current_data[key];
