@@ -28,11 +28,11 @@ notifications:
     use_notice: true
     skip_join: false
 
-# before_script:
-#   - npm install 
+before_script:
+  - npm install --skip_app_post_install=true 
 
 install: 
- - npm install  grunt-cli istanbul --skip_app_post_install=true -g
+ - npm install  grunt-cli istanbul -g
 
 branches:
   only:
