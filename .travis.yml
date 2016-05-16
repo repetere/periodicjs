@@ -31,8 +31,8 @@ notifications:
 before_script:
   - npm install -g grunt-cli istanbul
 
-install: 
-  - npm install 
+#install: 
+#  - npm install 
 
 branches:
   only:
