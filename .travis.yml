@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "6.0.0"
+  - "6.1.0"
 env:
   - CXX=g++-4.8
 addons:
@@ -28,8 +28,11 @@ notifications:
     use_notice: true
     skip_join: false
 
+before_script:
+  - npm install --skip_app_post_install=true 
+
 install: 
-  - npm install 
+ - npm install  grunt-cli istanbul -g
 
 branches:
   only:
@@ -37,3 +40,6 @@ branches:
     - devel
 git:
   submodules: false  
+
+script: 
+  - npm set progress=false && npm run deploysync && grunt test
