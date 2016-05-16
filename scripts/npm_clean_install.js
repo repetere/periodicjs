@@ -17,11 +17,14 @@ const promisie = require('promisie');
  * When installing from scratch, process.cwd() refers to the original location of periodic within node modules
  * @type {[type]}
  */
-const prefixpath = path.resolve(process.cwd(),'../../');//path.resolve(process.cwd());
+var prefixpath = path.resolve(process.cwd(),'../../');//path.resolve(process.cwd());
 
-console.log('npm clean_install prefixpath',prefixpath);
 
 var installStandardExtensions = function(options,callback){
+	if(options.prefixpath){
+		prefixpath = options.prefixpath;
+	}
+	console.log('npm clean_install prefixpath',prefixpath);
 	try{
 		let npmconfig ={
 			'strict-ssl': false,

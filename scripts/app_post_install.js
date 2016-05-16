@@ -15,11 +15,13 @@ const deploy_sync = require('./npm_deploymentsync');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
+const skip_app_post_install = (typeof process.env.npm_config_skip_app_post_install !=='undefined' && process.env.npm_config_skip_app_post_install) ? true : false;
 var periodic_module_resources = path.join(__dirname,'../');
 var installation_resources = path.join(__dirname,'install_resources');
 var application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
 var install_errors=[];
 var already_installed = false;
+var custom_clean_install = false;
 
 // console.log('__dirname',__dirname);
 // console.log('process.cwd()',process.cwd());
@@ -234,6 +236,9 @@ let install_extensions = function(){
 	let application_extensions=false;
 	let application_extensions_path = path.join(application_root,'content/config/extensions.json');
 	let app_root_to_use;
+	let clean_install_options = (custom_clean_install) ? {
+		prefixpath:process.cwd()
+	} : {};
 	try{
 		application_extensions = fs.readJsonSync(application_extensions_path,{throws:false});
 		app_root_to_use = application_root;
@@ -263,7 +268,7 @@ let install_extensions = function(){
 	}
 	else{
 		console.log('New Periodic Installation');
-		return npmcleaninstall.installStandardExtensionsAsync({});
+		return npmcleaninstall.installStandardExtensionsAsync(clean_install_options);
 	}
 };
 
@@ -286,7 +291,14 @@ let install_error_callback = function(e){
 };
 
 //install the new periodic
-create_log_directory()
+if(skip_app_post_install){
+	custom_clean_install = true;
+	install_extensions()
+	.then(install_complete_callback)
+	.catch(install_error_callback);
+}
+else{
+	create_log_directory()
 	.then(()=>{
 		return create_project_files();
 	})
@@ -301,3 +313,4 @@ create_log_directory()
 	})
 	.then(install_complete_callback)
 	.catch(install_error_callback);
+}
