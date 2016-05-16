@@ -42,4 +42,4 @@ git:
   submodules: false  
 
 script: 
-  - npm set progress=false && npm install && npm run deploysync && grunt test && grunt coveralls
+  - npm set progress=false && npm run deploysync && grunt test && grunt coveralls
