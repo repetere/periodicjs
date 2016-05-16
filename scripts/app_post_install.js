@@ -15,7 +15,7 @@ const deploy_sync = require('./npm_deploymentsync');
 const async = require('async');
 const Utilities = require('periodicjs.core.utilities');
 const CoreUtilities = new Utilities({});
-const skip_app_post_install = (typeof process.env.npm_config_skip_app_post_install !=='undefined' && process.env.npm_config_skip_app_post_install) ? true : false;
+const skip_app_post_install = ((typeof process.env.npm_config_skip_app_post_install !=='undefined' && process.env.npm_config_skip_app_post_install) || (typeof process.env.npm_config_skip_post_install !=='undefined' && process.env.npm_config_skip_post_install)) ? true : false;
 var periodic_module_resources = path.join(__dirname,'../');
 var installation_resources = path.join(__dirname,'install_resources');
 var application_root = path.resolve(process.cwd(),'../../');// process.cwd();// path.resolve(__dirname,'../../../');
