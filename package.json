@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "8.0.50",
+  "version": "8.0.61",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -54,7 +54,7 @@
     "deploy-sync": "node scripts/deploymentsync.js",
     "forever": "forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js --e",
     "test": "mocha -R spec --recursive",
-    "preinstall__old": "node scripts/preinstall.js",
+    "preinstall": "node scripts/app_pre_install.js",
     "preuninstall__old": "node scripts/preuninstall.js",
     "postinstall": "node scripts/app_post_install.js",
     "start": "node index.js --cli --nd --e",
