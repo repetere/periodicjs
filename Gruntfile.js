@@ -43,12 +43,11 @@ module.exports = function (grunt) {
 			}
 		},
 	  mocha_istanbul: {
-      coverage: {
-        src: testPaths, // a folder works nicely
-        options: {
-          	coverageFolder: 'coverage', // will check both coverage folders and merge the coverage results
-        }
-      },
+      // coverage: {
+      //   src: testPaths, // a folder works nicely
+      //   options: {
+      //   }
+      // },
       // coverageSpecial: {
       //   src: ['testSpecial/*/*.js', 'testUnique/*/*.js'], // specifying file patterns works as well
       //   options: {
@@ -61,6 +60,7 @@ module.exports = function (grunt) {
       coveralls: {
         src: testPaths, // multiple folders also works
         options: {
+        	coverageFolder: 'coverage', // will check both coverage folders and merge the coverage results
           coverage:true, // this will make the grunt.event.on('coverage') event listener to be triggered
           check: {
             lines: 5,
