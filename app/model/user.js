@@ -230,7 +230,7 @@ userSchema.statics.checkValidation = function (options) {
 
 userSchema.statics.validApiKey = function (userid, apikey, callback) {
 	var User = mongoose.model('User');
-	User.find({
+	User.findOne({
 		_id: userid,
 		apikey: apikey
 	}, function (err, user) {
@@ -242,7 +242,7 @@ userSchema.statics.validApiKey = function (userid, apikey, callback) {
 			callback(false, user);
 		}
 		else {
-			logger.silly('model - user.js - invalid apikey');
+			console.log('model - user.js - invalid apikey');
 			callback(new Error('invalid apikey'), false);
 		}
 	});
