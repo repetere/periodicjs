@@ -320,7 +320,7 @@ describe('A module that represents a periodic app', function () {
         .then(()=>{},(err)=>{
           expect(err).to.be.an('error');
           expect(err.message).to.equal('password is too short');
-          fastRegisterUserTest.password='nowvalidpassword';
+          // fastRegisterUserTest.password='nowvalidpassword';
           // return Promisie.promisify(User.fastRegisterUser,User)(fastRegisterUserTest);
           done();
         })
