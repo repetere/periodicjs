@@ -28,20 +28,35 @@ describe('A module that represents a periodic app', function () {
         if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
           done();
         }
-        periodicjs.mongoose.connection.on('connected',()=>{
-          // console.log('Object.keys(periodicjs.mongoose.models)',Object.keys(periodicjs.mongoose.models))
-          done();
-        });
+        else{
+          periodicjs.mongoose.connection.on('connected',()=>{
+            // console.log('Object.keys(periodicjs.mongoose.models)',Object.keys(periodicjs.mongoose.models))
+            done();
+          });
+        }
       }
     });
   });
   describe('The User Model', function () {
+    before('Delete test admin users', function (done) {
+      let user_emails_to_delete = [{email:'xxxxxxx'},
+      {email:'xxxxxxx@xxx.com'}, {email:'passwordtest@test.com'}, {email:'passwordtest4@test.com'}, {email:'rantok@test.com'}, {email:'rantok@test.com'}, {email:'privtest@test.com'},{email:'fastRegisterUserTest@test.com'},{ email:'createusertest@test.com'}];
+
+      Promise.all(user_emails_to_delete.map((testuser)=>{
+        return Promisie.promisify(User.remove,User)(testuser);
+      }))
+      .then((/*remove_results*/)=>done())
+      .catch((e)=>{ 
+        console.log('remove_results e',e);
+        expect(e).to.not.be.ok;
+        done(e);
+      });
+    });
     it('should return a function', function (done) {
       // console.log(periodicjs.mongoose.model('User'))
       expect(User).to.be.a('function');
       done();
     });
-
     it('should validate a valid user', function (done) {
       let inValidUserTest = {
         username:'testuser'+(new Date()).getTime(),
@@ -115,7 +130,6 @@ describe('A module that represents a periodic app', function () {
         })
         .then((no_password)=>{
           expect(no_password).to.not.be.ok;
-          done();
           let spy;
           let spycb = function() {
             // do something cool
@@ -124,7 +138,6 @@ describe('A module that represents a periodic app', function () {
             done();
           };
           spy = chai.spy(spycb);
-          
           testUser3.comparePassword('wrongpassword',spy);
         })
         .catch((err)=>{
@@ -183,6 +196,41 @@ describe('A module that represents a periodic app', function () {
           done(e);
         });
     });
+    it('should test user privileges',function(done){
+      testDocuments.Users = testDocuments.Users || [];
+      let testUserPrivilege = {
+        username:'testuser6'+(new Date()).getTime(),
+        email:'privtest@test.com',
+        firstname:'testuser6'+(new Date()).getTime(),
+        apikey: User.generateRandomTokenStatic()
+      };
+      let testUser6;
+      testDocuments.Users.push(testUserPrivilege);
+      testUser6 = new User(testUserPrivilege);
+      expect(User.hasPrivilege).to.be.a('function');
+      Promisie.promisify(testUser6.save,testUser6)()
+        .then((createdtestUser6)=>{
+          // createdUser5 = createdtestUser6;
+          expect(createdtestUser6).to.be.a('object');
+          testUserPrivilege.accounttype = 'admin';
+          expect(User.hasPrivilege(testUserPrivilege,900)).to.be.true;
+          testUserPrivilege.accounttype = 'basic';
+          testUserPrivilege.privileges = {
+            '1000':'basic',
+            '2000':'basic',
+            '3000':'basic'
+          };
+
+          expect(User.hasPrivilege(testUserPrivilege,1000)).to.be.ok;
+          expect(User.hasPrivilege(testUserPrivilege,5000)).to.not.be.ok;
+          done();
+          // return Promisie.promisify(User.validApiKey,User)(createdtestUser6._id, createdtestUser6.apikey);
+        })
+        .catch((e)=>{
+          console.log('testing valid apikey ',e);
+          done(e);
+        });
+    });
     it('should validate users',function(done){
       let no_username = {
         checkusername:true,
@@ -226,6 +274,186 @@ describe('A module that represents a periodic app', function () {
       expect(User.checkValidation(short_username).message).to.equal('Password is too short');
 
       done();
+    });
+    it('should existing users',function(done){
+      expect(User.checkExistingUser).to.be.a('function');
+      Promisie.promisify(User.checkExistingUser,User)({
+          userdata:{
+            email:'privtest@test.com',
+          }
+        })
+        .then(()=>{},(err)=>{
+          expect(err).to.be.an('error');
+          expect(err.message).to.equal('you already have an account');
+          return Promisie.promisify(User.checkExistingUser,User)({
+              userdata:{
+                email:`shoultnotexists${(new Date()).getTime()}email@test.com`,
+              }
+            });
+        })
+        .then((no_user_found_message)=>{
+          expect(no_user_found_message).to.equal('no existing user');
+          done();
+        })
+        .catch((e)=>{
+          console.log('testing existing users ',e);
+          done(e);
+        });
+    });
+    it('should fast register users',function(done){
+      expect(User.fastRegisterUser).to.be.a('function');
+      let fastRegisterUserTest = {
+        username:'testuser8'+(new Date()).getTime(),
+        email:'fastRegisterUserTest@test.com',
+        firstname:'testuser8'+(new Date()).getTime(),
+      };
+      testDocuments.Users = testDocuments.Users || [];
+      testDocuments.Users.push(fastRegisterUserTest);
+     
+      Promisie.promisify(User.fastRegisterUser,User)(fastRegisterUserTest)
+        .then(()=>{},(err)=>{
+          expect(err).to.be.an('error');
+          expect(err.message).to.equal('missing password');
+          fastRegisterUserTest.password='1';
+          return Promisie.promisify(User.fastRegisterUser,User)(fastRegisterUserTest);
+        })
+        .then(()=>{},(err)=>{
+          expect(err).to.be.an('error');
+          expect(err.message).to.equal('password is too short');
+          fastRegisterUserTest.password='nowvalidpassword';
+          return Promisie.promisify(User.fastRegisterUser,User)(fastRegisterUserTest);
+        })
+        .then((newly_created_user)=>{
+          // console.log('newly_created_user',newly_created_user)
+          expect(newly_created_user).to.be.ok;
+          expect(newly_created_user).to.be.an('object');
+          expect(newly_created_user.email).to.equal('fastRegisterUserTest@test.com');
+          done();
+        })
+        .catch((e)=>{
+          console.log('testing existing users ',e);
+          done(e);
+        });
+    });
+    it('should login In User',function(done){
+      expect(User.logInNewUser).to.be.a('function');
+      let spycb = function() {
+        // do something cool
+        expect(spy).to.be.spy;
+        expect(spy).to.have.been.called();
+        done();
+      };
+      let spy = chai.spy(spycb);
+      let logintest = {
+          newuser:{
+            email:'loginnewuser@emailtest.com'
+          },
+          req:{
+          login:function(options,cb){
+            cb(null,true);
+          }
+        }
+      };
+
+      User.logInNewUser(logintest,spy);
+    });
+    it('should not send welcome email with errors',function(done){
+      expect(User.sendNewUserWelcomeEmail).to.be.a('function');
+      let spycb = function(err,status) {
+        expect(err).to.be.an('error');
+        expect(spy).to.be.spy;
+        expect(spy).to.have.been.called();
+        done();
+      };
+      let spy = chai.spy(spycb);
+      let emailtest = {
+          newuser:{
+            email:'loginnewuser@emailtest.com'
+          },
+          req:{
+          login:function(options,cb){
+            cb(null,true);
+          }
+        }
+      };
+
+      User.sendNewUserWelcomeEmail(emailtest,spy);
+    });
+    it('should send welcome email',function(done){
+      expect(User.sendNewUserWelcomeEmail).to.be.a('function');
+      let spycb = function(err,status) {
+        // console.log('sendNewUserWelcomeEmail err,status',err,status)
+        expect(status).to.be.ok;
+        expect(spy).to.be.spy;
+        expect(spy).to.have.been.called();
+        done();
+      };
+      let spy = chai.spy(spycb);
+      let emailtest = {
+        newuser: {
+          email: 'test@test.com'
+        },
+        lognewuserin: false,
+        req: {},
+        send_new_user_email: true,
+        requireuseractivation: false,
+        welcomeemaildata: {
+          getEmailTemplateFunction: periodicjs.periodic.core.controller.getPluginViewDefaultTemplate,
+          emailviewname: 'email/user/welcome',
+          themefileext: periodicjs.periodic.settings.templatefileextension,
+          sendEmailFunction: periodicjs.periodic.core.mailer.sendEmail,
+          subject: ' New User Registration',
+          from: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
+          replyto: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
+          hostname: 'test.example.com',
+          appenvironment: 'test',
+          appname: 'email-app-test',
+        }
+      };
+
+      User.sendNewUserWelcomeEmail(emailtest,spy);
+    });
+    it('should create new users',function(done){
+      expect(User.createNewUserAccount).to.be.a('function');
+      testDocuments.Users = testDocuments.Users || [];
+      let testCreateUser = {
+        username:'testuser10'+(new Date()).getTime(),
+        email:'createusertest@test.com',
+        password:'createusertest@test.com',
+        firstname:'testuser10'+(new Date()).getTime(),
+      };
+      testDocuments.Users.push(testCreateUser);
+      let spycb = function(err,status) {
+        // console.log('sendNewUserWelcomeEmail err,status',err,status)
+        expect(status).to.be.ok;
+        expect(spy).to.be.spy;
+        expect(spy).to.have.been.called();
+        done();
+      };
+      let spy = chai.spy(spycb);
+      let emailtest = {
+        newuser: testCreateUser,
+        lognewuserin: false,
+        req: {},
+      checkusername: false,
+      checkpassword: false,
+        send_new_user_email: true,
+        requireuseractivation: false,
+        welcomeemaildata: {
+          getEmailTemplateFunction: periodicjs.periodic.core.controller.getPluginViewDefaultTemplate,
+          emailviewname: 'email/user/welcome',
+          themefileext: periodicjs.periodic.settings.templatefileextension,
+          sendEmailFunction: periodicjs.periodic.core.mailer.sendEmail,
+          subject: ' New User Registration',
+          from: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
+          replyto: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
+          hostname: 'test.example.com',
+          appenvironment: 'test',
+          appname: 'email-app-test',
+        }
+      };
+
+      User.createNewUserAccount(emailtest,spy);
     });
     after('Delete test admin user', function (done) {
         Promise.all(testDocuments.Users.map((testuser)=>{
