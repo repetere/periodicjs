@@ -1,5 +1,6 @@
 'use strict';
 
+var bcrypt = require('bcrypt');
 var mongoose = require('mongoose'),
 	merge = require('utils-merge'),
 	async = require('async'),
@@ -164,7 +165,6 @@ userSchema.pre('save', function (next, done) {
 
 // Password verification
 userSchema.methods.comparePassword = function (candidatePassword, cb) {
-	var bcrypt = require('bcrypt');
 	if (this.password) {
 		bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
 			if (err) {
@@ -293,7 +293,6 @@ userSchema.statics.checkExistingUser = function(options,callback){
 };
 
 userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
-	var bcrypt = require('bcrypt');
 	var userdata = userdataparam;
 	// console.log(userdata);
 	if (userdata._csrf) {
@@ -310,7 +309,7 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 			callback(new Error('missing password'), userdata);
 		}
 	}
-	else if (userdata.password.length < 1) {
+	else if (userdata.password.length <= 1) {
 		if (callback) {
 			callback(new Error('password is too short'), userdata);
 		}
@@ -330,6 +329,7 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 
 				var newUser = new User(userdata);
 				newUser.save(function (err, user) {
+					// console.log('newUser.save err, user',err, user);
 					if (err) {
 						logger.error(err);
 						if (callback) {

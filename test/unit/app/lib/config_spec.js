@@ -36,5 +36,34 @@ describe('A module that loads configurations for express and periodic', function
       expect(configuration.version).to.not.eql('1.0.0');
       done();
     });
+    // it('should be debuggable', function (done) {
+    //   let debugtest = new Config({env:'test',debug:true});
+
+    //   expect(debugtest.settings().debug).to.be.true;
+    //   done();
+    // });
+    // it('should be take cli configurations', function (done) {
+    //   process.argv.push('e=configtest');
+    //   let processenvtest = new Config({});
+
+    //   expect(processenvtest.settings().application.environment).to.equal('configtest');
+    //   done();
+    // });
+    it('should be take runtime from runtime.json', function (done) {
+      let runtimetest = new Config({
+        lastRuntimeEnvironmentFilePath:path.join(__dirname,'config_spec_runtime.json'),
+        env: 'testruntime' //this should be read from the file, but gets overidden by json file
+      });
+
+      expect(runtimetest.settings().application.environment).to.equal('development');
+      done();
+    });
+    it('should be take process env configurations', function (done) {
+      process.env.NODE_ENV = 'test';
+      let processenvtest = new Config({env:'test',debug:true});
+
+      expect(processenvtest.settings().application.environment).to.equal('test');
+      done();
+    });
   });
 });
