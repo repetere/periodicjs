@@ -122,6 +122,17 @@ exports.useLogger = function (options,callback) {
 					err:err
 				});
 			});
+			process.on('unhandledRejection', (reason, p) => {
+				if(reason.message && reason.stack){
+					logger.error(reason.message,reason.stack,{
+						reason:err
+					});
+				}
+				else{
+					logger.error('unhandledRejection',reason);
+				}
+		    console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+			});
 			options.logger = logger;
 			options.AppLog = AppLog;
 			options.app = app;
