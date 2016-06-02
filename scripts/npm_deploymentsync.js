@@ -261,9 +261,11 @@ let install_node_modules = function(options = {
 let install_missing_extensions = function(missing_extensions){
 	let install_prefix = application_root;
 	let npm_load_options = {
+		'save-optional': false,
 		prefix: install_prefix
 	};
 	let npm_install_options = {
+		'save-optional': false,
 		prefix: install_prefix
 	};
 
