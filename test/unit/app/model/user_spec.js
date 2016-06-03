@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt'),
     expect = chai.expect,
     path = require('path'),
     periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic')),
-    periodicLib = periodic({ waitformongo: true, skip_install_check: true, env: 'test', debug: false });
+    periodicLib = periodic({waitformongo: true, skip_install_check: true, env: 'test', debug: false});
 
 let periodicjs,
     testDocuments = {},
@@ -16,10 +16,10 @@ let periodicjs,
 
 chai.use(require('sinon-chai'));
 
-describe('A module that represents a periodic app', function() {
+describe('A module that represents a periodic app', function () {
     this.timeout(10000);
-    before('initialize periodic', function(done) {
-        periodicLib.init({}, function(err, periodicInitialized) {
+    before('initialize periodic', function (done) {
+        periodicLib.init({}, function (err, periodicInitialized) {
             if (err) {
                 done(err);
             } else {
@@ -36,28 +36,28 @@ describe('A module that represents a periodic app', function() {
             }
         });
     });
-    describe('The User Model', function() {
-        before('Delete test admin users', function(done) {
-            let user_emails_to_delete = [{ email: 'xxxxxxx' },
-                { email: 'xxxxxxx@xxx.com' }, { email: 'passwordtest@test.com' }, { email: 'passwordtest4@test.com' }, { email: 'rantok@test.com' }, { email: 'rantok@test.com' }, { email: 'privtest@test.com' }, { email: 'fastRegisterUserTest@test.com' }, { email: 'createusertest@test.com' }
+    describe('The User Model', function () {
+        before('Delete test admin users', function (done) {
+            let user_emails_to_delete = [{email: 'xxxxxxx'},
+                {email: 'xxxxxxx@xxx.com'}, {email: 'passwordtest@test.com'}, {email: 'passwordtest4@test.com'}, {email: 'rantok@test.com'}, {email: 'rantok@test.com'}, {email: 'privtest@test.com'}, {email: 'fastRegisterUserTest@test.com'}, {email: 'createusertest@test.com'}
             ];
 
             Promise.all(user_emails_to_delete.map((testuser) => {
-                    return Promisie.promisify(User.remove, User)(testuser);
-                }))
-                .then(( /*remove_results*/ ) => done())
+                return Promisie.promisify(User.remove, User)(testuser);
+            }))
+                .then((/*remove_results*/) => done())
                 .catch((e) => {
                     console.log('remove_results e', e);
                     expect(e).to.not.be.ok;
                     done(e);
                 });
         });
-        it('should return a function', function(done) {
+        it('should return a function', function (done) {
             // console.log(periodicjs.mongoose.model('User'))
             expect(User).to.be.a('function');
             done();
         });
-        it('should validate a valid user', function(done) {
+        it('should validate a valid user', function (done) {
             let inValidUserTest = {
                 username: 'testuser' + (new Date()).getTime(),
                 email: 'xxxxxxx',
@@ -73,7 +73,8 @@ describe('A module that represents a periodic app', function() {
             let testUser = new User(inValidUserTest);
             let testUser2 = new User(validUserTest);
             Promisie.promisify(testUser.save, testUser)()
-                .then(() => {}, (err) => {
+                .then(() => {
+                }, (err) => {
                     // console.log('testUser err',err);
                     expect(err).to.be.an('error');
                     return Promisie.promisify(testUser2.save, testUser2)();
@@ -88,7 +89,7 @@ describe('A module that represents a periodic app', function() {
                     done(e);
                 });
         });
-        it('should compare passwords', function(done) {
+        it('should compare passwords', function (done) {
             testDocuments.Users = testDocuments.Users || [];
             let passwordTestUser = {
                 username: 'testuser3' + (new Date()).getTime(),
@@ -117,7 +118,8 @@ describe('A module that represents a periodic app', function() {
                     expect(matched_wrong).to.not.be.ok;
                     return Promisie.promisify(testUser3.comparePassword, testUser3)(undefined);
                 })
-                .then(() => {}, (err) => {
+                .then(() => {
+                }, (err) => {
                     expect(err).to.be.an('error');
                     let testNoUserPassword = {
                         username: 'testuser4' + (new Date()).getTime(),
@@ -131,7 +133,7 @@ describe('A module that represents a periodic app', function() {
                 .then((no_password) => {
                     expect(no_password).to.not.be.ok;
                     let spy;
-                    let spycb = function() {
+                    let spycb = function () {
                         // do something cool
                         expect(spy).to.be.spy;
                         expect(spy).to.have.been.called;
@@ -145,7 +147,7 @@ describe('A module that represents a periodic app', function() {
                     done(err);
                 });
         });
-        it('should generate a random user token', function(done) {
+        it('should generate a random user token', function (done) {
             testDocuments.Users = testDocuments.Users || [];
             let randomTokenUser = {
                 username: 'testuser4' + (new Date()).getTime(),
@@ -163,7 +165,7 @@ describe('A module that represents a periodic app', function() {
             expect(ranToken1).to.not.equal(ranToken2);
             done();
         });
-        it('should have a valid apikey', function(done) {
+        it('should have a valid apikey', function (done) {
             testDocuments.Users = testDocuments.Users || [];
             let validApiKeyUser = {
                 username: 'testuser5' + (new Date()).getTime(),
@@ -186,7 +188,8 @@ describe('A module that represents a periodic app', function() {
                     expect(found_user_by_apikey._id.toString()).to.equal(createdUser5._id.toString());
                     return Promisie.promisify(User.validApiKey, User)(createdUser5._id, 'wrong API key');
                 })
-                .then(() => {}, (err) => {
+                .then(() => {
+                }, (err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('invalid apikey');
                     done();
@@ -196,7 +199,7 @@ describe('A module that represents a periodic app', function() {
                     done(e);
                 });
         });
-        it('should test user privileges', function(done) {
+        it('should test user privileges', function (done) {
             testDocuments.Users = testDocuments.Users || [];
             let testUserPrivilege = {
                 username: 'testuser6' + (new Date()).getTime(),
@@ -231,7 +234,7 @@ describe('A module that represents a periodic app', function() {
                     done(e);
                 });
         });
-        it('should validate users', function(done) {
+        it('should validate users', function (done) {
             let no_username = {
                 checkusername: true,
                 newuser: {}
@@ -275,14 +278,15 @@ describe('A module that represents a periodic app', function() {
 
             done();
         });
-        it('should existing users', function(done) {
+        it('should existing users', function (done) {
             expect(User.checkExistingUser).to.be.a('function');
             Promisie.promisify(User.checkExistingUser, User)({
-                    userdata: {
-                        email: 'privtest@test.com'
-                    }
-                })
-                .then(() => {}, (err) => {
+                userdata: {
+                    email: 'privtest@test.com'
+                }
+            })
+                .then(() => {
+                }, (err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('you already have an account');
                     return Promisie.promisify(User.checkExistingUser, User)({
@@ -300,7 +304,7 @@ describe('A module that represents a periodic app', function() {
                     done(e);
                 });
         });
-        it('should fast register users', function(done) {
+        it('should fast register users', function (done) {
             expect(User.fastRegisterUser).to.be.a('function');
             let fastRegisterUserTest = {
                 username: 'testuser8' + (new Date()).getTime(),
@@ -311,13 +315,15 @@ describe('A module that represents a periodic app', function() {
             testDocuments.Users.push(fastRegisterUserTest);
 
             Promisie.promisify(User.fastRegisterUser, User)(fastRegisterUserTest)
-                .then(() => {}, (err) => {
+                .then(() => {
+                }, (err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('missing password');
                     fastRegisterUserTest.password = '1';
                     return Promisie.promisify(User.fastRegisterUser, User)(fastRegisterUserTest);
                 })
-                .then(() => {}, (err) => {
+                .then(() => {
+                }, (err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('password is too short');
                     fastRegisterUserTest.password = 'nowvalidpassword';
@@ -335,9 +341,9 @@ describe('A module that represents a periodic app', function() {
                     done(e);
                 });
         });
-        it('should login In User', function(done) {
+        it('should login In User', function (done) {
             expect(User.logInNewUser).to.be.a('function');
-            let spycb = function() {
+            let spycb = function () {
                 // do something cool
                 expect(spy).to.be.spy;
                 expect(spy).to.have.been.called;
@@ -349,7 +355,7 @@ describe('A module that represents a periodic app', function() {
                     email: 'loginnewuser@emailtest.com'
                 },
                 req: {
-                    login: function(options, cb) {
+                    login: function (options, cb) {
                         cb(null, true);
                     }
                 }
@@ -357,9 +363,9 @@ describe('A module that represents a periodic app', function() {
 
             User.logInNewUser(logintest, spy);
         });
-        it('should not send welcome email with errors', function(done) {
+        it('should not send welcome email with errors', function (done) {
             expect(User.sendNewUserWelcomeEmail).to.be.a('function');
-            let spycb = function(err, status) {
+            let spycb = function (err, status) {
                 expect(err).to.be.an('error');
                 expect(spy).to.be.spy;
                 expect(spy).to.have.been.called;
@@ -371,7 +377,7 @@ describe('A module that represents a periodic app', function() {
                     email: 'loginnewuser@emailtest.com'
                 },
                 req: {
-                    login: function(options, cb) {
+                    login: function (options, cb) {
                         cb(null, true);
                     }
                 }
@@ -379,9 +385,9 @@ describe('A module that represents a periodic app', function() {
 
             User.sendNewUserWelcomeEmail(emailtest, spy);
         });
-        it('should send welcome email', function(done) {
+        it('should send welcome email', function (done) {
             expect(User.sendNewUserWelcomeEmail).to.be.a('function');
-            let spycb = function(err, status) {
+            let spycb = function (err, status) {
                 // console.log('sendNewUserWelcomeEmail err,status',err,status)
                 expect(status).to.be.ok;
                 expect(spy).to.be.spy;
@@ -413,7 +419,7 @@ describe('A module that represents a periodic app', function() {
 
             User.sendNewUserWelcomeEmail(emailtest, spy);
         });
-        it('should create new users', function(done) {
+        it('should create new users', function (done) {
             expect(User.createNewUserAccount).to.be.a('function');
             testDocuments.Users = testDocuments.Users || [];
             let testCreateUser = {
@@ -423,7 +429,7 @@ describe('A module that represents a periodic app', function() {
                 firstname: 'testuser10' + (new Date()).getTime()
             };
             testDocuments.Users.push(testCreateUser);
-            let spycb = function(err, status) {
+            let spycb = function (err, status) {
                 // console.log('sendNewUserWelcomeEmail err,status',err,status)
                 expect(status).to.be.ok;
                 expect(spy).to.be.spy;
@@ -455,11 +461,11 @@ describe('A module that represents a periodic app', function() {
 
             User.createNewUserAccount(emailtest, spy);
         });
-        after('Delete test admin user', function(done) {
+        after('Delete test admin user', function (done) {
             Promise.all(testDocuments.Users.map((testuser) => {
-                    return Promisie.promisify(User.remove, User)(testuser);
-                }))
-                .then(( /*remove_results*/ ) => done())
+                return Promisie.promisify(User.remove, User)(testuser);
+            }))
+                .then((/*remove_results*/) => done())
                 .catch((e) => {
                     console.log('remove_results e', e);
                     expect(e).to.not.be.ok;
