@@ -1,36 +1,37 @@
 'use strict';
 /*jshint expr: true*/
-const bcrypt = require('bcrypt');
-const Promisie = require('promisie');
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
-const expect = chai.expect;
-var path = require('path'),
-  periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
-  periodicLib = periodic({waitformongo:true,skip_install_check:true,env:'test',debug:false}),
-  periodicjs,
-  Item,
-  testDocuments={},
-  mongoose;
+const bcrypt = require('bcrypt'),
+    Promisie = require('promisie'),
+    chai = require('chai'),
+    sinon = require('sinon'),
+    expect = chai.expect,
+    path = require('path'),
+    periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
+    periodicLib = periodic({waitformongo: true, skip_install_check: true, env: 'test', debug: false});
+
+let periodicjs,
+    testDocuments = {},
+    mongoose,
+    Item;
+
+chai.use(require('sinon-chai'));
 
 describe('A module that represents a periodic app', function () {
   this.timeout(10000);
-  before('initialize periodic',function(done){
-    periodicLib.init({},function(err,periodicInitialized){
-      if(err){
+  before('initialize periodic', function (done) {
+    periodicLib.init({}, function (err, periodicInitialized) {
+      if (err) {
         done(err);
       }
-      else{
+      else {
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
         Item = periodicjs.periodic.mongoose.model('Item');
-        if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
+        if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
           done();
         }
-        else{
-          periodicjs.mongoose.connection.on('connected',()=>{
-            // console.log('Object.keys(periodicjs.mongoose.models)',Object.keys(periodicjs.mongoose.models))
+        else {
+          periodicjs.mongoose.connection.on('connected', ()=> {
             done();
           });
         }
@@ -39,14 +40,14 @@ describe('A module that represents a periodic app', function () {
   });
   describe('The Item Model', function () {
     before('Delete test items', function (done) {
-      let items_to_delete = [{name:'test_item_0293401943208942304'}];
+      let items_to_delete = [{name: 'test_item_0293401943208942304'}];
 
-      Promise.all(items_to_delete.map((testitem)=>{
-        return Promisie.promisify(Item.remove,Item)(testitem);
+      Promise.all(items_to_delete.map((testitem)=> {
+        return Promisie.promisify(Item.remove, Item)(testitem);
       }))
       .then((/*remove_results*/)=>done())
-      .catch((e)=>{ 
-        console.log('remove_results e',e);
+      .catch((e)=> {
+        console.log('remove_results e', e);
         expect(e).to.not.be.ok;
         done(e);
       });
@@ -58,31 +59,32 @@ describe('A module that represents a periodic app', function () {
     });
     it('should validate a valid item', function (done) {
       let inValidItemTest = {
-        name:'',
+        name: '',
       };
       let valideItem = {
-        name:'test_item_0293401943208942304',
+        name: 'test_item_0293401943208942304',
       };
       testDocuments.Items = testDocuments.Items || [];
       testDocuments.Items.push(valideItem);
       let testItem = new Item(inValidItemTest);
       let testItem2 = new Item(valideItem);
 
-      Promisie.promisify(testItem.save,testItem)()
-        .then(()=>{},(err)=>{
-          // console.log('testItem err',err);
-          expect(err).to.be.an('error');
-          return Promisie.promisify(testItem2.save,testItem2)();
-        })
-        .then((newItem2)=>{
-          // console.log('testItem2 err',newItem2);
-          expect(newItem2).to.be.a('object');
-          done();
-        })
-        .catch((e)=>{
-          console.log('testing valid user errors',e);
-          done(e);
-        });
+      Promisie.promisify(testItem.save, testItem)()
+      .then(()=> {
+      }, (err)=> {
+        // console.log('testItem err',err);
+        expect(err).to.be.an('error');
+        return Promisie.promisify(testItem2.save, testItem2)();
+      })
+      .then((newItem2)=> {
+        // console.log('testItem2 err',newItem2);
+        expect(newItem2).to.be.a('object');
+        done();
+      })
+      .catch((e)=> {
+        console.log('testing valid user errors', e);
+        done(e);
+      });
     });
     // it('should send welcome email',function(done){
     //   expect(Item.sendNewItemWelcomeEmail).to.be.a('function');
@@ -90,10 +92,10 @@ describe('A module that represents a periodic app', function () {
     //     // console.log('sendNewItemWelcomeEmail err,status',err,status)
     //     expect(status).to.be.ok;
     //     expect(spy).to.be.spy;
-    //     expect(spy).to.have.been.called();
+    //     expect(spy).to.have.been.called;
     //     done();
     //   };
-    //   let spy = chai.spy(spycb);
+    //   let spy = sinon.spy(spycb);
     //   let emailtest = {
     //     newuser: {
     //       email: 'test@test.com'
@@ -119,16 +121,16 @@ describe('A module that represents a periodic app', function () {
     //   Item.sendNewItemWelcomeEmail(emailtest,spy);
     // });
     after('Delete test items', function (done) {
-        Promise.all(testDocuments.Items.map((testitem)=>{
-          return Promisie.promisify(Item.remove,Item)(testitem);
-        }))
-        .then((/*remove_results*/)=>done())
-        .catch((e)=>{ 
-          console.log('remove_results e',e);
-          expect(e).to.not.be.ok;
-          done(e);
-        });
+      Promise.all(testDocuments.Items.map((testitem)=> {
+        return Promisie.promisify(Item.remove, Item)(testitem);
+      }))
+      .then((/*remove_results*/)=>done())
+      .catch((e)=> {
+        console.log('remove_results e', e);
+        expect(e).to.not.be.ok;
+        done(e);
       });
+    });
   });
 
 });

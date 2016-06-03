@@ -1,13 +1,14 @@
 'use strict';
 /*jshint expr: true*/
-var path = require('path'),
-  Config = require(path.resolve(process.cwd(), 'app/lib/config.js')),
-  chai = require('chai'),
-  expect = require('chai').expect,
-  defaultPath,
-  configuration = new Config({env:'test'});
-  chai.use(require('@yawetse/chai-fs'));
+const path = require('path'),
+    Config = require(path.resolve(__dirname, '../../../../app/lib/config')),
+    chai = require('chai'),
+    expect = chai.expect,
+    configuration = new Config({env: 'test'});
 
+let defaultPath;
+
+chai.use(require('@yawetse/chai-fs'));
 
 describe('A module that loads configurations for express and periodic', function () {
   describe('The config object', function () {
@@ -51,7 +52,7 @@ describe('A module that loads configurations for express and periodic', function
     // });
     it('should be take runtime from runtime.json', function (done) {
       let runtimetest = new Config({
-        lastRuntimeEnvironmentFilePath:path.join(__dirname,'config_spec_runtime.json'),
+        lastRuntimeEnvironmentFilePath: path.join(__dirname, 'config_spec_runtime.json'),
         env: 'testruntime' //this should be read from the file, but gets overidden by json file
       });
 
@@ -60,7 +61,7 @@ describe('A module that loads configurations for express and periodic', function
     });
     it('should be take process env configurations', function (done) {
       process.env.NODE_ENV = 'test';
-      let processenvtest = new Config({env:'test',debug:true});
+      let processenvtest = new Config({env: 'test', debug: true});
 
       expect(processenvtest.settings().application.environment).to.equal('test');
       done();

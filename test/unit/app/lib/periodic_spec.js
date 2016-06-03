@@ -1,13 +1,11 @@
 'use strict';
 /*jshint expr: true*/
+const path = require('path'),
+    periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
+    periodicLib = periodic({skiprouting:true,env:'test'}),
+    expect = require('chai').expect;
 
-var path = require('path'),
-  periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
-  periodicLib = periodic({skiprouting:true,env:'test'}),
-  periodicjs,
-  // chai = require('chai'),
-  expect = require('chai').expect;
-// chai.use(require('chai-fs'));
+let periodicjs;
 
 describe('A module that represents a periodic app', function () {
   this.timeout(10000);
