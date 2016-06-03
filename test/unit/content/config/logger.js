@@ -1,7 +1,7 @@
 'use strict';
 /*jshint expr: true*/
 const path = require('path'),
-		Logger = require(path.resolve(__dirname, '../../../content/config/logger')),
+		Logger = require(path.resolve(__dirname, '../../../../content/config/logger')),
 		fs = require('fs-extra'),
 		chai = require('chai'),
 		expect = require('chai').expect;
