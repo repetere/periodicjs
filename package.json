@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "8.1.13",
+  "version": "8.1.14",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -124,7 +124,6 @@
     "browserify": "^13.0.0",
     "bulma": "0.0.28",
     "chai": "^3.0.0",
-    "chai-spies": "^0.7.1",
     "coveralls": "^2.11.9",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
@@ -147,6 +146,8 @@
     "mocha-lcov-reporter": "^1.2.0",
     "node-mocks-http": "^1.5.0",
     "pow-mongodb-fixtures": "^0.13.0",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0",
     "stylie": "^2.0.0",
     "stylie.modals": "^2.0.1",
     "stylie.notifications": "^2.0.1",
@@ -155,8 +156,7 @@
     "supertest": "^1.0.1",
     "supertest-session": "^2.0.1",
     "uglify-js": "^2.4.15",
-    "uglifyify": "^3.0.1",
-    "zombie": "^4.2.1"
+    "uglifyify": "^3.0.1"
   },
   "keywords": [
     "content management framework",
@@ -192,6 +192,11 @@
       "name": "Jan Bialostok",
       "email": "janbialostok@gmail.com",
       "url": "https://github.com/janbialostok"
+    },
+    {
+      "name": "Bryan Chu",
+      "email": "bryan.p.chu@gmail.com",
+      "url": "https://github.com/chulander"
     }
   ],
   "dist": {
