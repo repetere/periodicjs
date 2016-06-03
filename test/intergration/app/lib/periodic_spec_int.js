@@ -110,7 +110,8 @@ describe('the default routes when no modules are installed',function (){
             .get('/articles')
             .expect('Content-Type','text/html; charset=utf-8')
             .expect(200,done);
-        } else {
+        }
+        else {
           done();
         }
       });
