@@ -48,6 +48,7 @@ describe('the default routes when no modules are installed',function (){
                 }
                 if(periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
                   number_of_enabled_extensions++;
+
                 }
               }
               if(periodicjs.periodic.settings.theme){
