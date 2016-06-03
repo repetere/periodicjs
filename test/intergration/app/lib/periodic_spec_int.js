@@ -74,7 +74,8 @@ describe('the default routes when no modules are installed',function (){
           .expect('Content-Type','text/html; charset=utf-8')
           .expect(/Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture./)
           .expect(200,done);
-      } else {
+      }
+      else {
         done();
       }
     });
@@ -86,7 +87,8 @@ describe('the default routes when no modules are installed',function (){
           // .expect(/Sorry page not found!/)
           .expect(/page: \/random-page-not-found-9809j0vnq8hv0h708jv0advnotfound/)
           .expect(404,done);
-      } else {
+      }
+      else {
         done();
       }
     });
@@ -97,7 +99,8 @@ describe('the default routes when no modules are installed',function (){
           .set('Accept','application/json')
           .expect('Content-Type',/json/)
           .expect(200,done);
-      } else {
+      }
+      else {
         done();
       }
     });
@@ -129,7 +132,8 @@ describe('the default routes when no modules are installed',function (){
             expect(res).to.be.an('object');
             done();
           });
-      } else {
+      }
+      else {
         done();
       }
     });
