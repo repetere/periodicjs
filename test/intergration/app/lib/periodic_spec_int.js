@@ -29,7 +29,8 @@ describe('the default routes when no modules are installed',function (){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);
-      } else {
+      }
+      else {
         periodicjs = periodicInitialized;
         request = supertest('http://localhost:' + periodicjs.port),
 
