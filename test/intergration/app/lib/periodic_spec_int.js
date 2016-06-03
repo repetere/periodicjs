@@ -19,6 +19,10 @@ let periodicjs,
     default_routes_extension_enabled = false,
     admin_extension_enabled = false;
 
+// function getCookie(res) {		 +describe('the default routes when no modules are installed', function () {
+//   return res.headers['set-cookie'][0].split(';')[0];		 +    this.timeout(10000);
+// }
+
 describe('the default routes when no modules are installed', function () {
     this.timeout(10000);
     before('connect to mongo', function (done) {
