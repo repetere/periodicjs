@@ -2,22 +2,22 @@
 /*jshint expr: true*/
 
 const path = require('path'),
-	periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
-	periodicLib = periodic({waitformongo: true, skip_install_check: true, env: 'test'}),
-	expect = require('chai').expect,
-	context = describe,
-	supertest = require('supertest'),
-	http = require('http');
+ periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js')),
+ periodicLib = periodic({waitformongo: true, skip_install_check: true, env: 'test'}),
+ expect = require('chai').expect,
+ context = describe,
+ supertest = require('supertest'),
+ http = require('http');
 
 let periodicjs,
-	periodicExpressApp,
-	request,
-	number_of_extensions,
-	number_of_enabled_extensions = 0,
-	install_extension_enabled = false,
-	has_custom_theme = false,
-	default_routes_extension_enabled = false,
-	admin_extension_enabled = false;
+ periodicExpressApp,
+ request,
+ number_of_extensions,
+ number_of_enabled_extensions = 0,
+ install_extension_enabled = false,
+ has_custom_theme = false,
+ default_routes_extension_enabled = false,
+ admin_extension_enabled = false;
 
 describe('the default routes when no modules are installed', function () {
  this.timeout(10000);
@@ -30,33 +30,33 @@ describe('the default routes when no modules are installed', function () {
 		periodicjs = periodicInitialized;
 		request = supertest('http://localhost:' + periodicjs.port),
 
-			periodicjs.mongoose.connection.on('connected', function () {
-			 periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function () {
-				number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
-				for (var x in periodicjs.periodic.settings.extconf.extensions) {
-				 if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
-					default_routes_extension_enabled = true;
-				 }
-				 if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
-					admin_extension_enabled = true;
-				 }
-				 if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
-					install_extension_enabled = true;
-				 }
-				 if (periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
-					number_of_enabled_extensions++;
-				 }
+		 periodicjs.mongoose.connection.on('connected', function () {
+			periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function () {
+			 number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
+			 for (var x in periodicjs.periodic.settings.extconf.extensions) {
+				if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
+				 default_routes_extension_enabled = true;
 				}
-				if (periodicjs.periodic.settings.theme) {
-				 has_custom_theme = true;
+				if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
+				 admin_extension_enabled = true;
 				}
-				console.log('number_of_extensions', number_of_extensions);
-				console.log('number_of_enabled_extensions', number_of_enabled_extensions);
-				console.log('default_routes_extension_enabled', default_routes_extension_enabled);
-				console.log('admin_extension_enabled', admin_extension_enabled);
-				done();
-			 });
+				if (periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
+				 install_extension_enabled = true;
+				}
+				if (periodicjs.periodic.settings.extconf.extensions[x].enabled === true) {
+				 number_of_enabled_extensions++;
+				}
+			 }
+			 if (periodicjs.periodic.settings.theme) {
+				has_custom_theme = true;
+			 }
+			 console.log('number_of_extensions', number_of_extensions);
+			 console.log('number_of_enabled_extensions', number_of_enabled_extensions);
+			 console.log('default_routes_extension_enabled', default_routes_extension_enabled);
+			 console.log('admin_extension_enabled', admin_extension_enabled);
+			 done();
 			});
+		 });
 
 	 }
 	});
