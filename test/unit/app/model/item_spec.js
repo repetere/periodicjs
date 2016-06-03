@@ -13,24 +13,25 @@ let periodicjs,
   testDocuments = {},
   mongoose,
   Item;
-
 chai.use(require('sinon-chai'));
-
 describe('A module that represents a periodic app',function (){
   this.timeout(10000);
   before('initialize periodic',function (done){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);
-      } else {
+      }
+      else {
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
         Item = periodicjs.periodic.mongoose.model('Item');
         if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
           done();
-        } else {
+        }
+        else {
           periodicjs.mongoose.connection.on('connected',() =>{
             done();
+
           });
         }
       }

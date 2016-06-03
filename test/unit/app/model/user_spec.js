@@ -8,12 +8,10 @@ const bcrypt = require('bcrypt'),
   path = require('path'),
   periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic')),
   periodicLib = periodic({waitformongo: true,skip_install_check: true,env: 'test',debug: false});
-
 let periodicjs,
   testDocuments = {},
   mongoose,
   User;
-
 chai.use(require('sinon-chai'));
 
 describe('A module that represents a periodic app',function (){
@@ -22,13 +20,15 @@ describe('A module that represents a periodic app',function (){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);
-      } else {
+      }
+      else {
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
         User = periodicjs.periodic.mongoose.model('User');
         if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
           done();
-        } else {
+        }
+        else {
           periodicjs.mongoose.connection.on('connected',() =>{
             done();
           });
