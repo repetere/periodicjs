@@ -59,7 +59,6 @@ describe('A module that loads configurations for express and periodic',function 
       done();
     });
     it('should be take process env configurations',function (done){
-      process.env.NODE_ENV = 'production';
       let processenvtest = new Config({env: 'production',debug: true});
 
       expect(processenvtest.settings().application.environment).to.equal('production');
