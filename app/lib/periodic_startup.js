@@ -330,7 +330,9 @@ exports.useSessions = function (options,callback) {
 
 		if (application_settings.sessions.enabled) {
 			var express_session_config = {};
-			var secure_cookie = (application_settings.sessions.secure_cookie) ? {secure:true}: {secure:'auto'};
+			var secure_cookie = (application_settings.sessions.secure_cookie) 
+				? application_settings.sessions.secure_cookie
+				: {secure:'auto'};
 			var maxage_in_milliseconds = application_settings.sessions.maxage_in_milliseconds || 3600000;
 			var session_ttl_in_seconds = application_settings.sessions.ttl_in_seconds ||300;
 			if (application_settings.sessions.type === 'mongo' && application_settings.status !== 'install') {
