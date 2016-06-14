@@ -11,7 +11,7 @@ let standardExtensions = [
 	'periodicjs.ext.install@7.1.0',
 	'periodicjs.ext.default_routes@5.9.11',
 	'periodicjs.ext.mailer@6.0.1',
-	'periodicjs.ext.login@7.3.3',
+	'periodicjs.ext.login@7.4.0',
 	'periodicjs.ext.user_access_control@7.0.1',
 	'periodicjs.ext.scheduled_content@6.0.1',
 	'periodicjs.ext.asyncadmin@7.3.4',
