@@ -381,7 +381,12 @@ exports.useSessions = function (options,callback) {
 			}
 
 			// app.use(session(express_session_config));
-
+			if (application_settings.sessions['trust proxy']) {
+				express_session_config['trust proxy'] = application_settings.sessions['trust proxy'];
+			}
+			if (application_settings.sessions.session_name) {
+				express_session_config.name = application_settings.sessions.session_name;
+			}
 			var sessionMiddleware = session(express_session_config);
 
 			app.use(function(req, res, next) {

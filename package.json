@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -185,8 +185,9 @@
   "homepage": "https://github.com/typesettin/periodicjs",
   "maintainers": [
     {
-      "name": "yawetse",
-      "email": "yaw.etse@gmail.com"
+      "name": "Yaw Etse",
+      "email": "yaw.etse@gmail.com",
+      "url": "https://github.com/yawetse"
     },
     {
       "name": "Jan Bialostok",
