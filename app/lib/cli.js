@@ -198,7 +198,12 @@ var cli = function (argv) {
 		}
 		else if (argv.deploy) {
 			try {
-				run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploy], function(err,text) { console.log (text); });
+				if (argv.deploy === 'sync') {
+					run_cmd( 'node', [path.resolve(process.cwd(),'scripts/deploymentsync.js')], function(err,text) { console.log (text); });					
+				}
+				else{
+					run_cmd( 'pm2', ['deploy',path.resolve(process.cwd(),'content/config/deployment/ecosystem.json'),argv.deploy], function(err,text) { console.log (text); });
+				}
 			}
 			catch (e) {
 				logger.error(e);
