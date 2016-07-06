@@ -153,7 +153,13 @@ module.exports = function (grunt) {
 						return finallocation;
 					}
 				}],
-				options: {}
+				options: {
+					transform: [
+						["babelify", {
+							presets: ["es2015"]
+						}]
+					]
+				},
 			},
 			extension_resources: {
 				files: [{
