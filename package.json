@@ -1,7 +1,7 @@
 {
     "name": "periodicjs",
     "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-    "version": "8.2.5",
+    "version": "8.2.6",
     "main": "index.js",
     "engines": {
         "node": "^6.x"
@@ -73,6 +73,7 @@
         "decompress": "^3.0.0",
         "download": "^4.1.2",
         "ejs": "^2.4.1",
+        "es6-promise": "^3.2.1",
         "errorie": "1.0.0",
         "express": "^4.13.0",
         "express-session": "^1.11.3",
@@ -116,6 +117,7 @@
     },
     "devDependencies": {
         "@yawetse/chai-fs": "^0.4.0-rc.0",
+        "babelify":"7.3.0", 
         "browserify": "^13.0.0",
         "bulma": "^0.1.0",
         "chai": "^3.0.0",
@@ -141,6 +143,7 @@
         "mocha-lcov-reporter": "^1.2.0",
         "node-mocks-http": "^1.5.0",
         "pow-mongodb-fixtures": "^0.13.0",
+        "proxy-polyfill":"0.1.6",
         "sinon": "^1.17.4",
         "sinon-chai": "^2.8.0",
         "stylie": "^2.0.0",
