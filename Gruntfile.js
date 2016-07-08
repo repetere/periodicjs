@@ -6,24 +6,23 @@
  * Copyright (c) 2014 Yaw Joseph Etse. All rights reserved.
  */
 
-var path = require('path'),
-	Config = require('./app/lib/config'),
-	config = new Config(),
-	fs = require('fs-extra'),
-	themename = config.settings().theme,
-	testPaths = [];
+const path = require('path');
+const Config = require('./app/lib/config');
+const fs = require('fs-extra');
+let config = new Config();
+let themename = config.settings().theme;
+let	testPaths = [];
 
 if (typeof themename === 'string') {
 	try {
-		var themePath = path.join(__dirname, './content/themes/' + themename + '/test');
+		let themePath = path.join(__dirname, './content/themes/' + themename + '/test');
 		console.log(themePath);
-		var dirResults = fs.readdirSync(themePath);
-		if (dirResults instanceof Error) {
-			throw dirResults;
-		}
-		else if (Array.isArray(dirResults)) {
-			var themeTestPath = themePath + '/**/*.js';
-			testPaths.push(themeTestPath);
+		if (fs.existsSync(themePath)) {			
+			let dirResults = fs.readdirSync(themePath);
+			if (Array.isArray(dirResults)) {
+				var themeTestPath = themePath + '/**/*.js';
+				testPaths.push(themeTestPath);
+			}
 		}
 	}
 	catch (e) {
