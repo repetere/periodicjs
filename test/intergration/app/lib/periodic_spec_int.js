@@ -1,23 +1,26 @@
 'use strict';
 /*jshint expr: true*/
 
-const path = require('path'),
-  periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic.js')),
-  periodicLib = periodic({waitformongo: true,skip_install_check: true,env: 'test'}),
-  expect = require('chai').expect,
-  context = describe,
-  supertest = require('supertest'),
-  http = require('http');
+const path = require('path');
+const Promisie = require('promisie');
+const periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic.js'));
+const periodicLib = periodic({waitformongo: true,skip_install_check: true,env: 'test'});
+const expect = require('chai').expect;
+const context = describe;
+const supertest = require('supertest');
+const http = require('http');
 
-let periodicjs,
-  periodicExpressApp,
-  request,
-  number_of_extensions,
-  number_of_enabled_extensions = 0,
-  install_extension_enabled = false,
-  has_custom_theme = false,
-  default_routes_extension_enabled = false,
-  admin_extension_enabled = false;
+let periodicjs;
+let mongoose;
+let periodicExpressApp;
+let request;
+let number_of_extensions;
+let number_of_enabled_extensions = 0;
+let install_extension_enabled = false;
+let has_custom_theme = false;
+let default_routes_extension_enabled = false;
+let admin_extension_enabled = false;
+let mongoConnected = false;
 
 // function getCookie(res) {		 +describe('the default routes when no modules are installed', function () {
 //   return res.headers['set-cookie'][0].split(';')[0];		 +    this.timeout(10000);
@@ -25,46 +28,71 @@ let periodicjs,
 
 describe('the default routes when no modules are installed',function (){
   this.timeout(10000);
-  before('connect to mongo',function (done){
-    periodicLib.init({},function (err,periodicInitialized){
-      if(err){
-        done(err);
-      }
-      else {
-        periodicjs = periodicInitialized;
-        request = supertest('http://localhost:' + periodicjs.port),
+  before('connect to mongo', function (done) {
+    let startExpressApp = function (options) {
+      mongoConnected = true;
 
-          periodicjs.mongoose.connection.on('connected',function (){
-            periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port,function (){
-              number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
-              for (var x in periodicjs.periodic.settings.extconf.extensions) {
-                if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-                  default_routes_extension_enabled = true;
-                }
-                if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-                  admin_extension_enabled = true;
-                }
-                if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-                  install_extension_enabled = true;
-                }
-                if(periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-                  number_of_enabled_extensions++;
-
-                }
-              }
-              if(periodicjs.periodic.settings.theme){
-                has_custom_theme = true;
-              }
-              console.log('number_of_extensions',number_of_extensions);
-              console.log('number_of_enabled_extensions',number_of_enabled_extensions);
-              console.log('default_routes_extension_enabled',default_routes_extension_enabled);
-              console.log('admin_extension_enabled',admin_extension_enabled);
-              done();
-            });
+      return new Promise((resolve, reject) => {
+        try {
+          periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function (e) { 
+            if (e) {
+              reject(e);
+            }
+            else {
+              resolve();
+            }
           });
+        }
+        catch (e) {
+          reject(e);
+        }
+      });
+    };
+    Promisie.promisify(periodicLib.init, periodicLib)({})
+      .then(periodicInitialized => {
+        periodicjs = periodicInitialized;
+        request = supertest('http://localhost:' + periodicjs.port);
+        mongoose = periodicjs.mongoose;
+        if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
+          if (mongoConnected === false) {
+            return startExpressApp();
+          }
+        }
+        else {
+          mongoose.connection.on('connected',() =>{
+            if (mongoConnected === false) {
+              return startExpressApp();
+            }
+          });
+        }
+      })
+      .then(() => {
+        number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
+        for (var x in periodicjs.periodic.settings.extconf.extensions) {
+          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+            default_routes_extension_enabled = true;
+          }
+          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+            admin_extension_enabled = true;
+          }
+          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+            install_extension_enabled = true;
+          }
+          if(periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+            number_of_enabled_extensions++;
 
-      }
-    });
+          }
+        }
+        if(periodicjs.periodic.settings.theme){
+          has_custom_theme = true;
+        }
+        console.log('number_of_extensions',number_of_extensions);
+        console.log('number_of_enabled_extensions',number_of_enabled_extensions);
+        console.log('default_routes_extension_enabled',default_routes_extension_enabled);
+        console.log('admin_extension_enabled',admin_extension_enabled);
+        done();
+      })
+      .catch(e => done);
   });
   context('GET /',function (){
     it('should show the views/home page',function (done){
@@ -118,24 +146,6 @@ describe('the default routes when no modules are installed',function (){
           done();
         }
       });
-    });
-  });
-
-  context('Get /p-admin',function (){
-    it('should redirect to login',function (done){
-      if(admin_extension_enabled){
-        request
-          .get('/p-admin')
-          .expect('Content-Type','text/plain; charset=utf-8')
-          .expect(302,function (err,res){
-            expect(err).to.be.a('null');
-            expect(res).to.be.an('object');
-            done();
-          });
-      }
-      else {
-        done();
-      }
     });
   });
 });

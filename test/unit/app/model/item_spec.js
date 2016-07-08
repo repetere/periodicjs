@@ -1,22 +1,29 @@
 'use strict';
 /*jshint expr: true*/
-const bcrypt = require('bcrypt'),
-  Promisie = require('promisie'),
-  chai = require('chai'),
-  sinon = require('sinon'),
-  expect = chai.expect,
-  path = require('path'),
-  periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic.js')),
-  periodicLib = periodic({waitformongo: true,skip_install_check: true,env: 'test',debug: false});
+const bcrypt = require('bcrypt');
+const Promisie = require('promisie');
+const chai = require('chai');
+const sinon = require('sinon');
+const expect = chai.expect;
+const path = require('path');
+const periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js'));
+const periodicLib = periodic({
+  waitformongo: true,
+  skip_install_check: true,
+  env: 'test',
+  debug: false,
+  port: 8011
+});
 
-let periodicjs,
-  testDocuments = {},
-  mongoose,
-  Item;
+let periodicjs;
+let testDocuments = {};
+let mongoose;
+let Item;
+let mongoConnected = false;
 chai.use(require('sinon-chai'));
-describe('A module that represents a periodic app',function (){
+describe('A module that represents a item model',function (){
   this.timeout(10000);
-  before('initialize periodic',function (done){
+  before('item_spec initialize periodic',function (done){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);
@@ -24,14 +31,17 @@ describe('A module that represents a periodic app',function (){
       else {
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
-        Item = periodicjs.periodic.mongoose.model('Item');
+        Item = mongoose.model('Item');
         if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
-          done();
+          if (mongoConnected === false) {
+            done();
+          }
         }
         else {
-          periodicjs.mongoose.connection.on('connected',() =>{
-            done();
-
+          periodicjs.mongoose.connection.on('connected', () => {
+            if (mongoConnected === false) {
+              done();
+            }
           });
         }
       }
@@ -40,6 +50,7 @@ describe('A module that represents a periodic app',function (){
   describe('The Item Model',function (){
     before('Delete test items',function (done){
       let items_to_delete = [{name: 'test_item_0293401943208942304'}];
+      mongoConnected = true;
 
       Promise.all(items_to_delete.map((testitem) =>{
         return Promisie.promisify(Item.remove,Item)(testitem);
@@ -85,40 +96,6 @@ describe('A module that represents a periodic app',function (){
           done(e);
         });
     });
-    // it('should send welcome email',function(done){
-    //   expect(Item.sendNewItemWelcomeEmail).to.be.a('function');
-    //   let spycb = function(err,status) {
-    //     // console.log('sendNewItemWelcomeEmail err,status',err,status)
-    //     expect(status).to.be.ok;
-    //     expect(spy).to.be.spy;
-    //     expect(spy).to.have.been.called;
-    //     done();
-    //   };
-    //   let spy = sinon.spy(spycb);
-    //   let emailtest = {
-    //     newuser: {
-    //       email: 'test@test.com'
-    //     },
-    //     lognewuserin: false,
-    //     req: {},
-    //     send_new_user_email: true,
-    //     requireuseractivation: false,
-    //     welcomeemaildata: {
-    //       getEmailTemplateFunction: periodicjs.periodic.core.controller.getPluginViewDefaultTemplate,
-    //       emailviewname: 'email/user/welcome',
-    //       themefileext: periodicjs.periodic.settings.templatefileextension,
-    //       sendEmailFunction: periodicjs.periodic.core.mailer.sendEmail,
-    //       subject: ' New Item Registration',
-    //       from: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
-    //       replyto: periodicjs.periodic.settings.fromemail || periodicjs.periodic.settings.adminnotificationemail,
-    //       hostname: 'test.example.com',
-    //       appenvironment: 'test',
-    //       appname: 'email-app-test',
-    //     }
-    //   };
-
-    //   Item.sendNewItemWelcomeEmail(emailtest,spy);
-    // });
     after('Delete test items',function (done){
       Promise.all(testDocuments.Items.map((testitem) =>{
         return Promisie.promisify(Item.remove,Item)(testitem);

@@ -1,17 +1,19 @@
 'use strict';
 /*jshint expr: true*/
-const path = require('path'),
-  periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic.js')),
-  periodicLib = periodic({skiprouting: true,env: 'test'}),
-  expect = require('chai').expect;
+const path = require('path');
+const periodic = require(path.resolve(__dirname, '../../../../app/lib/periodic.js'));
+const periodicLib = periodic({
+  skiprouting: true,
+  env: 'test',
+  port: 8010
+});
+const expect = require('chai').expect;
 
 let periodicjs;
 
-
-
 describe('A module that represents a periodic app',function (){
   this.timeout(10000);
-  before('initialize periodic',function (done){
+  before('periodic_spec initialize periodic',function (done){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);

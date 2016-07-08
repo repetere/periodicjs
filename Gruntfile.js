@@ -16,7 +16,7 @@ let	testPaths = [];
 if (typeof themename === 'string') {
 	try {
 		let themePath = path.join(__dirname, './content/themes/' + themename + '/test');
-		console.log(themePath);
+		// console.log(themePath);
 		if (fs.existsSync(themePath)) {			
 			let dirResults = fs.readdirSync(themePath);
 			if (Array.isArray(dirResults)) {

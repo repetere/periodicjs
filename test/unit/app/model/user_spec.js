@@ -1,22 +1,29 @@
 'use strict';
 /*jshint expr: true*/
-const bcrypt = require('bcrypt'),
-  Promisie = require('promisie'),
-  chai = require('chai'),
-  sinon = require('sinon'),
-  expect = chai.expect,
-  path = require('path'),
-  periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic')),
-  periodicLib = periodic({waitformongo: true,skip_install_check: true,env: 'test',debug: false});
-let periodicjs,
-  testDocuments = {},
-  mongoose,
-  User;
+const bcrypt = require('bcrypt');
+const Promisie = require('promisie');
+const chai = require('chai');
+const sinon = require('sinon');
+const expect = chai.expect;
+const path = require('path');
+const periodic = require(path.resolve(__dirname,'../../../../app/lib/periodic'));
+const periodicLib = periodic({
+  waitformongo: true,
+  skip_install_check: true,
+  env: 'test',
+  debug: false,
+  port: 8012
+});
+let periodicjs;
+let testDocuments = {};
+let mongoose;
+let User;
+let mongoConnected = false;
 chai.use(require('sinon-chai'));
 
-describe('A module that represents a periodic app',function (){
+describe('A module that represents a user model',function (){
   this.timeout(10000);
-  before('initialize periodic',function (done){
+  before('user_spec initialize periodic',function (done){
     periodicLib.init({},function (err,periodicInitialized){
       if(err){
         done(err);
@@ -24,13 +31,17 @@ describe('A module that represents a periodic app',function (){
       else {
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
-        User = periodicjs.periodic.mongoose.model('User');
+        User = mongoose.model('User');
         if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
-          done();
+          if (mongoConnected === false) {
+            done();
+          }
         }
         else {
-          periodicjs.mongoose.connection.on('connected',() =>{
-            done();
+          mongoose.connection.on('connected',() =>{
+            if (mongoConnected === false) {
+              done();
+            }
           });
         }
       }
@@ -41,6 +52,7 @@ describe('A module that represents a periodic app',function (){
       let user_emails_to_delete = [{email: 'xxxxxxx'},
         {email: 'xxxxxxx@xxx.com'},{email: 'passwordtest@test.com'},{email: 'passwordtest4@test.com'},{email: 'rantok@test.com'},{email: 'rantok@test.com'},{email: 'privtest@test.com'},{email: 'fastRegisterUserTest@test.com'},{email: 'createusertest@test.com'}
       ];
+      mongoConnected = true;
 
       Promise.all(user_emails_to_delete.map((testuser) =>{
         return Promisie.promisify(User.remove,User)(testuser);

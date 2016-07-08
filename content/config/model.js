@@ -1,4 +1,6 @@
 'use strict';
+
+const capitalize = require('capitalize');
 /**
  * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
@@ -13,40 +15,46 @@ module.exports = function(options){
 	const mongoose = options.mongoose;
 	const periodic = options.periodic;
 	const customSchema = options.periodic.custom_standard_models;
-	const UserSchema = require('../../app/model/user.js');
-	const ItemSchema = require('../../app/model/item.js');
-	const DataSchema = require('../../app/model/data.js');
-	const CollectionSchema = require('../../app/model/collection.js');
-	const CompilationSchema = require('../../app/model/compilation.js');
-	const CategorySchema = require('../../app/model/category.js');
-	const AssetSchema = require('../../app/model/asset.js');
-	const ContenttypeSchema = require('../../app/model/contenttype.js');
-	const TagSchema = require('../../app/model/tag.js');
-	const UserroleSchema = require('../../app/model/userrole');
-	const UserprivilegeSchema = require('../../app/model/userprivilege');
-	const UsergroupSchema = require('../../app/model/usergroup');
-	const SettingSchema = require('../../app/model/setting');
-	const	logger = options.periodic.logger;
+	const logger = options.periodic.logger;
+	const standard_periodic_models = [
+		'user',
+		'item',
+		'data',
+		'collection',
+		'compilation',
+		'category',
+		'asset',
+		'contenttype',
+		'tag',
+		'userrole',
+		'userprivilege',
+		'usergroup',
+		'setting'
+	];
+	let SchemaObjects = {};
 	mongoose.connect(options.dburl, options.dboptions);
 
+	standard_periodic_models.forEach(modelname => {
+		let capitalizedModelname = capitalize(modelname);
+		SchemaObjects[`${capitalizedModelname}Schema`] = require(`../../app/model/${modelname}.js`);
+	});
+	
 	/** set mongoose debug settings */
 	if(options.debug){
 		mongoose.set('debug', true);
 	}
-	mongoose.model('User',new UserSchema(customSchema.user).schema);
-	mongoose.model('Item',new ItemSchema(customSchema.item).schema);
-	mongoose.model('Data',new DataSchema(customSchema.data).schema);
-	mongoose.model('Collection',new CollectionSchema(customSchema.collection).schema);
-	mongoose.model('Compilation',new CompilationSchema(customSchema.compilation).schema);
-	mongoose.model('Category',new CategorySchema(customSchema.category).schema);
-	mongoose.model('Asset',new AssetSchema(customSchema.asset).schema);
-	mongoose.model('Contenttype',new ContenttypeSchema(customSchema.contenttype).schema);
-	mongoose.model('Tag',new TagSchema(customSchema.tag).schema);
-	mongoose.model('Userrole',new UserroleSchema(customSchema.userrole).schema);
-	mongoose.model('Userprivilege',new UserprivilegeSchema(customSchema.userprivilege).schema);
-	mongoose.model('Usergroup',new UsergroupSchema(customSchema.usergroup).schema);
-	mongoose.model('Setting',new SettingSchema(customSchema.setting).schema);
-
+	/**
+	 * Test to make sure models are not defined before definition
+	 */
+	standard_periodic_models.forEach(modelname => {
+		let capitalizedModelname = capitalize(modelname);
+		let schemaName = `${capitalizedModelname}Schema`;
+		if (Object.keys(mongoose.models).indexOf(capitalizedModelname)===-1) {
+				mongoose.model(capitalizedModelname,new SchemaObjects[schemaName](customSchema[modelname]).schema);
+		}
+	});
+	// mongoose.model('User',new UserSchema(customSchema.user).schema);
+	// mongoose.model('User',new SchemaObjects['UserSchema'](customSchema.user).schema);
 
 	mongoose.connection.on('error', function (err) {
 		console.log('\u0007');
