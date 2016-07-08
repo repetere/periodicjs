@@ -60,7 +60,7 @@ describe('A module that represents a user model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          expect(e).to.not.be.ok;
+          // expect(e).to.not.be.ok;
           done(e);
         });
     });
@@ -480,7 +480,7 @@ describe('A module that represents a user model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          expect(e).to.not.be.ok;
+          // expect(e).to.not.be.ok;
           done(e);
         });
     });
