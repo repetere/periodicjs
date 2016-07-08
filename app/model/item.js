@@ -1,34 +1,25 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
+const async = require('async');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
 //http://cookbook.mongodb.org/patterns/date_range/
 //http://cronchecker.net/check?utf8=%E2%9C%93&statement=1+*+*+*+*+*&button=
 //http://crontab-generator.org/
-var itemSchema = new Schema({
-	id: ObjectId,
+let schemaModelAttributes = {
 	status: {
 		type: String,
 		'default': 'draft'
-	},
-	entitytype: {
-		type: String,
-		'default': 'item'
 	},
 	publishat: {
 		type: Date,
 		'default': Date.now,
 		index: true
-	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
 	},
 	title: String,
 	name: {
@@ -37,10 +28,6 @@ var itemSchema = new Schema({
 	},
 	dek: String,
 	content: String,
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	tags: [{
 		type: ObjectId,
 		ref: 'Tag'
@@ -79,39 +66,39 @@ var itemSchema = new Schema({
 		originaldate: Date,
 		originaldata: Schema.Types.Mixed
 	},
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
 	link: String,
 	visibility: String,
 	visibilitypassword: String,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
-
-
-itemSchema.pre('save', function (next, done) {
+};
+let preSaveFunction = function (next, done) {
 	this.random = Math.random();
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
 	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('title is too short'));
 	}
-	// else if (this.name !== undefined && badname.test(this.name)) {
-	// 	done(new Error('Invalid title'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-module.exports = itemSchema;
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'item'
+		});
+	}
+}
+
+class itemModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = itemModel;

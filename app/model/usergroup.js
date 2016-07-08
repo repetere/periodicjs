@@ -1,11 +1,13 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var usergroupSchema = new Schema({
-	id: ObjectId,
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	usergroupid: {
 		type: Number,
 		unique: true
@@ -14,10 +16,6 @@ var usergroupSchema = new Schema({
 	name: {
 		type: String,
 		unique: true
-	},
-	entitytype: {
-		type: String,
-		'default': 'usergroup'
 	},
 	roles: [{
 		type: ObjectId,
@@ -28,35 +26,35 @@ var usergroupSchema = new Schema({
 		ref: 'User'
 	},
 	description: String,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
-
-usergroupSchema.pre('save', function (next, done) {
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+};
+let preSaveFunction = function (next, done) {
 	if (this.name !== undefined && this.name.length < 4) {
 		done(new Error('User role title is too short'));
 	}
-	// else if(this.name !== undefined && badname.test(this.name) ){
-	//     done(new Error('User role title('+this.name+') is a reserved word invalid'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-// usergroupSchema.post('init', function (doc) {
-// 	console.log("model - usergroup.js - " + doc._id + ' has been initialized from the db');
-// });
-// usergroupSchema.post('validate', function (doc) {
-// 	console.log("model - usergroup.js - " + doc._id + ' has been validated (but not saved yet)');
-// });
-// usergroupSchema.post('save', function (doc) {
-// 	// this.db.models.Item.emit('created', this);
-// 	console.log("model - usergroup.js - " + doc._id + ' has been saved');
-// });
-// usergroupSchema.post('remove', function (doc) {
-// 	console.log("model - usergroup.js - " + doc._id + ' has been removed');
-// });
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'usergroup'
+		});
+	}
+}
 
-module.exports = usergroupSchema;
+class usergroupModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = usergroupModel;

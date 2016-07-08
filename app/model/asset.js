@@ -1,41 +1,27 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var assetSchema = new Schema({
-	id: ObjectId,
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	title: String,
 	name: String,
 	status: {
 		type: String,
 		'default': 'VALID'
 	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
-	},
 	size: Number,
 	author: {
 		type: ObjectId,
 		ref: 'User'
 	},
-	entitytype: {
-		type: String,
-		'default': 'asset'
-	},
 	userid: ObjectId,
 	username: String,
 	assettype: String,
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	authors: [{
 		type: ObjectId,
 		ref: 'User'
@@ -52,18 +38,6 @@ var assetSchema = new Schema({
 		type: ObjectId,
 		ref: 'Asset'
 	}],
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
 	fileurl: String,
 	locationtype: String,
 	description: String,
@@ -71,24 +45,26 @@ var assetSchema = new Schema({
 	filedata: Schema.Types.Mixed,
 	attributes: Schema.Types.Mixed,
 	versions: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
+};
 
-/*
-assetSchema.post('init', function (doc) {
-	logger.info('model - asset.js - ' + doc._id + ' has been initialized from the db');
-});
-assetSchema.post('validate', function (doc) {
-	logger.info('model - asset.js - ' + doc._id + ' has been validated (but not saved yet)');
-});
-assetSchema.post('save', function (doc) {
-	logger.info('model - asset.js - ' + doc._id + ' has been saved');
-});
-assetSchema.post('remove', function (doc) {
-	logger.info('model - asset.js - ' + doc._id + ' has been removed');
-});
-*/
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'asset'
+		});
+	}
+}
+class assetModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+	}
+}
 
-module.exports = assetSchema;
+
+module.exports = assetModel;

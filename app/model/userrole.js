@@ -1,11 +1,13 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var userroleSchema = new Schema({
-	id: ObjectId,
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	userroleid: {
 		type: Number,
 		unique: true
@@ -14,10 +16,6 @@ var userroleSchema = new Schema({
 	name: {
 		type: String,
 		unique: true
-	},
-	entitytype: {
-		type: String,
-		'default': 'userrole'
 	},
 	privileges: [{
 		type: ObjectId,
@@ -28,20 +26,36 @@ var userroleSchema = new Schema({
 		ref: 'User'
 	},
 	description: String,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
+};
 
-userroleSchema.pre('save', function (next, done) {
+let preSaveFunction = function (next, done) {
 	if (this.name !== undefined && this.name.length < 4) {
 		done(new Error('User role title is too short'));
 	}
-	// else if(this.name !== undefined && badname.test(this.name) ){
-	//     done(new Error('User role title('+this.name+') is a reserved word invalid'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-module.exports = userroleSchema;
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'userrole'
+		});
+	}
+}
+
+class userprivilegeModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = userprivilegeModel;

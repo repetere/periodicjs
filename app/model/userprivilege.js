@@ -1,20 +1,18 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var userprivilegeSchema = new Schema({
-	id: ObjectId,
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	userprivilegeid: {
 		type: Number,
 		unique: true
 	},
 	title: String,
-	entitytype: {
-		type: String,
-		'default': 'userprivilege'
-	},
 	name: {
 		type: String,
 		unique: true
@@ -24,21 +22,35 @@ var userprivilegeSchema = new Schema({
 		ref: 'User'
 	},
 	description: String,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
-
-userprivilegeSchema.pre('save', function (next, done) {
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+};
+let preSaveFunction = function (next, done) {
 	if (this.name !== undefined && this.name.length < 4) {
 		done(new Error('User privilege title is too short'));
 	}
-	// else if(this.name !== undefined && badname.test(this.name) ){
-	//     done(new Error('User privilege title('+this.name+') is a reserved word invalid'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-module.exports = userprivilegeSchema;
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'userprivilege'
+		});
+	}
+}
+
+class userprivilegeModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = userprivilegeModel;

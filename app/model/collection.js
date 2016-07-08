@@ -1,18 +1,17 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
 
-var collectionSchema = new Schema({
-	id: ObjectId,
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	status: {
 		type: String,
 		'default': 'draft'
-	},
-	entitytype: {
-		type: String,
-		'default': 'collection'
 	},
 	title: String,
 	name: {
@@ -37,14 +36,6 @@ var collectionSchema = new Schema({
 		type: ObjectId,
 		ref: 'User'
 	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
-	},
 	publishat: {
 		type: Date,
 		'default': Date.now,
@@ -61,10 +52,6 @@ var collectionSchema = new Schema({
 			ref: 'Item'
 		}
 	}],
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	tags: [{
 		type: ObjectId,
 		ref: 'Tag'
@@ -73,35 +60,36 @@ var collectionSchema = new Schema({
 		type: ObjectId,
 		ref: 'Category'
 	}],
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
-	attributes: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
-
-collectionSchema.pre('save', function (next, done) {
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+};
+let preSaveFunction = function (next, done) {
+	this.random = Math.random();
 	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('title is too short'));
 	}
-	// else if(this.name !== undefined && badname.test(this.name) ){
-	//     done(new Error('Invalid title'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-module.exports = collectionSchema;
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'collection'
+		});
+	}
+}
+
+class collectionModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = collectionModel;

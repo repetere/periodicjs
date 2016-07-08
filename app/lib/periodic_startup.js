@@ -483,6 +483,8 @@ exports.applicationRouting = function (options, callback) {
 		let db = options.db;
 		let extension_helper = options.extension_helper;
 		let periodicConfigOptions = options.periodicConfigOptions;
+		let customized_standard_model_path = path.resolve(__dirname, '../../content/config/model/standard_models.js');
+		let customSchema = (fs.existsSync(customized_standard_model_path)) ? require(customized_standard_model_path)(periodicObj) : {};
 
 		periodicObj = {
 			express: express,
@@ -490,7 +492,8 @@ exports.applicationRouting = function (options, callback) {
 			logger: logger,
 			settings: application_settings,
 			db: db,
-			mongoose: mngse
+			mongoose: mngse,
+			custom_standard_models: customSchema
 		};
 		periodicObj.app.controller ={
 			native:{},

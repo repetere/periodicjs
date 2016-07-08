@@ -1,31 +1,22 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var dataSchema = new Schema({
-	id: ObjectId,
+const async = require('async');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	status: {
 		type: String,
 		'default': 'active'
-	},
-	entitytype: {
-		type: String,
-		'default': 'data'
 	},
 	publishat: {
 		type: Date,
 		'default': Date.now,
 		index: true
-	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
 	},
 	title: String,
 	name: {
@@ -33,10 +24,6 @@ var dataSchema = new Schema({
 		unique: true
 	},
 	content: String,
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	tags: [{
 		type: ObjectId,
 		ref: 'Tag'
@@ -49,22 +36,35 @@ var dataSchema = new Schema({
 		type: ObjectId,
 		ref: 'User'
 	},
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
-	attributes: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
+};
+let preSaveFunction = function (next, done) {
+	if (this.name !== undefined && this.name.length < 1) {
+		done(new Error('Data name is too short'));
+	}
+	else {
+		next();
+	}
+};
 
-module.exports = dataSchema;
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'data'
+		});
+	}
+}
+
+class dataModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = dataModel;

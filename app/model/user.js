@@ -1,17 +1,30 @@
 'use strict';
 
-var bcrypt = require('bcrypt');
-var mongoose = require('mongoose'),
-	merge = require('utils-merge'),
-	async = require('async'),
-	path = require('path'),
-	complexity = require('complexity'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId,
-	logger = console;
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const merge = require('utils-merge');
+const async = require('async');
+const path = require('path');
+const complexity = require('complexity');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let preSaveFunction = function (next, done) {
+	this._wasNew = this.isNew;
+	this.random = Math.random();
 
-var userSchema = new Schema({
-	id: ObjectId,
+	if (this.email !== undefined && this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
+		done(new Error('Invalid email'));
+	}
+
+	else {
+		next();
+	}
+};
+let schemaModelAttributes = {
 	email: {
 		type: String,
 		index: {
@@ -56,14 +69,6 @@ var userSchema = new Schema({
 			latitude: Number
 		}
 	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
-	},
 	accounttype: {
 		type: String,
 		'default': 'basic'
@@ -91,10 +96,6 @@ var userSchema = new Schema({
 		type: ObjectId,
 		ref: 'Userrole'
 	}],
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	tags: [{
 		type: ObjectId,
 		ref: 'Tag'
@@ -104,67 +105,19 @@ var userSchema = new Schema({
 		ref: 'Category'
 	}],
 	apikey: String,
-	entitytype: {
-		type: String,
-		'default': 'user'
-	},
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
-	attributes: Schema.Types.Mixed, //moved facebook/socialdata to attributes
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
+};
 
-userSchema.pre('save', function (next, done) {
-	this._wasNew = this.isNew;
-	this.random = Math.random();
-
-	// var badusername = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	// if (this.password !== undefined && this.password.length < 8) {
-	// 	done(new Error('Password is too short'));
-	// }
-	// else if (this.username !== undefined && this.username.length < 4) {
-	// 	done(new Error('Username is too short'));
-	// }
-	// else 
-	if (this.email !== undefined && this.email.match(/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i) === null) {
-		done(new Error('Invalid email'));
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'user'
+		});
 	}
-	// else if (this.username !== undefined && badusername.test(this.username)) {
-	//     done(new Error('Invalid username'));
-	// } 
-	else {
-		next();
-	}
-});
-
-// userSchema.post('init', function (doc) {
-// 	logger.info('model - user.js - ' + doc._id + ' has been initialized from the db');
-// });
-// userSchema.post('validate', function (doc) {
-// 	logger.info('model - user.js - ' + doc._id + ' has been validated (but not saved yet)');
-// });
-// userSchema.post('save', function (doc) {
-// 	logger.info('model - user.js - ' + doc._id + ' has been saved');
-// });
-// userSchema.pre('remove', function (doc) {
-// 	console.log('==================deleted============');
-// 	logger.info('model - user.js - ' + doc._id + ' has been removed');
-// });
+}
 
 // Password verification
-userSchema.methods.comparePassword = function (candidatePassword, cb) {
+schemaMethods.comparePassword = function (candidatePassword, cb) {
 	if (this.password) {
 		bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
 			if (err) {
@@ -179,19 +132,8 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
 	}
 };
 
-
 // Remember Me implementation helper method
-userSchema.methods.generateRandomToken = function () {
-	// var user = this,
-	var chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-		token = new Date().getTime() + '_';
-	for (var x = 0; x < 16; x++) {
-		var i = Math.floor(Math.random() * 62);
-		token += chars.charAt(i);
-	}
-	return token;
-};
-userSchema.statics.generateRandomTokenStatic = function () {
+schemaMethods.generateRandomToken = function () {
 	// var user = this,
 	var chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
 		token = new Date().getTime() + '_';
@@ -202,7 +144,18 @@ userSchema.statics.generateRandomTokenStatic = function () {
 	return token;
 };
 
-userSchema.statics.checkValidation = function (options) {
+schemaStatics.generateRandomTokenStatic = function () {
+	// var user = this,
+	var chars = '_!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+		token = new Date().getTime() + '_';
+	for (var x = 0; x < 16; x++) {
+		var i = Math.floor(Math.random() * 62);
+		token += chars.charAt(i);
+	}
+	return token;
+};
+
+schemaStatics.checkValidation = function (options) {
 	var userdata = options.newuser,
 	min_username_length = (options && options.length_of_username) ? options.length_of_username : 4,
 	min_password_length = (options && options.length_of_password) ? options.length_of_password : 8;
@@ -228,7 +181,7 @@ userSchema.statics.checkValidation = function (options) {
 	}
 };
 
-userSchema.statics.validApiKey = function (userid, apikey, callback) {
+schemaStatics.validApiKey = function (userid, apikey, callback) {
 	var User = mongoose.model('User');
 	User.findOne({
 		_id: userid,
@@ -248,12 +201,12 @@ userSchema.statics.validApiKey = function (userid, apikey, callback) {
 	});
 };
 
-userSchema.statics.hasPrivilege = function (user, privilege) {
+schemaStatics.hasPrivilege = function (user, privilege) {
 	// console.log(' hasPrivilege user, privilege',user,privilege);
 	return user.accounttype === 'admin' || user.privileges[privilege];
 };
 
-userSchema.statics.checkExistingUser = function(options,callback){
+schemaStatics.checkExistingUser = function(options,callback){
 	var User = mongoose.model('User'),
 		userdata = options.userdata;
 	var searchUsernameRegEx = (userdata.username) ? new RegExp(`^${ userdata.username.replace(/([^\w\d\s])/g, '\\$1') }$`, 'i') : null,
@@ -292,7 +245,7 @@ userSchema.statics.checkExistingUser = function(options,callback){
 	});
 };
 
-userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
+schemaStatics.fastRegisterUser = function (userdataparam, callback) {
 	var userdata = userdataparam;
 	// console.log(userdata);
 	if (userdata._csrf) {
@@ -348,7 +301,7 @@ userSchema.statics.fastRegisterUser = function (userdataparam, callback) {
 	}
 };
 
-userSchema.statics.logInNewUser = function(options, callback){
+schemaStatics.logInNewUser = function(options, callback){
 	try{
 		var req = options.req;
 		req.login(
@@ -367,7 +320,7 @@ userSchema.statics.logInNewUser = function(options, callback){
 	}
 };
 
-userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
+schemaStatics.sendNewUserWelcomeEmail = function(options, callback){
 	try{
 		if(options.requireactivation){
 			options.welcomeemaildata.emailviewname = 'email/user/welcome_with_validation';
@@ -409,7 +362,7 @@ userSchema.statics.sendNewUserWelcomeEmail = function(options, callback){
 	}
 };
 
-userSchema.statics.createNewUserAccount = function(options,callback){
+schemaStatics.createNewUserAccount = function(options,callback){
 	var validationErrors,
 		newuseroptions,
 		newelycreateduser,
@@ -480,4 +433,16 @@ userSchema.statics.createNewUserAccount = function(options,callback){
 	}
 };
 
-exports = module.exports = userSchema;
+class userModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = userModel;

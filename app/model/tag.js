@@ -1,12 +1,14 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-	async = require('async'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
-
-var tagSchema = new Schema({
-	id: ObjectId,
+const async = require('async');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
+const logger = console;
+const PeriodicSchemaClass = require('./periodic_schema.class.js');
+let schemaMethods = {};
+let schemaStatics = {};
+let schemaModelAttributes = {
 	title: String,
 	name: {
 		type: String,
@@ -14,10 +16,6 @@ var tagSchema = new Schema({
 	},
 	dek: String,
 	content: String,
-	entitytype: {
-		type: String,
-		'default': 'tag'
-	},
 	author: {
 		type: ObjectId,
 		ref: 'User'
@@ -26,54 +24,30 @@ var tagSchema = new Schema({
 		type: ObjectId,
 		ref: 'Asset'
 	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
-	},
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
 	parent: [{
 		type: ObjectId,
 		ref: 'Tag'
 	}], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
-	changes: [{
-		createdat: {
-			type: Date,
-			'default': Date.now
-		},
-		editor: {
-			type: ObjectId,
-			ref: 'User'
-		},
-		editor_username: String,
-		changeset: Schema.Types.Mixed
-	}],
-	attributes: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
 	random: Number
-});
-
-tagSchema.pre('save', function (next, done) {
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
+};
+let preSaveFunction = function (next, done) {
 	if (this.name !== undefined && this.name.length < 1) {
 		done(new Error('Tag title is too short'));
 	}
-	// else if (this.name !== undefined && badname.test(this.name)) {
-	// 	done(new Error('Tag title(' + this.name + ') is a reserved word invalid'));
-	// }
 	else {
 		next();
 	}
-});
+};
 
-tagSchema.methods.getChildren = function (getTagChildrenCallback) {
+class PeriodicSchemaAttributes extends PeriodicSchemaClass.attributes{
+	constructor() {
+		super({
+			entitytype: 'tag'
+		});
+	}
+}
+
+schemaMethods.getChildren = function (getTagChildrenCallback) {
 	var currentTag = {
 			title: this.title,
 			name: this.name,
@@ -131,4 +105,16 @@ tagSchema.methods.getChildren = function (getTagChildrenCallback) {
 	});
 };
 
-module.exports = tagSchema;
+class tagModel extends PeriodicSchemaClass.model{
+	constructor(resources) {
+		resources = Object.assign({}, resources);
+		resources.schemaStatics = schemaStatics;
+		resources.schemaMethods = schemaMethods;
+		resources.schemaModelAttributes = schemaModelAttributes;
+		resources.periodicSchemaAttributes = new PeriodicSchemaAttributes();
+		super(resources);
+		this.schema.pre('save', preSaveFunction);
+	}
+}
+
+module.exports = tagModel;
