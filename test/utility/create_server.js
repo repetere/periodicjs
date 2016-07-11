@@ -15,7 +15,7 @@ let create_server = function (options) {
       mongoConnected = true;
       try {
         periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function (e) {
-          console.log('http server started e', e);
+          // console.log('http server started e', e);
           if (e) {
             reject(e);
           }
@@ -37,7 +37,7 @@ let create_server = function (options) {
   
     Promisie.promisify(periodicLib.init, periodicLib)({})
       .then(periodicInitialized => {
-        console.log('CREATING SERVER create_server');
+        // console.log('CREATING SERVER create_server');
         periodicjs = periodicInitialized;
         mongoose = periodicjs.mongoose;
 
