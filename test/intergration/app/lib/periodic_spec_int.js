@@ -30,21 +30,34 @@ describe('the default routes when no modules are installed',function (){
   this.timeout(10000);
   before('connect to mongo', function (done) {
     let startExpressApp = function (options) {
-      mongoConnected = true;
-
       return new Promise((resolve, reject) => {
-        try {
-          periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function (e) { 
-            if (e) {
-              reject(e);
-            }
-            else {
-              resolve();
+        let runApp = function () {
+          mongoConnected = true;
+          try {
+            periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function (e) { 
+              if (e) {
+                reject(e);
+              }
+              else {
+                resolve();
+              }
+            });
+          }
+          catch (e) {
+            reject(e);
+          }
+        };
+				if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
+          if (mongoConnected === false) {
+            return runApp();
+          }
+        }
+        else {
+          mongoose.connection.on('connected', () => {
+            if (mongoConnected === false) {
+              return runApp();
             }
           });
-        }
-        catch (e) {
-          reject(e);
         }
       });
     };
@@ -53,18 +66,7 @@ describe('the default routes when no modules are installed',function (){
         periodicjs = periodicInitialized;
         request = supertest('http://localhost:' + periodicjs.port);
         mongoose = periodicjs.mongoose;
-        if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
-          if (mongoConnected === false) {
-            return startExpressApp();
-          }
-        }
-        else {
-          mongoose.connection.on('connected',() =>{
-            if (mongoConnected === false) {
-              return startExpressApp();
-            }
-          });
-        }
+        return startExpressApp();
       })
       .then(() => {
         number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
