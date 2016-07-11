@@ -14,6 +14,7 @@ const periodicLib = periodic({
   debug: false,
   port: 8012
 });
+const mongo_start = require('../../../utility/mongo_start.js');
 let periodicjs;
 let testDocuments = {};
 let mongoose;
@@ -24,28 +25,20 @@ chai.use(require('sinon-chai'));
 describe('A module that represents a user model',function (){
   this.timeout(10000);
   before('user_spec initialize periodic',function (done){
-    periodicLib.init({},function (err,periodicInitialized){
-      if(err){
-        done(err);
-      }
-      else {
-        periodicjs = periodicInitialized;
-        mongoose = periodicjs.mongoose;
-        User = mongoose.model('User');
-        if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
-          if (mongoConnected === false) {
-            done();
-          }
-        }
-        else {
-          mongoose.connection.on('connected',() =>{
-            if (mongoConnected === false) {
-              done();
-            }
-          });
-        }
-      }
-    });
+    mongo_start({
+			periodicLib,
+			periodicjs,
+			mongoose,
+			mongoConnected,
+		})
+		.then(resolvedApp => {
+			periodicjs = resolvedApp.periodicjs;
+			mongoose = resolvedApp.mongoose;
+			mongoConnected = resolvedApp.mongoConnected;
+      User = mongoose.model('User');
+			done();
+		})
+		.catch(e => done);
   });
   describe('The User Model',function (){
     before('Delete test admin users',function (done){
@@ -60,7 +53,7 @@ describe('A module that represents a user model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          // expect(e).to.not.be.ok;
+          expect(e).to.not.be.ok;
           done(e);
         });
     });
@@ -480,7 +473,7 @@ describe('A module that represents a user model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          // expect(e).to.not.be.ok;
+          expect(e).to.not.be.ok;
           done(e);
         });
     });

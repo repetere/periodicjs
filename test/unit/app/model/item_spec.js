@@ -14,6 +14,7 @@ const periodicLib = periodic({
   debug: false,
   port: 8011
 });
+const mongo_start = require('../../../utility/mongo_start.js');
 
 let periodicjs;
 let testDocuments = {};
@@ -24,28 +25,20 @@ chai.use(require('sinon-chai'));
 describe('A module that represents a item model',function (){
   this.timeout(10000);
   before('item_spec initialize periodic',function (done){
-    periodicLib.init({},function (err,periodicInitialized){
-      if(err){
-        done(err);
-      }
-      else {
-        periodicjs = periodicInitialized;
-        mongoose = periodicjs.mongoose;
-        Item = mongoose.model('Item');
-        if(mongoose.Connection.STATES.connected === mongoose.connection.readyState){
-          if (mongoConnected === false) {
-            done();
-          }
-        }
-        else {
-          periodicjs.mongoose.connection.on('connected', () => {
-            if (mongoConnected === false) {
-              done();
-            }
-          });
-        }
-      }
-    });
+    mongo_start({
+			periodicLib,
+			periodicjs,
+			mongoose,
+			mongoConnected,
+		})
+		.then(resolvedApp => {
+			periodicjs = resolvedApp.periodicjs;
+			mongoose = resolvedApp.mongoose;
+			mongoConnected = resolvedApp.mongoConnected;
+      Item = mongoose.model('Item');
+			done();
+		})
+		.catch(e => done);
   });
   describe('The Item Model',function (){
     before('Delete test items',function (done){
@@ -58,7 +51,7 @@ describe('A module that represents a item model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          // expect(e).to.not.be.ok;
+          expect(e).to.not.be.ok;
           done(e);
         });
     });
@@ -103,7 +96,7 @@ describe('A module that represents a item model',function (){
         .then((/*remove_results*/) => done())
         .catch((e) =>{
           console.log('remove_results e',e);
-          // expect(e).to.not.be.ok;
+          expect(e).to.not.be.ok;
           done(e);
         });
     });
