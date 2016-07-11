@@ -9,6 +9,7 @@ const expect = require('chai').expect;
 const context = describe;
 const supertest = require('supertest');
 const http = require('http');
+const create_server = require('../../../utility/create_server.js');
 
 let periodicjs;
 let mongoose;
@@ -29,72 +30,46 @@ let mongoConnected = false;
 describe('the default routes when no modules are installed',function (){
   this.timeout(10000);
   before('connect to mongo', function (done) {
-    let startExpressApp = function (options) {
-      return new Promise((resolve, reject) => {
-        let runApp = function () {
-          mongoConnected = true;
-          try {
-            periodicExpressApp = http.createServer(periodicjs.expressapp).listen(periodicjs.port, function (e) { 
-              if (e) {
-                reject(e);
-              }
-              else {
-                resolve();
-              }
-            });
-          }
-          catch (e) {
-            reject(e);
-          }
-        };
-				if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
-          if (mongoConnected === false) {
-            return runApp();
-          }
+    create_server({
+      periodicExpressApp,
+      periodicLib,
+      periodicjs,
+      mongoose,
+      mongoConnected,
+    })
+      .then(resolvedApp => {
+      periodicExpressApp = resolvedApp.periodicExpressApp;
+      // periodicLib = resolvedApp.periodicLib;
+      periodicjs = resolvedApp.periodicjs;
+      mongoose = resolvedApp.mongoose;
+      mongoConnected = resolvedApp.mongoConnected;
+      request = supertest('http://localhost:' + periodicjs.port);
+      number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
+      for (var x in periodicjs.periodic.settings.extconf.extensions) {
+        if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+          default_routes_extension_enabled = true;
         }
-        else {
-          mongoose.connection.on('connected', () => {
-            if (mongoConnected === false) {
-              return runApp();
-            }
-          });
+        if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+          admin_extension_enabled = true;
         }
-      });
-    };
-    Promisie.promisify(periodicLib.init, periodicLib)({})
-      .then(periodicInitialized => {
-        periodicjs = periodicInitialized;
-        request = supertest('http://localhost:' + periodicjs.port);
-        mongoose = periodicjs.mongoose;
-        return startExpressApp();
-      })
-      .then(() => {
-        number_of_extensions = periodicjs.periodic.settings.extconf.extensions.length;
-        for (var x in periodicjs.periodic.settings.extconf.extensions) {
-          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.default_routes' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-            default_routes_extension_enabled = true;
-          }
-          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.asyncadmin' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-            admin_extension_enabled = true;
-          }
-          if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-            install_extension_enabled = true;
-          }
-          if(periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
-            number_of_enabled_extensions++;
+        if(periodicjs.periodic.settings.extconf.extensions[x].name === 'periodicjs.ext.install' && periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+          install_extension_enabled = true;
+        }
+        if(periodicjs.periodic.settings.extconf.extensions[x].enabled === true){
+          number_of_enabled_extensions++;
 
-          }
         }
-        if(periodicjs.periodic.settings.theme){
-          has_custom_theme = true;
-        }
-        console.log('number_of_extensions',number_of_extensions);
-        console.log('number_of_enabled_extensions',number_of_enabled_extensions);
-        console.log('default_routes_extension_enabled',default_routes_extension_enabled);
-        console.log('admin_extension_enabled',admin_extension_enabled);
-        done();
-      })
-      .catch(e => done);
+      }
+      if(periodicjs.periodic.settings.theme){
+        has_custom_theme = true;
+      }
+      console.log('number_of_extensions',number_of_extensions);
+      console.log('number_of_enabled_extensions',number_of_enabled_extensions);
+      console.log('default_routes_extension_enabled',default_routes_extension_enabled);
+      console.log('admin_extension_enabled',admin_extension_enabled);
+      done();
+    })
+    .catch(e => done);
   });
   context('GET /',function (){
     it('should show the views/home page',function (done){
