@@ -127,31 +127,73 @@ exports.startWebServer = function (options, callback){
 		let periodicSettings = options.periodicSettings;
 		let periodic = options.periodic;
 		let server_options = options.server_options;
-
-		if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
-			periodic.mongoose.connection.on('open',function(){
-				global.periodicExpressApp = periodic.expressapp.listen(periodic.port,function(){
-					console.log('HTTP Server listening on port',periodic.port);
+		let mongoConnected = false;
+		let mongoose = periodic.mongoose; 
+		let server_promises = [];
+		let start_http_server = function () {
+			return new Promise((resolve, reject) => {
+				global.periodicExpressApp = periodic.expressapp.listen(periodic.port, function (e) {
+					if (e) {
+						reject(e);						
+					}
+					else {
+						console.log('HTTP Server listening on port',periodic.port);
+						resolve(true);
+					}
 				});
-			});	
+			});
+		};   
+		let start_https_server = function () {
+			return new Promise((resolve, reject) => {
+				global.periodicHTTPSExpressApp = https.createServer(server_options, periodic.expressapp).listen(periodicSettings.application.https_port, (e) => {
+					if (e) {
+						reject(e);
+					}
+					else{
+						console.log('HTTPS Server listening on port',periodic.port);
+						resolve(true);
+					}
+				});
+			});
+		};
+		let start_servers = function () {
+			Promise.all(server_promises)
+				.then(started_servers => {
+					console.log('started_servers', started_servers);
+					options.server_options = server_options;
+					options.periodic = periodic;
+					options.periodicSettings = periodicSettings;
+					options.argv = argv;
+					callback(null, options);
+				})
+				.catch(e => callback(e));
+		};
+		let set_servers_to_start = () => {
 			if(periodicSettings.application.https_port){
-				global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
-					console.log('HTTPS Server listening on port',periodic.port);
+				server_promises.push(start_https_server());
 			}
-		}
-		else{
-			global.periodicExpressApp = periodic.expressapp.listen(periodic.port);
-			if(periodicSettings.application.https_port){
-				global.periodicHTTPSExpressApp = https.createServer(server_options,periodic.expressapp).listen(periodicSettings.application.https_port);
+			if(periodicSettings.application.port){
+				server_promises.push(start_http_server());
 			}
-		}
+		};
+		let start_all_servers = () => {
+				if(argv.waitformongo || (periodicSettings && periodicSettings.waitformongo)){
+				if (mongoose.Connection.STATES.connected === mongoose.connection.readyState) {
+					start_servers();
+				}
+				else {
+					mongoose.connection.on('connected', () => {
+					start_servers();
+					});
+				}
+			}
+			else{
+				start_servers();
+			}
+		};
 
-		options.server_options = server_options;
-		options.periodic = periodic;
-		options.periodicSettings = periodicSettings;
-		options.argv = argv;
-		callback(null,options);
-		
+		set_servers_to_start();
+		start_all_servers();
 	}
 	catch(err){
 		callback(err);
@@ -190,16 +232,17 @@ exports.useSocketIO = function(options, callback){
 					additionalIOConfigs = { return_buffers: true, detect_buffers: true };
 				global.io.adapter(mongoIoAdapter(periodicSettings.dburl,additionalIOConfigs));
 			}
-			global.io.attach(global.periodicExpressApp, {
-				logger: periodic.logger
-			});
+			if (periodicSettings.application.port) {
+				global.io.attach(global.periodicExpressApp, {
+					logger: periodic.logger
+				});
+			}
 			if(periodicSettings.application.https_port){
 				global.io.attach(global.periodicHTTPSExpressApp, {
 					logger: periodic.logger
 				});
 			}
 		}
-	
 
 		options.periodic = periodic;
 		options.periodicSettings = periodicSettings;

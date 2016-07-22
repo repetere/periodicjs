@@ -5,6 +5,7 @@
   "eqeqeq": true,
   "eqnull": true,
   "undef": true,
+  "esversion": 6,
   "devel": true,
   "node": true,
   "browser": true,
