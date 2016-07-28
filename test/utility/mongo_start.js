@@ -41,7 +41,7 @@ let mongo_start = function (options) {
           });
         }
       })
-      .catch(e=>reject);
+      .catch(reject);
   });
 };
 

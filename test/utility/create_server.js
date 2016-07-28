@@ -55,7 +55,7 @@ let create_server = function (options) {
         }
       })
       // .then(resolvedApp => resolve)
-      .catch(e=>reject);
+      .catch(reject);
   });
 };
 
