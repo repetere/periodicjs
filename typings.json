@@ -1,0 +1,10 @@
+{
+  "globalDependencies": {
+    "mocha": "registry:dt/mocha#2.2.5+20160720003353",
+    "node": "registry:dt/node#6.0.0+20160823142437",
+    "react": "registry:dt/react#0.14.0+20160817201227",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
+    "react-native": "registry:dt/react-native#0.29.0+20160728152643",
+    "redux": "registry:dt/redux#3.5.2+20160703092728"
+  }
+}
