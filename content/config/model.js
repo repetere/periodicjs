@@ -1,6 +1,7 @@
 'use strict';
 
 const capitalize = require('capitalize');
+const path = require('path');
 /**
  * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
@@ -14,7 +15,7 @@ const capitalize = require('capitalize');
 module.exports = function(options){
 	const mongoose = options.mongoose;
 	const periodic = options.periodic;
-	const customSchema = options.periodic.custom_standard_models;
+	const customSchema = options.periodic.custom_standard_models || require(path.join(__dirname, './model/standard_models.js'));
 	const logger = options.periodic.logger;
 	const standard_periodic_models = [
 		'user',
