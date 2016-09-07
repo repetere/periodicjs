@@ -16,7 +16,7 @@ let standardExtensions = [
     'periodicjs.ext.scheduled_content@6.0.1',
     'periodicjs.ext.asyncadmin@7.4.2',
     'periodicjs.ext.async_cms@7.2.0',
-    'periodicjs.ext.dbseed@7.0.6',
+    'periodicjs.ext.dbseed@7.0.7',
 ];
 
 module.exports = standardExtensions;
