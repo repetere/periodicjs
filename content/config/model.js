@@ -2,6 +2,7 @@
 
 const capitalize = require('capitalize');
 const path = require('path');
+const fs = require('fs');
 /**
  * A module that loads configurations for express and periodic.
  * @{@link https://github.com/typesettin/periodic}
@@ -32,6 +33,7 @@ module.exports = function(options){
 		'usergroup',
 		'setting'
 	];
+	const importSchemas = fs.readdirSync(path.join(__dirname, './model')).filter(file => (!/standard_models\.js/i.test(file) && file.indexOf('.') !== 0));
 	let SchemaObjects = {};
 	mongoose.connect(options.dburl, options.dboptions);
 
@@ -39,6 +41,18 @@ module.exports = function(options){
 		let capitalizedModelname = capitalize(modelname);
 		SchemaObjects[`${capitalizedModelname}Schema`] = require(`../../app/model/${modelname}.js`);
 	});
+	if (importSchemas.length) {
+		importSchemas.forEach(modelname => {
+			try {
+				let capitalizedModelname = capitalize(path.basename(modelname, '.js'));
+				SchemaObjects[`${capitalizedModelname}Schema`] = require(`./model/${ modelname }`);
+			}
+			catch (e) {
+				console.log('eeeeeeeeee', e.stack);
+				throw e;
+			}
+		});
+	} 
 	
 	/** set mongoose debug settings */
 	if(options.debug){
@@ -54,6 +68,15 @@ module.exports = function(options){
 				mongoose.model(capitalizedModelname,new SchemaObjects[schemaName](customSchema[modelname]).schema);
 		}
 	});
+	if (importSchemas.length) {
+		importSchemas.forEach(modelname => {
+			let capitalizedModelname = capitalize(path.basename(modelname, '.js'));
+			let schemaName = `${capitalizedModelname}Schema`;
+			if (Object.keys(mongoose.models).indexOf(capitalizedModelname)===-1) {
+					mongoose.model(capitalizedModelname,new SchemaObjects[schemaName]().schema);
+			}
+		});
+	}
 	// mongoose.model('User',new UserSchema(customSchema.user).schema);
 	// mongoose.model('User',new SchemaObjects['UserSchema'](customSchema.user).schema);
 
