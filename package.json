@@ -41,18 +41,6 @@
   },
   "license": "MIT",
   "scripts": {
-    "coverage": "mocha -R html-cov --recursive > test/coverage.html",
-    "deploy": "node index.js --cli --deploy",
-    "deploysetup": "node index.js --cli --deploysetup",
-    "deploy-setup": "node index.js --cli --deploysetup",
-    "deploysync": "node scripts/deploymentsync.js",
-    "deploy-sync": "node scripts/deploymentsync.js",
-    "forever": "forever start -o logs/app-out.forever.log -e logs/app-err.forever.log -c nodemon index.js --e",
-    "test": "mocha -R spec --recursive",
-    "preinstall": "node scripts/app_pre_install.js",
-    "postinstall": "node scripts/app_post_install.js",
-    "start": "nodemon index.js --e",
-    "stop": "forever stop -c nodemon index.js"
   },
   "dependencies": {
     "@yawetse/socket.io-adapter-mongo": "^0.1.8",
