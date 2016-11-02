@@ -27,6 +27,8 @@
     "name": "Jan Bialostok",
     "email": "janbialostok@gmail.com",
     "url": "https://github.com/janbialostok"
+  }, {
+    "name": "Mark Waldron"
   }],
   "repository": {
     "type": "git",
@@ -41,6 +43,8 @@
   },
   "license": "MIT",
   "scripts": {
+    "start": "nodemon index.js --e",
+    "test": "mocha -R spec --recursive"
   },
   "dependencies": {
     "@yawetse/socket.io-adapter-mongo": "^0.1.8",
