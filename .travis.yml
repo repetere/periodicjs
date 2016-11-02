@@ -42,4 +42,4 @@ git:
   submodules: false  
 
 script: 
-  - npm set progress=false && npm run deploysync && grunt test 
+  - npm set progress=false && grunt test 
