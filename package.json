@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is an application framework built on top of Express and MongoDB designed for data driven, content based web and mobile applications.",
-  "version": "8.40.0",
+  "version": "9.0.2",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -27,6 +27,8 @@
     "name": "Jan Bialostok",
     "email": "janbialostok@gmail.com",
     "url": "https://github.com/janbialostok"
+  }, {
+    "name": "Mark Waldron"
   }],
   "repository": {
     "type": "git",
@@ -41,6 +43,8 @@
   },
   "license": "MIT",
   "scripts": {
+    "start": "nodemon index.js --e",
+    "test": "mocha -R spec --recursive"
   },
   "dependencies": {
     "@yawetse/socket.io-adapter-mongo": "^0.1.8",

@@ -30,10 +30,11 @@ Applications built with Periodic range from simple blogs, complicated enterprise
 
 ### Quick start guide
 ```
-$ npm start --e [name-of-environment (development by default)] # runs nodemon
-$ npm run forever --e [name-of-environment (development by default)] # runs forever + nodemon
-$ npm run deploy --e [name-of-environment (development by default)] # deploys with pm2
-$ npm run sync # syncs dependencies
+$ npm i periodic-cli nodemon -g
+$ periodicjs setup [version (default is to install the latest version)] # installs periodicjs from npm
+$ periodicjs start [name-of-environment (development by default)] # runs nodemon
+$ periodicjs deploy [name-of-environment (development by default)] # deploys with pm2
+$ periodicjs deploy-sync # synchronize extensions with manifest json file
 ```
 
 | [![Install home](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/install-start-screen.png) | [![Admin home](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-content-dropdown.png) | [![New Item](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-item-new-2.png) | [![review revision](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png)](https://raw.githubusercontent.com/typesettin/wiki-resources/master/images/periodic/admin-review-revisions-collection.png) |
