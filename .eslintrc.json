@@ -13,7 +13,6 @@
   "rules": {
     "jsx-quotes": ["error", "prefer-double"],
     "indent": ["error", 2],
-    "linebreak-style": ["warn", "windows"],
     "quotes": ["error", "single"],
     "semi": ["warn", "always"],
     "comma-dangle": ["warn", "always"],
