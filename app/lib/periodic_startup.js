@@ -122,6 +122,9 @@ exports.useLogger = function (options,callback) {
 					err:err
 				});
 			});
+			process.on('warning', err => {
+				logger.warn(err.message, err.stack);
+			});
 			process.on('unhandledRejection', (reason, p) => {
 				if(reason.message && reason.stack){
 					logger.error(reason.message,reason.stack,{
