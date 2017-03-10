@@ -20,6 +20,7 @@ module.exports = function(options){
 	const logger = options.periodic.logger;
 	const standard_periodic_models = [
 		'user',
+		'account',
 		'item',
 		'data',
 		'collection',
