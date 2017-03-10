@@ -90,6 +90,7 @@ module.exports = function (periodic) {
 		 */
 		periodic.app.controller = {
 			native:{
+        account: periodic.core.controller.controller_routes(ControllerSettings.account),
 				asset: require('../controller/asset')(periodic),
 				category: periodic.core.controller.controller_routes(ControllerSettings.category),
 				collection: periodic.core.controller.controller_routes(ControllerSettings.collection),
