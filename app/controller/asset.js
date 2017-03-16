@@ -586,6 +586,7 @@ var controller = function (resources) {
 	controllerRoutes.rename = multiupload_rename;
 	controllerRoutes.searchResults = searchResults;
 	controllerRoutes.remove = remove;
+	controllerRoutes.updateModel = (options) => CoreController.updateModel(Object.assign({ model: Asset }, options));
 	controllerRoutes.changeDest = multiupload_changeDest;
 	controllerRoutes.onParseStart = multiupload_onParseStart;
 	controllerRoutes.client_encryption_algo = client_encryption_algo;

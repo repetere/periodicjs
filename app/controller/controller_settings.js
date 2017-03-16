@@ -22,13 +22,15 @@ module.exports.userrole = {
 	model_name:'userrole',
 	load_model_population:'privileges',
 	load_multiple_model_population:'privileges',
-	searchfields : ['title','name','userroleid'],
+	// searchfields : ['title','name','userroleid'],
+	searchfields : ['title','name'],
 	use_full_data:true
 };
 
 module.exports.userprivilege = {
 	model_name:'userprivilege',
-	searchfields : ['title','name','userprivilegeid'],
+	// searchfields : ['title','name','userprivilegeid'],
+	searchfields : ['title','name'],
 	use_full_data:false
 };
 
