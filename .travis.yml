@@ -28,18 +28,16 @@ notifications:
     use_notice: true
     skip_join: false
 
-before_script:
-  - npm install --skip_app_post_install=true 
-
-install: 
- - npm install  grunt-cli istanbul -g
+install:
+  - npm install  grunt-cli istanbul -g
+  - npm install --skip_app_post_install=true
 
 branches:
   only:
     - master
     - devel
 git:
-  submodules: false  
+  submodules: false
 
-script: 
-  - npm set progress=false && grunt test 
+script:
+  - npm set progress=false && grunt test
