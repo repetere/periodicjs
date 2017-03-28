@@ -11,7 +11,8 @@ exports.attributes = class ModelAttributes {
     this.id = ObjectId;
     this.createdat = {
       type: Date,
-      'default': Date.now
+      'default': Date.now,
+      index: true,
     };
     this.updatedat = {
       type: Date,
@@ -40,6 +41,7 @@ exports.attributes = class ModelAttributes {
     this.attributes = Schema.Types.Mixed;
     this.contenttypeattributes= Schema.Types.Mixed;
     this.extensionattributes= Schema.Types.Mixed;
+    this.random = Number;
   }
 };
 exports.model = class ModelSchema {
