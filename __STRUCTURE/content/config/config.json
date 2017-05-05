@@ -2,6 +2,8 @@
   "configuration": {
     "type": "db",
     "db": "lowkie",
-    "options": {}
+    "options": {
+      "dbpath": "content/config/settings/db.json"
+    }
   }
 }
