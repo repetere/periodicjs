@@ -35,6 +35,7 @@ install:
 branches:
   only:
     - master
+    - periodic10
     - devel
 git:
   submodules: false
