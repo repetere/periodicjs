@@ -77,15 +77,66 @@ describe('periodic', function () {
         debug: true,
         app_root: initTestPathDir,
       })
-      .then((result) => {
-        expect(periodic.config.debug).to.be.true;
-        expect(periodic.config.app_root).to.eql(initTestPathDir);
-        // console.log({ result, });
-        done();
-      })
-      .catch(done);
+        .then((result) => {
+          expect(periodic.config.debug).to.be.true;
+          expect(periodic.config.app_root).to.eql(initTestPathDir);
+          // console.log({ result, });
+          done();
+        })
+        .catch(done);
     });
-  })
+  });
+  describe('Handles initialization errors', () => {
+    it('handles console.timeEnd errors', (done) => {
+      try {
+        function foo() { throw new Error('Error On console.timeEnd'); }
+        var fooSpy = sinon.stub(console, 'timeEnd', foo);
+        let newPeriodic = new periodicClass({});
+        console.timeEnd = fooSpy;
+        newPeriodic.init({
+          debug: false,
+          app_root: initTestPathDir,
+        }).then((m) => {
+          console.timeEnd.restore();
+          done(new Error('was not supposed to succeed'));
+        })
+          .catch((m) => {
+            expect(fooSpy.threw()).to.be.ok;
+            console.timeEnd.restore();
+            done();
+          });
+      } catch (e) {
+        console.timeEnd.restore();
+        console.log({ e });
+        done();
+      }
+    })
+    it('handles console.time errors', (done) => {
+      try {
+        function foo() { throw new Error('Error On console.timeEnd'); }
+        var fooSpy = sinon.stub(console, 'timeEnd', foo);
+        let newPeriodic = new periodicClass({});
+        console.time = fooSpy;
+        newPeriodic.init({
+          debug: false,
+          app_root: initTestPathDir,
+        }).then((m) => {
+          console.time.restore();
+          done(new Error('was not supposed to succeed'));
+        })
+          .catch((m) => {
+            expect(fooSpy.threw()).to.be.ok;
+            console.time.restore();
+            done();
+          });
+      } catch (e) {
+        console.time.restore();
+        console.log({ e });
+        done();
+      }
+    })
+  });
+  
   after('remove test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
