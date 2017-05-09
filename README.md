@@ -1,14 +1,11 @@
-# Periodic - Rapid Enterprise Application Framework
-
 [![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs) [![Downloads Per Month](https://img.shields.io/npm/dm/periodicjs.svg?maxAge=2592000)](https://www.npmjs.com/package/periodicjs) [![npm](https://img.shields.io/npm/dt/periodicjs.svg?maxAge=2592000)]() [![Join the chat at https://gitter.im/typesettin/periodicjs](https://badges.gitter.im/typesettin/periodicjs.svg)](https://gitter.im/typesettin/periodicjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Download Stats](https://nodei.co/npm/periodicjs.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/periodicjs)
 
-
 PeriodicJS is a framework for developing database agnostic enterprise  applications and APIs in Node.js. 
 ===================================
 
-
+![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/periodic10/doc/images/white_logo_color_background.png)
 
 ## About
 
