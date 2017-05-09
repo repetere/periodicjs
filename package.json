@@ -116,6 +116,7 @@
     "flat": "^2.0.1",
     "fs-extra": "^3.0.1",
     "lowkie": "^0.1.2",
+    "minimist": "^1.2.0",
     "moment": "^2.18.1",
     "mongoose": "^4.9.7",
     "periodicjs.core.data": "^0.2.0",
