@@ -64,6 +64,7 @@ describe('Periodic', function () {
     });
     it('should allow for overwriteable configs', (done) => {
       let spy = sinon.spy();
+      process.env.ENV = 'test';
       periodic.logger.silly = spy;
       periodic.logger.debug = spy;
       periodic.logger.info = spy;
@@ -92,6 +93,7 @@ describe('Periodic', function () {
         function foo() { throw new Error('Error On console.timeEnd'); }
         var fooSpy = sinon.stub(console, 'timeEnd', foo);
         let newPeriodic = new periodicClass({});
+        process.env.ENV = 'test';
         console.timeEnd = fooSpy;
         newPeriodic.init({
           debug: false,
@@ -116,6 +118,7 @@ describe('Periodic', function () {
         function foo() { throw new Error('Error On console.timeEnd'); }
         var fooSpy = sinon.stub(console, 'timeEnd', foo);
         let newPeriodic = new periodicClass({});
+        process.env.ENV = 'test';
         console.time = fooSpy;
         newPeriodic.init({
           debug: false,

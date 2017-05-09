@@ -75,97 +75,78 @@ describe('runtime', function () {
       expect(createSpy.calledOnce).to.be.true;
     });
   });
-  /*
-	describe('Represents a singleton module', function () {
-    it('should always reference the same instance of periodic when required', function () {
-      let periodic2 = require('../../index');
-      expect(periodic)
-        .to.deep.equal(periodic2)
-        .and.to.be.an.instanceof(periodicClass);
-    });
-  });
-  describe('Manages initialization configuration', () => {
-    // beforeEach(function() {
-    //   // this.sinon.stub(console, 'log');
-    // });
-    it('should be implemented with configurable default settings', () => {
-      expect(Object.keys(periodic.config).length).to.be.greaterThan(0);
-    });
-    it('should allow for overwriteable configs', (done) => {
-      let spy = sinon.spy();
-      periodic.logger.silly = spy;
-      periodic.logger.debug = spy;
-      periodic.logger.info = spy;
-      periodic.logger.warn = spy;
-      periodic.logger.error = spy;
+  describe('configRuntimeEnvironment - configures runtime environment', () => {
+    const processEnv = Object.assign({}, process.env);
 
-      // this.sinon.stub(console, 'log');
-
-      // console.log('this.sinon', this.sinon);
-      periodic.init({
-        debug: true,
-        app_root: initTestPathDir,
-      })
-        .then((result) => {
-          expect(periodic.config.debug).to.be.true;
-          expect(periodic.config.app_root).to.eql(initTestPathDir);
-          // console.log({ result, });
-          done();
-        })
-        .catch(done);
+      // const nodeenv = 'nodetest';
+      // const env = 'test';
+      // process.env.NODE_ENV = nodeenv;
+      // expect(runtime.getEnv()).to.eql(nodeenv);
+      // delete process.env.NODE_ENV;
+      // process.env.ENV = env;
+      // expect(runtime.getEnv()).to.eql(env);
+      // delete process.env.ENV;
+    const updateSpy = sinon.spy();
+    const createSpy = sinon.spy();
+    const returnValidRuntime = () => {
+      return Promise.resolve( {
+        filepath: 'content/config/process/runtime.json',
+        config: { process: { environment: 'dev' } },
+        _id: 'TESTVALIDID',
+        meta:
+        {
+          revision: 0,
+          created: 1494338785207,
+          version: 0,
+          updated: 1494340295729
+        },
+        '$loki': 1
+      });
+    };
+    const returnNonExistingRuntime = () => {
+      return Promise.resolve(undefined);
+    };
+    const testPeriodicInstance = {
+      config: {},
+      configuration: {
+        update: updateSpy,
+        create: createSpy,
+        load: returnValidRuntime,
+      },
+    };
+    it('should return a promise', () => {
+      expect(runtime.configRuntimeEnvironment.call(testPeriodicInstance)).to.be.a('promise');
     });
-  });
-  describe('Handles initialization errors', () => {
-    it('handles console.timeEnd errors', (done) => {
-      try {
-        function foo() { throw new Error('Error On console.timeEnd'); }
-        var fooSpy = sinon.stub(console, 'timeEnd', foo);
-        let newPeriodic = new periodicClass({});
-        console.timeEnd = fooSpy;
-        newPeriodic.init({
-          debug: false,
-          app_root: initTestPathDir,
-        }).then((m) => {
-          console.timeEnd.restore();
-          done(new Error('was not supposed to succeed'));
-        })
-          .catch((m) => {
-            expect(fooSpy.threw()).to.be.ok;
-            console.timeEnd.restore();
+    it('should handle invalid runtimes', (done) => {
+      try { 
+        process.env.ENV=undefined;
+        const invalidTestPeriodicInstance = {
+          config: {},
+          configuration: {
+            update: updateSpy,
+            create: createSpy,
+            load: returnNonExistingRuntime,
+          },
+        };
+        // testPeriodicInstance.configuration.load = returnNonExistingRuntime;
+        runtime.configRuntimeEnvironment.call(invalidTestPeriodicInstance)
+          .then((m) => {
+            // console.timeEnd.restore();
+            done(new Error('was not supposed to succeed'));
+          })
+          .catch((loadError) => {
+            // console.log({ loadError });
+            expect(loadError).to.be.an('error');
+            // expect(fooSpy.threw()).to.be.ok;
+            // console.timeEnd.restore();
             done();
           });
       } catch (e) {
-        console.timeEnd.restore();
-        console.log({ e });
-        done();
+        done(e);
       }
-    })
-    it('handles console.time errors', (done) => {
-      try {
-        function foo() { throw new Error('Error On console.timeEnd'); }
-        var fooSpy = sinon.stub(console, 'timeEnd', foo);
-        let newPeriodic = new periodicClass({});
-        console.time = fooSpy;
-        newPeriodic.init({
-          debug: false,
-          app_root: initTestPathDir,
-        }).then((m) => {
-          console.time.restore();
-          done(new Error('was not supposed to succeed'));
-        })
-          .catch((m) => {
-            expect(fooSpy.threw()).to.be.ok;
-            console.time.restore();
-            done();
-          });
-      } catch (e) {
-        console.time.restore();
-        console.log({ e });
-        done();
-      }
-    })
+    });
+    process.env = processEnv;
   });
-  */
   
   after('remove test periodic dir', (done) => {
     fs.remove(initTestPathDir)
