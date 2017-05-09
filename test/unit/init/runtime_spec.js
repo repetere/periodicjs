@@ -15,7 +15,7 @@ chai.use(require('sinon-chai'));
 require('mocha-sinon');
 
 
-describe('runtime', function () {
+describe('Periodic Init Runtime', function () {
   this.timeout(10000);
   before('initialize test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)

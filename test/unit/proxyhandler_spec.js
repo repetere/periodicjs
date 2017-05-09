@@ -7,7 +7,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 let periodicProxyHandler = require('../../lib/periodicProxyHandler');
 
-describe('ProxyHandler', function () {
+describe('Periodic Class ProxyHandler', function () {
   it('should be a proxy handler', () => {
     expect(periodicProxyHandler).to.be.a('function');    
   });
