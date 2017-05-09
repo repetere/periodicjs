@@ -18,21 +18,25 @@ module.exports = function (grunt) {
       },
     },
     mocha_istanbul: {
-      coveralls: {
+      coverage: {
         src: testPaths, // multiple folders also works
-        options: {
-          coverageFolder: 'coverage', // will check both coverage folders and merge the coverage results
-          coverage:true, // this will make the grunt.event.on('coverage') event listener to be triggered
-          check: {
-            lines: 5,
-            branches: 5,
-            functions: 5,
-            statements: 5,
-          },
-          // root: './lib', // define where the cover task should consider the root of libraries that are covered by tests
-          reportFormats: ['cobertura', 'lcovonly',],
-        },
+        reportFormats: ['cobertura', 'lcovonly',],
       },
+      // coveralls: {
+      //   src: testPaths, // multiple folders also works
+      //   options: {
+      //     coverageFolder: 'coverage', // will check both coverage folders and merge the coverage results
+      //     coverage:true, // this will make the grunt.event.on('coverage') event listener to be triggered
+      //     check: {
+      //       lines: 5,
+      //       branches: 5,
+      //       functions: 5,
+      //       statements: 5,
+      //     },
+      //     // root: './lib', // define where the cover task should consider the root of libraries that are covered by tests
+      //     reportFormats: ['cobertura', 'lcovonly',],
+      //   },
+      // },
     },
     istanbul_check_coverage: {
       default: {

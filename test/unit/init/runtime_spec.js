@@ -6,18 +6,16 @@ const chai = require('chai');
 const sinon = require('sinon');
 const fs = require('fs-extra');
 const expect = require('chai').expect;
-let periodic = require('../../index');
-// let periodicSchema = require('../../lib/schema');
-let periodicClass = require('../../lib/periodicClass');
+const periodic = require('../../../index');
+const periodicClass = require('../../../lib/periodicClass');
+const runtime = require('../../../lib/init/runtime');
+const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
+const initTestPathDir = path.join(testPathDir, 'runtimeTest');
 chai.use(require('sinon-chai'));
 require('mocha-sinon');
-// const sinon = require('sinon');
-
-const testPathDir = path.resolve(__dirname, '../mock/spec/periodic');
-const initTestPathDir = path.join(testPathDir, 'initTest');
 
 
-describe('Periodic', function () {
+describe('runtime', function () {
   this.timeout(10000);
   before('initialize test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)
@@ -25,6 +23,59 @@ describe('Periodic', function () {
         done();
       }).catch(done);
   });
+  describe('getEnv - Handles Command Line Arguments', () => {
+    it('should return false if no valid command line arguments are present', () => {
+      expect(runtime.getEnv()).to.be.false;
+      expect(runtime.getEnv({ whatver:'ok'})).to.be.false;
+    });
+    it('should return environment from e property', () => {
+      const env = 'development';
+      expect(runtime.getEnv({e:env})).to.eql(env);
+    });
+    it('should return environment from first command line argument', () => {
+      const argv = ['development'];
+      const argv2 = ['only','if','one','argv'];
+      expect(runtime.getEnv({_:argv})).to.eql(argv[0]);
+      expect(runtime.getEnv({_:argv2})).to.be.false;
+      expect(runtime.getEnv({_:[]})).to.be.false;
+    });
+    it('should read environment from env variables', () => {
+      const processEnv = Object.assign({}, process.env);
+      const nodeenv = 'nodetest';
+      const env = 'test';
+      process.env.NODE_ENV = nodeenv;
+      expect(runtime.getEnv()).to.eql(nodeenv);
+      delete process.env.NODE_ENV;
+      process.env.ENV = env;
+      expect(runtime.getEnv()).to.eql(env);
+      delete process.env.ENV;
+      process.env = processEnv;
+    });
+  });
+  describe('setAppRunningEnv - updates application env', () => {
+    const updateSpy = sinon.spy();
+    const createSpy = sinon.spy();
+    const testPeriodicInstance = {
+      config: {},
+      configuration: {
+        update: updateSpy,
+        create: createSpy,
+      },
+    };
+    // const testSetAppRunningEnv = runtime.setAppRunningEnv.bind(testPeriodicInstance);
+    it('should set running config environment', () => {
+      expect(runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv')).to.be.false;
+      expect(testPeriodicInstance.config.process.runtime).to.eql('testenv');
+    });
+    it('should update configuration db', () => { 
+      expect(runtime.setAppRunningEnv.bind(testPeriodicInstance, 'testenv1', 'update')).to.be.a('function');
+      runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'update');
+      runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'create');
+      expect(updateSpy.calledOnce).to.be.true;
+      expect(createSpy.calledOnce).to.be.true;
+    });
+  });
+  /*
 	describe('Represents a singleton module', function () {
     it('should always reference the same instance of periodic when required', function () {
       let periodic2 = require('../../index');
@@ -32,28 +83,6 @@ describe('Periodic', function () {
         .to.deep.equal(periodic2)
         .and.to.be.an.instanceof(periodicClass);
     });
-  
-    // it('should export schema types', () => {
-    //   expect(periodic.Schema.Types).to.be.an('object');
-    //   expect(periodic.Schema.Types).to.have.property('String');
-    //   expect(periodic.Schema.Types.String).to.deep.equal(String);
-    //   expect(periodic.Schema.Types).to.have.property('ObjectId');
-    // });
-    // it('should have connection that emit events', () => {
-    //   expect(periodic.connection).to.be.an.instanceof(events.EventEmitter);
-    // });
-    // it('should expose a method for creating schemas', () => {
-    //   let testUserSchema = {
-    //     name: String,
-    //     email: String,
-    //     profile: {
-    //       type: String,
-    //       default: 'no profile',
-    //     },
-    //   };
-    //   expect(periodic.Schema).to.be.an.a('function');
-    //   expect(periodic.Schema(testUserSchema)).to.be.an.an('object');
-    // });
   });
   describe('Manages initialization configuration', () => {
     // beforeEach(function() {
@@ -136,6 +165,7 @@ describe('Periodic', function () {
       }
     })
   });
+  */
   
   after('remove test periodic dir', (done) => {
     fs.remove(initTestPathDir)
