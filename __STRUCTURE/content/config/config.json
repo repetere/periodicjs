@@ -5,5 +5,8 @@
     "options": {
       "dbpath": "content/config/settings/db.json"
     }
+  },
+  "settings": {
+    "name": "My APP"
   }
 }
