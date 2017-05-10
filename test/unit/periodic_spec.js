@@ -32,33 +32,8 @@ describe('Periodic', function () {
         .to.deep.equal(periodic2)
         .and.to.be.an.instanceof(periodicClass);
     });
-  
-    // it('should export schema types', () => {
-    //   expect(periodic.Schema.Types).to.be.an('object');
-    //   expect(periodic.Schema.Types).to.have.property('String');
-    //   expect(periodic.Schema.Types.String).to.deep.equal(String);
-    //   expect(periodic.Schema.Types).to.have.property('ObjectId');
-    // });
-    // it('should have connection that emit events', () => {
-    //   expect(periodic.connection).to.be.an.instanceof(events.EventEmitter);
-    // });
-    // it('should expose a method for creating schemas', () => {
-    //   let testUserSchema = {
-    //     name: String,
-    //     email: String,
-    //     profile: {
-    //       type: String,
-    //       default: 'no profile',
-    //     },
-    //   };
-    //   expect(periodic.Schema).to.be.an.a('function');
-    //   expect(periodic.Schema(testUserSchema)).to.be.an.an('object');
-    // });
   });
   describe('Manages initialization configuration', () => {
-    // beforeEach(function() {
-    //   // this.sinon.stub(console, 'log');
-    // });
     it('should be implemented with configurable default settings', () => {
       expect(Object.keys(periodic.config).length).to.be.greaterThan(0);
     });
@@ -70,10 +45,6 @@ describe('Periodic', function () {
       periodic.logger.info = spy;
       periodic.logger.warn = spy;
       periodic.logger.error = spy;
-
-      // this.sinon.stub(console, 'log');
-
-      // console.log('this.sinon', this.sinon);
       periodic.init({
         debug: true,
         app_root: initTestPathDir,
@@ -81,7 +52,6 @@ describe('Periodic', function () {
         .then((result) => {
           expect(periodic.config.debug).to.be.true;
           expect(periodic.config.app_root).to.eql(initTestPathDir);
-          // console.log({ result, });
           done();
         })
         .catch(done);
