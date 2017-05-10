@@ -46,7 +46,7 @@ describe('Periodic Init Config', function () {
       }).catch(done);
   });
   describe('loadConfiguration - Loads periodic configuration settings', (done) => {
-    it('should return a promise', () => {
+    it('should return a promise', (done) => {
       const testConfigPeriodic = Object.assign({},configPeriodic);
       const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic);
       expect(configLoadPromise).to.be.a('promise');
@@ -59,6 +59,16 @@ describe('Periodic Init Config', function () {
         writable: false,
       });
       const configErrorLoadPromise = config.loadConfiguration.call(testErrorConfigPeriodic);
+      configErrorLoadPromise
+        .then((config) => {
+          // console.log({ config });
+          done(new Error('was not supposed to succeed'));
+        })
+        .catch(configError => {
+          // console.log({ configError });
+          expect(configError).to.be.an('error');
+          done();
+        });
       expect(configErrorLoadPromise).to.eventually.be.rejected;
     });
     it('should set the config configuration and settings properly', () => {
