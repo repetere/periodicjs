@@ -82,6 +82,11 @@ describe('Periodic Init Config', function () {
       expect(config.loadConfiguration()).to.eventually.be.rejected;
     });
   });
+  describe('configureLowkie', () => { 
+    it('should handle errors', () => {
+      expect(config.configureLowkie()).to.eventually.be.rejected;
+    });
+  });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
       const testConfigPeriodic = Object.assign({},configPeriodic);
