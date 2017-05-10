@@ -78,6 +78,9 @@ describe('Periodic Init Config', function () {
       expect(configPeriodic.config.configuration).to.eql(configTestJson.configuration);
       expect(configPeriodic.settings.name).to.eql(configTestJson.settings.name);
     });
+    it('should handle errors', () => {
+      expect(config.loadConfiguration()).to.eventually.be.rejected;
+    });
   });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {

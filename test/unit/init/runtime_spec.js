@@ -145,6 +145,28 @@ describe('Periodic Init Runtime', function () {
         done(e);
       }
     });
+    it('should handle errors', (done) => { 
+      function foo() { throw new Error('Error On this.configuration.load'); }
+      const testPeriodicInstance = {
+        config: {
+          process: {
+            runtime:'test',
+          },
+        },
+        configuration: {
+          load: ()=>{ },
+        },
+      };
+      const fooSpy = sinon.stub(testPeriodicInstance.configuration,'load',foo);
+      runtime.configRuntimeEnvironment.call(testPeriodicInstance)
+        .then((m) => {
+          done(new Error('was not supposed to succeed'));
+        })
+        .catch((m) => {
+          expect(fooSpy.threw()).to.be.ok;
+          done();
+        });
+    });
     process.env = processEnv;
   });
   
