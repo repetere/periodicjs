@@ -48,9 +48,18 @@ describe('Periodic Init Config', function () {
   describe('loadConfiguration - Loads periodic configuration settings', (done) => {
     it('should return a promise', () => {
       const testConfigPeriodic = Object.assign({},configPeriodic);
-      const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic)
+      const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic);
       expect(configLoadPromise).to.be.a('promise');
       expect(configLoadPromise).to.eventually.eql(true);
+
+      const testErrorConfigPeriodic = Object.assign({},configPeriodic);
+      Object.defineProperty(testErrorConfigPeriodic, 'settings', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+      });
+      const configErrorLoadPromise = config.loadConfiguration.call(testErrorConfigPeriodic);
+      expect(configErrorLoadPromise).to.eventually.be.rejected;
     });
     it('should set the config configuration and settings properly', () => {
       const configTestJson = configTestConfigJson({
