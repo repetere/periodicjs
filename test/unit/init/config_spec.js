@@ -45,7 +45,7 @@ describe('Periodic Init Config', function () {
           .catch(done);
       }).catch(done);
   });
-  describe('loadConfiguration - Loads periodic configuration settings', (done) => {
+  describe('loadConfiguration', (done) => {
     it('should return a promise', (done) => {
       const testConfigPeriodic = Object.assign({},configPeriodic);
       const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic);
@@ -73,136 +73,114 @@ describe('Periodic Init Config', function () {
     });
     it('should set the config configuration and settings properly', () => {
       const configTestJson = configTestConfigJson({
-        dbpathprefix:initTestPathDir
+        dbpathprefix: initTestPathDir
       });
       expect(configPeriodic.config.configuration).to.eql(configTestJson.configuration);
       expect(configPeriodic.settings.name).to.eql(configTestJson.settings.name);
-    })
-    // it('should return false if no valid command line arguments are present', () => {
-    //   expect(runtime.getEnv()).to.be.false;
-    //   expect(runtime.getEnv({ whatver:'ok'})).to.be.false;
-    // });
-    // it('should return environment from e property', () => {
-    //   const env = 'development';
-    //   expect(runtime.getEnv({e:env})).to.eql(env);
-    // });
-    // it('should return environment from first command line argument', () => {
-    //   const argv = ['development'];
-    //   const argv2 = ['only','if','one','argv'];
-    //   expect(runtime.getEnv({_:argv})).to.eql(argv[0]);
-    //   expect(runtime.getEnv({_:argv2})).to.be.false;
-    //   expect(runtime.getEnv({_:[]})).to.be.false;
-    // });
-    // it('should read environment from env variables', () => {
-    //   const processEnv = Object.assign({}, process.env);
-    //   const nodeenv = 'nodetest';
-    //   const env = 'test';
-    //   process.env.NODE_ENV = nodeenv;
-    //   expect(runtime.getEnv()).to.eql(nodeenv);
-    //   delete process.env.NODE_ENV;
-    //   process.env.ENV = env;
-    //   expect(runtime.getEnv()).to.eql(env);
-    //   delete process.env.ENV;
-    //   process.env = processEnv;
-    // });
-  });
-  /*
-  describe('setAppRunningEnv - updates application env', () => {
-    const updateSpy = sinon.spy();
-    const createSpy = sinon.spy();
-    const testPeriodicInstance = {
-      config: {},
-      configuration: {
-        update: updateSpy,
-        create: createSpy,
-      },
-    };
-    // const testSetAppRunningEnv = runtime.setAppRunningEnv.bind(testPeriodicInstance);
-    it('should set running config environment', () => {
-      expect(runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv')).to.be.false;
-      expect(testPeriodicInstance.config.process.runtime).to.eql('testenv');
-    });
-    it('should update configuration db', () => { 
-      expect(runtime.setAppRunningEnv.bind(testPeriodicInstance, 'testenv1', 'update')).to.be.a('function');
-      runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'update');
-      runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'create');
-      expect(updateSpy.calledOnce).to.be.true;
-      expect(createSpy.calledOnce).to.be.true;
     });
   });
-  describe('configRuntimeEnvironment - configures runtime environment', () => {
-    const processEnv = Object.assign({}, process.env);
-
-      // const nodeenv = 'nodetest';
-      // const env = 'test';
-      // process.env.NODE_ENV = nodeenv;
-      // expect(runtime.getEnv()).to.eql(nodeenv);
-      // delete process.env.NODE_ENV;
-      // process.env.ENV = env;
-      // expect(runtime.getEnv()).to.eql(env);
-      // delete process.env.ENV;
-    const updateSpy = sinon.spy();
-    const createSpy = sinon.spy();
-    const returnValidRuntime = () => {
-      return Promise.resolve( {
-        filepath: 'content/config/process/runtime.json',
-        config: { process: { environment: 'dev' } },
-        _id: 'TESTVALIDID',
-        meta:
-        {
-          revision: 0,
-          created: 1494338785207,
-          version: 0,
-          updated: 1494340295729
-        },
-        '$loki': 1
-      });
-    };
-    const returnNonExistingRuntime = () => {
-      return Promise.resolve(undefined);
-    };
-    const testPeriodicInstance = {
-      config: {},
-      configuration: {
-        update: updateSpy,
-        create: createSpy,
-        load: returnValidRuntime,
-      },
-    };
-    it('should return a promise', () => {
-      expect(runtime.configRuntimeEnvironment.call(testPeriodicInstance)).to.be.a('promise');
+  describe('loadAppSettings', () => {
+    it('should attempt to load settings from configuration db', (done) => {
+      const testConfigPeriodic = Object.assign({},configPeriodic);
+      // console.log({ testConfigPeriodic });
+      config.loadAppSettings.call(configPeriodic)
+        .then((updatedSettings) => {
+          // console.log({ updatedSettings });
+          expect(updatedSettings).to.eql(configPeriodic.settings);
+          done();
+        })
+        .catch(done);
     });
-    it('should handle invalid runtimes', (done) => {
-      try { 
-        process.env.ENV=undefined;
-        const invalidTestPeriodicInstance = {
-          config: {},
-          configuration: {
-            update: updateSpy,
-            create: createSpy,
-            load: returnNonExistingRuntime,
+    it('should override settings from config.json', (done) => {
+      const ORIGINALNAME = 'ORIGINAL NAME';
+      const testPeriodicInstance = {
+        config: {
+          process: {
+            runtime:'test',
           },
-        };
-        // testPeriodicInstance.configuration.load = returnNonExistingRuntime;
-        runtime.configRuntimeEnvironment.call(invalidTestPeriodicInstance)
-          .then((m) => {
-            // console.timeEnd.restore();
-            done(new Error('was not supposed to succeed'));
-          })
-          .catch((loadError) => {
-            // console.log({ loadError });
-            expect(loadError).to.be.an('error');
-            // expect(fooSpy.threw()).to.be.ok;
-            // console.timeEnd.restore();
-            done();
-          });
-      } catch (e) {
-        done(e);
-      }
+        },
+        settings: {
+          name:ORIGINALNAME,
+        },
+        configuration: {
+          load: () => new Promise((resolve, reject) => {
+            resolve({
+              name:'ENV SPECIFIC NAME',
+            });
+          }),
+        },
+      };
+      config.loadAppSettings.call(testPeriodicInstance)
+        .then((updatedSettings) => {
+          expect(testPeriodicInstance.settings.name).to.eql(ORIGINALNAME);
+          done();
+        })
+        .catch(done);
     });
-    process.env = processEnv;
+    it('should merge settings from env', (done) => {
+      const ENVNAME = 'ENV SPECIFIC NAME';
+      const testPeriodicInstance = {
+        config: {
+          process: {
+            runtime:'test',
+          },
+        },
+        settings: {
+          // name:ORIGINALNAME,
+        },
+        configuration: {
+          load: () => new Promise((resolve, reject) => {
+            resolve({
+              name:ENVNAME,
+            });
+          }),
+        },
+      };
+      config.loadAppSettings.call(testPeriodicInstance)
+        .then((updatedSettings) => {
+          expect(testPeriodicInstance.settings.name).to.eql(ENVNAME);
+          done();
+        })
+        .catch(done);
+    });
+    it('should return a promise', () => {
+      // const loadSpy = sinon.spy();
+      const testPeriodicInstance = {
+        config: {
+          process: {
+            runtime:'test',
+          },
+        },
+        configuration: {
+          load: ()=>new Promise((resolve, reject) => { resolve(true)}),
+        },
+      };
+      const configLoadAppPromise = config.loadAppSettings.call(testPeriodicInstance);
+      expect(configLoadAppPromise).to.be.a('promise');
+    });
+    it('should handle errors', (done) => {
+      function foo() { throw new Error('Error On this.configuration.load'); }
+      const testPeriodicInstance = {
+        config: {
+          process: {
+            runtime:'test',
+          },
+        },
+        configuration: {
+          load: ()=>{ },
+        },
+      };
+      const fooSpy = sinon.stub(testPeriodicInstance.configuration,'load',foo);
+      config.loadAppSettings.call(testPeriodicInstance)
+        .then((m) => {
+          done(new Error('was not supposed to succeed'));
+        })
+        .catch((m) => {
+          expect(fooSpy.threw()).to.be.ok;
+          done();
+        });
+    });
   });
-  */
   after('remove test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {

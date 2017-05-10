@@ -25,7 +25,7 @@ describe('Periodic', function () {
         done();
       }).catch(done);
   });
-	describe('Represents a singleton module', function () {
+	describe('Singleton module', function () {
     it('should always reference the same instance of periodic when required', function () {
       let periodic2 = require('../../index');
       expect(periodic)
@@ -33,7 +33,7 @@ describe('Periodic', function () {
         .and.to.be.an.instanceof(periodicClass);
     });
   });
-  describe('Manages initialization configuration', () => {
+  describe('Initialization configuration', () => {
     it('should be implemented with configurable default settings', () => {
       expect(Object.keys(periodic.config).length).to.be.greaterThan(0);
     });
@@ -57,7 +57,7 @@ describe('Periodic', function () {
         .catch(done);
     });
   });
-  describe('Handles initialization errors', () => {
+  describe('Initialization errors', () => {
     it('handles console.timeEnd errors', (done) => {
       try {
         function foo() { throw new Error('Error On console.timeEnd'); }

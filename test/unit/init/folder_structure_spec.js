@@ -24,7 +24,7 @@ describe('Periodic Init Folder Structure', function () {
       }).catch(done);
   });
 
-  describe('setUpFolderStructure - defines app folders', () => {
+  describe('setUpFolderStructure', () => {
     it('should copy files to app_root', (done) => {
       const testPeriodic = {
         config: {

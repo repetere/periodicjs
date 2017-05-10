@@ -23,7 +23,7 @@ describe('Periodic Init Runtime', function () {
         done();
       }).catch(done);
   });
-  describe('getEnv - Handles Command Line Arguments', () => {
+  describe('getEnv', () => {
     it('should return false if no valid command line arguments are present', () => {
       expect(runtime.getEnv()).to.be.false;
       expect(runtime.getEnv({ whatver:'ok'})).to.be.false;
@@ -52,7 +52,7 @@ describe('Periodic Init Runtime', function () {
       process.env = processEnv;
     });
   });
-  describe('setAppRunningEnv - updates application env', () => {
+  describe('setAppRunningEnv', () => {
     const updateSpy = sinon.spy();
     const createSpy = sinon.spy();
     const testPeriodicInstance = {
@@ -75,7 +75,7 @@ describe('Periodic Init Runtime', function () {
       expect(createSpy.calledOnce).to.be.true;
     });
   });
-  describe('configRuntimeEnvironment - configures runtime environment', () => {
+  describe('configRuntimeEnvironment', () => {
     const processEnv = Object.assign({}, process.env);
 
       // const nodeenv = 'nodetest';
