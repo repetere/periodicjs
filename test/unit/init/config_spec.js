@@ -87,6 +87,11 @@ describe('Periodic Init Config', function () {
       expect(config.configureLowkie()).to.eventually.be.rejected;
     });
   });
+  describe('configureMongoose', () => { 
+    it('should handle errors', () => {
+      expect(config.configureMongoose()).to.eventually.be.rejected;
+    });
+  });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
       const testConfigPeriodic = Object.assign({},configPeriodic);

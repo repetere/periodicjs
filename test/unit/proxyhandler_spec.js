@@ -23,12 +23,20 @@ describe('Periodic Class ProxyHandler', function () {
     expect(testProxy.someprop).to.eql(spy.someprop);
     expect(periodicProxyHandler().get(spy, 'someprop')).to.eql(spy.someprop);
   });
-  it('should alias the configuraiton db', () => {
+  it('should alias the configuraiton core data', () => {
     const testPeriodicInstance = {
       datas: new Map(),
     };
     const dummyConfigDBAdapter = {};
     testPeriodicInstance.datas.set('configuration', dummyConfigDBAdapter);
     expect(periodicProxyHandler().get(testPeriodicInstance, 'configuration')).to.eql(dummyConfigDBAdapter);
-  })
+  });
+  it('should alias the standard db', () => {
+    const testPeriodicInstance = {
+      dbs: new Map(),
+    };
+    const dummyConfigDBAdapter = {};
+    testPeriodicInstance.dbs.set('standard', dummyConfigDBAdapter);
+    expect(periodicProxyHandler().get(testPeriodicInstance, 'db')).to.eql(dummyConfigDBAdapter);
+  });
 });
