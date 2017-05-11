@@ -56,6 +56,26 @@ configuration.options = {/**/} //core data apadter connection options
   }
 }
 ```
+#### Example SL Configuration
+```json
+{
+  "configuration": {
+    "type": "db",
+    "db": "sql",
+    "options": {
+      "database": "yawetse",
+      "username": "",
+      "password": "",
+      "connection_options":{
+        "dialect":"postgres",
+        "port":5432,
+        "host":"127.0.0.1",
+        "logging":true
+      }
+    }
+  }
+}
+```
 ---
 ## Application Settings
 The settings for Periodic are on the `periodic.settings` property. The applicatication settings are assigned by merging default settings, environment settings and override settings.
