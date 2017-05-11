@@ -168,6 +168,40 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });
+    it('should log disconnect messages using mongo', (done) => {
+      const spy = sinon.spy();
+      const mongoconfig = configTestConfigJson({
+        db: 'mongoose',
+        db_config_options: {
+          "url": "mongodb://localhost:27017/test_config_db",
+          "connection_options":{}
+        }
+      });
+      const mongoPeriodicInstance = {
+        config: Object.assign({
+          app_root: initTestPathDir,
+        }, mongoconfig),
+        core: {
+          data: CoreData,
+        },
+        dbs: new Map(),
+        datas: new Map(),
+        logger: {
+          error:spy,
+        }
+      };
+
+      config.loadConfiguration.call(mongoPeriodicInstance, mongoconfig.configuration)
+        .then((result) => {
+          expect(result).to.be.true;
+          mongoPeriodicInstance.dbs.get('configuration').on('disconnected', () => {
+            expect(spy.called).to.be.true;
+            done();
+          });
+          mongoPeriodicInstance.dbs.get('configuration').emit('disconnected');
+        })
+        .catch(done);
+    });
   });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
