@@ -168,6 +168,7 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });
+    
     it('should log disconnect messages using mongo', (done) => {
       const spy = sinon.spy();
       const mongoconfig = configTestConfigJson({
@@ -202,6 +203,49 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });
+    
+    /*
+    it('should close mongo connection after node process ends', (done) => {
+      const processExitSpy = sinon.spy();
+      const sillySpy = sinon.spy();
+      const errorSpy = sinon.spy();
+      process.exit = sinon.stub(process, 'exit', processExitSpy);
+      const mongoconfig = configTestConfigJson({
+        db: 'mongoose',
+        db_config_options: {
+          "url": "mongodb://localhost:27017/test_config_db2",
+          "connection_options":{}
+        }
+      });
+      const mongoPeriodicInstance = {
+        config: Object.assign({
+          app_root: initTestPathDir,
+        }, mongoconfig),
+        core: {
+          data: CoreData,
+        },
+        dbs: new Map(),
+        datas: new Map(),
+        logger: {
+          silly:sillySpy,
+          error:errorSpy,
+        }
+      };
+
+      config.loadConfiguration.call(mongoPeriodicInstance, mongoconfig.configuration)
+        .then((result) => {
+          expect(result).to.be.true;
+          mongoPeriodicInstance.dbs.get('configuration').once('disconnected', () => {
+            expect(processExitSpy.called).to.be.true;
+            expect(sillySpy.called).to.be.true;
+            expect(errorSpy.called).to.be.true;
+            process.exit.restore();
+            // done();
+          });
+          process.emit('SIGINT');
+        })
+        .catch(done);
+    });*/
   });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
