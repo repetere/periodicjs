@@ -119,7 +119,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.18.1",
     "mongoose": "^4.9.7",
-    "periodicjs.core.data": "^0.2.1",
+    "periodicjs.core.data": "^0.2.3",
     "pluralize": "^4.0.0",
     "promisie": "^1.6.1",
     "proxy-polyfill": "0.1.6",
