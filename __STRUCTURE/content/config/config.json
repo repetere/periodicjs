@@ -3,10 +3,10 @@
     "type": "db",
     "db": "lowkie",
     "options": {
-      "dbpath": "content/config/settings/db.json"
+      "dbpath": "content/config/settings/config_db.json"
     }
   },
   "settings": {
-    "name": "My APP"
+    "name":"My Application"
   }
 }
