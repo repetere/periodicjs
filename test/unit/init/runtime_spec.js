@@ -77,15 +77,6 @@ describe('Periodic Init Runtime', function () {
   });
   describe('configRuntimeEnvironment', () => {
     const processEnv = Object.assign({}, process.env);
-
-      // const nodeenv = 'nodetest';
-      // const env = 'test';
-      // process.env.NODE_ENV = nodeenv;
-      // expect(runtime.getEnv()).to.eql(nodeenv);
-      // delete process.env.NODE_ENV;
-      // process.env.ENV = env;
-      // expect(runtime.getEnv()).to.eql(env);
-      // delete process.env.ENV;
     const updateSpy = sinon.spy();
     const createSpy = sinon.spy();
     const returnValidRuntime = () => {
@@ -114,6 +105,31 @@ describe('Periodic Init Runtime', function () {
         load: returnValidRuntime,
       },
     };
+    it('should handle raw mongo documents', (done) => {
+      const toJSONSpy = sinon.spy();
+      const returnValidJSONRuntime = () => {
+        return Promise.resolve( {
+          toJSON:toJSONSpy,
+        });
+      };
+      const testPeriodicInstanceResultJSON = {
+        config: {
+          environment:'test',
+        },
+        configuration: {
+          update: updateSpy,
+          create: createSpy,
+          load: returnValidJSONRuntime,
+        },
+      };
+      runtime.configRuntimeEnvironment.call(testPeriodicInstanceResultJSON)
+        .then(() => { 
+          expect(toJSONSpy.calledOnce).to.be.true;
+          done();
+        })
+        .catch(done);
+      // expect().to.be.a('promise');
+    });
     it('should return a promise', () => {
       expect(runtime.configRuntimeEnvironment.call(testPeriodicInstance)).to.be.a('promise');
     });
