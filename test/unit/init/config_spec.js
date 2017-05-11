@@ -11,6 +11,7 @@ const periodicClass = require('../../../lib/periodicClass');
 const config = require('../../../lib/init/config');
 const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'configTest');
+const CoreData = require('periodicjs.core.data');
 const initTestConfigJsonFile = path.join(initTestPathDir, 'content/config/config.json');
 const configTestConfigJson = require('../../mock/config/config_test_config');
 let configPeriodic;
@@ -139,6 +140,33 @@ describe('Periodic Init Config', function () {
   describe('configureMongoose', () => { 
     it('should handle errors', () => {
       expect(config.configureMongoose()).to.eventually.be.rejected;
+    });
+    it('should connect using mongo', (done) => {
+      const mongoconfig = configTestConfigJson({
+        db: 'mongoose',
+        db_config_options: {
+          "url": "mongodb://localhost:27017/test_config_db",
+          "connection_options":{}
+        }
+      });
+      const mongoPeriodicInstance = {
+        config: Object.assign({
+          app_root: initTestPathDir,
+        }, mongoconfig),
+        core: {
+          data: CoreData,
+        },
+        dbs: new Map(),
+        datas: new Map(),
+      };
+      config.loadConfiguration.call(mongoPeriodicInstance, mongoconfig.configuration)
+        .then((result) => {
+          expect(result).to.be.true;
+          expect(mongoPeriodicInstance.datas.has('configuration')).to.be.true;
+          expect(mongoPeriodicInstance.dbs.has('configuration')).to.be.true;
+          done();
+        })
+        .catch(done);
     });
   });
   describe('loadAppSettings', () => {
