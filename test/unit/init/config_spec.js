@@ -45,7 +45,7 @@ describe('Periodic Init Config', function () {
           .catch(done);
       }).catch(done);
   });
-  describe('loadConfiguration', (done) => {
+  describe('loadConfiguration', () => {
     it('should return a promise', (done) => {
       const testConfigPeriodic = Object.assign({},configPeriodic);
       const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic);
@@ -80,6 +80,55 @@ describe('Periodic Init Config', function () {
     });
     it('should handle errors', () => {
       expect(config.loadConfiguration()).to.eventually.be.rejected;
+    });
+    it('should handle invalid configuration types', (done) => {
+   
+      Promise.all([
+        (new Promise((resolve, reject) => {
+          const invalidConfigurationType = configTestConfigJson({
+            config_type: 'invalidConfigType',
+            dbpathprefix: initTestPathDir
+          });
+          const testInvalidPeriodicConfig = {
+            config: Object.assign({
+              app_root: initTestPathDir,
+            },invalidConfigurationType)
+          };
+          config.loadConfiguration.call(testInvalidPeriodicConfig, invalidConfigurationType.configuration)
+            .then(() => {
+              reject(new Error('was not supposed to succeed'));
+            })
+            .catch(e => {
+              expect(e.message).to.eql('invalid configuration type');
+              resolve(true);
+            });
+        })),
+        new Promise((resolve, reject) => {
+          const config_configuration_db_invalid = configTestConfigJson({
+            db: 'invalidDB',
+            dbpathprefix: initTestPathDir
+          });
+          const invalidTestPeriodicDbConfig = {
+            config: Object.assign({
+              app_root: initTestPathDir,
+            },config_configuration_db_invalid)
+          };
+          config.loadConfiguration.call(invalidTestPeriodicDbConfig, config_configuration_db_invalid.configuration)
+            .then(() => {
+              reject(new Error('was not supposed to succeed'));
+            })
+            .catch(e => {
+              expect(e.message).to.eql('invalid configuration db');
+              resolve(true);
+            });
+        })
+      ])
+        .then((result) => {
+          // console.log({ result });
+          done();
+        })
+        .catch(done);
+      
     });
   });
   describe('configureLowkie', () => { 
