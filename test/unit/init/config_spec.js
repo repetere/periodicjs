@@ -9,6 +9,7 @@ const expect = require('chai').expect;
 const periodic = require('../../../index');
 const periodicClass = require('../../../lib/periodicClass');
 const config = require('../../../lib/init/config');
+const configSequelizeSchema = require('../../../lib/schemas/config.sequelize');
 const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'configTest');
 const CoreData = require('periodicjs.core.data');
@@ -282,6 +283,25 @@ describe('Periodic Init Config', function () {
           done();
         })
         .catch(done);
+    });
+  });
+  describe('configuration sql schema json', () => { 
+    it('should store json configurations in sql', () => {
+      expect(configSequelizeSchema.options.getterMethods.config.call({
+        dataValues: {
+          config: '{"data":true}'
+        }
+      })).to.eql({ data: true });
+    });
+    it('should store json values in sql', () => {
+      const mockThis = {
+        // config:false,
+        setDataValue: function (prop, val) {
+          this[ prop ] = val;
+        }
+      }
+      configSequelizeSchema.options.setterMethods.config.call(mockThis, { data: true });
+      expect(mockThis.config).to.eql(JSON.stringify({data:true}))
     });
   });
   describe('loadAppSettings', () => {
