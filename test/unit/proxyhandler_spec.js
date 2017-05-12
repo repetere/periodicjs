@@ -39,4 +39,14 @@ describe('Periodic Class ProxyHandler', function () {
     testPeriodicInstance.dbs.set('standard', dummyConfigDBAdapter);
     expect(periodicProxyHandler().get(testPeriodicInstance, 'db')).to.eql(dummyConfigDBAdapter);
   });
+  it('should alias the process runtime environment', () => {
+    const testPeriodicInstance = {
+      config: {
+        process: {
+          runtime:'testenv',
+        },
+      },
+    };
+    expect(periodicProxyHandler().get(testPeriodicInstance, 'environment')).to.eql('testenv');
+  });
 });

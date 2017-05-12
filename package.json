@@ -113,6 +113,7 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "capitalize": "^1.0.0",
+    "express": "^4.15.2",
     "flat": "^2.0.1",
     "fs-extra": "^3.0.1",
     "lowkie": "^0.1.2",

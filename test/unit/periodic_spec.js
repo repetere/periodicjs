@@ -15,13 +15,22 @@ require('mocha-sinon');
 
 const testPathDir = path.resolve(__dirname, '../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'initTest');
-const initTest2PathDir = path.join(testPathDir, 'test2');
+const initTestEVENTSPathDir = path.join(testPathDir, 'testEvents');
+const initTest3PathDir = path.join(testPathDir, 'test3');
+const initTestConsoleTimePathDir = path.join(testPathDir, 'testConsoleTime');
+const initTestConsoleTimeEndPathDir = path.join(testPathDir, 'testConsoleTimeEnd');
 // const initTest3PathDir = path.join(testPathDir, 'test3');
 
 describe('Periodic', function () {
   this.timeout(10000);
   before('initialize test periodic dir', (done) => {
-    fs.ensureDir(initTestPathDir)
+    Promise.all([
+      fs.ensureDir(initTestPathDir),
+      fs.ensureDir(initTestEVENTSPathDir),
+      fs.ensureDir(initTest3PathDir),
+      fs.ensureDir(initTestConsoleTimePathDir),
+      fs.ensureDir(initTestConsoleTimeEndPathDir),
+    ])
       .then(() => {
         done();
       }).catch(done);
@@ -38,7 +47,7 @@ describe('Periodic', function () {
     it('emits initialization event', (done) => { 
       let newPeriodic2 = new periodicClass({
         debug: false,
-        app_root: initTest2PathDir,
+        app_root: initTestEVENTSPathDir,
       });
       newPeriodic2.status.once('initializing', (state) => { 
         expect(state).to.be.true;
@@ -46,7 +55,7 @@ describe('Periodic', function () {
       })
       newPeriodic2.init({
         debug: false,
-        app_root: initTest2PathDir,
+        app_root: initTestEVENTSPathDir,
       })
         .then((result) => { 
         })
@@ -69,11 +78,11 @@ describe('Periodic', function () {
       periodic.logger.error = spy;
       periodic.init({
         debug: true,
-        app_root: initTestPathDir,
+        app_root: initTest3PathDir,
       })
         .then((result) => {
           expect(periodic.config.debug).to.be.true;
-          expect(periodic.config.app_root).to.eql(initTestPathDir);
+          expect(periodic.config.app_root).to.eql(initTest3PathDir);
           done();
         })
         .catch(done);
@@ -89,7 +98,7 @@ describe('Periodic', function () {
         console.timeEnd = fooSpy;
         newPeriodic.init({
           debug: false,
-          app_root: initTestPathDir,
+          app_root: initTestConsoleTimeEndPathDir,
         }).then((m) => {
           console.timeEnd.restore();
           done(new Error('was not supposed to succeed'));
@@ -104,17 +113,17 @@ describe('Periodic', function () {
         console.log({ e });
         done();
       }
-    })
+    });
     it('handles console.time errors', (done) => {
       try {
-        function foo() { throw new Error('Error On console.timeEnd'); }
-        var fooSpy = sinon.stub(console, 'timeEnd', foo);
+        function foo() { throw new Error('Error On console.time'); }
+        var fooSpy = sinon.stub(console, 'time', foo);
         let newPeriodic = new periodicClass({});
         process.env.ENV = 'test';
         console.time = fooSpy;
         newPeriodic.init({
           debug: false,
-          app_root: initTestPathDir,
+          app_root: initTestConsoleTimePathDir,
         }).then((m) => {
           console.time.restore();
           done(new Error('was not supposed to succeed'));
@@ -129,13 +138,16 @@ describe('Periodic', function () {
         console.log({ e });
         done();
       }
-    })
+    });
   });
   
   after('remove test periodic dir', (done) => {
     Promise.all([
       fs.remove(initTestPathDir),
-      fs.remove(initTest2PathDir),
+      fs.remove(initTestEVENTSPathDir),
+      fs.remove(initTest3PathDir),
+      fs.remove(initTestConsoleTimePathDir),
+      fs.remove(initTestConsoleTimeEndPathDir),
     ])
       .then(() => {
         done();
