@@ -168,7 +168,6 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });
-    
     it('should log disconnect messages using mongo', (done) => {
       const spy = sinon.spy();
       const mongoconfig = configTestConfigJson({
@@ -203,7 +202,6 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });
-    
     /*
     it('should close mongo connection after node process ends', (done) => {
       const processExitSpy = sinon.spy();
@@ -246,6 +244,45 @@ describe('Periodic Init Config', function () {
         })
         .catch(done);
     });*/
+  });
+  describe('configureSequelize', () => { 
+    it('should handle errors', () => {
+      expect(config.configureSequelize()).to.eventually.be.rejected;
+    });
+    it('should connect using sql', (done) => {
+      const sqlconfig = configTestConfigJson({
+        db: 'sequelize',
+        db_config_options: {
+          "database": "travis_ci_test",
+          "username": "",
+          "password": "",
+          "connection_options":{
+            "dialect":"postgres",
+            "port":5432,
+            "host":"127.0.0.1",
+            "logging":false
+          },
+        }
+      });
+      const sqlPeriodicInstance = {
+        config: Object.assign({
+          app_root: initTestPathDir,
+        }, sqlconfig),
+        core: {
+          data: CoreData,
+        },
+        dbs: new Map(),
+        datas: new Map(),
+      };
+      config.loadConfiguration.call(sqlPeriodicInstance, sqlconfig.configuration)
+        .then((result) => {
+          expect(result).to.be.true;
+          expect(sqlPeriodicInstance.datas.has('configuration')).to.be.true;
+          expect(sqlPeriodicInstance.dbs.has('configuration')).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
