@@ -12,6 +12,7 @@ addons:
 
 services:
   - mongodb
+  - postgresql
 
 notifications:
   irc:
@@ -40,6 +41,9 @@ branches:
     - devel
 git:
   submodules: false
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
 
 script:
   - npm set progress=false && grunt test

@@ -61,16 +61,15 @@ configuration.options = {/**/} //core data apadter connection options
 {
   "configuration": {
     "type": "db",
-    "db": "sql",
+    "db": "sequelize",
     "options": {
-      "database": "yawetse",
+      "database": "testdb",
       "username": "",
       "password": "",
       "connection_options":{
         "dialect":"postgres",
         "port":5432,
-        "host":"127.0.0.1",
-        "logging":true
+        "host":"127.0.0.1"
       }
     }
   }
