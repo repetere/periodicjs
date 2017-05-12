@@ -327,6 +327,9 @@ describe('Periodic Init Config', function () {
         settings: {
           name:ORIGINALNAME,
         },
+        status: {
+          emit:() => { }
+        },
         configuration: {
           load: () => new Promise((resolve, reject) => {
             resolve({
@@ -352,6 +355,9 @@ describe('Periodic Init Config', function () {
         },
         settings: {
           // name:ORIGINALNAME,
+        },
+        status: {
+          emit:() => { }
         },
         configuration: {
           load: () => new Promise((resolve, reject) => {

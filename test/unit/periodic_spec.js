@@ -15,7 +15,8 @@ require('mocha-sinon');
 
 const testPathDir = path.resolve(__dirname, '../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'initTest');
-
+const initTest2PathDir = path.join(testPathDir, 'test2');
+// const initTest3PathDir = path.join(testPathDir, 'test3');
 
 describe('Periodic', function () {
   this.timeout(10000);
@@ -31,6 +32,27 @@ describe('Periodic', function () {
       expect(periodic)
         .to.deep.equal(periodic2)
         .and.to.be.an.instanceof(periodicClass);
+    });
+  });
+  describe('Initialization events', () => {
+    it('emits initialization event', (done) => { 
+      let newPeriodic2 = new periodicClass({
+        debug: false,
+        app_root: initTest2PathDir,
+      });
+      newPeriodic2.status.once('initializing', (state) => { 
+        expect(state).to.be.true;
+        done();
+      })
+      newPeriodic2.init({
+        debug: false,
+        app_root: initTest2PathDir,
+      })
+        .then((result) => { 
+        })
+        .catch((e) => { 
+          done(e);
+        });
     });
   });
   describe('Initialization configuration', () => {
@@ -111,7 +133,10 @@ describe('Periodic', function () {
   });
   
   after('remove test periodic dir', (done) => {
-    fs.remove(initTestPathDir)
+    Promise.all([
+      fs.remove(initTestPathDir),
+      fs.remove(initTest2PathDir),
+    ])
       .then(() => {
         done();
       }).catch(done);
