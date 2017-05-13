@@ -15,9 +15,9 @@ chai.use(require('sinon-chai'));
 require('mocha-sinon');
 
 
-describe('Periodic Init Runtime', function () {
+describe('Periodic Init Runtime', function() {
   this.timeout(10000);
-  before('initialize test periodic dir', (done) => {
+  before('initialize runtime test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)
       .then(() => {
         done();
@@ -26,18 +26,18 @@ describe('Periodic Init Runtime', function () {
   describe('getEnv', () => {
     it('should return false if no valid command line arguments are present', () => {
       expect(runtime.getEnv()).to.be.false;
-      expect(runtime.getEnv({ whatver:'ok'})).to.be.false;
+      expect(runtime.getEnv({ whatver: 'ok' })).to.be.false;
     });
     it('should return environment from e property', () => {
       const env = 'development';
-      expect(runtime.getEnv({e:env})).to.eql(env);
+      expect(runtime.getEnv({ e: env })).to.eql(env);
     });
     it('should return environment from first command line argument', () => {
       const argv = ['development'];
-      const argv2 = ['only','if','one','argv'];
-      expect(runtime.getEnv({_:argv})).to.eql(argv[0]);
-      expect(runtime.getEnv({_:argv2})).to.be.false;
-      expect(runtime.getEnv({_:[]})).to.be.false;
+      const argv2 = ['only', 'if', 'one', 'argv'];
+      expect(runtime.getEnv({ _: argv })).to.eql(argv[0]);
+      expect(runtime.getEnv({ _: argv2 })).to.be.false;
+      expect(runtime.getEnv({ _: [] })).to.be.false;
     });
     it('should read environment from env variables', () => {
       const processEnv = Object.assign({}, process.env);
@@ -67,7 +67,7 @@ describe('Periodic Init Runtime', function () {
       expect(runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv')).to.be.false;
       expect(testPeriodicInstance.config.process.runtime).to.eql('testenv');
     });
-    it('should update configuration db', () => { 
+    it('should update configuration db', () => {
       expect(runtime.setAppRunningEnv.bind(testPeriodicInstance, 'testenv1', 'update')).to.be.a('function');
       runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'update');
       runtime.setAppRunningEnv.call(testPeriodicInstance, 'testenv1', 'create');
@@ -80,12 +80,11 @@ describe('Periodic Init Runtime', function () {
     const updateSpy = sinon.spy();
     const createSpy = sinon.spy();
     const returnValidRuntime = () => {
-      return Promise.resolve( {
+      return Promise.resolve({
         filepath: 'content/config/process/runtime.json',
         config: { process: { environment: 'dev' } },
         _id: 'TESTVALIDID',
-        meta:
-        {
+        meta: {
           revision: 0,
           created: 1494338785207,
           version: 0,
@@ -108,13 +107,13 @@ describe('Periodic Init Runtime', function () {
     it('should handle raw mongo documents', (done) => {
       const toJSONSpy = sinon.spy();
       const returnValidJSONRuntime = () => {
-        return Promise.resolve( {
-          toJSON:toJSONSpy,
+        return Promise.resolve({
+          toJSON: toJSONSpy,
         });
       };
       const testPeriodicInstanceResultJSON = {
         config: {
-          environment:'test',
+          environment: 'test',
         },
         configuration: {
           update: updateSpy,
@@ -123,7 +122,7 @@ describe('Periodic Init Runtime', function () {
         },
       };
       runtime.configRuntimeEnvironment.call(testPeriodicInstanceResultJSON)
-        .then(() => { 
+        .then(() => {
           expect(toJSONSpy.calledOnce).to.be.true;
           done();
         })
@@ -134,8 +133,8 @@ describe('Periodic Init Runtime', function () {
       expect(runtime.configRuntimeEnvironment.call(testPeriodicInstance)).to.be.a('promise');
     });
     it('should handle invalid runtimes', (done) => {
-      try { 
-        process.env.ENV=undefined;
+      try {
+        process.env.ENV = undefined;
         const invalidTestPeriodicInstance = {
           config: {},
           configuration: {
@@ -161,19 +160,19 @@ describe('Periodic Init Runtime', function () {
         done(e);
       }
     });
-    it('should handle errors', (done) => { 
+    it('should handle errors', (done) => {
       function foo() { throw new Error('Error On this.configuration.load'); }
       const testPeriodicInstance = {
         config: {
           process: {
-            runtime:'test',
+            runtime: 'test',
           },
         },
         configuration: {
-          load: ()=>{ },
+          load: () => {},
         },
       };
-      const fooSpy = sinon.stub(testPeriodicInstance.configuration,'load',foo);
+      const fooSpy = sinon.stub(testPeriodicInstance.configuration, 'load', foo);
       runtime.configRuntimeEnvironment.call(testPeriodicInstance)
         .then((m) => {
           done(new Error('was not supposed to succeed'));
@@ -185,8 +184,8 @@ describe('Periodic Init Runtime', function () {
     });
     process.env = processEnv;
   });
-  
-  after('remove test periodic dir', (done) => {
+
+  after('remove runtime test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
         done();

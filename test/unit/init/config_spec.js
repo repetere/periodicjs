@@ -20,41 +20,45 @@ chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 require('mocha-sinon');
 
-describe('Periodic Init Config', function () {
+describe('Periodic Init Config', function() {
   this.timeout(10000);
-  before('initialize test periodic dir', (done) => {
+  before('initialize config test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)
       .then(() => {
-        return fs.ensureDir(path.join(initTestPathDir,'content/config'))
-      }) 
+        return fs.ensureDir(path.join(initTestPathDir, 'content/config'))
+      })
       .then(() => {
         return fs.ensureFile(initTestConfigJsonFile)
-      })  
+      })
       .then(() => {
         return fs.outputJson(initTestConfigJsonFile, configTestConfigJson({
-          dbpathprefix:initTestPathDir
+          dbpathprefix: initTestPathDir,
+          settingsProp: {
+            logger: {
+              use_winston_logger: false,
+            },
+          },
         }));
-      })  
+      })
       .then(() => {
         // process.env.ENV = 'test';
-        configPeriodic = new periodicClass({
-        });
+        configPeriodic = new periodicClass({});
         configPeriodic.init({
-          app_root: initTestPathDir,
-          environment:'test',
-        })
-          .then(done.bind(done,undefined))
+            app_root: initTestPathDir,
+            environment: 'test',
+          })
+          .then(done.bind(done, undefined))
           .catch(done);
       }).catch(done);
   });
   describe('loadConfiguration', () => {
     it('should return a promise', (done) => {
-      const testConfigPeriodic = Object.assign({},configPeriodic);
+      const testConfigPeriodic = Object.assign({}, configPeriodic);
       const configLoadPromise = config.loadConfiguration.call(testConfigPeriodic);
       expect(configLoadPromise).to.be.a('promise');
       expect(configLoadPromise).to.eventually.eql(true);
 
-      const testErrorConfigPeriodic = Object.assign({},configPeriodic);
+      const testErrorConfigPeriodic = Object.assign({}, configPeriodic);
       Object.defineProperty(testErrorConfigPeriodic, 'settings', {
         enumerable: false,
         configurable: false,
@@ -75,7 +79,12 @@ describe('Periodic Init Config', function () {
     });
     it('should set the config configuration and settings properly', () => {
       const configTestJson = configTestConfigJson({
-        dbpathprefix: initTestPathDir
+        dbpathprefix: initTestPathDir,
+        settingsProp: {
+          logger: {
+            use_winston_logger: false,
+          },
+        },
       });
       expect(configPeriodic.config.configuration).to.eql(configTestJson.configuration);
       expect(configPeriodic.settings.name).to.eql(configTestJson.settings.name);
@@ -84,61 +93,66 @@ describe('Periodic Init Config', function () {
       expect(config.loadConfiguration()).to.eventually.be.rejected;
     });
     it('should handle invalid configuration types', (done) => {
-   
+
       Promise.all([
-        (new Promise((resolve, reject) => {
-          const invalidConfigurationType = configTestConfigJson({
-            config_type: 'invalidConfigType',
-            dbpathprefix: initTestPathDir
-          });
-          const testInvalidPeriodicConfig = {
-            config: Object.assign({
-              app_root: initTestPathDir,
-            },invalidConfigurationType)
-          };
-          config.loadConfiguration.call(testInvalidPeriodicConfig, invalidConfigurationType.configuration)
-            .then(() => {
-              reject(new Error('was not supposed to succeed'));
-            })
-            .catch(e => {
-              expect(e.message).to.eql('invalid configuration type');
-              resolve(true);
+          (new Promise((resolve, reject) => {
+            const invalidConfigurationType = configTestConfigJson({
+              config_type: 'invalidConfigType',
+              dbpathprefix: initTestPathDir,
+              settingsProp: {
+                logger: {
+                  use_winston_logger: false,
+                },
+              },
             });
-        })),
-        new Promise((resolve, reject) => {
-          const config_configuration_db_invalid = configTestConfigJson({
-            db: 'invalidDB',
-            dbpathprefix: initTestPathDir
-          });
-          const invalidTestPeriodicDbConfig = {
-            config: Object.assign({
-              app_root: initTestPathDir,
-            },config_configuration_db_invalid)
-          };
-          config.loadConfiguration.call(invalidTestPeriodicDbConfig, config_configuration_db_invalid.configuration)
-            .then(() => {
-              reject(new Error('was not supposed to succeed'));
-            })
-            .catch(e => {
-              expect(e.message).to.eql('invalid configuration db');
-              resolve(true);
+            const testInvalidPeriodicConfig = {
+              config: Object.assign({
+                app_root: initTestPathDir,
+              }, invalidConfigurationType)
+            };
+            config.loadConfiguration.call(testInvalidPeriodicConfig, invalidConfigurationType.configuration)
+              .then(() => {
+                reject(new Error('was not supposed to succeed'));
+              })
+              .catch(e => {
+                expect(e.message).to.eql('invalid configuration type');
+                resolve(true);
+              });
+          })),
+          new Promise((resolve, reject) => {
+            const config_configuration_db_invalid = configTestConfigJson({
+              db: 'invalidDB',
+              dbpathprefix: initTestPathDir
             });
-        })
-      ])
+            const invalidTestPeriodicDbConfig = {
+              config: Object.assign({
+                app_root: initTestPathDir,
+              }, config_configuration_db_invalid)
+            };
+            config.loadConfiguration.call(invalidTestPeriodicDbConfig, config_configuration_db_invalid.configuration)
+              .then(() => {
+                reject(new Error('was not supposed to succeed'));
+              })
+              .catch(e => {
+                expect(e.message).to.eql('invalid configuration db');
+                resolve(true);
+              });
+          })
+        ])
         .then((result) => {
           // console.log({ result });
           done();
         })
         .catch(done);
-      
+
     });
   });
-  describe('configureLowkie', () => { 
+  describe('configureLowkie', () => {
     it('should handle errors', () => {
       expect(config.configureLowkie()).to.eventually.be.rejected;
     });
   });
-  describe('configureMongoose', () => { 
+  describe('configureMongoose', () => {
     it('should handle errors', () => {
       expect(config.configureMongoose()).to.eventually.be.rejected;
     });
@@ -147,8 +161,13 @@ describe('Periodic Init Config', function () {
         db: 'mongoose',
         db_config_options: {
           "url": "mongodb://localhost:27017/test_config_db",
-          "connection_options":{}
-        }
+          "connection_options": {}
+        },
+        settingsProp: {
+          logger: {
+            use_winston_logger: false,
+          },
+        },
       });
       const mongoPeriodicInstance = {
         config: Object.assign({
@@ -175,8 +194,13 @@ describe('Periodic Init Config', function () {
         db: 'mongoose',
         db_config_options: {
           "url": "mongodb://localhost:27017/test_config_db",
-          "connection_options":{}
-        }
+          "connection_options": {}
+        },
+        settingsProp: {
+          logger: {
+            use_winston_logger: false,
+          },
+        },
       });
       const mongoPeriodicInstance = {
         config: Object.assign({
@@ -188,7 +212,7 @@ describe('Periodic Init Config', function () {
         dbs: new Map(),
         datas: new Map(),
         logger: {
-          error:spy,
+          error: spy,
         }
       };
 
@@ -246,7 +270,7 @@ describe('Periodic Init Config', function () {
         .catch(done);
     });*/
   });
-  describe('configureSequelize', () => { 
+  describe('configureSequelize', () => {
     it('should handle errors', () => {
       expect(config.configureSequelize()).to.eventually.be.rejected;
     });
@@ -257,13 +281,18 @@ describe('Periodic Init Config', function () {
           "database": "travis_ci_test",
           "username": "",
           "password": "",
-          "connection_options":{
-            "dialect":"postgres",
-            "port":5432,
-            "host":"127.0.0.1",
-            "logging":false
+          "connection_options": {
+            "dialect": "postgres",
+            "port": 5432,
+            "host": "127.0.0.1",
+            "logging": false
           },
-        }
+        },
+        settingsProp: {
+          logger: {
+            use_winston_logger: false,
+          },
+        },
       });
       const sqlPeriodicInstance = {
         config: Object.assign({
@@ -285,7 +314,7 @@ describe('Periodic Init Config', function () {
         .catch(done);
     });
   });
-  describe('configuration sql schema json', () => { 
+  describe('configuration sql schema json', () => {
     it('should store json configurations in sql', () => {
       expect(configSequelizeSchema.options.getterMethods.config.call({
         dataValues: {
@@ -296,17 +325,17 @@ describe('Periodic Init Config', function () {
     it('should store json values in sql', () => {
       const mockThis = {
         // config:false,
-        setDataValue: function (prop, val) {
-          this[ prop ] = val;
+        setDataValue: function(prop, val) {
+          this[prop] = val;
         }
       }
       configSequelizeSchema.options.setterMethods.config.call(mockThis, { data: true });
-      expect(mockThis.config).to.eql(JSON.stringify({data:true}))
+      expect(mockThis.config).to.eql(JSON.stringify({ data: true }))
     });
   });
   describe('loadAppSettings', () => {
     it('should attempt to load settings from configuration db', (done) => {
-      const testConfigPeriodic = Object.assign({},configPeriodic);
+      const testConfigPeriodic = Object.assign({}, configPeriodic);
       // console.log({ testConfigPeriodic });
       config.loadAppSettings.call(configPeriodic)
         .then((updatedSettings) => {
@@ -321,19 +350,19 @@ describe('Periodic Init Config', function () {
       const testPeriodicInstance = {
         config: {
           process: {
-            runtime:'test',
+            runtime: 'test',
           },
         },
         settings: {
-          name:ORIGINALNAME,
+          name: ORIGINALNAME,
         },
         status: {
-          emit:() => { }
+          emit: () => {}
         },
         configuration: {
           load: () => new Promise((resolve, reject) => {
             resolve({
-              name:'ENV SPECIFIC NAME',
+              name: 'ENV SPECIFIC NAME',
             });
           }),
         },
@@ -350,19 +379,19 @@ describe('Periodic Init Config', function () {
       const testPeriodicInstance = {
         config: {
           process: {
-            runtime:'test',
+            runtime: 'test',
           },
         },
         settings: {
           // name:ORIGINALNAME,
         },
         status: {
-          emit:() => { }
+          emit: () => {}
         },
         configuration: {
           load: () => new Promise((resolve, reject) => {
             resolve({
-              name:ENVNAME,
+              name: ENVNAME,
             });
           }),
         },
@@ -379,11 +408,14 @@ describe('Periodic Init Config', function () {
       const testPeriodicInstance = {
         config: {
           process: {
-            runtime:'test',
+            runtime: 'test',
           },
         },
         configuration: {
-          load: ()=>new Promise((resolve, reject) => { resolve(true)}),
+          load: () => new Promise((resolve, reject) => { resolve(true) }),
+        },
+        status: {
+          emit: () => {},
         },
       };
       const configLoadAppPromise = config.loadAppSettings.call(testPeriodicInstance);
@@ -394,14 +426,14 @@ describe('Periodic Init Config', function () {
       const testPeriodicInstance = {
         config: {
           process: {
-            runtime:'test',
+            runtime: 'test',
           },
         },
         configuration: {
-          load: ()=>{ },
+          load: () => {},
         },
       };
-      const fooSpy = sinon.stub(testPeriodicInstance.configuration,'load',foo);
+      const fooSpy = sinon.stub(testPeriodicInstance.configuration, 'load', foo);
       config.loadAppSettings.call(testPeriodicInstance)
         .then((m) => {
           done(new Error('was not supposed to succeed'));
@@ -412,7 +444,7 @@ describe('Periodic Init Config', function () {
         });
     });
   });
-  after('remove test periodic dir', (done) => {
+  after('remove config test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
         done();

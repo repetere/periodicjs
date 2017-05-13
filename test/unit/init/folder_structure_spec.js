@@ -15,9 +15,9 @@ const __STRUCTURE_DIR = path.resolve(__dirname, '../../../__STRUCTURE');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 
-describe('Periodic Init Folder Structure', function () {
+describe('Periodic Init Folder Structure', function() {
   this.timeout(10000);
-  before('initialize test periodic dir', (done) => {
+  before('initialize folder test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)
       .then(() => {
         done();
@@ -40,7 +40,7 @@ describe('Periodic Init Folder Structure', function () {
         })
         .then(results => {
           // console.log({ results });
-          expect(results[ 0 ]).to.eql(results[ 1 ]);
+          expect(results[0]).to.eql(results[1]);
           done();
         })
         .catch(done);
@@ -68,7 +68,7 @@ describe('Periodic Init Folder Structure', function () {
         .then(() => {
           return folderStructure.call(testPeriodic)
         })
-        .then(() => { 
+        .then(() => {
           return fs.readJson(configPath)
         })
         .then(updatedJsonAfterCopy => {
@@ -76,7 +76,7 @@ describe('Periodic Init Folder Structure', function () {
           done();
         })
         .catch(done);
-      
+
     });
     it('should return a promise', () => {
       const testPeriodic = {
@@ -88,8 +88,8 @@ describe('Periodic Init Folder Structure', function () {
       expect(fsPromise).to.be.a('promise');
     });
   });
-  
-  after('remove test periodic dir', (done) => {
+
+  after('remove folder test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
         done();
