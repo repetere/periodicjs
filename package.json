@@ -134,7 +134,8 @@
     "proxy-polyfill": "0.1.6",
     "response-time": "^2.3.2",
     "sequelize": "^3.30.4",
-    "serve-favicon": "^2.4.2"
+    "serve-favicon": "^2.4.2",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "babel": "^6.23.0",
