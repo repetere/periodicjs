@@ -71,7 +71,74 @@ describe('Periodic Init logger', function() {
       expect(logger.configureLogger()).to.eventually.be.rejected;
     });
   });
-
+  describe('getDefaultWinstonLoggerConfig', () => {
+    it('should return an empty object on error', () => {
+      const errorSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          error: errorSpy,
+        },
+      };
+      expect(logger.getDefaultWinstonLoggerConfig.call(mockThis)).to.be.an('object');
+      expect(errorSpy.called).to.be.true;
+    });
+    it('should return production winston', () => {
+      const mockThis = {
+        config: {
+          app_root: initTestPathDir,
+        },
+        environment: 'production',
+        logger: {
+          error: () => {},
+        },
+      };
+      expect(logger.getDefaultWinstonLoggerConfig.call(mockThis, { periodic: mockThis, fileNamePathAddition: '1' })).to.be.an('object');
+    });
+    // it('should use default console log', (done) => {
+    //   const mockThis = {
+    //     environment: 'test',
+    //     settings: {
+    //       logger: {
+    //         use_winston_logger: false,
+    //       }
+    //     },
+    //     logger: console,
+    //   };
+    //   logger.configureLogger.call(mockThis)
+    //     .then(result => {
+    //       expect(result).to.be.true;
+    //       expect(mockThis.logger).to.eql(console);
+    //       done();
+    //     })
+    //     .catch(done);
+    // });
+    // it('should use standard winston logger', (done) => {
+    //   const winstonSpy = sinon.spy();
+    //   const mockThis = {
+    //     environment: 'test',
+    //     config: {
+    //       app_root: initTestPathDir,
+    //     },
+    //     settings: {
+    //       logger: {
+    //         use_winston_logger: true,
+    //         use_standard_logging: true,
+    //       }
+    //     },
+    //     logger: console,
+    //   };
+    //   logger.configureLogger.call(mockThis)
+    //     .then(result => {
+    //       expect(result).to.be.true;
+    //       // expect(winstonSpy.called).to.be.true;
+    //       done();
+    //     })
+    //     .catch(done);
+    // });
+    // it('should handle errors', () => {
+    //   expect(logger.configureLogger()).to.eventually.be.rejected;
+    // });
+  });
   describe('catchProcessErrors', () => {
     it('should catch errors', () => {
       expect(logger.catchProcessErrors.call({ logger: { error: () => {} } })).to.eventually.be.fulfilled;
@@ -86,35 +153,7 @@ describe('Periodic Init logger', function() {
           done();
         });
     });
-    // it('should handle errors', () => {
-    //   // process = sinon.stub(process);
-    //   expect(logger.catchProcessErrors.call()).to.eventually.be.rejected;
-
-    // });
-    // it('should catch uncaught exceptions', (done) => {
-    //   const errorSpy = sinon.spy();
-    //   const processEventEmitter = new events.EventEmitter();
-    //   const originalProcess = Object({}, process);
-    //   process = processEventEmitter;
-    //   const mockThis = {
-    //     logger: {
-    //       error: errorSpy,
-    //     }
-    //   }
-    //   logger.catchProcessErrors.call(mockThis)
-    //     .then(() => {
-
-    //       process.emit('uncaughtException');
-    //       setImmediate(() => {
-    //         expect(errorSpy.called).to.be.true;
-    //         process = originalProcess;
-    //       })
-    //     })
-    //     .catch(done);
-    // });
   });
-
-
   after('remove logger test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
