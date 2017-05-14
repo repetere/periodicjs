@@ -170,6 +170,74 @@ describe('Periodic Init Express', function() {
     });
   });
   describe('staticCacheExpress', () => {
+    it('has configurable static caching', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              use_static_caching: false,
+            },
+            body_parser: {
+              urlencoded: {
+                limit: '1mb',
+                extended: true,
+              },
+              json: {
+                limit: '1mb'
+              },
+            },
+          },
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.staticCacheExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('can use disabled static caching settings', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              use_static_caching: true,
+            },
+            body_parser: {
+              urlencoded: {
+                limit: '1mb',
+                extended: true,
+              },
+              json: {
+                limit: '1mb'
+              },
+            },
+          },
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.staticCacheExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
     it('should handle errors', () => {
       expect(express.staticCacheExpress()).to.eventually.be.rejected;
     });
