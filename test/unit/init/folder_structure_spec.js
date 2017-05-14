@@ -11,6 +11,7 @@ const periodicClass = require('../../../lib/periodicClass');
 const folderStructure = require('../../../lib/init/folderStructure');
 const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'folderStructureTest');
+const initStructTestPathDir = path.join(testPathDir, 'folderStructureTest2');
 const __STRUCTURE_DIR = path.resolve(__dirname, '../../../__STRUCTURE');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
@@ -18,7 +19,10 @@ chai.use(require('chai-as-promised'));
 describe('Periodic Init Folder Structure', function() {
   this.timeout(10000);
   before('initialize folder test periodic dir', (done) => {
-    fs.ensureDir(initTestPathDir)
+    Promise.all([
+        fs.ensureDir(initTestPathDir),
+        fs.ensureDir(initStructTestPathDir),
+      ])
       .then(() => {
         done();
       }).catch(done);
@@ -81,7 +85,7 @@ describe('Periodic Init Folder Structure', function() {
     it('should return a promise', () => {
       const testPeriodic = {
         config: {
-          app_root: initTestPathDir,
+          app_root: initStructTestPathDir,
         },
       };
       const fsPromise = folderStructure.call(testPeriodic);
@@ -90,7 +94,10 @@ describe('Periodic Init Folder Structure', function() {
   });
 
   after('remove folder test periodic dir', (done) => {
-    fs.remove(initTestPathDir)
+    Promise.all([
+        fs.remove(initTestPathDir),
+        fs.remove(initStructTestPathDir),
+      ])
       .then(() => {
         done();
       }).catch(done);
