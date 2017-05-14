@@ -30,6 +30,45 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.configureViews()).to.eventually.be.rejected;
     });
+    it('sets expressview  options', (done) => {
+      const setSpy = sinon.spy();
+      const enableSpy = sinon.spy();
+      const engineSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              trust_proxy: true,
+            },
+            views: {
+              engine: 'jsx',
+              lru_cache: true,
+              lru: 100,
+              package: 'ejs',
+            }
+          }
+        },
+        app: {
+          set: setSpy,
+          enable: enableSpy,
+          engine: engineSpy,
+          // set: setSpy,
+        },
+      };
+      express.configureViews.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(setSpy.called).to.be.true;
+          expect(enableSpy.called).to.be.true;
+          expect(engineSpy.called).to.be.true;
+          // expect(mockThis.config.time_end).to.be.a('number');
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('configureExpress', () => {
     it('should handle errors', () => {
@@ -94,23 +133,7 @@ describe('Periodic Init Express', function() {
     //     })
     //     .catch(done);
     // });
-    // it('stores intialization end time', (done) => {
-    //   const infoSpy = sinon.spy();
-    //   const mockThis = {
-    //     config: {},
-    //     logger: {
-    //       info: infoSpy,
-    //     },
-    //   };
-    //   express.endTimer.call(mockThis)
-    //     .then(result => {
-    //       expect(result).to.be.true;
-    //       expect(infoSpy.called).to.be.true;
-    //       expect(mockThis.config.time_end).to.be.a('number');
-    //       done();
-    //     })
-    //     .catch(done);
-    // });
+
   });
   after('remove Express test periodic dir', (done) => {
     Promise.all([
