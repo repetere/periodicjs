@@ -10,8 +10,10 @@ const periodic = require('../../../index');
 const periodicClass = require('../../../lib/periodicClass');
 const express = require('../../../lib/init/express');
 const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
+const folderStructure = require('../../../lib/init/folderStructure');
 const initTestExpressPathDir = path.join(testPathDir, 'TestExpress');
 const initTestExpressEndPathDir = path.join(testPathDir, 'TestExpressEnd');
+const __STRUCTURE_DIR = path.resolve(__dirname, '../../../__STRUCTURE');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 
@@ -21,6 +23,7 @@ describe('Periodic Init Express', function() {
     Promise.all([
         fs.ensureDir(initTestExpressPathDir),
         fs.ensureDir(initTestExpressEndPathDir),
+        fs.copy(__STRUCTURE_DIR, initTestExpressPathDir)
       ])
       .then(() => {
         done();
@@ -110,6 +113,53 @@ describe('Periodic Init Express', function() {
     });
   });
   describe('configureExpress', () => {
+    it('has configurable flash settings', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            use_flash: false,
+            config: {
+              trust_proxy: false,
+            },
+            body_parser: {
+              urlencoded: {
+                limit: '1mb',
+                extended: true,
+              },
+              json: {
+                limit: '1mb'
+              },
+            },
+            cookies: {
+              cookie_parser: 'defaultcookiejson',
+            },
+            views: {
+              // engine: 'ejs',
+              lru_cache: false,
+              lru: 100,
+              package: 'ejs',
+            }
+          }
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.configureExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          // expect(enableSpy.called).to.not.be.true;
+          // expect(engineSpy.calledThrice).to.be.true;
+          // expect(mockThis.config.time_end).to.be.a('number');
+          done();
+        })
+        .catch(done);
+    });
     it('should handle errors', () => {
       expect(express.configureExpress()).to.eventually.be.rejected;
     });
