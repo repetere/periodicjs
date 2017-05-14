@@ -30,7 +30,7 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.configureViews()).to.eventually.be.rejected;
     });
-    it('sets expressview  options', (done) => {
+    it('sets express non ejs view with proxy options', (done) => {
       const setSpy = sinon.spy();
       const enableSpy = sinon.spy();
       const engineSpy = sinon.spy();
@@ -61,9 +61,48 @@ describe('Periodic Init Express', function() {
       express.configureViews.call(mockThis)
         .then(result => {
           expect(result).to.be.true;
-          expect(setSpy.called).to.be.true;
-          expect(enableSpy.called).to.be.true;
-          expect(engineSpy.called).to.be.true;
+          expect(setSpy.calledTwice).to.be.true;
+          expect(enableSpy.calledOnce).to.be.true;
+          expect(engineSpy.calledThrice).to.be.true;
+          // expect(mockThis.config.time_end).to.be.a('number');
+          done();
+        })
+        .catch(done);
+    });
+    it('sets express ejs view without proxy options', (done) => {
+      const setSpy = sinon.spy();
+      const enableSpy = sinon.spy();
+      const engineSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              trust_proxy: false,
+            },
+            views: {
+              // engine: 'ejs',
+              lru_cache: false,
+              lru: 100,
+              package: 'ejs',
+            }
+          }
+        },
+        app: {
+          set: setSpy,
+          enable: enableSpy,
+          engine: engineSpy,
+          // set: setSpy,
+        },
+      };
+      express.configureViews.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(setSpy.calledTwice).to.be.true;
+          expect(enableSpy.called).to.not.be.true;
+          expect(engineSpy.calledThrice).to.be.true;
           // expect(mockThis.config.time_end).to.be.a('number');
           done();
         })
