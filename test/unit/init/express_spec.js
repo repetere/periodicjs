@@ -301,6 +301,16 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.logExpress()).to.eventually.be.rejected;
     });
+    it('should generate the right colored response', () => {
+      function getColoredResponse(options) {
+        const { color, status } = options;
+        return '\x1b[' + color + 'm' + status + '\x1b[90m';
+      }
+      expect(express.morganColors({}, { statusCode: 501 })).to.eql(getColoredResponse({ color: 31, status: 501 }));
+      expect(express.morganColors({}, { statusCode: 401 })).to.eql(getColoredResponse({ color: 33, status: 401 }));
+      expect(express.morganColors({}, { statusCode: 301 })).to.eql(getColoredResponse({ color: 36, status: 301 }));
+      expect(express.morganColors({}, { statusCode: 200 })).to.eql(getColoredResponse({ color: 32, status: 200 }));
+    });
     it('should use express debugging', (done) => {
       const useSpy = sinon.spy();
       const mockThis = {
