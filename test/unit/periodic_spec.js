@@ -67,7 +67,7 @@ describe('Periodic', function() {
       let spy = sinon.spy();
       let overwriteableConfigPeriodic = new periodicClass({
         debug: false,
-        environment: 'test',
+        environment: 'DISABLELOG',
         app_root: initTestEVENTSPathDir,
       });
       // process.env.ENV = 'test';
@@ -78,6 +78,7 @@ describe('Periodic', function() {
       // overwriteableConfigPeriodic.logger.error = spy;
       overwriteableConfigPeriodic.init({
           debug: false,
+          environment: 'DISABLELOG',
           app_root: initTest3PathDir,
         })
         .then((result) => {
