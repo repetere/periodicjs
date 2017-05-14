@@ -301,6 +301,56 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.logExpress()).to.eventually.be.rejected;
     });
+    it('should use express debugging', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              debug: true,
+            },
+          },
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.logExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not use express debugging', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              debug: false,
+            },
+          }
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.logExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.not.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   // describe('expressSessions', () => {
   //   it('should handle errors', () => {
