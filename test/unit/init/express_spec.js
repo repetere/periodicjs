@@ -246,6 +246,56 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.compressExpress()).to.eventually.be.rejected;
     });
+    it('should use express compression', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              use_compression: true,
+            },
+          }
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.compressExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('should not use express compression', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        config: {
+          app_root: initTestExpressPathDir,
+        },
+        settings: {
+          express: {
+            config: {
+              use_compression: false,
+            },
+          }
+        },
+        app: {
+          use: useSpy,
+        },
+      };
+      express.compressExpress.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.not.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('logExpress', () => {
     it('should handle errors', () => {
