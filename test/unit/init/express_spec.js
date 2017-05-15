@@ -732,6 +732,10 @@ describe('Periodic Init Express', function() {
           email: 'test@domain.tld',
         }
       };
+      const mockReq2 = {
+        headers: {},
+        connection: {},
+      };
       const mockRes = {};
       const mockError = new Error('middleware error test');
       express.errorLogMiddleware.call({
@@ -741,6 +745,11 @@ describe('Periodic Init Express', function() {
       }, mockError, mockReq, mockRes, nextSpy);
       expect(nextSpy.called).to.be.true;
       expect(errorSpy.called).to.be.true;
+      express.errorLogMiddleware.call({
+        logger: {
+          error: errorSpy,
+        },
+      }, mockError, mockReq2, mockRes, nextSpy);
     });
   });
   after('remove Express test periodic dir', (done) => {
