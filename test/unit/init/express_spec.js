@@ -660,11 +660,14 @@ describe('Periodic Init Express', function() {
       expect(mockThis.app.locals.isLoggedIn({})).to.eql(mockReq.user);
     });
   });
-  // describe('expressRouting', () => {
-  //   it('should handle errors', () => {
-  //     expect(express.expressRouting()).to.eventually.be.rejected;
-  //   });
-  // });
+  describe('expressRouting', () => {
+    it('should handle errors', () => {
+      expect(express.expressRouting()).to.eventually.be.rejected;
+    });
+    it('should return a promise', () => {
+      expect(express.expressRouting.call({ app: {} })).to.eventually.be.fulfilled;
+    });
+  });
   describe('expressStatus', () => {
     it('should handle errors', () => {
       expect(express.expressStatus()).to.eventually.be.rejected;
@@ -674,21 +677,6 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.expressErrors()).to.eventually.be.rejected;
     });
-  });
-  describe('Error handling', () => {
-    // it('stores intialization start time', (done) => {
-    //   const mockThis = {
-    //     config: {},
-    //   };
-    //   express.startTimer.call(mockThis)
-    //     .then(result => {
-    //       expect(result).to.be.true;
-    //       expect(mockThis.config.time_start).to.be.a('number');
-    //       done();
-    //     })
-    //     .catch(done);
-    // });
-
   });
   after('remove Express test periodic dir', (done) => {
     Promise.all([
