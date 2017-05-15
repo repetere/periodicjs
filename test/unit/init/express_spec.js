@@ -677,6 +677,11 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.expressErrors()).to.eventually.be.rejected;
     });
+    it('catchAllErrorMiddleware should skip middle if no errors', () => {
+      const nextSpy = sinon.spy();
+      express.catchAllErrorMiddleware(undefined, null, null, nextSpy);
+      expect(nextSpy.called).to.be.true;
+    });
   });
   after('remove Express test periodic dir', (done) => {
     Promise.all([
