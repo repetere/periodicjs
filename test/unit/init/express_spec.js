@@ -469,6 +469,119 @@ describe('Periodic Init Express', function() {
         })
         .catch(done);
     });
+    it('should support mongo session stores', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        app: {
+          use: useSpy,
+        },
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: true,
+              type: 'mongo',
+              config: {
+                secret: 'sessiontest',
+              },
+              store_settings: {
+                url: 'mongodb://localhost:27017/session_db',
+              },
+            },
+            config: {
+              csrf: true,
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('should support sql session stores', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        app: {
+          use: useSpy,
+        },
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: true,
+              type: 'sql',
+              config: {
+                secret: 'sessiontest',
+              },
+              store_settings: {
+                db: [
+                  "travis_ci_test", //database
+                  "", //username
+                  "", //password
+                  {
+                    "dialect": "postgres",
+                    "port": 5432,
+                    "host": "127.0.0.1",
+                    logging: false,
+                  }, //options
+                ],
+                options: {},
+                modelName: 'session',
+              },
+            },
+            config: {
+              csrf: true,
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('should support redis session stores', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        app: {
+          use: useSpy,
+        },
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: true,
+              type: 'redis',
+              config: {
+                secret: 'sessiontest',
+              },
+              store_settings: {
+                // client An existing client
+                host: 'localhost',
+                port: 6379,
+              },
+            },
+            config: {
+              csrf: true,
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('expressLocals', () => {
     it('should handle errors', () => {

@@ -13,6 +13,7 @@ lib-cov
 *.swo
 *.gz
 *.tempconf
+dump.rdb
 
 # Logs
 !logs

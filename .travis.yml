@@ -13,7 +13,8 @@ addons:
 services:
   - mongodb
   - postgresql
-
+  - redis-server
+  
 notifications:
   irc:
     channels:
