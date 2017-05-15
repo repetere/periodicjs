@@ -398,6 +398,77 @@ describe('Periodic Init Express', function() {
         }
       })).to.be.false;
     });
+    it('should skip session middleware', (done) => {
+      const mockThis = {
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: false,
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+    it('should only support specific session stores', (done) => {
+      const mockThis = {
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: true,
+              config: {
+                secret: 'testsessions',
+              },
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          done(new Error('Should be actually rejected'));
+        })
+        .catch(e => {
+          expect(e.message).to.eql('Invalid express session type');
+          done();
+        });
+    });
+    it('should  support loki session stores', (done) => {
+      const useSpy = sinon.spy();
+      const mockThis = {
+        app: {
+          use: useSpy,
+        },
+        config: {},
+        settings: {
+          express: {
+            sessions: {
+              enabled: true,
+              type: 'loki',
+              config: {
+                secret: 'sessiontest',
+              },
+            },
+            config: {
+              csrf: true,
+            },
+          },
+        },
+      };
+      express.expressSessions.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(useSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('expressLocals', () => {
     it('should handle errors', () => {

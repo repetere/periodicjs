@@ -121,6 +121,7 @@
     "connect-redis": "^3.3.0",
     "connect-sequelize": "^2.0.2",
     "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "express-session": "^1.15.2",
