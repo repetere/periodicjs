@@ -722,6 +722,23 @@ describe('Periodic Init Express', function() {
       express.catchAllErrorMiddleware(false, null, null, nextSpy);
       expect(nextSpy.called).to.be.true;
     });
+    it('errorLogMiddleware should set error on next call', () => {
+      const nextSpy = sinon.spy();
+      const errorSpy = sinon.spy();
+      const mockReq = {
+        headers: {},
+        connection: {},
+      };
+      const mockRes = {};
+      const mockError = new Error('middleware error test');
+      express.errorLogMiddleware.call({
+        logger: {
+          error: errorSpy,
+        },
+      }, mockError, mockReq, mockRes, nextSpy);
+      expect(nextSpy.called).to.be.true;
+      expect(errorSpy.called).to.be.true;
+    });
   });
   after('remove Express test periodic dir', (done) => {
     Promise.all([
