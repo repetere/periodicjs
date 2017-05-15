@@ -43,6 +43,34 @@ describe('Periodic Util fetchUtils', function() {
       expect(fetchUtils.generateErrorFromResponse({ res: testErrorFormat, error: testError })).to.eql(testError);
     });
   });
+  describe('isVersionUpToDate', () => { 
+    it('should return true if input version is greater than latest version', () => {
+      expect(fetchUtils.isVersionUpToDate('10.0.0', '9.0.0')).to.be.true;
+    });
+    it('should return false if input version is not greater than latest version', () => {
+      expect(fetchUtils.isVersionUpToDate('7.0.0', '9.0.0')).to.be.false;
+    });
+  });
+  describe('checkStatus', () => {
+    const jsonSpy = sinon.spy();
+    const okResponse = {
+      status: 200,
+    };
+    const failedResponse = {
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: jsonSpy,
+    };
+    it('should handle errors', () => {
+      expect(fetchUtils.checkStatus()).to.eventually.be.rejected;
+    });
+    it('should handle successful responses', () => {
+      expect(fetchUtils.checkStatus(okResponse)).to.eventually.be.fulfilled;
+    });
+    it('should reject with normal error test', () => { 
+      expect(fetchUtils.checkStatus(failedResponse)).to.eventually.be.rejected;
+    });
+  });
   describe('generateErrorResponse', () => {
     it('should return a formatted error', () => {
       const testError = new Error('test error');
