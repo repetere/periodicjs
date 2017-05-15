@@ -362,31 +362,63 @@ describe('Periodic Init Express', function() {
         .catch(done);
     });
   });
-  // describe('expressSessions', () => {
-  //   it('should handle errors', () => {
-  //     expect(express.expressSessions()).to.eventually.be.rejected;
-  //   });
-  // });
-  // describe('expressLocals', () => {
-  //   it('should handle errors', () => {
-  //     expect(express.expressLocals()).to.eventually.be.rejected;
-  //   });
-  // });
+  describe('expressSessions', () => {
+    it('should handle errors', () => {
+      expect(express.expressSessions()).to.eventually.be.rejected;
+    });
+    it('should skip sessions', () => {
+      expect(express.skipSessions({
+        req: {
+          headers: {
+            authorization: true,
+          },
+        }
+      })).to.be.true;
+      expect(express.skipSessions({
+        req: {
+          headers: {},
+          query: {
+            skip_session: true,
+          },
+        }
+      })).to.be.true;
+      expect(express.skipSessions({
+        req: {
+          headers: {},
+          controllerData: {
+            skip_session: true,
+          },
+        }
+      })).to.be.true;
+      expect(express.skipSessions({
+        req: {
+          headers: {},
+          query: {},
+          controllerData: {},
+        }
+      })).to.be.false;
+    });
+  });
+  describe('expressLocals', () => {
+    it('should handle errors', () => {
+      expect(express.expressLocals()).to.eventually.be.rejected;
+    });
+  });
   // describe('expressRouting', () => {
   //   it('should handle errors', () => {
   //     expect(express.expressRouting()).to.eventually.be.rejected;
   //   });
   // });
-  // describe('expressStatus', () => {
-  //   it('should handle errors', () => {
-  //     expect(express.expressStatus()).to.eventually.be.rejected;
-  //   });
-  // });
-  // describe('expressErrors', () => {
-  //   it('should handle errors', () => {
-  //     expect(express.expressErrors()).to.eventually.be.rejected;
-  //   });
-  // });
+  describe('expressStatus', () => {
+    it('should handle errors', () => {
+      expect(express.expressStatus()).to.eventually.be.rejected;
+    });
+  });
+  describe('expressErrors', () => {
+    it('should handle errors', () => {
+      expect(express.expressErrors()).to.eventually.be.rejected;
+    });
+  });
   describe('Error handling', () => {
     // it('stores intialization start time', (done) => {
     //   const mockThis = {
