@@ -51,6 +51,7 @@ describe('Periodic', function() {
       })
       newPeriodic2.init({
           debug: false,
+          cli:true,
           app_root: initTestEVENTSPathDir,
         })
         .then((result) => {})
@@ -79,6 +80,7 @@ describe('Periodic', function() {
       overwriteableConfigPeriodic.init({
           debug: false,
           environment: 'DISABLELOG',
+          cli:true,
           app_root: initTest3PathDir,
         })
         .then((result) => {

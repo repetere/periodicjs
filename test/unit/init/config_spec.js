@@ -44,7 +44,8 @@ describe('Periodic Init Config', function() {
         // process.env.ENV = 'test';
         configPeriodic = new periodicClass({});
         configPeriodic.init({
-            app_root: initTestPathDir,
+          app_root: initTestPathDir,
+          cli:true,
             environment: 'test',
           })
           .then(done.bind(done, undefined))
