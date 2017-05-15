@@ -677,9 +677,49 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.expressErrors()).to.eventually.be.rejected;
     });
-    it('catchAllErrorMiddleware should skip middle if no errors', () => {
+    it('catchAllErrorMiddleware should skip middleware if no errors', () => {
+      const statusSpy = sinon.spy();
+      const sendSpy = sinon.spy();
+      const mockReq = {
+        query: {
+          format: 'json',
+        },
+        is: (type) => true,
+      };
+      const mockRes = {
+        status: statusSpy,
+        send: sendSpy,
+      };
+      const mockError = new Error('error for test');
       const nextSpy = sinon.spy();
-      express.catchAllErrorMiddleware(undefined, null, null, nextSpy);
+      const statusSpy2 = sinon.spy();
+      const renderSpy = sinon.spy();
+      const mockReqAllError = {
+        query: {},
+        is: (type) => false,
+      }
+      const mockResAllError = {
+        status: statusSpy2,
+        render: renderSpy,
+      };
+      express.catchAllErrorMiddleware(mockError, mockReq, mockRes, nextSpy);
+      expect(sendSpy.called).to.be.true;
+      expect(statusSpy.called).to.be.true;
+      express.catchAllErrorMiddleware.call({
+        settings: {
+          express: {
+            views: {
+              custom_error_view: 'someerrorview',
+            },
+          },
+        },
+      }, mockError, mockReqAllError, mockResAllError, nextSpy);
+      expect(statusSpy2.called).to.be.true;
+      expect(renderSpy.called).to.be.true;
+    });
+    it('catchAllErrorMiddleware should respond with errors', () => {
+      const nextSpy = sinon.spy();
+      express.catchAllErrorMiddleware(false, null, null, nextSpy);
       expect(nextSpy.called).to.be.true;
     });
   });
