@@ -728,6 +728,9 @@ describe('Periodic Init Express', function() {
       const mockReq = {
         headers: {},
         connection: {},
+        user: {
+          email: 'test@domain.tld',
+        }
       };
       const mockRes = {};
       const mockError = new Error('middleware error test');
