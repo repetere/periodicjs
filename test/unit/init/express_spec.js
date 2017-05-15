@@ -672,6 +672,34 @@ describe('Periodic Init Express', function() {
     it('should handle errors', () => {
       expect(express.expressStatus()).to.eventually.be.rejected;
     });
+    it('should log current environment', (done) => {
+      const debugSpy = sinon.spy();
+      const warnSpy = sinon.spy();
+      const mockThis = {
+        environment: 'test',
+        config: {
+          debug:true,
+        },
+        logger: {
+          debug: debugSpy,
+          warn: warnSpy,
+        },
+        utilities: require('../../../lib/utilities'),
+        settings: {
+          application: {
+            check_for_updates: true,
+            version:'10.0.0',
+          }
+        }
+      };
+      express.expressStatus.call(mockThis)
+        .then(result => {
+          expect(result).to.be.true;
+          expect(debugSpy.called).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
   });
   describe('expressErrors', () => {
     it('should handle errors', () => {
