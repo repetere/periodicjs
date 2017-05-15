@@ -642,6 +642,9 @@ describe('Periodic Init Express', function() {
       const mockReq = {
         headers: {},
         connection: {},
+        user: {
+          id: 1,
+        },
       };
       const mockRes = {
         locals: {},
@@ -654,6 +657,7 @@ describe('Periodic Init Express', function() {
       };
       express.useLocalsMiddleware.call(mockThis, mockReq, mockRes, nextSpy);
       expect(nextSpy.called).to.be.true;
+      expect(mockThis.app.locals.isLoggedIn({})).to.eql(mockReq.user);
     });
   });
   // describe('expressRouting', () => {
