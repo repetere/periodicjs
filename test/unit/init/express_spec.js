@@ -700,6 +700,33 @@ describe('Periodic Init Express', function() {
         })
         .catch(done);
     });
+    it('should handleLatestPeriodicVersionCheckError', () => {
+      const warnSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          warn: warnSpy,
+        }
+      }
+      express.handleLatestPeriodicVersionCheckError.call(mockThis);
+      expect(warnSpy.called).to.be.true;
+    });
+    it('should displayOutOfDatePeriodic', () => {
+      const warnSpy = sinon.spy();
+      const debugSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          debug: debugSpy,
+          warn: warnSpy,
+        },
+        settings: {
+          application: {
+            version:'10.0.0',
+          },
+        },
+      }
+      express.displayOutOfDatePeriodic.call(mockThis,{latestPeriodicVersion:'10.0.0'});
+      expect(debugSpy.called).to.be.true;
+    });
   });
   describe('expressErrors', () => {
     it('should handle errors', () => {
