@@ -440,19 +440,6 @@ describe('Periodic Init Express', function() {
         });
     });
     it('should pass enabledSessionMiddleware', () => {
-      // const mockThis = {
-      //   config: {},
-      //   settings: {
-      //     express: {
-      //       sessions: {
-      //         enabled: true,
-      //         config: {
-      //           secret: 'testsessions',
-      //         },
-      //       },
-      //     },
-      //   },
-      // };
       const mockAuthReq = {
         headers: {
           authorization: true,
@@ -618,6 +605,55 @@ describe('Periodic Init Express', function() {
   describe('expressLocals', () => {
     it('should handle errors', () => {
       expect(express.expressLocals()).to.eventually.be.rejected;
+    });
+    it('useCSRFMiddleware handle CRSF', () => {
+      const csrfSpy = sinon.spy();
+      const mockReq = {
+        csrfToken: csrfSpy,
+      };
+      const mockRes = {
+        locals: {},
+      };
+      const nextSpy = sinon.spy();
+      const mockCSRFThis = {
+        settings: {
+          express: {
+            config: {
+              csrf: true,
+            },
+          },
+        },
+      };
+      const mockNoCSRFThis = {
+        settings: {
+          express: {
+            config: {
+              csrf: false,
+            },
+          },
+        },
+      };
+      express.useCSRFMiddleware.call(mockCSRFThis, mockReq, mockRes, nextSpy);
+      expect(csrfSpy.called).to.be.true;
+      express.useCSRFMiddleware.call(mockNoCSRFThis, mockReq, mockRes, nextSpy);
+      expect(nextSpy.called).to.be.true;
+    });
+    it('useLocalsMiddleware handle CRSF', () => {
+      const mockReq = {
+        headers: {},
+        connection: {},
+      };
+      const mockRes = {
+        locals: {},
+      };
+      const nextSpy = sinon.spy();
+      const mockThis = {
+        app: {
+          locals: {},
+        },
+      };
+      express.useLocalsMiddleware.call(mockThis, mockReq, mockRes, nextSpy);
+      expect(nextSpy.called).to.be.true;
     });
   });
   // describe('expressRouting', () => {
