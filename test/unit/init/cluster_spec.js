@@ -35,31 +35,71 @@ describe('Periodic Util fetchUtils', function() {
         })
         .catch(done);
     });
-    // it('should reject if a cli process', () => {
-    //   const mockThis = {
-    //     config: {
-    //       cli: true,
-    //       process: {},
-    //     },
-    //   };
-    //   expect(cli.run.call(mockThis)).to.eventually.be.rejected;
-    // });
-    // it('should notify exit of promise chain', (done) => {
-    //   const mockThis = {
-    //     config: {
-    //       cli: true,
-    //       process: {},
-    //     },
-    //   };
-    //   cli.run.call(mockThis)
-    //     .then(result => {
-    //       done(new Error('it should have rejected cli run'));
-    //     })
-    //     .catch(e => {
-    //       expect(e.message).to.eql('Leave Promise Chain: CLI Process');
-    //       done();
-    //     })
-    // });
+    it('should cluster master process', (done) => {
+      const infoSpy = sinon.spy();
+      const eventEmitterSpy = sinon.spy();
+      const forkSpy = sinon.spy();
+      const clusterObj = {
+        isMaster: true,
+        on: eventEmitterSpy,
+        fork: forkSpy,
+      };
+      const mockThis = {
+        settings: {
+          application: {
+            cluster_process: true,
+          },
+        },
+        config: {
+          process: {},
+        },
+        logger: {
+          info: infoSpy,
+        },
+        cluster: clusterObj,
+      };
+      cluster.forkProcess.call(mockThis)
+        .then(result => {
+          done(new Error('FAILED cluster master test'));
+        })
+        .catch(e => {
+          // expect(mockThis.config.process.isClustered).to.be.true;
+          expect(infoSpy.called).to.be.true;
+          expect(e.message).to.eql('Leave Promise Chain: Forking Process');
+          done();
+        });
+    });
+    it('should cluster fork process', (done) => {
+      const infoSpy = sinon.spy();
+      const eventEmitterSpy = sinon.spy();
+      const forkSpy = sinon.spy();
+      const clusterObj = {
+        isMaster: false,
+        on: eventEmitterSpy,
+        fork: forkSpy,
+      };
+      const mockThis = {
+        settings: {
+          application: {
+            cluster_process: true,
+          },
+        },
+        config: {
+          process: {},
+        },
+        logger: {
+          info: infoSpy,
+        },
+        cluster: clusterObj,
+      };
+      cluster.forkProcess.call(mockThis)
+        .then(result => {
+          expect(mockThis.config.process.isClustered).to.be.true;
+          expect(result).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
     it('should handle errors', () => {
       expect(cluster.forkProcess()).to.eventually.be.rejected;
     });
