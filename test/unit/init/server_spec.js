@@ -4,6 +4,7 @@ const path = require('path');
 const events = require('events');
 const chai = require('chai');
 const sinon = require('sinon');
+const express = require('express');
 const fs = require('fs-extra');
 const expect = require('chai').expect;
 const periodic = require('../../../index');
@@ -132,7 +133,7 @@ describe('Periodic Init server', function() {
               https: {
                 port: 8770,
                 ssl: {
-                  pfx: path.resolve('../../../lib/defaults/demo/2017.testperiodic.ssl_key.pfx'),
+                  pfx: path.resolve('lib/defaults/demo/certs/2017.testperiodic.ssl_key.pfx'),
                 },
               },
             },
@@ -141,16 +142,12 @@ describe('Periodic Init server', function() {
         servers: {
           set: setSpy,
         },
-        app: {
-          listen: (port, e) => {
-            e();
-          },
-        },
+        app: express(),
       };
-      server.startHTTPserver.call(mockThis)
+      server.startHTTPSserver.call(mockThis)
         .then(result => {
-          // expect(setSpy.called).to.be.true;
-          // expect(verboseSpy.called).to.be.true;
+          expect(setSpy.called).to.be.true;
+          expect(verboseSpy.called).to.be.true;
           expect(result).to.be.true;
           done();
         })
@@ -171,8 +168,8 @@ describe('Periodic Init server', function() {
     //           https: {
     //             port: 8771,
     //             ssl: {
-    //               private_key: path.resolve('../../../lib/defaults/demo/2017.testperiodic.ssl_key.pem'),
-    //               certificate: path.resolve('../../../lib/defaults/demo/2017.testperiodic.ssl_cert.pem'),
+    //               private_key: path.resolve('../../../lib/defaults/demo/certs/2017.testperiodic.ssl_key.pem'),
+    //               certificate: path.resolve('../../../lib/defaults/demo/certs/2017.testperiodic.ssl_cert.pem'),
     //             },
     //           },
     //         },
@@ -181,11 +178,7 @@ describe('Periodic Init server', function() {
     //     servers: {
     //       set: setSpy,
     //     },
-    //     app: {
-    //       listen: (port, e) => {
-    //         e(new Error('test https server error'));
-    //       },
-    //     },
+    //     app: express(),
     //   };
     //   server.startHTTPSserver.call(mockThis)
     //     .then(result => {
