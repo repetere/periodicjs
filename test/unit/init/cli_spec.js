@@ -12,7 +12,7 @@ const cli = require('../../../lib/init/cli');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 
-describe('Periodic Util fetchUtils', function() {
+describe('Periodic Init cli', function() {
   this.timeout(10000);
 
   describe('run', () => {

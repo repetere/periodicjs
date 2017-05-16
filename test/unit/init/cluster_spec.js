@@ -12,7 +12,7 @@ const cluster = require('../../../lib/init/cluster');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 
-describe('Periodic Util fetchUtils', function() {
+describe('Periodic Init cluster', function() {
   this.timeout(10000);
   describe('onlineEventHandler', () => {
     it('should log process id', () => {
