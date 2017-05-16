@@ -184,6 +184,53 @@ describe('Periodic Init Runtime', function() {
     });
     process.env = processEnv;
   });
+  describe('completeInitialization', () => {
+    it('should exit gracefully if process is forked', () => {
+      const mockError = new Error('Leave Promise Chain: CLI Process');
+      const resolveSpy = sinon.spy();
+      const rejectSpy = sinon.spy();
+      const infoSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          info: infoSpy,
+        },
+      };
+      runtime.completeInitialization.call(mockThis, resolveSpy, rejectSpy, mockError);
+      expect(resolveSpy.calledWith(true)).to.be.true;
+      expect(infoSpy.called).to.be.true;
+      expect(rejectSpy.called).to.be.false;
+    });
+    it('should exit gracefully if cli process', () => {
+      const mockError = new Error('Leave Promise Chain: Forking Process');
+      const resolveSpy = sinon.spy();
+      const rejectSpy = sinon.spy();
+      const infoSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          info: infoSpy,
+        },
+      };
+      runtime.completeInitialization.call(mockThis, resolveSpy, rejectSpy, mockError);
+      expect(resolveSpy.calledWith(true)).to.be.true;
+      expect(infoSpy.called).to.be.true;
+      expect(rejectSpy.called).to.be.false;
+    });
+    it('should reject if actual error', () => {
+      const mockError = new Error('Actual Error');
+      const resolveSpy = sinon.spy();
+      const rejectSpy = sinon.spy();
+      const errorSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          error: errorSpy,
+        },
+      };
+      runtime.completeInitialization.call(mockThis, resolveSpy, rejectSpy, mockError);
+      expect(rejectSpy.calledWith(mockError)).to.be.true;
+      expect(errorSpy.called).to.be.true;
+      expect(resolveSpy.called).to.be.false;
+    });
+  });
 
   after('remove runtime test periodic dir', (done) => {
     fs.remove(initTestPathDir)
