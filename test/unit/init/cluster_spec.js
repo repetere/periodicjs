@@ -14,7 +14,45 @@ chai.use(require('chai-as-promised'));
 
 describe('Periodic Util fetchUtils', function() {
   this.timeout(10000);
-
+  describe('onlineEventHandler', () => {
+    it('should log process id', () => {
+      const infoSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          info: infoSpy,
+        },
+      };
+      const mockWorker = {
+        process: {
+          pid: 1,
+        },
+      };
+      cluster.onlineEventHandler.call(mockThis, mockWorker);
+      expect(infoSpy.called).to.be.true;
+    });
+  });
+  describe('exitEventHandler', () => {
+    it('should log process id', () => {
+      const infoSpy = sinon.spy();
+      const forkSpy = sinon.spy();
+      const mockThis = {
+        logger: {
+          info: infoSpy,
+        },
+      };
+      const mockCluster = {
+        fork: forkSpy,
+      };
+      const mockWorker = {
+        process: { pid: 1, },
+      };
+      const mockCode = {};
+      const mockSignal = {};
+      cluster.exitEventHandler.call(mockThis, mockCluster, mockWorker, mockCluster, mockSignal);
+      expect(infoSpy.called).to.be.true;
+      expect(forkSpy.called).to.be.true;
+    });
+  });
   describe('forkProcess', () => {
     it('should resolve true if not a clustered process', (done) => {
       const mockThis = {
