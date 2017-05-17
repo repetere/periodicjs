@@ -1,0 +1,8 @@
+{
+  "filepath":"content/config/appconfig/myconfig.json",
+  "environment":"test",
+  "config":{
+    "some":"data",
+    "test":true
+  }
+}
