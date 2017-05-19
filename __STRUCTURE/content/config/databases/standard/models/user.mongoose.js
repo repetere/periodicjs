@@ -1,6 +1,6 @@
 'use strict';
-const lowkie = require('lowkie');
-const Schema = lowkie.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const scheme = {
   name: String,
@@ -66,5 +66,5 @@ const scheme = {
 
 module.exports = {
   scheme,
-  options: {},
+  options,
 };
