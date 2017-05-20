@@ -66,5 +66,5 @@ const scheme = {
 
 module.exports = {
   scheme,
-  options,
+  options: {},
 };
