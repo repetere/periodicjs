@@ -3,8 +3,8 @@ const Sequelize = require('sequelize');
 
 const scheme = {
   _id: {
-    // type: Sequelize.INTEGER,
-    type: Sequelize.UUID,
+    type: Sequelize.INTEGER,
+    // type: Sequelize.UUID,
     primaryKey: true,
     autoIncrement: true,
   },
@@ -49,56 +49,34 @@ const scheme = {
     type: Sequelize.STRING,
     default: 'basic',
   },
-  location_city: {
-    type: Sequelize.BOOLEAN,
+  // location_city: {
+  //   type: Sequelize.BOOLEAN,
+  // },
+  // location_country: {
+  //   type: Sequelize.BOOLEAN,
+  // },
+  // location_state: {
+  //   type: Sequelize.BOOLEAN,
+  // },
+  // location_zip: {
+  //   type: Sequelize.BOOLEAN,
+  // },
+  // location_longitude: {
+  //   type: Sequelize.INTEGER,
+  // },
+  // location_latitude: {
+  //   type: Sequelize.INTEGER,
+  // },
+  location: {
+    type: Sequelize.STRING,
+    // allowNull: false,
+    get() {
+      return JSON.parse(this.getDataValue('location'));
+    },
+    set(val) {
+      this.setDataValue('location', JSON.stringify(val));
+    },
   },
-  location_country: {
-    type: Sequelize.BOOLEAN,
-  },
-  location_state: {
-    type: Sequelize.BOOLEAN,
-  },
-  location_zip: {
-    type: Sequelize.BOOLEAN,
-  },
-  location_longitude: {
-    type: Sequelize.INTEGER,
-  },
-  location_latitude: {
-    type: Sequelize.INTEGER,
-  },
-  primaryasset: {
-    type: ObjectId,
-    ref: 'Asset'
-  },
-  coverimage: {
-    type: ObjectId,
-    ref: 'Asset'
-  },
-  coverimages: [{
-    type: ObjectId,
-    ref: 'Asset'
-  }],
-  assets: [{
-    type: ObjectId,
-    ref: 'Asset'
-  }],
-  userroles: [{
-    type: ObjectId,
-    ref: 'Userrole'
-  }],
-  tags: [{
-    type: ObjectId,
-    ref: 'Tag'
-  }],
-  categories: [{
-    type: ObjectId,
-    ref: 'Contenttype'
-  }],
-  contenttypes: [{
-    type: ObjectId,
-    ref: 'Contenttype'
-  }],
 };
 
 
@@ -125,70 +103,71 @@ const options = {
   // },
 };
 
-const associations = [{
-    source: 'asset',
-    association: 'hasOne',
-    target: 'user',
-    options: {
-      as: 'primaryasset',
-    }
-  },
-  {
-    source: 'asset',
-    association: 'hasOne',
-    target: 'user',
-    options: {
-      as: 'coverimage',
-    }
-  },
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'asset',
-    options: {
-      as: 'assets',
-    },
-  },
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'asset',
-    options: {
-      as: 'coverimages',
-    },
-  },
-  {
-    source: 'userrole',
-    association: 'hasMany',
-    target: 'user',
-    options: {
-      as: 'userroles',
-    },
-  },
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'tag',
-    options: {
-      as: 'tags',
-    },
-  },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'categories',
-    },
-  },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'contenttype',
-    options: {
-      as: 'contenttypes',
-    },
-  },
+const associations = [
+  // {
+  //   source: 'asset',
+  //   association: 'hasOne',
+  //   target: 'user',
+  //   options: {
+  //     as: 'primaryasset',
+  //   }
+  // },
+  // {
+  //   source: 'asset',
+  //   association: 'hasOne',
+  //   target: 'user',
+  //   options: {
+  //     as: 'coverimage',
+  //   }
+  // },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'asset',
+  //   options: {
+  //     as: 'assets',
+  //   },
+  // },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'asset',
+  //   options: {
+  //     as: 'coverimages',
+  //   },
+  // },
+  // {
+  //   source: 'userrole',
+  //   association: 'hasMany',
+  //   target: 'user',
+  //   options: {
+  //     as: 'userroles',
+  //   },
+  // },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'tag',
+  //   options: {
+  //     as: 'tags',
+  //   },
+  // },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'category',
+  //   options: {
+  //     as: 'categories',
+  //   },
+  // },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'contenttype',
+  //   options: {
+  //     as: 'contenttypes',
+  //   },
+  // },
 ];
 
 module.exports = {

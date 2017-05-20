@@ -3,13 +3,13 @@ const Sequelize = require('sequelize');
 
 const scheme = {
   _id: {
-    // type: Sequelize.INTEGER,
-    type: Sequelize.UUID,
+    type: Sequelize.INTEGER,
+    // type: Sequelize.UUID,
     primaryKey: true,
     autoIncrement: true,
   },
   status: {
-    type: String,
+    type: Sequelize.STRING,
     default: 'draft',
   },
   publishat: {
@@ -17,8 +17,7 @@ const scheme = {
     defaultValue: Sequelize.NOW,
   },
   name: {
-    type: String,
-    unique: true
+    type: Sequelize.STRING,
   },
   title: {
     type: Sequelize.STRING,
@@ -41,10 +40,6 @@ const scheme = {
   random: {
     type: Sequelize.FLOAT,
   },
-  contenttypes: [{
-    type: ObjectId,
-    ref: 'Contenttype'
-  }],
 };
 
 const options = {
@@ -70,62 +65,63 @@ const options = {
   // },
 };
 
-const associations = [{
-    source: 'asset',
-    association: 'hasOne',
-    target: 'item',
-    options: {
-      as: 'primaryasset',
-    }
-  },
+const associations = [
+  // {
+  //   source: 'asset',
+  //   association: 'hasOne',
+  //   target: 'item',
+  //   options: {
+  //     as: 'primaryasset',
+  //   }
+  // },
   {
     source: 'user',
     association: 'hasOne',
     target: 'item',
     options: {
       as: 'primaryauthor',
-    }
-  },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'asset',
-    options: {
-      as: 'assets',
     },
   },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'asset',
+  //   options: {
+  //     as: 'assets',
+  //   },
+  // },
   {
-    source: 'item',
+    source: 'user',
     association: 'hasMany',
-    target: 'user',
+    target: 'item',
     options: {
       as: 'authors',
     },
   },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'tag',
-    options: {
-      as: 'tags',
-    },
-  },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'categories',
-    },
-  },
-  {
-    source: 'item',
-    association: 'hasMany',
-    target: 'contenttype',
-    options: {
-      as: 'contenttypes',
-    },
-  },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'tag',
+  //   options: {
+  //     as: 'tags',
+  //   },
+  // },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'category',
+  //   options: {
+  //     as: 'categories',
+  //   },
+  // },
+  // {
+  //   source: 'item',
+  //   association: 'hasMany',
+  //   target: 'contenttype',
+  //   options: {
+  //     as: 'contenttypes',
+  //   },
+  // },
 ];
 
 module.exports = {
