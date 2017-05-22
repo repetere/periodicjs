@@ -15,6 +15,22 @@ chai.use(require('chai-as-promised'));
 describe('Periodic Init cli', function() {
   this.timeout(10000);
   describe('processArgv', () => {
+//     const crud_types = [ 'config', 'ext', 'con' ];
+//     const crud_ops = [ 'create', 'remove', 'update', 'get', 'list' ];
+//     const mockPeriodicThis = new periodicClass();
+//     crud_types.forEach(crud_type => {
+//       crud_ops.forEach(crud_op => {
+//         it(`should handle cli $ node index.js --cli --crud=${crud_type} --crud_op=${crud_op}`, () => {
+//           expect()
+//         });
+//       });
+//     });
+//     /**
+//      * The CRUD CLI has the following options
+// * crud - crud type (entity type: config, ext, con)
+// * crud_op - crud operation (create,remove,update,get,list)
+// * crud_arg - crud argument (argument for crud operation)
+//      */
     it('should output status', () => {
       const infoSpy = sinon.spy();
       const mockThis = {
@@ -33,7 +49,8 @@ describe('Periodic Init cli', function() {
     });
     it('should handle a --crud command line arguments', () => {
       const mockThis = new periodicClass();
-      console.log({ mockThis });
+      // for
+      // console.log({ mockThis });
       // const writeSpy = sinon.spy();
       // const mockThis = {
       //   logger: {
