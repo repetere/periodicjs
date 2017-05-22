@@ -23,10 +23,10 @@ const scheme = {
     type: Sequelize.STRING,
   },
   dek: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
   },
   content: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
   },
   link: {
     type: Sequelize.STRING,

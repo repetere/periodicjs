@@ -42,7 +42,7 @@ const scheme = {
     type: Sequelize.BOOLEAN,
   },
   description: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     default: 'No Profile',
   },
   accounttype: {
