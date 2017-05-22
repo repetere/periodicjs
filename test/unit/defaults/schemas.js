@@ -25,11 +25,32 @@ describe('Periodic lib defaults schema', function() {
     });
   });
   describe('sequelize', () => { 
+    const itemScheme = sequelizeSchema('item');
+    const sampleJson = { data: 'test' };
+    const stringifiedSampleJson = JSON.stringify(sampleJson);
+    const setDataValueSpy = sinon.spy();
+    const mockThis = {
+      getDataValue: (val) => stringifiedSampleJson,
+      setDataValue: setDataValueSpy,
+    };
     it('should return model scheme', () => {
       expect(sequelizeSchema('example')).to.be.an('object');
     });
     it('should set entity type', () => {
       expect(sequelizeSchema('item').entitytype.default).to.eql('item');
+    });
+    it('should retrieve _attributes, contenttypeattributes, extensionattributes as json', () => {
+      expect(itemScheme._attributes.get.call(mockThis)).to.eql(sampleJson)
+      expect(itemScheme.contenttypeattributes.get.call(mockThis)).to.eql(sampleJson)
+      expect(itemScheme.extensionattributes.get.call(mockThis)).to.eql(sampleJson)
+    });
+    it('should store _attributes, contenttypeattributes, extensionattributes as json', () => {
+      itemScheme._attributes.set.call(mockThis, sampleJson);
+      expect(setDataValueSpy.called).to.be.true;
+      itemScheme.contenttypeattributes.set.call(mockThis,sampleJson)
+      expect(setDataValueSpy.called).to.be.true;
+      itemScheme.extensionattributes.set.call(mockThis,sampleJson)
+      expect(setDataValueSpy.called).to.be.true;
     });
   });
   describe('lowkie', () => { 
