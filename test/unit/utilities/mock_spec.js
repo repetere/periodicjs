@@ -35,8 +35,11 @@ describe('Periodic Util mock', function() {
     it('should resolve as true', () => {
       expect(mock.tempPromise()).to.eventually.be.fulfilled;
     });
+    it('should reject an errors', () => {
+      expect(mock.tempPromise('throw')).to.eventually.be.rejected;
+    });
     it('should return a promise', () => {
-      expect(mock.tempPromise()).to.be.a('promise')
+      expect(mock.tempPromise()).to.be.a('promise');
     });
   });
 });
