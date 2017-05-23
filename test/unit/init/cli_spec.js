@@ -98,6 +98,81 @@ describe('Periodic Init cli', function() {
       };
       cli.processArgv.call(mockThis, mockOptions);
     });
+    it('should handle a --crud command line arguments --debug', (done) => {
+      const infoSpy = sinon.spy();
+      const debugSpy = sinon.spy();
+      const mockThis = {
+        crud: {
+          config: {
+            create: () => {
+              // console.log('calling crud', arguments)
+              return new Promise((resolve, reject) => {
+                // console.log('in PROMISE')
+                // expect(infoSpy.called).to.be.true;
+                done();
+                resolve(true);
+              });
+            },
+          },
+        },
+        logger: {
+          info: infoSpy,
+          debug: debugSpy,
+          error: console.error,
+        },
+        config: {},
+      };
+      const mockOptions = {
+        argv: {
+          crud: 'config',
+          crud_op: 'create',
+          crud_arg: {},
+          crud_debug: true,
+        },
+        process: {
+          exit: () => {},
+        },
+      };
+      cli.processArgv.call(mockThis, mockOptions);
+    });
+    it('should handle a --crud command line arguments errors', (done) => {
+      const debugSpy = sinon.spy();
+      const errorSpy = sinon.spy();
+      const mockThis = {
+        crud: {
+          config: {
+            create: () => {
+              // console.log('calling crud', arguments)
+              return new Promise((resolve, reject) => {
+                // console.log('in PROMISE')
+                // expect(infoSpy.called).to.be.true;
+                reject(new Error('testing the reject'));
+              });
+            },
+          },
+        },
+        logger: {
+          debug: debugSpy,
+          error: errorSpy,
+        },
+        config: {},
+      };
+      const mockOptions = {
+        argv: {
+          crud: 'config',
+          crud_op: 'create',
+          crud_arg: {},
+          crud_debug: true,
+        },
+        process: {
+          exit: () => {
+            expect(errorSpy.called).to.be.true;
+            done();
+          },
+        },
+      };
+      cli.processArgv.call(mockThis, mockOptions);
+    });
     it('should handle a --repl command line argument', (done) => {
       const writeSpy = sinon.spy();
       const mockThis = {
