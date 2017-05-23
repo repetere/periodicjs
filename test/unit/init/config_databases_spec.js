@@ -161,22 +161,6 @@ describe('Periodic Init Config', function() {
     });
   });
   describe('assignSequelizeModels', () => {
-    // it('should resolve as true', () => {
-    //   const testModelDir = path.join(initTestPathDir, 'content/config/databases/standard/models');
-    //   const resolveSpy = sinon.spy();
-    //   const createSpy = sinon.spy();
-    //   const mockThis = {
-    //     dbs: new Map(),
-    //   };
-    //   const mockOptions = {
-    //     resolve: resolveSpy,
-    //     periodic_db_name: 'default',
-    //     db: {},
-    //     modelFiles: [],
-    //   };
-    //   config.assignSequelizeModels.call(mockThis, mockOptions);
-    //   expect(resolveSpy.calledWith(true)).to.be.true;
-    // });
     it('should create sequelize models', (done) => {
       const testModelDir = path.join(initTestPathDir, 'content/config/databases/standard/models');
       const Sequelize = require('sequelize');
@@ -188,6 +172,7 @@ describe('Periodic Init Config', function() {
           dialect: 'postgres',
           port: 5432,
           host: '127.0.0.1',
+          logging:false,
         },
       };
       const sequelizeDB = new Sequelize(dboptions.database, dboptions.username, dboptions.password, dboptions.connection_options);
@@ -219,6 +204,85 @@ describe('Periodic Init Config', function() {
       };
       // console.log(fs.readdirSync(path.join(initTestPathDir,'content/config/databases/standard/models')))
       config.assignSequelizeModels.call(mockThis, mockOptions);
+    });
+  });
+  describe('connectLowkieDB', () => {
+    it('should handle errors', () => {
+      expect(config.connectLowkieDB()).to.eventually.be.rejected;
+    });
+    it('should connect to loki', () => {
+      const mockOptions = {
+        periodic_db_name: 'default',
+        db_config_type: 'content',
+        options: {
+          dbpath: path.join(initTestPathDir,'content/config/settings/config_db.json'),
+        },
+      };
+      const mockThis = {};
+      expect(config.connectLowkieDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+    });
+  });
+  describe('connectMongooseDB', () => {
+    it('should handle errors', () => {
+      expect(config.connectMongooseDB()).to.eventually.be.rejected;
+    });
+    it('should connect to mongo', () => {
+      const mockOptions = {
+        periodic_db_name: 'default',
+        db_config_type: 'content',
+        options: {
+          url: 'mongodb://localhost:27017/config_db',
+          connection_options:{},
+        },
+      };
+      const mockThis = {
+        config: {
+          app_root: initTestPathDir,
+        },
+      };
+      expect(config.connectMongooseDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+    });
+  });
+  describe('connectSequelizeDB', () => {
+    it('should handle errors', () => {
+      expect(config.connectSequelizeDB()).to.eventually.be.rejected;
+    });
+    it('should connect to sql', () => {
+      const mockOptions = {
+        periodic_db_name: 'default',
+        db_config_type: 'content',
+        options: {
+          database: 'travis_ci_test',
+          username: '',
+          password: '',
+          connection_options: {
+            dialect: 'postgres',
+            port: 5432,
+            host: '127.0.0.1',
+          },
+        },
+      };
+      const mockThis = {
+        config: {
+          app_root: initTestPathDir,
+        },
+      };
+      expect(config.connectSequelizeDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+    });
+  });
+  describe('connectDB', () => {
+    it('should handle errors', () => {
+      expect(config.connectDB()).to.eventually.be.rejected;
+    });
+  });
+  describe('loadDatabases', () => {
+    it('should handle errors', () => {
+      expect(config.loadDatabases()).to.eventually.be.rejected;
+    });
+  });
+  describe('loadExtensions', () => {
+    it('should handle errors', () => {
+      expect(config.loadExtensions()).to.eventually.be.rejected;
     });
   });
   after('remove config test periodic dir', (done) => {
