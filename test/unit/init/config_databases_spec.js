@@ -283,6 +283,9 @@ describe('Periodic Init Config', function() {
     it('should connect to sql', () => {
       expect(config.connectDB({ db:'sequelize'})).to.eventually.be.rejected;
     });
+    it('should resolve to true if no db specified', () => {
+      expect(config.connectDB({ db:'other'})).to.eventually.eql(true);
+    });
   });
   describe('loadDatabases', () => {
     it('should handle errors', () => {
