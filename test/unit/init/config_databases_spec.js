@@ -274,6 +274,15 @@ describe('Periodic Init Config', function() {
     it('should handle errors', () => {
       expect(config.connectDB()).to.eventually.be.rejected;
     });
+    it('should connect to loki', () => {
+      expect(config.connectDB({ db:'lowkie'})).to.eventually.be.rejected;
+    });
+    it('should connect to mongo', () => {
+      expect(config.connectDB({ db:'mongoose'})).to.eventually.be.rejected;
+    });
+    it('should connect to sql', () => {
+      expect(config.connectDB({ db:'sequelize'})).to.eventually.be.rejected;
+    });
   });
   describe('loadDatabases', () => {
     it('should handle errors', () => {
