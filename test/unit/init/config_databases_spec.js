@@ -109,6 +109,9 @@ describe('Periodic Init Config', function() {
       };
       // console.log(fs.readdirSync(path.join(initTestPathDir,'content/config/databases/standard/models')))
       config.assignLowkieModels.call(mockThis, mockOptions);
+      expect(createSpy.called).to.be.true;
+      expect(mockThis.dbs.size).to.be.greaterThan(0);
+      expect(mockThis.datas.size).to.be.greaterThan(0);
       expect(resolveSpy.calledWith(true)).to.be.true;
     });
   });
