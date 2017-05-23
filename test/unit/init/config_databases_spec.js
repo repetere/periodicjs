@@ -70,6 +70,48 @@ describe('Periodic Init Config', function() {
       }, { db_config_type: 'content', periodic_db_name: 'test', })).to.eql('path/to/dir/content/config/databases/test/models');
     });
   });
+  describe('assignLowkieModels', () => {
+    it('should resolve as true', () => {
+      const testModelDir = path.join(initTestPathDir, 'content/config/databases/standard/models');
+      const resolveSpy = sinon.spy();
+      const createSpy = sinon.spy();
+      const mockThis = {
+        dbs: new Map(),
+      };
+      const mockOptions = {
+        resolve: resolveSpy,
+        periodic_db_name: 'almTest',
+        db: {},
+        modelFiles: [],
+      };
+      config.assignLowkieModels.call(mockThis, mockOptions);
+      expect(resolveSpy.calledWith(true)).to.be.true;
+    });
+    it('should create lowkie models', () => {
+      const testModelDir = path.join(initTestPathDir, 'content/config/databases/standard/models');
+      const resolveSpy = sinon.spy();
+      const createSpy = sinon.spy();
+      const mockThis = {
+        dbs: new Map(),
+        datas: new Map(),
+        core: {
+          data: {
+            create: createSpy,
+          },
+        },
+      };
+      const mockOptions = {
+        resolve: resolveSpy,
+        periodic_db_name: 'default',
+        db: {},
+        modelFiles: fs.readdirSync(testModelDir),
+        modelDirPath: testModelDir,
+      };
+      // console.log(fs.readdirSync(path.join(initTestPathDir,'content/config/databases/standard/models')))
+      config.assignLowkieModels.call(mockThis, mockOptions);
+      expect(resolveSpy.calledWith(true)).to.be.true;
+    });
+  });
   // describe('loadConfiguration', () => {
   //   it('should return a promise', (done) => {
   //     const testConfigPeriodic = Object.assign({}, configPeriodic);
