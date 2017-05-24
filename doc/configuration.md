@@ -56,7 +56,7 @@ configuration.options = {/**/} //core data apadter connection options
   }
 }
 ```
-#### Example SL Configuration
+#### Example SQL Configuration
 ```json
 {
   "configuration": {

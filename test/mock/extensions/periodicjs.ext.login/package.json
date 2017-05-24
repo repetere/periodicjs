@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.login",
+  "version": "9.3.1",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "test extension",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}

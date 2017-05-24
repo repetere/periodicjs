@@ -17,6 +17,7 @@ let configPeriodic;
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 require('mocha-sinon');
+let TEXT_ext;
 
 describe('Periodic Crud Ext', function() {
   this.timeout(10000);
@@ -27,6 +28,9 @@ describe('Periodic Crud Ext', function() {
       })
       .then(() => {
         return fs.ensureFile(initTestConfigJsonFile);
+      })
+      .then(() => {
+        return fs.copy(path.resolve(__dirname, '../../mock/extensions'), path.join(initTestPathDir, 'node_modules'));
       })
       .then(() => {
         return fs.outputJson(initTestConfigJsonFile, configTestConfigJson({
@@ -207,21 +211,62 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', () => {
       expect(CRUD_ext.create()).to.eventually.be.rejected;
     });
-    // it('should resolve to true if no db specified', () => {   
-    //   expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
-    // });
-  });
-  describe('remove', () => {
-    it('should handle errors', () => {
-      expect(CRUD_ext.remove()).to.eventually.be.rejected;
+    it('should add extension to extension db', (done) => {
+      CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.cloudupload')
+        .then(createdExtension => {
+          TEXT_ext = createdExtension;
+          // console.log({ createdExtension });
+          expect(createdExtension).to.be.ok;
+          expect(createdExtension.name).to.eql('periodicjs.ext.cloudupload');
+          expect(createdExtension.source).to.eql('npm');
+          expect(createdExtension.enabled).to.eql(true);
+          expect(createdExtension._id).to.be.ok;
+          // expect
+          return configPeriodic.datas.get('extension').load({ query: createdExtension._id, });
+        })
+        .then(loadedExtension => {
+          expect(loadedExtension._id).to.eql(TEXT_ext._id);
+          done();
+        })
+        .catch(done);
+      // expect().to.eventually.eql(true);
     });
-    // it('should resolve to true if no db specified', () => {   
-    //   expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
-    // });
   });
   describe('update', () => {
     it('should handle errors', () => {
       expect(CRUD_ext.update()).to.eventually.be.rejected;
+    });
+    it('should update extension in extension db', (done) => {   
+      const updatedExt = Object.assign({}, TEXT_ext, {
+        enabled: false,
+        description: 'updated cloud upload extension',
+      });
+      // console.log({ updatedExt });
+      CRUD_ext.update.call(configPeriodic, {
+        ext: updatedExt,
+        isPatch: true,
+      })
+        .then(updatedExtensionStatus => {
+          expect(updatedExtensionStatus.status).to.eql('ok');
+          return configPeriodic.datas.get('extension').load({ docid:'name' ,query: TEXT_ext.name, });
+        })
+        .then(updatedExtension => {
+          // console.log({ updatedExtension });
+          expect(updatedExtension._id).to.eql(TEXT_ext._id);
+          expect(updatedExtension).to.be.ok;
+          expect(updatedExtension.name).to.eql('periodicjs.ext.cloudupload');
+          expect(updatedExtension.source).to.eql('npm');
+          expect(updatedExtension.enabled).to.eql(false);
+          expect(updatedExtension.description).to.eql('updated cloud upload extension');
+          expect(updatedExtension._id).to.be.ok;
+          done();
+        })
+        .catch(done);
+    });
+  });
+  describe('remove', () => {
+    it('should handle errors', () => {
+      expect(CRUD_ext.remove()).to.eventually.be.rejected;
     });
     // it('should resolve to true if no db specified', () => {   
     //   expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
