@@ -54,8 +54,17 @@ describe('Periodic Crud Ext', function() {
       }).catch(done);
   });
   describe('create', () => {
-    it('should handle errors', () => {
-      expect(CRUD_config.create()).to.eventually.be.rejected;
+    it('should handle errors', (done) => {
+      // expect(CRUD_config.create()).to.eventually.be.rejected;
+      CRUD_config.create()
+        .then(() => { 
+          done(new Error('should have rejected'));
+        })
+        .catch(e => {
+          expect(e).to.be.an('error');
+          // console.log(e);
+          done();
+        });
     });
     it('should add config to config db from filepath', (done) => {
       const dummy_config_filepath = path.join(sample_configs_dir, 'dummy_config.json');
@@ -104,8 +113,17 @@ describe('Periodic Crud Ext', function() {
     });
   });
   describe('update', () => {
-    it('should handle errors', () => {
-      expect(CRUD_config.update()).to.eventually.be.rejected;
+    it('should handle errors', (done) => {
+      // expect(CRUD_config.create()).to.eventually.be.rejected;
+      CRUD_config.update()
+        .then(() => { 
+          done(new Error('should have rejected'));
+        })
+        .catch(e => {
+          expect(e).to.be.an('error');
+          // console.log(e);
+          done();
+        });
     });
     it('should update config in config db', (done) => {   
       const updatedConf = Object.assign({}, TEST_file_config, {
@@ -137,8 +155,17 @@ describe('Periodic Crud Ext', function() {
     });
   });
   describe('remove', () => {
-    it('should handle errors', () => {
-      expect(CRUD_config.remove()).to.eventually.be.rejected;
+    it('should handle errors', (done) => {
+      // expect(CRUD_config.create()).to.eventually.be.rejected;
+      CRUD_config.remove()
+        .then(() => { 
+          done(new Error('should have rejected'));
+        })
+        .catch(e => {
+          expect(e).to.be.an('error');
+          // console.log(e);
+          done();
+        });
     });
     it('should remove extension from extension db', (done) => {
       const server_config_filepath = path.join(sample_configs_dir, 'server_config.json');
