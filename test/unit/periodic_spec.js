@@ -15,7 +15,7 @@ require('mocha-sinon');
 
 const testPathDir = path.resolve(__dirname, '../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'initTest');
-const initTestEVENTSPathDir = path.join(testPathDir, 'testEvents');
+const initTestEVENTSPathDir = path.join(testPathDir, 'testEventsSINGLETON');
 const initTest3PathDir = path.join(testPathDir, 'test3');
 
 describe('Periodic', function() {
@@ -42,19 +42,22 @@ describe('Periodic', function() {
     it('emits initialization event', (done) => {
       let newPeriodic2 = new periodicClass({
         debug: false,
-        environment: 'testevent',
+        environment: 'DISABLELOG',
         app_root: initTestEVENTSPathDir,
       });
       newPeriodic2.status.once('initializing', (state) => {
         expect(state).to.be.true;
         done();
-      })
+      });
       newPeriodic2.init({
           debug: false,
-          cli:true,
+          cli: true,
+          environment: 'DISABLELOG',
           app_root: initTestEVENTSPathDir,
         })
-        .then((result) => {})
+        .then((result) => {
+          // console.log({ result });
+        })
         .catch((e) => {
           done(e);
         });
@@ -80,7 +83,7 @@ describe('Periodic', function() {
       overwriteableConfigPeriodic.init({
           debug: false,
           environment: 'DISABLELOG',
-          cli:true,
+          cli: true,
           app_root: initTest3PathDir,
         })
         .then((result) => {
