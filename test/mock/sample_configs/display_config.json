@@ -1,0 +1,13 @@
+{
+  "filepath":"content/config/front-end/display.json",
+  "environment":"test",
+  "config":{
+    "html":5,
+    "engine":"React",
+    "responsive":{
+      "unit":"rem",
+      "modular":[1,2,3,4,5]
+    },
+    "test":true
+  }
+}

@@ -248,7 +248,7 @@ describe('Periodic Crud Ext', function() {
       })
         .then(updatedExtensionStatus => {
           expect(updatedExtensionStatus.status).to.eql('ok');
-          return configPeriodic.datas.get('extension').load({ docid:'name' ,query: TEXT_ext.name, });
+          return configPeriodic.datas.get('extension').load({ docid:'name', query: TEXT_ext.name, });
         })
         .then(updatedExtension => {
           // console.log({ updatedExtension });
