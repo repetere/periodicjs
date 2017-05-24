@@ -268,17 +268,84 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', () => {
       expect(CRUD_ext.remove()).to.eventually.be.rejected;
     });
-    // it('should resolve to true if no db specified', () => {   
-    //   expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
-    // });
+    it('should remove extension from extension db', (done) => {   
+      Promise.all([
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.admin'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login_mfa'),
+      ])
+        .then(() => {
+          return configPeriodic.datas.get('extension').query();
+        })
+        .then(exts => {
+          expect(exts.length).to.eql(4);
+          return CRUD_ext.remove.call(configPeriodic, 'periodicjs.ext.cloudupload');
+        })
+        .then(removedExt => {
+          expect(removedExt.name).to.eql('periodicjs.ext.cloudupload');
+          return configPeriodic.datas.get('extension').query();
+        })
+        .then(exts => {
+          expect(exts.length).to.eql(3);
+        })
+        .then(() => {
+          return CRUD_ext.remove.call(configPeriodic, { name: 'periodicjs.ext.admin' });
+        })
+        .then(() => {
+          return configPeriodic.datas.get('extension').query();
+        })
+        .then(extensions => {
+          expect(extensions.length).to.eql(2);
+          return CRUD_ext.remove.call(configPeriodic, { _id:extensions[0]._id, });
+        })
+        .then(removedExt => {
+          expect(removedExt).to.be.ok;
+          done();          
+        })
+        .catch(done);
+    });
   });
   describe('list', () => {
     it('should handle errors', () => {
       expect(CRUD_ext.list()).to.eventually.be.rejected;
     });
-    // it('should resolve to true if no db specified', () => {   
-    //   expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
-    // });
+    it('should return sorted extensions', (done) => {   
+      Promise.all([
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.mailer'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2client'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2server'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.test'),
+        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.uac'),
+      ])
+      .then(() => {
+        return CRUD_ext.list.call(configPeriodic, {});
+      })
+      .then(exts => {
+        const periodic_types = exts.map(ext => ext.periodic_type || 0);
+        // const periodic_priorities = exts.map(ext => ext.periodic_priority || 0);
+        /* https://gist.github.com/yorkie/7959685
+          * check the array is sorted
+          * return: if positive ->  1
+          *         if negative -> -1
+          *         not sorted  ->  0
+          */
+        const isSorted = function () {
+          return (function (direction) {
+            return this.reduce(function (prev, next, i, arr) {
+              if (direction === undefined)
+                return (direction = prev <= next ? 1 : -1) || true;
+              else
+                return (direction + 1 ?
+                  (arr[ i - 1 ] <= next) :
+                  (arr[ i - 1 ] > next));
+            }) ? Number(direction) : false;
+          }).call(this);
+        };
+        expect(isSorted.call(periodic_types)).to.eql(1);
+        done();
+      })
+      .catch(done);
+    });
   });
   after('remove config test periodic dir', (done) => {
     fs.remove(initTestPathDir)
