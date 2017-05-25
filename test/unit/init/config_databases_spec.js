@@ -81,6 +81,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
+        dboptions:{},
         periodic_db_name: 'almTest',
         db: {},
         modelFiles: [],
@@ -103,6 +104,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
+        dboptions:{},
         periodic_db_name: 'default',
         db: {},
         modelFiles: fs.readdirSync(testModelDir),
@@ -126,6 +128,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
+        dboptions:{},
         periodic_db_name: 'default',
         db: {},
         modelFiles: [],
@@ -150,6 +153,7 @@ describe('Periodic Init Config', function() {
         resolve: resolveSpy,
         periodic_db_name: 'default',
         db: require('mongoose'),
+        dboptions:{},
         modelFiles: fs.readdirSync(testModelDir),
         modelDirPath: testModelDir,
       };
@@ -199,6 +203,7 @@ describe('Periodic Init Config', function() {
         },
         reject: done,
         periodic_db_name: 'default',
+        dboptions:{},
         db: sequelizeDB,
         modelFiles: fs.readdirSync(testModelDir),
         modelDirPath: testModelDir,
