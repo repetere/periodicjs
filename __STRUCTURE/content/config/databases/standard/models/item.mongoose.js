@@ -14,7 +14,7 @@ const scheme = {
   },
   name: {
     type: String,
-    unique: true
+    unique: true,
   },
   title: String,
   dek: String,
@@ -61,4 +61,16 @@ const scheme = {
 module.exports = {
   scheme,
   options: {},
+  coreDataOptions: {
+    docid: '_id',
+    sort: { createdat: -1, },
+    search: [ 'name', 'title', 'dek', 'content', 'link', ],
+    // limit: 500,
+    // skip: 0,
+    population: 'primaryauthor primaryasset asset assets authors tags categories contenttypes',
+    // fields: {},
+    // pagelength:15,
+    // tract_changes:true,
+    // xss_whitelist:['p','b'],
+  },
 };

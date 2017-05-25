@@ -67,4 +67,16 @@ const scheme = {
 module.exports = {
   scheme,
   options: {},
+  coreDataOptions: {
+    docid:'_id',
+    sort: { createdat: -1, },
+    search:['name','email','firstname','lastname','description'],
+    // limit: 500,
+    // skip: 0,
+    population: 'coverimage coverimages primaryasset assets userroles tags categories contenttypes',
+    // fields: {},
+    // pagelength:15,
+    // tract_changes:true,
+    // xss_whitelist:['p','b'],
+  },
 };
