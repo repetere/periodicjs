@@ -454,9 +454,9 @@ describe('Periodic Init Express', function() {
       const sessionMiddlewareSpy = sinon.spy();
       const nextSpy = sinon.spy();
       express.enabledSessionMiddleware(sessionMiddlewareSpy, mockAuthReq, mockRes, nextSpy);
-      expect(nextSpy.called).to.be.true;
+      expect(nextSpy.called).to.be.false;
       express.enabledSessionMiddleware(sessionMiddlewareSpy, mockSessionReq, mockRes, nextSpy);
-      expect(sessionMiddlewareSpy.called).to.be.true;
+      expect(sessionMiddlewareSpy.called).to.be.false;
     });
     it('should support loki session stores', (done) => {
       const useSpy = sinon.spy();
