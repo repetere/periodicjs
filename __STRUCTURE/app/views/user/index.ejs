@@ -1,0 +1,15 @@
+<% include ../shared/header %>
+<% include ../shared/nav %>
+	<div class="ts-container ts-theme">
+		<% if(users && users.length>0){
+			var fulluser=false;
+			var collectionuser=false;
+			users.forEach(function(user){%>
+				<% include ../shared/partial/_user %>
+			<%});
+		}
+		else{%>
+			no users
+		<%}%>
+	</div>
+<% include ../shared/footer %>
