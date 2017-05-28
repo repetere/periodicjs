@@ -657,7 +657,8 @@ describe('Periodic Init Express', function() {
       };
       express.useLocalsMiddleware.call(mockThis, mockReq, mockRes, nextSpy);
       expect(nextSpy.called).to.be.true;
-      expect(mockThis.app.locals.isLoggedIn({})).to.eql(mockReq.user);
+      // expect(mockThis.app.locals.isLoggedIn({})).to.eql(mockReq.user);
+      expect(mockRes.locals.isLoggedIn).to.be.true;
     });
   });
   describe('expressRouting', () => {
@@ -678,7 +679,7 @@ describe('Periodic Init Express', function() {
       const mockThis = {
         environment: 'test',
         config: {
-          debug:true,
+          debug: true,
         },
         logger: {
           debug: debugSpy,
@@ -688,7 +689,7 @@ describe('Periodic Init Express', function() {
         settings: {
           application: {
             check_for_updates: true,
-            version:'10.0.0',
+            version: '10.0.0',
           }
         }
       };
@@ -720,11 +721,11 @@ describe('Periodic Init Express', function() {
         },
         settings: {
           application: {
-            version:'10.0.0',
+            version: '10.0.0',
           },
         },
       }
-      express.displayOutOfDatePeriodic.call(mockThis,{latestPeriodicVersion:'10.0.0'});
+      express.displayOutOfDatePeriodic.call(mockThis, { latestPeriodicVersion: '10.0.0' });
       expect(debugSpy.called).to.be.true;
     });
   });
