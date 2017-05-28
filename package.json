@@ -108,7 +108,7 @@
     "moment": "^2.18.1",
     "mongoose": "^4.9.7",
     "morgan": "^1.8.1",
-    "periodicjs.core.controller": "^10.2.0",
+    "periodicjs.core.controller": "^10.3.0",
     "periodicjs.core.data": "^0.5.0",
     "periodicjs.core.utilities": "^6.1.1",
     "pluralize": "^4.0.0",
