@@ -2,31 +2,94 @@
 <html xmlns="http://www.w3.org/1999/xhtml" class="ts ts-height-100">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<% console.log({locals})
-	console.log('~~~~~~~~~~~~~~~~')
-	 %>	
-	<!-- <title>
-
-	</title> -->
 	<style type="text/css">
 		html{
 			height:100%;
 		}
 		body {
 			margin: 0;
-			padding: 0;
+			padding: 1rem;
 			/*font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;*/
-			font-family: 'freight-sans-pro', 'BlinkMacSystemFont', -apple-system, 'Roboto', 'Lucida Sans';
+			/*font-family: 'freight-sans-pro', 'BlinkMacSystemFont', -apple-system, 'Roboto', 'Lucida Sans';*/
+			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 			height:100%;
 			overflow-x:hidden;
+			font-size:14px;
+			box-sizing:border-box;
+		}
+		header nav{
+			border-bottom:1px solid lightgrey;
+			margin-bottom:1rem;
+		}
+		footer nav{
+			border-top:1px solid lightgrey;
+			font-size:0.75rem;
+			margin-top:1rem;
+			text-align:center;
+			padding:1rem;
+		}
+		a{
+			color:black;
+		}
+		a:visited{
+			color:darkgrey;
+		}
+		html, 
+		body, 
+		header, 
+		footer, 
+		nav, 
+		section, 
+		main, 
+		article, 
+		div, 
+		p, table, tfoot, thead, tbody, tr, td, th 
+		span{
+			box-sizing:border-box;
+		}
+		table{
+			width:100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+			border:1px solid whitesmoke;
+		}
+		table thead, table tfoot{
+			background:whitesmoke;
+		}
+		table tbody tr:nth-child(even){
+			/*background:snow;*/
+		}
+		table tbody td{
+			padding:0.25rem;
+		}
+		table th{
+			padding:0.25rem;
+		}
+		table tfoot tr th{
+			text-align:left;
+			font-size:0.75rem;
+		}
+		table thead tr th{
+			text-align:left;
+		}
+		form{
+			display:flex;
+		}
+		form aside, form input{
+			display: flex;
+			flex:1;
+			margin-bottom:1rem;
+			font-size:1.25rem;
 		}
 	</style>
-	<meta name="author" content="Yaw Joseph Etse" />
-	<meta name="description" content="Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture. Periodic defines a lightweight application wrapper for Express, that provides a simple mechanism to handle theming, routes and extensions. Unlike some traditional content management solutions, there are no assumptions made about your data model, which allows for information hierarchies and taxonomies to be extremely malleable." />
-	<meta name="keywords" content="content management framework, typeset, wysiwyg, ui manager, CMS, CDS, Express, ExpressJS, Application Framework, Micro Framework, Node CMS, wordpress, drupal, modular,Content Delivery System, Content Management System, Periodic Decoupled Framework" />
+	<% if(locals && locals.periodic && locals.periodic.page_data){%>
+	<title><%- locals.periodic.page_data.title%></title>
+	<meta name="author" content="<%- locals.periodic.page_data.author %>" />
+	<meta name="description" content="<%- locals.periodic.page_data.description %>" />
+	<meta name="keywords" content="<%- locals.periodic.page_data.keywords %>" />
 	<meta name="Resource-type" content="Document" />
+	<%}%>
 	<!--<link rel="stylesheet" type="text/css" href="/stylesheets/default/periodic.css" />-->
 	<link rel="icon" type="image/png" href="/favicon.png">
-
 </head>
 <body>
