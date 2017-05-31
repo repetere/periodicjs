@@ -16,6 +16,7 @@ require('mocha-sinon');
 const testPathDir = path.resolve(__dirname, '../mock/spec/periodic');
 const initTestPathDir = path.join(testPathDir, 'initTest');
 const initTestEVENTSPathDir = path.join(testPathDir, 'testEventsSINGLETON');
+const initTestEVENTSEMITPathDir = path.join(testPathDir, 'testEventsEMIT');
 const initTest3PathDir = path.join(testPathDir, 'test3');
 
 describe('Periodic', function() {
@@ -24,6 +25,7 @@ describe('Periodic', function() {
     Promise.all([
         fs.ensureDir(initTestPathDir),
         fs.ensureDir(initTestEVENTSPathDir),
+        fs.ensureDir(initTestEVENTSEMITPathDir),
         fs.ensureDir(initTest3PathDir),
       ])
       .then(() => {
@@ -43,7 +45,7 @@ describe('Periodic', function() {
       let newPeriodic2 = new periodicClass({
         debug: false,
         environment: 'DISABLELOG',
-        app_root: initTestEVENTSPathDir,
+        app_root: initTestEVENTSEMITPathDir,
       });
       newPeriodic2.status.once('initializing', (state) => {
         expect(state).to.be.true;
@@ -53,7 +55,7 @@ describe('Periodic', function() {
           debug: false,
           cli: true,
           environment: 'DISABLELOG',
-          app_root: initTestEVENTSPathDir,
+          app_root: initTestEVENTSEMITPathDir,
         })
         .then((result) => {
           // console.log({ result });
@@ -98,6 +100,7 @@ describe('Periodic', function() {
     Promise.all([
         fs.remove(initTestPathDir),
         fs.remove(initTestEVENTSPathDir),
+        fs.remove(initTestEVENTSEMITPathDir),
         fs.remove(initTest3PathDir),
       ])
       .then(() => {
