@@ -1,13 +1,10 @@
-<% console.log('content',{locals})%>
 <%
 const pluralize = periodic.viewHelper.pluralize;
 const capitalize = periodic.viewHelper.capitalize;
 const hasItems = (
   items && 
   items[pluralize(entitytype)] && 
-  items[pluralize(entitytype)][0].documents) ? true:false;
-// console.log({hasItems},'items[pluralize(entitytype)][0].documents',items[pluralize(entitytype)][0].documents);
-// console.log(locals.items.userpage_current,{hasItems},items[pluralize(entitytype)])
+  items[pluralize(entitytype)][0].documents.length) ? true:false;
 const entityName = {
   name: entitytype,
   plural: pluralize(entitytype),
@@ -20,44 +17,45 @@ const entityPage = {
   totalpages: (hasItems) ? items[`${entitytype}pages`] : 1,
   currentpage: (hasItems) ? items[`${entitytype}page_current`] : 1,
 }
-console.log('request.query',request.query)
 %>
-<section>
-  <form method="GET">
-    <input placeholder="Search <%- entityName.pluralCapitalized %>" name="search" type="text" value="<%- request.query.search %>"/>
-  </form>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Created</th>
-        <th>Updated</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% if(hasItems){
-      items[pluralize(entitytype)][0].documents.map(item=>{%>
+<article>
+  <section>
+    <form method="GET">
+      <input placeholder="Search <%- entityName.pluralCapitalized %>" name="query" type="text" value="<%- request.query.query %>"/>
+    </form>
+    <table>
+      <thead>
         <tr>
-          <td><a href="<%- request.originalUrl %>/<%- item._id %>"><%- item._id %></a></td>
-          <td><%- item.title || item.name %></td>
-          <td><%- item.createdat %></td>
-          <td><%- item.updatedat %></td>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Created</th>
+          <th>Updated</th>
         </tr>
-      <%});
-    } else{%>
-      <tr>
-        <td colspan="4">No <%- entityName.pluralCapitalized %></td>
-      </tr>
-    <%}%>
-    </tbody>
-    <tfoot>
-      <tr>
-        <th><a href="?pagenum=<%- (entityPage.currentpage > 1) ? entityPage.currentpage-1 : 1 %>">Prev Page<a/></th>
-        <th>Page <%- entityPage.currentpage %> of <%- entityPage.totalpages %></th>
-        <th>Showing <%- entityPage.limit %> of <%- entityPage.count %></th>
-        <th><a href="?pagenum=<%- (entityPage.currentpage < entityPage.totalpages -1) ? entityPage.currentpage+1 : entityPage.currentpage %>">Next Page</a></th>
-      </tr>
-    </tfoot>
-  </table>
-</section>
+      </thead>
+      <tbody>
+      <% if(hasItems){
+        items[pluralize(entitytype)][0].documents.map(item=>{%>
+          <tr>
+            <td><a href="<%- request.baseurl %><%- request.parsed.pathname %><%- item._id %>"><%- item._id %></a></td>
+            <td><%- item.title || item.name %></td>
+            <td><%- item.createdat %></td>
+            <td><%- item.updatedat %></td>
+          </tr>
+        <%});
+      } else{%>
+        <tr>
+          <td colspan="4">No <%- entityName.pluralCapitalized %></td>
+        </tr>
+      <%}%>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th><a href="?pagenum=<%- (entityPage.currentpage > 1) ? entityPage.currentpage-1 : 1 %>">Prev Page<a/></th>
+          <th>Page <%- entityPage.currentpage %> of <%- entityPage.totalpages %></th>
+          <th>Showing <%- (entityPage.limit > entityPage.count)? entityPage.count: entityPage.limit %> of <%- entityPage.count %></th>
+          <th><a href="?pagenum=<%- (entityPage.currentpage < entityPage.totalpages -1) ? entityPage.currentpage+1 : entityPage.currentpage %>">Next Page</a></th>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+</article>
