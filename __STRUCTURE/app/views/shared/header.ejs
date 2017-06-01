@@ -44,7 +44,7 @@
     article, 
     div, 
     details, summary, pre,
-    p, table, tfoot, thead, tbody, tr, td, th 
+    p, tfoot, thead, tbody, tr, td, th 
     span{
       box-sizing:border-box;
     }
@@ -86,9 +86,11 @@
       flex:1;
       margin-bottom:1rem;
       font-size:1.25rem;
+      height:2rem;
     }
     main{
       display:flex;
+      /* min-height:10rem; */
     }
     main > aside{
       /*// flex: 1;*/
@@ -100,6 +102,10 @@
     }
     main > article{
       flex: 1;
+      min-height:10rem;
+    }
+    main > article table{
+      min-height:5rem;
     }
   </style>
   <% if(locals && locals.periodic && locals.periodic.page_data){%>
