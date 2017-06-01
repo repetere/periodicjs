@@ -23,46 +23,46 @@ const scheme = {
   visibility: String,
   visibilitypassword: Date,
   random: Number,
-  primaryasset: {
-    type: ObjectId,
-    ref: 'Asset'
-  },
+  // primaryasset: {
+  //   type: ObjectId,
+  //   ref: 'Asset'
+  // },
   primaryauthor: {
     type: ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
-  source: {
-    type: ObjectId,
-    ref: 'Source'
-  },
+  // source: {
+  //   type: ObjectId,
+  //   ref: 'Source'
+  // },
 
-  assets: [{
-    type: ObjectId,
-    ref: 'Asset'
-  }],
-  authors: [{
-    type: ObjectId,
-    ref: 'User'
-  }],
-  tags: [{
-    type: ObjectId,
-    ref: 'Tag'
-  }],
-  categories: [{
-    type: ObjectId,
-    ref: 'Category'
-  }],
-  contenttypes: [{
-    type: ObjectId,
-    ref: 'Contenttype'
-  }],
+  // assets: [{
+  //   type: ObjectId,
+  //   ref: 'Asset'
+  // }],
+  // authors: [{
+  //   type: ObjectId,
+  //   ref: 'User'
+  // }],
+  // tags: [{
+  //   type: ObjectId,
+  //   ref: 'Tag'
+  // }],
+  // categories: [{
+  //   type: ObjectId,
+  //   ref: 'Category'
+  // }],
+  // contenttypes: [{
+  //   type: ObjectId,
+  //   ref: 'Contenttype'
+  // }],
 };
 
 module.exports = {
   scheme,
   options: {},
   coreDataOptions: {
-    docid: '_id',
+    docid: [ '_id', 'name', ],
     sort: { createdat: -1, },
     search: [ 'name', 'title', 'dek', 'content', 'link', ],
     // limit: 500,
