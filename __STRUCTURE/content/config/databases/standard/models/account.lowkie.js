@@ -83,6 +83,6 @@ module.exports = {
         docid: '_id',
         sort: { createdat: -1, },
         search: ['email', 'firstname', 'lastname', 'username', ],
-        population: 'assets primaryasset coverimages userroles tags categories'
+        population: 'assets primaryasset coverimages coverimage userroles tags categories'
     }
 };
