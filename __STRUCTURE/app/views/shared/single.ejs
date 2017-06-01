@@ -7,9 +7,9 @@ const capitalize = periodic.viewHelper.capitalize;
     <h3><a href="<%- request.originalurl.replace(data._id,'') %>"><%- (capitalize(entitytype)) %></a> &rsaquo; <%- data.title %> <small>(<%- data.name %>)</small></h3>
     <p>
       <small>
-        <bold>ID:</bold> <%- data._id %> </br>
-        <bold>Updated:</bold> <%- data.updatedat %> </br>
-        <bold>Created:</bold> <%- data.createdat %>
+        <strong>ID:</strong> <%- data._id %> </br>
+        <strong>Updated:</strong> <%- data.updatedat %> </br>
+        <strong>Created:</strong> <%- data.createdat %>
       </small>
     </p>
     <p><%- data.description || data.content %></p>
