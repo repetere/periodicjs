@@ -18,7 +18,7 @@ const entityPage = {
   totalpages: (hasItems) ? items[`${entitytype}pages`] : 1,
   currentpage: (hasItems) ? items[`${entitytype}page_current`] : 1,
 }
-console.log({locals},'request.parsed',request.parsed)
+// console.log({locals},'request.parsed',request.parsed)
 %>
 <article>
   <section>
@@ -36,7 +36,7 @@ console.log({locals},'request.parsed',request.parsed)
       </thead>
       <tbody>
       <% if(hasItems){
-        items[pluralize(entitytype)][0].documents.map(item=>{ console.log({item})%>
+        items[pluralize(entitytype)][0].documents.map(item=>{%>
           <tr>
             <td><a href="<%- path.join(request.baseurl,request.parsed.pathname,item._id.toString()) %>"><%- item._id %></a></td>
             <td><%- item.title || item.name %></td>
