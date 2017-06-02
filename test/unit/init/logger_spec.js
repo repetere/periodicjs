@@ -32,7 +32,7 @@ describe('Periodic Init logger', function() {
         settings: {
           logger: {
             use_winston_logger: false,
-          }
+          },
         },
         logger: console,
       };
@@ -55,7 +55,7 @@ describe('Periodic Init logger', function() {
           logger: {
             use_winston_logger: true,
             use_standard_logging: true,
-          }
+          },
         },
         logger: console,
       };
@@ -68,7 +68,7 @@ describe('Periodic Init logger', function() {
         .catch(done);
     });
     it('should handle errors', () => {
-      expect(logger.configureLogger()).to.eventually.be.rejected;
+      expect(logger.configureLogger({ process:{ on:()=>{}, }, })).to.eventually.be.rejected;
     });
   });
   describe('getDefaultWinstonLoggerConfig', () => {
@@ -92,7 +92,7 @@ describe('Periodic Init logger', function() {
           error: () => {},
         },
       };
-      expect(logger.getDefaultWinstonLoggerConfig.call(mockThis, { periodic: mockThis, fileNamePathAddition: '1' })).to.be.an('object');
+      expect(logger.getDefaultWinstonLoggerConfig.call(mockThis, { periodic: mockThis, fileNamePathAddition: '1', })).to.be.an('object');
     });
     // it('should use default console log', (done) => {
     //   const mockThis = {
@@ -141,10 +141,28 @@ describe('Periodic Init logger', function() {
   });
   describe('catchProcessErrors', () => {
     it('should catch errors', () => {
-      expect(logger.catchProcessErrors.call({ logger: { error: () => {} } })).to.eventually.be.fulfilled;
+      expect(logger.catchProcessErrors.call({ 
+        logger: { 
+          error: () => {},
+          warn:()=>{},
+        },
+      }, {
+        process:{ on:(eventType)=>{
+          if(eventType==='warning')throw new Error('testing error');
+        }, },
+      })).to.eventually.be.fulfilled;
     });
     it('should handle errors', (done) => {
-      logger.catchProcessErrors.call()
+      logger.catchProcessErrors.call({
+        logger:{
+          error:()=>{},
+          warn:()=>{},
+        }
+      }, {
+        process:{ on:(eventType)=>{
+          if(eventType==='warning')throw new Error('testing error');
+        },  },
+      })
         .then((result) => {
           done(new Error('this should never be called'));
         })
