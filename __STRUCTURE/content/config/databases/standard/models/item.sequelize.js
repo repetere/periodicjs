@@ -129,9 +129,9 @@ module.exports = {
   options,
   associations,
   coreDataOptions: {
-    docid: '_id',
+    docid: ['_id', 'name'],
     sort: { createdat: -1, },
-    search: [ 'name', 'title', 'dek', 'content', 'link', ],
+    search: ['name', 'title', 'dek', 'content', 'link', ],
     // limit: 500,
     // skip: 0,
     // population: 'primaryauthor primaryasset asset assets authors tags categories contenttypes',
