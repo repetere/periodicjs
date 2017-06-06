@@ -45,10 +45,10 @@ describe('Periodic Init Config', function() {
         // process.env.ENV = 'test';
         configPeriodic = new periodicClass({});
         configPeriodic.init({
-          app_root: initTestPathDir,
-          cli: true,
-          environment: 'test',
-        })
+            app_root: initTestPathDir,
+            cli: true,
+            environment: 'test',
+          })
           .then(done.bind(done, undefined))
           .catch(done);
       }).catch(done);
@@ -81,7 +81,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
-        dboptions:{},
+        dboptions: {},
         periodic_db_name: 'almTest',
         db: {},
         modelFiles: [],
@@ -104,7 +104,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
-        dboptions:{},
+        dboptions: {},
         periodic_db_name: 'default',
         db: {},
         modelFiles: fs.readdirSync(testModelDir),
@@ -128,7 +128,7 @@ describe('Periodic Init Config', function() {
       };
       const mockOptions = {
         resolve: resolveSpy,
-        dboptions:{},
+        dboptions: {},
         periodic_db_name: 'default',
         db: {},
         modelFiles: [],
@@ -153,7 +153,7 @@ describe('Periodic Init Config', function() {
         resolve: resolveSpy,
         periodic_db_name: 'default',
         db: require('mongoose'),
-        dboptions:{},
+        dboptions: {},
         modelFiles: fs.readdirSync(testModelDir),
         modelDirPath: testModelDir,
       };
@@ -177,7 +177,7 @@ describe('Periodic Init Config', function() {
           dialect: 'postgres',
           port: 5432,
           host: '127.0.0.1',
-          logging:false,
+          logging: false,
         },
       };
       const sequelizeDB = new Sequelize(dboptions.database, dboptions.username, dboptions.password, dboptions.connection_options);
@@ -203,7 +203,7 @@ describe('Periodic Init Config', function() {
         },
         reject: done,
         periodic_db_name: 'default',
-        dboptions:{},
+        dboptions: {},
         db: sequelizeDB,
         modelFiles: fs.readdirSync(testModelDir),
         modelDirPath: testModelDir,
@@ -225,7 +225,7 @@ describe('Periodic Init Config', function() {
         },
       };
       const mockThis = {};
-      expect(config.connectLowkieDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+      expect(config.connectLowkieDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;
     });
   });
   describe('connectMongooseDB', () => {
@@ -238,7 +238,7 @@ describe('Periodic Init Config', function() {
         db_config_type: 'content',
         options: {
           url: 'mongodb://localhost:27017/config_db',
-          connection_options:{},
+          connection_options: {},
         },
       };
       const mockThis = {
@@ -246,7 +246,7 @@ describe('Periodic Init Config', function() {
           app_root: initTestPathDir,
         },
       };
-      expect(config.connectMongooseDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+      expect(config.connectMongooseDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;
     });
   });
   describe('connectSequelizeDB', () => {
@@ -273,7 +273,7 @@ describe('Periodic Init Config', function() {
           app_root: initTestPathDir,
         },
       };
-      expect(config.connectSequelizeDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;      
+      expect(config.connectSequelizeDB.call(mockThis, mockOptions)).to.eventually.be.fulfilled;
     });
   });
   describe('connectDB', () => {
@@ -281,16 +281,16 @@ describe('Periodic Init Config', function() {
       expect(config.connectDB()).to.eventually.be.rejected;
     });
     it('should connect to loki', () => {
-      expect(config.connectDB({ db:'lowkie', })).to.eventually.be.rejected;
+      expect(config.connectDB({ db: 'lowkie', })).to.eventually.be.rejected;
     });
     it('should connect to mongo', () => {
-      expect(config.connectDB({ db:'mongoose',  })).to.eventually.be.rejected;
+      expect(config.connectDB({ db: 'mongoose', })).to.eventually.be.rejected;
     });
     it('should connect to sql', () => {
-      expect(config.connectDB({ db:'sequelize',  })).to.eventually.be.rejected;
+      expect(config.connectDB({ db: 'sequelize', })).to.eventually.be.rejected;
     });
-    it('should resolve to true if no db specified', () => {   
-      expect(config.connectDB({ db:'other',  })).to.eventually.eql(true);
+    it('should resolve to true if no db specified', () => {
+      expect(config.connectDB({ db: 'other', })).to.eventually.eql(true);
     });
   });
   describe('loadDatabases', () => {
@@ -299,10 +299,15 @@ describe('Periodic Init Config', function() {
     });
     it('should return true if no databases to connect', (done) => {
       config.loadDatabases.call({
-        settings: {
-          databases: {},
-        },
-      })
+          resources: {
+            databases: {
+              extensions: {},
+            },
+          },
+          settings: {
+            databases: {},
+          },
+        })
         .then(result => {
           expect(result).to.be.true;
           done();
@@ -311,17 +316,22 @@ describe('Periodic Init Config', function() {
     });
     it('should return connected databases to from settings', (done) => {
       config.loadDatabases.call({
-        settings: {
-          databases: {
-            test: {
-              db:'other',
-            },
-            test2: {
-              db:'other',
+          resources: {
+            databases: {
+              extensions: {},
             },
           },
-        },
-      })
+          settings: {
+            databases: {
+              test: {
+                db: 'other',
+              },
+              test2: {
+                db: 'other',
+              },
+            },
+          },
+        })
         .then(results => {
           expect(results.length).to.eql(2);
           done();
@@ -345,7 +355,7 @@ describe('Periodic Init Config', function() {
       });
     });
     describe('checkForRequiredExtensions', () => {
-      it('should error if missing required extension', () => { 
+      it('should error if missing required extension', () => {
         const errors = [];
         const ext = {
           name: 'test extension',
@@ -361,15 +371,17 @@ describe('Periodic Init Config', function() {
         config.checkForRequiredExtensions.call(mockThis, mockOptions);
         expect(errors).to.have.length.greaterThan(0);
       });
-      it('should not error if extension map has extension loaded', () => { 
+      it('should not error if extension map has extension loaded', () => {
         const errors = [];
         const ext = {
           name: 'requiredExt',
-          version:'1.0.0',
+          version: '1.0.0',
         };
         const mockThis = {
           extensions: new Map(
-            [[ext.name,], ext,]
+            [
+              [ext.name, ], ext,
+            ]
           ),
         };
         const mockOptions = {
@@ -387,14 +399,14 @@ describe('Periodic Init Config', function() {
         const mockThis = {
           settings: {
             application: {
-              version:'10.0.0',
+              version: '10.0.0',
             },
           },
         };
         const mockOptions = {
-          errors, 
+          errors,
           ext: {
-            periodic_compatibility:'11.0.0',
+            periodic_compatibility: '11.0.0',
           },
         };
         config.checkExtensionDependencies.call(mockThis, mockOptions);
@@ -403,19 +415,19 @@ describe('Periodic Init Config', function() {
       it('should add valid extension to extensions map', () => {
         const errors = [];
         const ext = {
-          name:'testExtension',
+          name: 'testExtension',
           periodic_compatibility: '10.0.0',
         };
         const mockThis = {
           settings: {
             application: {
-              version:'10.0.0',
+              version: '10.0.0',
             },
           },
-          extensions:new Map(),
+          extensions: new Map(),
         };
         const mockOptions = {
-          errors, 
+          errors,
           ext,
         };
         config.checkExtensionDependencies.call(mockThis, mockOptions);
@@ -432,7 +444,7 @@ describe('Periodic Init Config', function() {
         const mockThis = {
           settings: {
             application: {
-              exit_on_invalid_extensions:false,
+              exit_on_invalid_extensions: false,
             },
           },
           crud: {
@@ -466,7 +478,7 @@ describe('Periodic Init Config', function() {
             ext: {
               list: () => {
                 return new Promise((resolve, reject) => {
-                  resolve([extNotCompatible,]);
+                  resolve([extNotCompatible, ]);
                 });
               },
             },

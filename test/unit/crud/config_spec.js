@@ -21,7 +21,7 @@ require('mocha-sinon');
 let TEST_file_config;
 let TEST_obj_config;
 
-describe('Periodic Crud Ext', function() {
+describe('Periodic Crud Config', function() {
   this.timeout(10000);
   before('initialize config test periodic dir', (done) => {
     fs.ensureDir(initTestPathDir)
@@ -45,10 +45,10 @@ describe('Periodic Crud Ext', function() {
         // process.env.ENV = 'test';
         configPeriodic = new periodicClass({});
         configPeriodic.init({
-          app_root: initTestPathDir,
-          cli: true,
-          environment: 'test',
-        })
+            app_root: initTestPathDir,
+            cli: true,
+            environment: 'test',
+          })
           .then(done.bind(done, undefined))
           .catch(done);
       }).catch(done);
@@ -57,7 +57,7 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', (done) => {
       // expect(CRUD_config.create()).to.eventually.be.rejected;
       CRUD_config.create()
-        .then(() => { 
+        .then(() => {
           done(new Error('should have rejected'));
         })
         .catch(e => {
@@ -87,14 +87,14 @@ describe('Periodic Crud Ext', function() {
     });
     it('should add config to config db from object', (done) => {
       CRUD_config.create.call(configPeriodic, {
-        filepath:'content/config/appconfig/dummy2.json',
-        environment:'test',
-        container:'default',
-        config:{
-          'some':'data2',
-          'test':true,
-        },
-      })
+          filepath: 'content/config/appconfig/dummy2.json',
+          environment: 'test',
+          container: 'default',
+          config: {
+            'some': 'data2',
+            'test': true,
+          },
+        })
         .then(createdConfig => {
           TEST_obj_config = createdConfig;
           expect(createdConfig).to.be.ok;
@@ -116,7 +116,7 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', (done) => {
       // expect(CRUD_config.create()).to.eventually.be.rejected;
       CRUD_config.update()
-        .then(() => { 
+        .then(() => {
           done(new Error('should have rejected'));
         })
         .catch(e => {
@@ -125,21 +125,21 @@ describe('Periodic Crud Ext', function() {
           done();
         });
     });
-    it('should update config in config db', (done) => {   
+    it('should update config in config db', (done) => {
       const updatedConf = Object.assign({}, TEST_file_config, {
         container: 'default-updated',
         config: {
           now: 'updated',
-          works:true,
+          works: true,
         },
       });
       // console.log({ updatedConf });
       CRUD_config.update.call(configPeriodic, {
-        config: updatedConf,
-      })
+          config: updatedConf,
+        })
         .then(updatedConfigStatus => {
           expect(updatedConfigStatus.status).to.eql('ok');
-          return configPeriodic.datas.get('configuration').load({ docid:'filepath', query: TEST_file_config.filepath, });
+          return configPeriodic.datas.get('configuration').load({ docid: 'filepath', query: TEST_file_config.filepath, });
         })
         .then(updatedConfig => {
           // console.log({ updatedConfig });
@@ -158,7 +158,7 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', (done) => {
       // expect(CRUD_config.create()).to.eventually.be.rejected;
       CRUD_config.remove()
-        .then(() => { 
+        .then(() => {
           done(new Error('should have rejected'));
         })
         .catch(e => {
@@ -172,9 +172,9 @@ describe('Periodic Crud Ext', function() {
       const display_config_filepath = path.join(sample_configs_dir, 'display_config.json');
 
       Promise.all([
-        CRUD_config.create.call(configPeriodic, server_config_filepath),
-        CRUD_config.create.call(configPeriodic, display_config_filepath),
-      ])
+          CRUD_config.create.call(configPeriodic, server_config_filepath),
+          CRUD_config.create.call(configPeriodic, display_config_filepath),
+        ])
         .then(() => {
           return configPeriodic.datas.get('configuration').query();
         })
@@ -190,8 +190,8 @@ describe('Periodic Crud Ext', function() {
           expect(confs.length).to.eql(4);
           // console.log({confs})
           return Promise.all([
-            CRUD_config.remove.call(configPeriodic, { _id: confs[ 0 ]._id, }),
-            CRUD_config.remove.call(configPeriodic, { filepath: confs[ 1 ].filepath, }),
+            CRUD_config.remove.call(configPeriodic, { _id: confs[0]._id, }),
+            CRUD_config.remove.call(configPeriodic, { filepath: confs[1].filepath, }),
           ]);
           // done();
         })

@@ -43,14 +43,20 @@ describe('Periodic Crud Ext', function() {
         }));
       })
       .then(() => {
-        // process.env.ENV = 'test';
+        console.log('custom setting file')
+          // process.env.ENV = 'test';
         configPeriodic = new periodicClass({});
+        // console.log('configPeriodic.init', configPeriodic.init)
         configPeriodic.init({
             app_root: initTestPathDir,
             cli: true,
             environment: 'test',
           })
-          .then(done.bind(done, undefined))
+          .then(result => {
+            console.log({ result });
+            done();
+            // done.bind(done, undefined);
+          })
           .catch(done);
       }).catch(done);
   });
@@ -236,19 +242,19 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', () => {
       expect(CRUD_ext.update()).to.eventually.be.rejected;
     });
-    it('should update extension in extension db', (done) => {   
+    it('should update extension in extension db', (done) => {
       const updatedExt = Object.assign({}, TEXT_ext, {
         enabled: false,
         description: 'updated cloud upload extension',
       });
       // console.log({ updatedExt });
       CRUD_ext.update.call(configPeriodic, {
-        ext: updatedExt,
-        isPatch: true,
-      })
+          ext: updatedExt,
+          isPatch: true,
+        })
         .then(updatedExtensionStatus => {
           expect(updatedExtensionStatus.status).to.eql('ok');
-          return configPeriodic.datas.get('extension').load({ docid:'name', query: TEXT_ext.name, });
+          return configPeriodic.datas.get('extension').load({ docid: 'name', query: TEXT_ext.name, });
         })
         .then(updatedExtension => {
           // console.log({ updatedExtension });
@@ -268,12 +274,12 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', () => {
       expect(CRUD_ext.remove()).to.eventually.be.rejected;
     });
-    it('should remove extension from extension db', (done) => {   
+    it('should remove extension from extension db', (done) => {
       Promise.all([
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.admin'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login_mfa'),
-      ])
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.admin'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.login_mfa'),
+        ])
         .then(() => {
           return configPeriodic.datas.get('extension').query();
         })
@@ -298,12 +304,12 @@ describe('Periodic Crud Ext', function() {
         .then(extensions => {
           expect(extensions.length).to.eql(2);
           // console.log({extensions});
-          return CRUD_ext.remove.call(configPeriodic, { _id:extensions[0]._id, });
+          return CRUD_ext.remove.call(configPeriodic, { _id: extensions[0]._id, });
         })
         .then(removedExt => {
           // console.log({removedExt});
           // expect(removedExt).to.be.ok;
-          done();          
+          done();
         })
         .catch(done);
     });
@@ -312,42 +318,42 @@ describe('Periodic Crud Ext', function() {
     it('should handle errors', () => {
       expect(CRUD_ext.list()).to.eventually.be.rejected;
     });
-    it('should return sorted extensions', (done) => {   
+    it('should return sorted extensions', (done) => {
       Promise.all([
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.mailer'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2client'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2server'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.test'),
-        CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.uac'),
-      ])
-      .then(() => {
-        return CRUD_ext.list.call(configPeriodic, {});
-      })
-      .then(exts => {
-        const periodic_types = exts.map(ext => ext.periodic_type || 0);
-        // const periodic_priorities = exts.map(ext => ext.periodic_priority || 0);
-        /* https://gist.github.com/yorkie/7959685
-          * check the array is sorted
-          * return: if positive ->  1
-          *         if negative -> -1
-          *         not sorted  ->  0
-          */
-        const isSorted = function () {
-          return (function (direction) {
-            return this.reduce(function (prev, next, i, arr) {
-              if (direction === undefined)
-                return (direction = prev <= next ? 1 : -1) || true;
-              else
-                return (direction + 1 ?
-                  (arr[ i - 1 ] <= next) :
-                  (arr[ i - 1 ] > next));
-            }) ? Number(direction) : false;
-          }).call(this);
-        };
-        expect(isSorted.call(periodic_types)).to.eql(1);
-        done();
-      })
-      .catch(done);
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.mailer'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2client'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.oauth2server'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.test'),
+          CRUD_ext.create.call(configPeriodic, 'periodicjs.ext.uac'),
+        ])
+        .then(() => {
+          return CRUD_ext.list.call(configPeriodic, {});
+        })
+        .then(exts => {
+          const periodic_types = exts.map(ext => ext.periodic_type || 0);
+          // const periodic_priorities = exts.map(ext => ext.periodic_priority || 0);
+          /* https://gist.github.com/yorkie/7959685
+           * check the array is sorted
+           * return: if positive ->  1
+           *         if negative -> -1
+           *         not sorted  ->  0
+           */
+          const isSorted = function() {
+            return (function(direction) {
+              return this.reduce(function(prev, next, i, arr) {
+                if (direction === undefined)
+                  return (direction = prev <= next ? 1 : -1) || true;
+                else
+                  return (direction + 1 ?
+                    (arr[i - 1] <= next) :
+                    (arr[i - 1] > next));
+              }) ? Number(direction) : false;
+            }).call(this);
+          };
+          expect(isSorted.call(periodic_types)).to.eql(1);
+          done();
+        })
+        .catch(done);
     });
   });
   after('remove config test periodic dir', (done) => {
