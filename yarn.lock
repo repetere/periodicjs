@@ -1629,7 +1629,7 @@ dateformat@~1.0.12:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-debug@2, debug@2.6.8, debug@^2.1.1, debug@^2.2.0, debug@~2.6.4, debug@~2.6.6:
+debug@2, debug@2.6.8, debug@^2.1.1, debug@~2.6.4, debug@~2.6.6:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
@@ -1653,7 +1653,7 @@ debug@2.3.3:
   dependencies:
     ms "0.7.2"
 
-debug@2.6.7:
+debug@2.6.7, debug@^2.2.0:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.7.tgz#92bad1f6d05bbb6bba22cca88bcd0ec894c2861e"
   dependencies:
@@ -3381,9 +3381,9 @@ loud-rejection@^1.0.0:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
 
-lowkie@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/lowkie/-/lowkie-0.3.1.tgz#2413234109495c10a437b341f697043d228df87f"
+lowkie@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/lowkie/-/lowkie-0.5.0.tgz#a37c6151fc519d244fab6159d00f32b47874ba36"
   dependencies:
     babel-polyfill "^6.23.0"
     flat "^2.0.1"
@@ -3563,13 +3563,13 @@ mkdirp@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.0.tgz#1bbf5ab1ba827af23575143490426455f481fe1e"
 
-mkdirp@0.5.0:
+mkdirp@0.5.0, mkdirp@0.5.x:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.0.tgz#1d73076a6df986cd9344e15e71fcc05a4c9abf12"
   dependencies:
     minimist "0.0.8"
 
-mkdirp@0.5.1, mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@~0.5.1:
+mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@~0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
@@ -4030,14 +4030,14 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-periodicjs.core.controller@^10.3.4:
-  version "10.3.4"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.3.4.tgz#8495da6750887b6e6bb5ba63f9b360c5c038f6a7"
+periodicjs.core.controller@^10.4.0:
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.4.0.tgz#0efe47dfc818ee5c47a580c79d50b45bbdb8ca5b"
   dependencies:
     capitalize "^1.0.0"
     objectcompare "^0.2.0"
-    periodicjs.core.data "^0.5.4"
-    periodicjs.core.protocols "^0.3.5"
+    periodicjs.core.data "^0.5.6"
+    periodicjs.core.protocols "^0.4.0"
     periodicjs.core.responder "~0.2.0"
     pluralize "^1.1.6"
     sequelize "^3.29.0"
@@ -4045,9 +4045,9 @@ periodicjs.core.controller@^10.3.4:
     valid-objectid "0.0.2"
     xss "^0.3.3"
 
-periodicjs.core.data@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.data/-/periodicjs.core.data-0.5.4.tgz#b441c10f1bfe12fd14a759f0d1f24d48862bd7aa"
+periodicjs.core.data@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.data/-/periodicjs.core.data-0.5.6.tgz#5268276d8fa09458a89c92a1a3893ae1b2f979c2"
   dependencies:
     flat "~2.0.1"
     jsondiffpatch "~0.2.4"
@@ -4056,9 +4056,9 @@ periodicjs.core.data@^0.5.4:
     string-to-json "~0.1.0"
     xss "~0.2.13"
 
-periodicjs.core.protocols@^0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.protocols/-/periodicjs.core.protocols-0.3.5.tgz#2dac87b9a5e40cb07bc2a96df747dcab8e856593"
+periodicjs.core.protocols@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.protocols/-/periodicjs.core.protocols-0.4.0.tgz#b0b0653edd219d555ce81b0179d46cb7b6143cd4"
   dependencies:
     capitalize "^1.0.0"
     periodicjs.core.responder "~0.2.0"
