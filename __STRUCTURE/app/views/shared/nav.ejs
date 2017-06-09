@@ -1,4 +1,3 @@
-
 <header>
   <nav>
   <% if(locals && locals.periodic ){%>
@@ -14,11 +13,11 @@ const pluralize = periodic.viewHelper.pluralize;
 const capitalize = periodic.viewHelper.capitalize;
 %>
   <aside>
-  <details>
   <% Object.keys(periodic.core_data_list).forEach(db_name=>{
     %>
+  <details>
     <summary>
-      <%- capitalize(db_name) %>
+      <%- capitalize(db_name) %> DB
     </summary>
     <div>
       <ul>
@@ -27,8 +26,8 @@ const capitalize = periodic.viewHelper.capitalize;
       <%}) %>
       </ul>
     </div>
+  </details>
     <%
   }) %>
-  </details>
   </aside>
 <%}%>
