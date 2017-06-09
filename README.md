@@ -5,7 +5,7 @@
 PeriodicJS is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
 ===================================
 
-![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/periodic10/doc/images/white_logo_color_background.png)
+![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
 
 ## About
 
