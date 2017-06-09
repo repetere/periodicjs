@@ -1,0 +1,11 @@
+{
+  "filepath":"content/config/server/config.json",
+  "environment":"test",
+  "config":{
+    "express_version":"5.0.1",
+    "caching":{
+      "data":"redis",
+      "view":"disk"
+    }
+  }
+}

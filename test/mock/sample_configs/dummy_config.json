@@ -1,0 +1,9 @@
+{
+  "filepath":"content/config/appconfig/dummy.json",
+  "environment":"test",
+  "container":"default",
+  "config":{
+    "some":"data",
+    "test":true
+  }
+}

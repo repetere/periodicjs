@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.uac",
+  "version": "4.8.1",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "test extension",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}

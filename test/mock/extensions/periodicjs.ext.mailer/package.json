@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.mailer",
+  "version": "9.1.1",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "node mailer",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}

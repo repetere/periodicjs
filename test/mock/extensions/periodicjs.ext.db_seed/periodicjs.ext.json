@@ -1,0 +1,29 @@
+{
+  "periodic_compatibility": "10.0.0",
+  "periodic_dependencies": [{
+    "extname": "periodicjs.ext.mailer",
+    "version": "~6.0.0"
+  }, {
+    "extname": "periodicjs.ext.login",
+    "version": "~7.2.0"
+  }, {
+    "extname": "periodicjs.ext.user_access_control",
+    "version": "~7.0.0"
+  }, {
+    "extname": "periodicjs.ext.oauth2server",
+    "version": "2.0.4"
+  }],
+  "periodic_type": 0,
+  "periodic_priority": 0,
+  "periodic_config": {
+    "reactadmin": {
+      "navigation": "node_modules/periodicjs.ext.reactadmin/views/reactadmin/components/navigation.manifest.js",
+      "manifests": [
+        "node_modules/periodicjs.ext.reactadmin/views/reactadmin/manifests"
+      ],
+      "unauthenticated_manifests": [
+        "node_modules/periodicjs.ext.reactadmin/views/public/home/"
+      ]
+    }
+  }
+}

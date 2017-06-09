@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.cloudupload",
+  "version": "8.1.5",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "cloud based uploads",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}
