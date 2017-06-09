@@ -301,6 +301,7 @@ describe('Periodic Init Config', function() {
       config.loadDatabases.call({
           resources: {
             databases: {
+              container: {},
               extensions: {},
             },
           },
@@ -318,6 +319,7 @@ describe('Periodic Init Config', function() {
       config.loadDatabases.call({
           resources: {
             databases: {
+              container: {},
               extensions: {},
             },
           },
