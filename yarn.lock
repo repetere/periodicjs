@@ -4030,15 +4030,15 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-periodicjs.core.controller@^10.4.0:
-  version "10.4.0"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.4.0.tgz#0efe47dfc818ee5c47a580c79d50b45bbdb8ca5b"
+periodicjs.core.controller@^10.4.1:
+  version "10.4.1"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.4.1.tgz#d32b8305fe15c32a2e79ac0eda3563d3be2d0187"
   dependencies:
     capitalize "^1.0.0"
     objectcompare "^0.2.0"
     periodicjs.core.data "^0.5.6"
-    periodicjs.core.protocols "^0.4.0"
-    periodicjs.core.responder "~0.2.0"
+    periodicjs.core.protocols "^0.4.1"
+    periodicjs.core.responder "~0.3.1"
     pluralize "^1.1.6"
     sequelize "^3.29.0"
     string-to-json "^0.1.0"
@@ -4056,17 +4056,17 @@ periodicjs.core.data@^0.5.6:
     string-to-json "~0.1.0"
     xss "~0.2.13"
 
-periodicjs.core.protocols@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.protocols/-/periodicjs.core.protocols-0.4.0.tgz#b0b0653edd219d555ce81b0179d46cb7b6143cd4"
+periodicjs.core.protocols@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.protocols/-/periodicjs.core.protocols-0.4.1.tgz#89787d742a75d94b8a62c53e2e9a3ca969e810f7"
   dependencies:
     capitalize "^1.0.0"
-    periodicjs.core.responder "~0.2.0"
+    periodicjs.core.responder "0.3.1"
     pluralize "~1.1.2"
 
-periodicjs.core.responder@~0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.responder/-/periodicjs.core.responder-0.2.0.tgz#70897aa033e12a8f05a1d0fbe4ab29e09dac6ad8"
+periodicjs.core.responder@0.3.1, periodicjs.core.responder@~0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.responder/-/periodicjs.core.responder-0.3.1.tgz#bf58505a70ad5c98a52992abe1568354540c3689"
   dependencies:
     ejs "~2.5.3"
     js2xmlparser "~2.0.2"
