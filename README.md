@@ -2,7 +2,7 @@
 
 [![Download Stats](https://nodei.co/npm/periodicjs.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/periodicjs)
 
-PeriodicJS is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
+Periodic is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
 ===================================
 
 ![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
@@ -14,8 +14,11 @@ Periodic provides:
 *	A beautiful React-based Isomorphic Admin UI based on database models
 *	Entreprise Security & Authentication with extensions for hosting an OAuth2 Servers, Multi-factor authentication, integrations with several session stores and authentication mechanisms 
 * Support for multiple protocols, websockets, REST, RPC and more
-*	Scaffolding for web integrations, ERP, ECM, CMS and more
+*	Scaffolding for web integrations, ERP, ECM, CMS applications and more
 
+## Getting Started
+
+Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide, to start building with Periodic.
 ### Community
 
 We have a friendly, growing community and welcome everyone to get involved.
