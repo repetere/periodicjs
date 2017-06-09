@@ -44,7 +44,7 @@ const associations = [
   },
   {
     source: 'category',
-    association: 'hasOne',
+    association: 'belongsTo',
     target: 'asset',
     options: {
       as: 'primaryasset',
