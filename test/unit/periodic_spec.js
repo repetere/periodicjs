@@ -49,7 +49,6 @@ describe('Periodic', function() {
       });
       newPeriodic2.status.once('initializing', (state) => {
         expect(state).to.be.true;
-        done();
       });
       newPeriodic2.init({
           debug: false,
@@ -58,6 +57,9 @@ describe('Periodic', function() {
           app_root: initTestEVENTSEMITPathDir,
         })
         .then((result) => {
+          setImmediate(() => { 
+            done();
+          });
           // console.log({ result });
         })
         .catch((e) => {
@@ -76,12 +78,7 @@ describe('Periodic', function() {
         environment: 'DISABLELOG',
         app_root: initTestEVENTSPathDir,
       });
-      // process.env.ENV = 'test';
-      // overwriteableConfigPeriodic.logger.silly = spy;
-      // overwriteableConfigPeriodic.logger.debug = spy;
-      // overwriteableConfigPeriodic.logger.info = spy;
-      // overwriteableConfigPeriodic.logger.warn = spy;
-      // overwriteableConfigPeriodic.logger.error = spy;
+
       overwriteableConfigPeriodic.init({
           debug: false,
           environment: 'DISABLELOG',
