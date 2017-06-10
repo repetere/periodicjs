@@ -33,7 +33,6 @@ describe('Periodic Util routing', function() {
 
     describe('all_prefixes', () => {
         it('should return an object with all prefix types', () => {
-            // expect(routing.all_prefixes('/r-admin')).to.be.an('object').that.have.keys('route_prefix', 'admin_prefix', 'manifest_prefix');
             expect(routing.all_prefixes('/r-admin')).to.deep.equal({
                 'route_prefix': '/r-admin',
                 'admin_prefix': 'r-admin',
