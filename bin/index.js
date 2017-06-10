@@ -57,7 +57,7 @@ function container(name, func, args) {
 function crud(entity, operation, args) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', `--crud=${entity}`, `--crud_op=${operation}`, `--crud_args=${args}`, ], function(err, text) { console.log(text.green.underline) });
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', `--crud=${entity}`, `--crud_op=${operation}`, `--crud_arg=${args}`, ], function(err, text) { console.log(text.green.underline) });
       return resolve(true);
     } catch (err) {
       return reject(err);
