@@ -63,8 +63,6 @@ describe('Periodic Init cli', function() {
             expect(infoSpy.called).to.be.true;
         });
 
-
-
         it('should run cli commands from extension', (done) => {
             const infoSpy = sinon.spy();
             const debugSpy = sinon.spy();      
@@ -202,7 +200,6 @@ describe('Periodic Init cli', function() {
             }
             cli.processArgv.call(mockThis, mockOptions);
         });
-
 
         it('should handle a --crud command line arguments', (done) => {
             const infoSpy = sinon.spy();
