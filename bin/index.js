@@ -176,7 +176,7 @@ program
   .action(function(entity, operation) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
-      container(entity, operation, arguments);
+      crud(entity, operation, arguments);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
