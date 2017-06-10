@@ -145,7 +145,7 @@ program
   });
 
 program
-  .command('extension [ext] [func]')
+  .command('extension <ext> <func>')
   .description('')
   .action(function(ext, func) {
     try {
@@ -158,7 +158,7 @@ program
   });
 
 program
-  .command('container [name] [func]')
+  .command('container <name> <func>')
   .description('')
   .action(function(name, func) {
     try {
@@ -171,12 +171,12 @@ program
   });
 
 program
-  .command('crud [entity] [operation]')
+  .command('crud <entity> <operation> [args]')
   .description('')
   .action(function(entity, operation) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
-      crud(entity, operation, arguments);
+      crud(entity, operation, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
