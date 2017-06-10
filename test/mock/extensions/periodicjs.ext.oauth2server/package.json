@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.oauth2server",
+  "version": "8.0.1",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "test extension",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}

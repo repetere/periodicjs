@@ -1,0 +1,16 @@
+{
+  "name": "periodicjs.ext.admin",
+  "version": "0.4.5",
+  "author": {
+    "name": "yaw joseph etse",
+    "email": "yaw.etse@gmail.com"
+  },
+  "description": "admin center",
+  "contributors": [{
+      "name": "jan"
+    },
+    {
+      "name": "iris"
+    }
+  ]
+}

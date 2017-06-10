@@ -1,0 +1,17 @@
+{
+  "periodic_compatibility": "10.0.0",
+  "periodic_dependencies": [],
+  "periodic_type": 1,
+  "periodic_priority": 0,
+  "periodic_config": {
+    "reactadmin": {
+      "navigation": "node_modules/periodicjs.ext.reactadmin/views/reactadmin/components/navigation.manifest.js",
+      "manifests": [
+        "node_modules/periodicjs.ext.reactadmin/views/reactadmin/manifests"
+      ],
+      "unauthenticated_manifests": [
+        "node_modules/periodicjs.ext.reactadmin/views/public/home/"
+      ]
+    }
+  }
+}
