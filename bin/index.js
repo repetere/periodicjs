@@ -110,7 +110,7 @@ function setup(name) {
         })
         .then(updated => {
           console.log(`New Periodic Application ${projectname} setup successfully.`);
-          console.log(`Run: cd ${projectname} && npm install && npm start, to start your application`);
+          console.log(`Run: cd ${projectname} && npm install && npm start development, to start your application`);
           resolve(true);
         })
         .catch(reject);
