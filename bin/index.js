@@ -6,7 +6,7 @@ const program = require('commander');
 const path = require('path');
 const fs = require('fs-extra');
 const colors = require('colors');
-let process_dir = process.cwd()
+let process_dir = process.cwd();
 let child;
 
 program
