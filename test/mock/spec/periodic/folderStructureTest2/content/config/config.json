@@ -1,0 +1,12 @@
+{
+  "configuration": {
+    "type": "db",
+    "db": "lowkie",
+    "options": {
+      "dbpath": "content/config/settings/config_db.json"
+    }
+  },
+  "settings": {
+    "name":"My Application"
+  }
+}
