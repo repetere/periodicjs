@@ -1,0 +1,17 @@
+{
+  "name": "my-app-server",
+  "description": "Simple enterprise node app server.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engines": {
+    "node": "^6.x"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js --e",
+    "test": "mocha -R spec --recursive"
+  },
+  "dependencies": {
+    "periodicjs": "^10.0.0"
+  }
+}
