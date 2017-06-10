@@ -7,9 +7,9 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 let periodicProxyHandler = require('../../lib/periodicProxyHandler');
 
-describe('Periodic Class ProxyHandler', function () {
+describe('Periodic Class ProxyHandler', function() {
   it('should be a proxy handler', () => {
-    expect(periodicProxyHandler).to.be.a('function');    
+    expect(periodicProxyHandler).to.be.a('function');
   });
   it('should return a proxy handler object', () => {
     expect(periodicProxyHandler()).to.be.a('object');
@@ -43,10 +43,20 @@ describe('Periodic Class ProxyHandler', function () {
     const testPeriodicInstance = {
       config: {
         process: {
-          runtime:'testenv',
+          runtime: 'testenv',
         },
       },
     };
     expect(periodicProxyHandler().get(testPeriodicInstance, 'environment')).to.eql('testenv');
+  });
+  it('should alias the current container settings', () => {
+    const testPeriodicInstance = {
+      settings: {
+        container: {
+          name: 'testcontainer',
+        },
+      },
+    };
+    expect(periodicProxyHandler().get(testPeriodicInstance, 'container').name).to.eql('testcontainer');
   });
 });
