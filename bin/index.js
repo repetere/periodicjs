@@ -173,7 +173,7 @@ program
 program
   .command('crud <entity> <operation> [args]')
   .description('')
-  .action(function(entity, operation) {
+  .action(function(entity, operation, args) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
       crud(entity, operation, args);
