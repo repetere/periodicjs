@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js --e",
+    "start": "node index.js --e",
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {
