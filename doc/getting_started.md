@@ -1,6 +1,12 @@
-# Configuring Periodic
+# Getting Started
 
-With Periodic 10, you can get up and running with periodic with zero configuration. To customize your Periodic application, you must define where configuration information sits. By default, Periodic uses Lowkie (an ORM for LokiJS).
+With Periodic 10, you can get up and running with periodic with zero configuration. It takes 30 seconds to create your first application server with periodic.
+
+```console
+$ npm install periodicjs -g 
+$ periodicjs setup [name-of-application] 
+$ npm start [name of environment]
+```
 
 The nice thing about Lowkie, is because it's JavaScript based, it can store data either in memory or to disk(via JSON DB interface).
 
