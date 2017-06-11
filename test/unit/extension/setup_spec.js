@@ -13,16 +13,16 @@ chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 
 describe('Periodic Extension install', function() {
-  this.timeout(10000);
-  describe('installExtension', () => {
-    it('should resolve as true', () => {
-      expect(install.installExtension()).to.eventually.be.fulfilled;
+    this.timeout(10000);
+    describe('installExtension', () => {
+        it('should resolve as true', () => {
+            expect(install.installExtension()).to.eventually.be.fulfilled;
+        });
+        it('should reject an errors', () => {
+            expect(install.installExtension('throw')).to.eventually.be.rejected;
+        });
+        it('should return a promise', () => {
+            expect(install.installExtension()).to.be.a('promise');
+        });
     });
-    it('should reject an errors', () => {
-      expect(install.installExtension('throw')).to.eventually.be.rejected;
-    });
-    it('should return a promise', () => {
-      expect(install.installExtension()).to.be.a('promise');
-    });
-  });
 });
