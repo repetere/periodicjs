@@ -8,21 +8,89 @@ const fs = require('fs-extra');
 const expect = require('chai').expect;
 const periodic = require('../../../index');
 const periodicClass = require('../../../lib/periodicClass');
-const install = require('../../../lib/extension/install');
+const setup = require('../../../lib/extension/setup');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
+const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
+const initExtensionFiles = path.join(testPathDir, '/my-example-app/node_modules/sample-extension/config/databases/standard/models');
+const exampleJSFile = path.join(initExtensionFiles, '/sample_model.js');
 
-describe('Periodic Extension install', function() {
+describe('Periodic Extension setup', function() {
     this.timeout(10000);
-    describe('installExtension', () => {
-        it('should resolve as true', () => {
-            expect(install.installExtension()).to.eventually.be.fulfilled;
+    before('initialize test periodic dir', (done) => {
+        Promise.all([
+                fs.ensureDir(initExtensionFiles),
+            ])
+            .then((result) => {
+                console.log({ result });
+                return Promise.all([
+                    fs.outputFile(exampleJSFile, 'var test= "working"', function(jsFileCreated) {
+                        console.log({ jsFileCreated });
+                        return;
+                    }),
+                ])
+            })
+            .then((created) => {
+                console.log({ created });
+                done();
+            }).catch(done);
+    });
+    describe('getModelFilesMap', () => {
+        it('should return fullpath of the model file', () => {
+            expect(setup.getModelFilesMap('/dirname', '/path/to/file')).to.eql('/dirname/path/to/file/___FULLPATH___');
         });
-        it('should reject an errors', () => {
-            expect(install.installExtension('throw')).to.eventually.be.rejected;
+    });
+    describe('loadExtensionFiles', () => {
+        it('should load extension files', (done) => {
+            // fs.readdir = sinon.spy();
+            const mockThis = {
+                resources: { 
+                    standard_models: [],
+                },
+                config: {
+                    app_root: '/my-example-app',
+                },
+            };
+            const mockOptions = {
+                extension: {
+                    name: 'sample-extension',
+                },
+                container: {},
+            }      
+            setup.loadExtensionFiles.call(mockThis, mockOptions)
+                .then(result => {
+
+                    // expect(fs.readdir.called).to.be.true;
+                    console.log("DIDNT ERROR");
+                    done();
+                })
+                .catch(e => {
+                    console.log('*****THIS IS ERROR', e);
+                    done();
+                });
         });
-        it('should return a promise', () => {
-            expect(install.installExtension()).to.be.a('promise');
-        });
+    });
+    describe('loadExtensionSettings', () => {
+
+    });
+    describe('getExtensionFromMap', () => {
+
+    });
+    describe('assignExtensionResources', () => {
+
+    });
+    describe('setupExtensions', () => {
+
+    });
+    describe('setupContainer', () => {
+
+    });
+    after('remove test periodic dir', (done) => {
+        Promise.all([
+                fs.remove(initExtensionFiles),
+            ])
+            .then(() => {
+                done();
+            }).catch(done);
     });
 });
