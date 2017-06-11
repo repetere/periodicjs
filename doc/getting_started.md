@@ -1,147 +1,88 @@
 # Getting Started
 
+
+![Getting started](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/getting-started/01-setup-install.gif)
+
 With Periodic 10, you can get up and running with periodic with zero configuration. It takes 30 seconds to create your first application server with periodic.
 
 ```console
 $ npm install periodicjs -g 
 $ periodicjs setup [name-of-application] 
+$ cd [name-of-application]
+$ npm install
 $ npm start [name of environment]
 ```
 
-The nice thing about Lowkie, is because it's JavaScript based, it can store data either in memory or to disk(via JSON DB interface).
+## The four step install
+1. Install periodic globally to use the Command Line Interface (CLI)
+2. Create a new application
+3. Change directory to your new **application root**
+4. Install periodic's dependencies
+5. Start your application
 
-The application configuration is defined in `[/path/to/app_root]/content/config/config.json`. Once loaded the application configuration sits on the `periodic.config` property 
+### 1. Install periodic globally to use the CLI (optional) 
 
-## config.json
+```
+$ npm install periodicjs -g 
+```
+Periodic comes with a built in CLI, REPL and other tools to fast track development. Using the CLI is completely optional. 
 
+### 2. Create a new node application with the CLI (optional)
+
+```
+$ periodicjs setup [name-of-application]
+```
+The `setup` command will create a zero-configuration scaffolded node.js web application.
+* The `setup` command create's a new directory for your application, this directory is what is referred to as the `app_root` or your **application root**.
+* After your `app_root` directory is created, two scaffolded `package.json` and `index.js` files are created  
+
+#### index.js
 ```javascript
-//The default Periodic application configuration
-{
-  "configuration": {
-    "type": "db",
-    "db": "lowkie",
-    "options": {
-      "url": "content/config/settings/db.json"
-    }
-  },
-  "settings":{
-    "name":"My Application"
-  }  
-}
+//example ES6 import periodic from 'periodic'; //periodic singleton
+//example index.js - ES5
+'use strict';
+const periodic = require('periodicjs'); //periodic singleton
+periodic.init()
+  .then(console.log.bind(console)) //log startup status
+  .catch(console.error.bind(console)) //log any errors
 ```
 
-### config.json: configuration
-The configuration property holds the information for you application's configuration database (can also be file based)
-```javascript
-configuration.type = "db" // can be either filebased or database driven "file" {db|file} 
-configuration.db = "lowkie" // can be any valid core data orm adapter db {lowkie(loki)|mongoose(mongo)|sequelize(sql)|reddie(redis)}
-configuration.options = {/**/} //core data apadter connection options
-```
-#### Example Loki Configuration
+#### package.json
 ```json
 {
-  "configuration": {
-    "type": "db",
-    "db": "lowkie",
-    "options": {
-      "dbpath": "content/config/settings/config_db.json"
-    }
+  "name": "[name-of-application]",
+  "description": "Simple app server.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engines": {
+    "node": "^6.x"
+  },
+  "scripts": {
+    "start": "node index.js --e",
+    "test": "mocha -R spec --recursive"
+  },
+  "dependencies": {
+    "periodicjs": "^10.0.0"
   }
 }
 ```
-#### Example Mongo Configuration
-```json
-{
-  "configuration": {
-    "type": "db",
-    "db": "mongoose",
-    "options": {
-      "url": "mongodb://localhost:27017/config_db",
-      "connection_options":{}
-    }
-  }
-}
+
+### 3. Change directory to your new **application root** and install periodic dependencies
+
 ```
-#### Example SQL Configuration
-```json
-{
-  "configuration": {
-    "type": "db",
-    "db": "sequelize",
-    "options": {
-      "database": "testdb",
-      "username": "",
-      "password": "",
-      "connection_options":{
-        "dialect":"postgres",
-        "port":5432,
-        "host":"127.0.0.1"
-      }
-    }
-  }
-}
+$ cd [name-of-application] 
+$ npm install
 ```
----
-## Application Settings
-The settings for Periodic are on the `periodic.settings` property. The applicatication settings are assigned by merging default settings, environment settings and override settings.
 
-Default Settings -> Environment Settings -> Override Settings -> Application Settings
+The scaffolded `package.json` file only has one dependency **periodicjs**. In order to use multiple databases you may need to install other dependencies (read more about configuring periodic). 
 
-* **Environment settings** are set in the configuration database in the `content/config/environment/{name-of-environment}.json`
-* **Override settings** are set on the _settings_ property in `content/config/config.json`
 
-```javascript
-//app settings demonstration
-//in reality this happens during application start up, and is asynchronous (because configurations can be stored in files or databases)
+### 5. Start your application 
 
-//default settings (cannot be modified) - periodicjs/lib/defaults/environment.js
-const defaultSettings = {
-  name:'default app name',
-  application:{
-    environment:'demo',
-    port:8786,
-  },
-  csrf: false,
-  cluster_process: false,
-  sessions:{
-    enabled:false,
-  },
-}
-
-//from configuration db - this.configuration.load({docid:'filepath',query:`content/config/environment/${this.config.process.runtime}.json`})
-const environmentSettings = {
-  application:{
-    environment:'staging',
-    port:8786,
-  },
-  sessions:{
-    enabled:true,
-    type:'redis',
-  },
-}
-
-const overrideSettings = {
-  name:'Accounting Pro',
-  crsf: true,
-  container: 'account_react_app@1.0.4',
-  author: 'ACME Co',
-}
-
-periodic.settings = Object.assign({},defaultSettings,environmentSettings,overrideSettings);
-/* if environment is staging
-periodic.settings = {
-  name:'Accounting Pro',
-  application:{
-    environment:'staging',
-    port:8786,
-  },
-  sessions:{
-    enabled:true,
-    type:'redis',
-  },
-  crsf: true,
-  container: 'account_react_app@1.0.4',
-  author: 'ACME Co',
-}
-*/
 ```
+$ npm start [name of environment]
+```
+
+Periodic requires a runtime environment to be defined when your application starts. Your periodic application can have an unlimited number of environments all with different configuration settings. 
+
+NEXT: How Periodic works
