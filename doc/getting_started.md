@@ -16,9 +16,8 @@ $ npm start [name of environment]
 ## The four step install
 1. Install periodic globally to use the Command Line Interface (CLI)
 2. Create a new application
-3. Change directory to your new **application root**
-4. Install periodic's dependencies
-5. Start your application
+3. Change directory to your new **application root** and Install periodic's dependencies
+4. Start your application
 
 ### 1. Install periodic globally to use the CLI (optional) 
 
@@ -77,7 +76,7 @@ $ npm install
 The scaffolded `package.json` file only has one dependency **periodicjs**. In order to use multiple databases you may need to install other dependencies (read more about configuring periodic). 
 
 
-### 5. Start your application 
+### 4. Start your application 
 
 ```
 $ npm start [name of environment]
