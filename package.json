@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is a rapid enterprise application framework for data driven web and mobile applications.",
-  "version": "10.0.0",
+  "version": "10.0.44",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -47,13 +47,6 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/typesettin/periodicjs.git"
-  },
-  "config": {
-    "blanket": {
-      "pattern": [
-        "content/themes"
-      ]
-    }
   },
   "license": "MIT",
   "scripts": {
@@ -163,7 +156,6 @@
     "Content Management System",
     "Periodic Decoupled Framework"
   ],
-  "gitHead": "ec239f4c3466993bc1afddb98fd835840758d827",
   "bugs": {
     "url": "https://github.com/typesettin/periodicjs/issues"
   },
@@ -179,11 +171,5 @@
       "url": "https://github.com/janbialostok"
     }
   ],
-  "dist": {
-    "shasum": "9087b685c4f3d5e7738114c5f21b4ddeefcf9aac",
-    "tarball": "http://registry.npmjs.org/periodicjs/-/periodicjs-5.1.22.tgz"
-  },
-  "directories": {},
-  "optionalDependencies": {},
   "readmeFilename": "README.md"
 }

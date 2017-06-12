@@ -6,7 +6,7 @@ const program = require('commander');
 const path = require('path');
 const fs = require('fs-extra');
 const colors = require('colors');
-let process_dir = process.cwd()
+let process_dir = process.cwd();
 let child;
 
 program
@@ -57,7 +57,7 @@ function container(name, func, args) {
 function crud(entity, operation, args) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', `--crud=${entity}`, `--crud_op=${operation}`, `--crud_args=${args}`, ], function(err, text) { console.log(text.green.underline) });
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', `--crud=${entity}`, `--crud_op=${operation}`, `--crud_arg=${args}`, ], function(err, text) { console.log(text.green.underline) });
       return resolve(true);
     } catch (err) {
       return reject(err);
@@ -110,7 +110,7 @@ function setup(name) {
         })
         .then(updated => {
           console.log(`New Periodic Application ${projectname} setup successfully.`);
-          console.log(`Run: cd ${projectname} && npm install && npm start, to start your application`);
+          console.log(`Run: cd ${projectname} && npm install && npm start development, to start your application`);
           resolve(true);
         })
         .catch(reject);
@@ -145,7 +145,7 @@ program
   });
 
 program
-  .command('extension [ext] [func]')
+  .command('extension <ext> <func>')
   .description('')
   .action(function(ext, func) {
     try {
@@ -158,7 +158,7 @@ program
   });
 
 program
-  .command('container [name] [func]')
+  .command('container <name> <func>')
   .description('')
   .action(function(name, func) {
     try {
@@ -171,12 +171,12 @@ program
   });
 
 program
-  .command('crud [entity] [operation]')
+  .command('crud <entity> <operation> [args]')
   .description('')
-  .action(function(entity, operation) {
+  .action(function(entity, operation, args) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
-      container(entity, operation, arguments);
+      crud(entity, operation, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
