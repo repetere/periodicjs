@@ -19,8 +19,6 @@
   },
   "license": "MIT",
   "scripts": {
-    "postinstall": "node install.js",
-    "postuninstall": "node uninstall.js",
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {
