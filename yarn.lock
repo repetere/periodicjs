@@ -1272,7 +1272,7 @@ colors@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
-colors@~1.1.2:
+colors@^1.1.2, colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
 
@@ -4030,15 +4030,15 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-periodicjs.core.controller@^10.4.1:
-  version "10.4.1"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.4.1.tgz#d32b8305fe15c32a2e79ac0eda3563d3be2d0187"
+periodicjs.core.controller@^10.4.3:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.4.3.tgz#74c1f47b8738687f3995f0aab266eb84c1c5b561"
   dependencies:
     capitalize "^1.0.0"
     objectcompare "^0.2.0"
     periodicjs.core.data "^0.5.6"
     periodicjs.core.protocols "^0.4.1"
-    periodicjs.core.responder "~0.3.1"
+    periodicjs.core.responder "~0.3.3"
     pluralize "^1.1.6"
     sequelize "^3.29.0"
     string-to-json "^0.1.0"
@@ -4064,9 +4064,16 @@ periodicjs.core.protocols@^0.4.1:
     periodicjs.core.responder "0.3.1"
     pluralize "~1.1.2"
 
-periodicjs.core.responder@0.3.1, periodicjs.core.responder@~0.3.1:
+periodicjs.core.responder@0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/periodicjs.core.responder/-/periodicjs.core.responder-0.3.1.tgz#bf58505a70ad5c98a52992abe1568354540c3689"
+  dependencies:
+    ejs "~2.5.3"
+    js2xmlparser "~2.0.2"
+
+periodicjs.core.responder@~0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.responder/-/periodicjs.core.responder-0.3.3.tgz#9b949215d2d439b8eaa5eb111ff1706f0ac28dae"
   dependencies:
     ejs "~2.5.3"
     js2xmlparser "~2.0.2"
