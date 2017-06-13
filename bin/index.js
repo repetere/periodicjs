@@ -136,6 +136,30 @@ function setup(name) {
 //     }
 //   });
 // }
+function createContainer(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--createContainer', `--name=${name}`, ], function (err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true); 
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+function createExtension(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--createExtension', `--name=${name}`, ], function (err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true); 
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
 function addExtension(name) {
   return new Promise((resolve, reject) => {
     try {
@@ -258,6 +282,28 @@ program
 //       process.exit(0);
 //     }
 //   });
+program
+  .command('createContainer <name>')
+  .description('create a new container')
+  .action(function(name) {
+    try {
+      createContainer(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+program
+  .command('createExtension <name>')
+  .description('create a new extension')
+  .action(function(name) {
+    try {
+      createExtension(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
 program
   .command('addExtension <name>')
   .description('add an extension to the extension database')
