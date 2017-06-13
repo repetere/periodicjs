@@ -94,10 +94,14 @@ function setup(name) {
       const project_app_root = path.join(process_dir, projectname);
       const project_package_json_path = path.join(project_app_root, 'package.json');
       const setup_directory = path.resolve(__dirname, './__SETUP');
+      const structure_directory = path.resolve(__dirname, '../__STRUCTURE');
       const periodicPackageJson = require('../package');
       fs.ensureDir(project_app_root)
         .then(() => {
-          return fs.copy(setup_directory, project_app_root, { overwrite: false, });
+          return Promise.all([
+            fs.copy(setup_directory, project_app_root, { overwrite: false, }),
+            fs.copy(structure_directory, project_app_root, { overwrite: false, }),
+          ]);
         })
         .then(() => {
           return fs.readJSON(project_package_json_path);
