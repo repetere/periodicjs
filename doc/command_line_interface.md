@@ -54,7 +54,7 @@ periodic.resources.commands[commandType]
     .catch(periodic.logger.error);
 ```
 
-## `$ periodicjs crud`
+## `$ periodicjs crud` - internal storage helpers
 
 ```console
 $ periodicjs crud extension create periodicjs.ext.dbseed
@@ -80,4 +80,11 @@ periodic.crud[options.argv.crud][options.argv.crud_op](options.argv.crud_arg)
     .then(periodic.logger.info)
     .catch(periodic.logger.error);
 ```
+
+There are a number of helper crud methods
+
+* `$ periodicjs addExtension periodicjs.ext.dbseed`
+* `$ periodicjs removeExtension periodicjs.ext.dbseed`
+* `$ periodicjs addContainer react-single-page-theme`
+* `$ periodicjs removeContainer react-single-page-theme`
 
