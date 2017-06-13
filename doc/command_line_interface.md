@@ -5,7 +5,7 @@ Periodic comes with a built in Command Line Interface (CLI) with three main feat
 * CRUD - access to periodic's internal persistent storage faculties
 * Tasks - access to mounted asychronous methods from extensions and containers.
 
-## $ periodicjs repl - interactive periodic shell
+## `$ periodicjs repl` - interactive periodic shell
 
 ```console
 $ periodicjs repl
@@ -21,7 +21,7 @@ const r = repl.start('$p > ');
 r.context.$p = periodic;
 ```
 
-## $ periodicjs commands - asynchronous mounted tasks
+## `$ periodicjs commands` - asynchronous mounted tasks
 
 ```console
 $ periodicjs command ext periodicjs.ext.dbseed import path/to/seedfile.json
@@ -54,7 +54,7 @@ periodic.resources.commands[commandType]
     .catch(periodic.logger.error);
 ```
 
-## $ periodicjs crud
+## `$ periodicjs crud`
 
 ```console
 $ periodicjs crud extension create periodicjs.ext.dbseed
