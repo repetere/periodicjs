@@ -12,7 +12,8 @@ const setup = require('../../../lib/extension/setup');
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
 const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
-const initExtensionFiles = path.join(testPathDir, '/my-example-app/node_modules/sample-extension/config/databases/standard/models');
+const setupDir = path.join(testPathDir, 'ExtSetup');
+const initExtensionFiles = path.join(setupDir, '/my-example-app/node_modules/sample-extension/config/databases/standard/models');
 const exampleJSFile = path.join(initExtensionFiles, '/sample_model.js');
 
 describe('Periodic Extension setup', function() {
@@ -87,7 +88,7 @@ describe('Periodic Extension setup', function() {
     });
     after('remove test periodic dir', (done) => {
         Promise.all([
-                fs.remove(initExtensionFiles),
+                fs.remove(setupDir),
             ])
             .then(() => {
                 done();
