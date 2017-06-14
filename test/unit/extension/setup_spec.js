@@ -249,6 +249,49 @@ describe('Periodic Extension setup', function() {
     });
 
     describe('assignExtensionResources', () => {
+        it('should load resources for container', (done) => {
+            const mockThis = {
+                resources: { 
+                    standard_models: [],
+                    commands: {
+                        container: new Map(),
+                    }
+                },
+                transforms: {
+                    pre: {
+
+                    },
+                    post: {
+
+                    }
+                },
+                config: {
+                    app_root: path.join(setupDir, '/my-example-app'),
+                },
+                routers: new Map(),
+                controller: {
+                    container: new Map(),
+                },
+                locals: {
+                    container: new Map(),
+                }
+            };
+            const mockOptions = {
+                container: {
+                    type: 'local',
+                    name: 'sample-container',
+                },
+            };      
+            setup.assignExtensionResources.call(mockThis, mockOptions)
+                .then((loadedResources) => {
+                    //extensionModule file must export a function
+                    expect(loadedResources).to.be.true;
+                    done();
+                })
+                .catch(e => {
+                    done();
+                });
+        });
 
     });
     describe('setupExtensions', () => {
