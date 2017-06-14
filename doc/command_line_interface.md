@@ -24,7 +24,7 @@ r.context.$p = periodic;
 ## `$ periodicjs commands` - asynchronous mounted tasks
 
 ```console
-$ periodicjs command ext periodicjs.ext.dbseed import path/to/seedfile.json
+$ periodicjs command extension periodicjs.ext.dbseed import path/to/seedfile.json
 $ #alternatively 
 $ node [path/to/app_root/]index.js --cli --command --ext --name=periodicjs.ext.dbseed --task=import --args 
 ```

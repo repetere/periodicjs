@@ -223,7 +223,7 @@ program
 
 program
   .command('repl')
-  .description('')
+  .description('start the periodic interactive shell')
   .action(function() {
     try {
       repl(arguments);
@@ -234,12 +234,12 @@ program
   });
 
 program
-  .command('extension <ext> <func>')
-  .description('')
-  .action(function(ext, func) {
+  .command('extension <ext> <func> [args]')
+  .description('execute mounted extension asynchronous task')
+  .action(function(ext, func, args) {
     try {
       if (!ext || !func) console.log('Please specify an extension and task');
-      extension(ext, func, arguments);
+      extension(ext, func, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
@@ -247,12 +247,12 @@ program
   });
 
 program
-  .command('container <name> <func>')
-  .description('')
-  .action(function(name, func) {
+  .command('container <name> <func> [args]')
+  .description('execute mounted container asynchronous task')
+  .action(function(name, func, args) {
     try {
       if (!name || !func) console.log('Please specify an container name and task');
-      container(name, func, arguments);
+      container(name, func, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
@@ -261,7 +261,7 @@ program
 
 program
   .command('crud <entity> <operation> [args]')
-  .description('')
+  .description('access to periodic\'s internal persistent storage faculties')
   .action(function(entity, operation, args) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
