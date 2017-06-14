@@ -1,0 +1,17 @@
+<%
+const pluralize = periodic.viewHelper.pluralize;
+const capitalize = periodic.viewHelper.capitalize;
+%>
+<article>
+  <section>
+    <h3><a href="<%- request.originalurl.replace(data._id,'') %>"><%- (capitalize(entitytype)) %></a> &rsaquo; <%- data.title %> <small>(<%- data.name %>)</small></h3>
+    <p>
+      <small>
+        <strong>ID:</strong> <%- data._id %> </br>
+        <strong>Updated:</strong> <%- data.updatedat %> </br>
+        <strong>Created:</strong> <%- data.createdat %>
+      </small>
+    </p>
+    <p><%- data.description || data.content %></p>
+  </section>
+</article>
