@@ -356,6 +356,64 @@ describe('Periodic Crud Ext', function() {
         .catch(done);
     });
   });
+  describe('init', () => {
+    it('should handle errors', () => {
+      expect(CRUD_ext.init()).to.eventually.be.rejected;
+    });
+    it('should create the structure for a new extension', (done) => {
+      const extname = 'testNewExtension';
+      CRUD_ext.init.call(configPeriodic, false, extname)
+        .then(result => {
+          return fs.readdir(path.join(initTestPathDir, 'node_modules', extname));
+        })
+        .then(newextfiles => {
+          expect(newextfiles).to.contain.members([
+            '.coveralls.yml',
+            '.eslintrc.json',
+            '.travis.yml',
+            'Gruntfile.js',
+            'LICENSE',
+            'README.md',
+            'commands',
+            'config',
+            'controllers',
+            'doc',
+            'index.js',
+            'jsdoc.json',
+            'package.json',
+            'periodicjs.ext.json',
+            'resources',
+            'routers',
+            'test',
+            'transforms',
+            'utilities',
+            'views'
+          ]);
+          return fs.readJson(path.join(initTestPathDir, 'node_modules', extname,'package.json'));
+        })
+        .then(newextPackageJson => {
+          expect(newextPackageJson.name).to.eql(extname);
+          return fs.readFile(path.join(initTestPathDir, 'node_modules', extname,'README.md'));
+        })
+        .then(readmeMarkDown => {
+          expect(readmeMarkDown.toString().indexOf(extname) === -1).to.be.false;
+          done();
+        })
+        .catch(done);
+    });
+  });
+  describe('generateREADME', () => {
+    it('should return a structured readme', (done) => {
+      expect(CRUD_ext.generateREADME({ extensionName: 'newtestext' })).to.be.a('string');
+      done();
+      // fs.readFile(path.resolve(__dirname,'./newtestext.md'))
+      //   .then(testMD => {
+      //     expect(CRUD_ext.generateREADME({ extensionName: 'newtestext' })).to.eql(testMD.toString());
+          // done();
+      //   })
+      //   .catch(done);
+    });
+  });
   after('remove config test periodic dir', (done) => {
     fs.remove(initTestPathDir)
       .then(() => {
