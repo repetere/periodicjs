@@ -203,3 +203,5 @@ A command is a function that is mounted to your periodic application during init
 ## 7. Views - Asynchronous tasks available to Periodic's CLI
 
 A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
+
+NEXT: [ How do Periodic Extensions work? ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/03-how-are-extensions-loaded.md)

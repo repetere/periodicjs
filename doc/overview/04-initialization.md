@@ -95,20 +95,63 @@ $ node index.js -e development
 $ node index.js --e=development
 ```
 
-          periodicInit.runtime.configRuntimeEnvironment.bind(this),
-          periodicInit.config.loadAppSettings.bind(this),
-          periodicInit.logger.configureLogger.bind(this),
-          periodicInit.config.loadExtensions.bind(this),
-          periodicInit.config.setupGenericCoreController.bind(this),
-          periodicExtension.setup.setupExtensions.bind(this),
-          periodicExtension.setup.setupContainer.bind(this),
-          periodicInit.config.loadDatabases.bind(this),
-          periodicInit.logger.catchProcessErrors.bind(this),
-          periodicInit.express.initializeExpress.bind(this),
-          periodicInit.cli.run.bind(this),
-          periodicInit.cluster.forkProcess.bind(this),
-          periodicInit.server.initializeServers.bind(this),
-          periodicInit.timer.endTimer.bind(this),
+## `periodicInit.config.loadAppSettings` - Loading application settings
+
+The settings for Periodic are on the `periodic.settings` property. The applicatication settings are assigned by merging default settings, environment settings and override settings.
+
+Default Settings -> Environment Settings -> Override Settings -> Application Settings
+
+* **Default settings** are stored in  `app_root/node_modules/periodicjs/lib/defaults/environment.js` and cannot be modified
+* **Environment settings** are set in the configuration database in the `content/config/environment/{name-of-environment}.json`
+* **Override settings** are set on the _settings_ property in `content/config/config.json` or `content/config/config.js`
+
+
+## `periodicInit.logger.configureLogger` - Configure winston logger
+
+configure winston
+
+## `periodicInit.periodicInit.config.loadExtensions` - Load extensions from DB
+
+load settings from teh db
+
+## `periodicInit.config.setupGenericCoreController` - Initialize helper controller functions
+
+core controller
+
+## `periodicInit.setup.setupExtensions` - Configure winston logger
+
+asd
+
+## `periodicInit.setup.setupContainer` - Configure winston logger
+
+asd
+
+## `periodicInit.config.loadDatabases` - Configure winston logger
+
+asd
+
+## `periodicInit.logger.catchProcessErrors` - Configure winston logger
+
+asd
+## `periodicInit.express.initializeExpress` - Configure winston logger
+
+asd
+
+## `periodicInit.cli.run` - Configure winston logger
+
+asd
+
+## `periodicInit.cluster.forkProcess` - Configure winston logger
+
+asd
+
+## `periodicInit.server.initializeServers` - Configure winston logger
+
+asd
+
+## `periodicInit.timer.endTimer` - Configure winston logger
+
+asd
 
 
 NEXT: [ Customizing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/05-customization.md)
