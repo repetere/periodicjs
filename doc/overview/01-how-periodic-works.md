@@ -6,7 +6,7 @@
 * [ Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md) 
 * ~~Containers (COMING SOON)~~
 * ~~Advanced (COMING SOON)~~
-  * ~~Testing & Developing new Periodic features  (COMING SOON)~~
+  * [ Testing & Developing new Periodic features ](https://github.com/typesettin/periodicjs/blob/master/doc/advanced/00-testing-developing.md)
   * ~~Deploying your application (COMING SOON)~~
   * ~~Migrating from legacy applications~~
     * ~~Wordpress~~
