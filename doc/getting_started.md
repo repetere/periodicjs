@@ -84,4 +84,4 @@ $ npm start [name of environment]
 
 Periodic requires a runtime environment to be defined when your application starts. Your periodic application can have an unlimited number of environments all with different configuration settings. 
 
-NEXT: How Periodic works
+NEXT: [ How Periodic works ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/01-how-periodic-works.md)

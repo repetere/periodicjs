@@ -5,9 +5,15 @@
 Periodic is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
 ===================================
 
+## Getting Started
+
+Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide, to start building with Periodic.
+
+
 ![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
 
-## About
+
+## Building scalable enterprise applications
 
 Periodic provides:
 *	A simple way to create a dynamic web application or app with well-structured routes, templates and models
@@ -16,9 +22,7 @@ Periodic provides:
 * Support for multiple protocols, websockets, REST, RPC and more
 *	Scaffolding for web integrations, ERP, ECM, CMS applications and more
 
-## Getting Started
 
-Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide, to start building with Periodic.
 ### Community
 
 We have a friendly, growing community and welcome everyone to get involved.
