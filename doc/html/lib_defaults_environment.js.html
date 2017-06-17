@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/defaults/environment.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/defaults/environment.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+const fs = require('fs-extra');
+const path = require('path');
+/**
+ * exports default application settings
+ *@return {object} default application settings
+ */
+module.exports = () => {
+  const packageJson = fs.readJSONSync(path.resolve(__dirname, '../../package.json'));
+  // console.log({ packageJson });
+  return {
+    name: 'Periodic Rapid Enterprise Application Framework',
+    application: {
+      environment: 'development',
+      cluster_process: false,
+      exit_on_invalid_extensions: false,
+      // number_of_clusters:8, //defaults to number of CPU cores
+      check_for_updates: true,
+      version: packageJson.version,
+      server: {
+        http: {
+          port: 8786,
+        },
+        https: {
+          port: 8787, //https://www.ibm.com/support/knowledgecenter/en/SSWHYP_4.0.0/com.ibm.apimgmt.cmc.doc/task_apionprem_gernerate_self_signed_openSSL.html
+          ssl: {
+            private_key: 'node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_key.pem',
+            // p12:'node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_key.p12',
+            // pfx:'node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_key.pfx',
+            certificate: 'node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_cert.pem',
+          },
+        },
+        // socketio: {
+        //   type: 'redis',
+        //   config: {
+        //     url:'localhost'
+        //   }
+        // },
+      },
+
+    },
+    logger: {
+      use_winston_logger: true,
+      winston_exit_on_error: false,
+      use_standard_logging: true,
+      custom_logger_file_path: false,
+      custom_logger_node_modules: [],
+    },
+    express: {
+      config: {
+        trust_proxy: true,
+        use_static_caching: false, //should be true in production
+        use_compression: true,
+        debug: true,
+        csrf: true,
+      },
+      views: {
+        template_engine: 'ejs',
+        lru_cache: true,
+        lru: 100,
+        engine: 'ejs',
+        package: 'ejs',
+        extension: 'ejs',
+        page_data: {
+          title: 'Web Application',
+          version: packageJson.version,
+          description: 'Periodic is an enterprise information and content management system, designed to quickly implement your own information architecture. Periodic defines a lightweight application wrapper for Express, that provides a simple mechanism to handle theming, routes and extensions. Unlike some traditional content management solutions, there are no assumptions made about your data model, which allows for information hierarchies and taxonomies to be extremely malleable.',
+          keywords: 'content management framework, typeset, wysiwyg, ui manager, CMS, CDS, Express, ExpressJS, Application Framework, Micro Framework, Node CMS, wordpress, drupal, modular,Content Delivery System, Content Management System, Periodic Decoupled Framework',
+          author: 'acme co',
+        },
+      },
+      response_time: {
+        digits: 5,
+      },
+      use_flash: true,
+      body_parser: {
+        urlencoded: {
+          limit: '1mb',
+          extended: true,
+        },
+        json: {
+          limit: '1mb',
+        },
+      },
+      cookies: {
+        cookie_parser: 'defaultcookiejson',
+      },
+      sessions: {
+        enabled: true,
+        type: 'loki',
+        config: {
+          // name:'connect.id',
+          proxy: true,
+          resave: false, //true, //default
+          // rolling:false,//default
+          saveUninitialized: false, //true, //default
+          secret: 'defaultsessionsecret',
+          // store:Loki //default
+          // unset:'keep' //default
+          cookie: {
+            // httpOnly:true,
+            // domain:,//one week
+            expires: 604800000, //one week
+            maxAge: 604800000, //one week
+            secure: 'auto',
+            // path:'/',
+            // sameSite:'strict',
+          },
+        },
+      },
+      routing: {
+        data: '/data',
+        extension: '/ext',
+        container: '/',
+      },
+    },
+    periodic: {
+      version: packageJson.version,
+      emails: {
+        server_from_address: 'Local Perodic App &lt;hello@localhost>',
+        notification_address: 'Local Perodic App &lt;hello@localhost>',
+      },
+    },
+    databases: {
+      standard: {
+        // db: 'mongoose',
+        // options: {
+        //   url: 'mongodb://localhost:27017/periodic10_test_standard',
+        //   mongoose_options: {},
+        // },
+
+        db: 'lowkie',
+        options: {
+          dbpath: 'content/config/settings/standard_db.json',
+          dboptions: {
+            verbose: true,
+          },
+        },
+
+        // db: 'sequelize',
+        // options: {
+        //   database: 'travis_ci_test',
+        //   username: '',
+        //   password: '',
+        //   connection_options: {
+        //     dialect: 'postgres',
+        //     port: 5432,
+        //     host: '127.0.0.1',
+        //     // logging: true,
+        //   },
+        // },
+
+        controller: {
+          default: {
+            protocol: {
+              adapter: 'http',
+              api: 'rest',
+            },
+            responder: {
+              adapter: 'json',
+            },
+          },
+        },
+        router: {
+          ignore_models: [],
+        },
+      },
+    },
+    extensions: {},
+    container: {
+      name: 'periodicjs.container.default',
+      type:'local',  
+    },
+  };
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
