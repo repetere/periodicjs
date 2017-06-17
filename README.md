@@ -4,11 +4,10 @@ Periodic is a library for rapidily developing database agnostic enterprise  appl
 
 [![Download Stats](https://nodei.co/npm/periodicjs.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/periodicjs)
 
-
 ## Getting Started
 
-Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide, to start building with Periodic.
-
+Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide to start building with Periodic or 
+jump straight to the [How it works](https://github.com/typesettin/periodicjs/blob/master/doc/overview/01-how-it-works.md) documentation.
 
 ![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
 
