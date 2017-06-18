@@ -1,0 +1,60 @@
+{
+  "name": "periodicjs.ext.sample",
+  "description": "sample extension.",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engines": {
+    "node": "^6.x"
+  },
+  "contributors": [
+  ],
+  "repository": {
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "content/themes"
+      ]
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha -R spec --recursive"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "chai": "^3.0.0",
+    "chai-as-promised": "^6.0.0",
+    "coveralls": "^2.11.9",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-coveralls": "^1.0.1",
+    "grunt-jsbeautifier": "~0.2.7",
+    "grunt-jsdoc": "^2.0.0",
+    "grunt-mocha-cov": "^0.4.0",
+    "grunt-mocha-istanbul": "^4.0.2",
+    "grunt-newer": "^1.1.1",
+    "grunt-simple-mocha": "^0.4.1",
+    "istanbul": "^0.4.3",
+    "jsdoc": "^3.3.2",
+    "mocha": "^2.2.5",
+    "mocha-lcov-reporter": "^1.2.0",
+    "mocha-sinon": "^2.0.0",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  },
+  "keywords": [
+  ],
+  "bugs": {
+  },
+  "maintainers": [],
+  "directories": {},
+  "optionalDependencies": {}
+}

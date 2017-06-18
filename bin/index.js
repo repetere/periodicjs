@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 'use strict';
+//https://developer.atlassian.com/blog/2015/11/scripting-with-node/
 
 const program = require('commander');
 const path = require('path');
@@ -94,10 +95,14 @@ function setup(name) {
       const project_app_root = path.join(process_dir, projectname);
       const project_package_json_path = path.join(project_app_root, 'package.json');
       const setup_directory = path.resolve(__dirname, './__SETUP');
+      const structure_directory = path.resolve(__dirname, '../__STRUCTURE');
       const periodicPackageJson = require('../package');
       fs.ensureDir(project_app_root)
         .then(() => {
-          return fs.copy(setup_directory, project_app_root, { overwrite: false, });
+          return Promise.all([
+            fs.copy(setup_directory, project_app_root, { overwrite: false, }),
+            fs.copy(structure_directory, project_app_root, { overwrite: false, }),
+          ]);
         })
         .then(() => {
           return fs.readJSON(project_package_json_path);
@@ -120,6 +125,104 @@ function setup(name) {
   });
 }
 
+function createContainer(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--createContainer', `--name=${name}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function createExtension(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--createExtension', `--name=${name}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function addExtension(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addExtension', `--name=${name}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function removeExtension(name) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--removeExtension', `--name=${name}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function createConfig(type, name, environment, filepath) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'),
+        '--cli',
+        '--createExtension',
+        `--name=${name}`,
+        `--type=${type}`,
+        `--environment=${environment}`,
+        `--filepath=${filepath}`,
+      ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function addConfig(filepath) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--filepath=${filepath}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
+function removeConfig(id) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--id=${id}`, ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
 program
   .command('setup [name]')
   .description('create a new periodic application')
@@ -134,7 +237,7 @@ program
 
 program
   .command('repl')
-  .description('')
+  .description('start the periodic interactive shell')
   .action(function() {
     try {
       repl(arguments);
@@ -145,12 +248,12 @@ program
   });
 
 program
-  .command('extension <ext> <func>')
-  .description('')
-  .action(function(ext, func) {
+  .command('extension <ext> <func> [args]')
+  .description('execute mounted extension asynchronous task')
+  .action(function(ext, func, args) {
     try {
       if (!ext || !func) console.log('Please specify an extension and task');
-      extension(ext, func, arguments);
+      extension(ext, func, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
@@ -158,12 +261,12 @@ program
   });
 
 program
-  .command('container <name> <func>')
-  .description('')
-  .action(function(name, func) {
+  .command('container <name> <func> [args]')
+  .description('execute mounted container asynchronous task')
+  .action(function(name, func, args) {
     try {
       if (!name || !func) console.log('Please specify an container name and task');
-      container(name, func, arguments);
+      container(name, func, args);
     } catch (err) {
       console.log('Error running command - ', err);
       process.exit(0);
@@ -172,7 +275,7 @@ program
 
 program
   .command('crud <entity> <operation> [args]')
-  .description('')
+  .description('access to periodic\'s internal persistent storage faculties')
   .action(function(entity, operation, args) {
     try {
       if (!entity || !operation) console.log('Please specify an entity and operation');
@@ -183,4 +286,109 @@ program
     }
   });
 
+program
+  .command('createContainer <name>')
+  .description('create a new container')
+  .action(function(name) {
+    try {
+      createContainer(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+program
+  .command('createExtension <name>')
+  .description('create a new extension')
+  .action(function(name) {
+    try {
+      createExtension(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+program
+  .command('addExtension <name>')
+  .description('add an extension to the extension database')
+  .action(function(name) {
+    try {
+      addExtension(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+program
+  .command('removeExtension <name>')
+  .description('remove an extension from the extension database')
+  .action(function(name) {
+    try {
+      removeExtension(name);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+
+program
+  .command('createConfig <type> <name> <environment> <filepath>')
+  .description('create a new Config')
+  .action(function(type, name, environment, filepath) {
+    try {
+      createConfig(type, name, environment, filepath);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+
+program
+  .command('addConfig <filepath>')
+  .description('add an application configuration to the configuration database')
+  .action(function(filepath) {
+    try {
+      addConfig(filepath);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+program
+  .command('removeConfig <id>')
+  .description('remove an application configuration from the configuration database')
+  .action(function(id) {
+    try {
+      removeConfig(id);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+
 program.parse(process.argv);
+
+
+// function toggleExtension(name) {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--toggleExtension', `--name=${name}`, ], function (err, text) {
+//         console.log(text.green.underline);
+//       });
+//       return resolve(true); 
+//     } catch (e) {
+//       return reject(e);
+//     }
+//   });
+// }
+// program
+//   .command('toggleExtension <name>')
+//   .description('toggle an extension enabled status in the extension database')
+//   .action(function(name) {
+//     try {
+//       toggleExtension(name);
+//     } catch (err) {
+//       console.log('Error running command - ', err);
+//       process.exit(0);
+//     }
+//   });

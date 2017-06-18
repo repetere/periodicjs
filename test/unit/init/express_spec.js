@@ -257,7 +257,7 @@ describe('Periodic Init Express', function() {
             config: {
               use_compression: true,
             },
-          }
+          },
         },
         app: {
           use: useSpy,

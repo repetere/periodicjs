@@ -16,7 +16,7 @@ const scheme = {
   lastname: {
     type: Sequelize.STRING,
   },
-  username: {
+  name: {
     type: Sequelize.STRING,
   },
   password: {
@@ -74,8 +74,7 @@ const options = {
   }],
 };
 
-const associations = [
-  {
+const associations = [{
     source: 'account',
     association: 'hasMany',
     target: 'asset',
@@ -140,7 +139,7 @@ module.exports = {
   coreDataOptions: {
     docid: ['_id', 'name'],
     sort: { createdat: -1, },
-    search: [ 'email', 'firstname', 'lastname', 'username', ],
+    search: ['email', 'firstname', 'lastname', 'name', ],
     population: 'assets primaryasset coverimages userroles tags categories',
   },
 };

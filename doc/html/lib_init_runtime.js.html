@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/init/runtime.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/init/runtime.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+// const path = require('path');
+// const fs = require('fs-extra');
+const minimist = require('minimist');
+
+/**
+ * get the application environment from command line arguments
+ * 
+ * @param {any} argv parsed command line arguments
+ * @returns {string|boolean} returns the value of the enviroment or false
+ */
+function getEnv(argv) {
+  if (!argv &amp;&amp; !process.env.NODE_ENV &amp;&amp; !process.env.ENV) {
+    return false;
+  } else if (argv &amp;&amp; argv.e) {
+    return argv.e;
+  } else if (argv &amp;&amp; argv._ &amp;&amp; argv._.length === 1) {
+    return argv._[0];
+  } else if (process.env.NODE_ENV) {
+    return process.env.NODE_ENV;
+  } else if (process.env.ENV) {
+    return process.env.ENV;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * sets the application runtime environment and save last run environment into configuration
+ * 
+ * @param {any} env this is the enviroment variable to set
+ * @param {string} operation either update the config db, or create a new entry for process.runtime
+ * @param {object} processRuntimeConfig existing runtime config from configuration database
+ * @returns {boolean|Promise} returns a resolved promise after configuration database operation
+ */
+function setAppRunningEnv(env, operation, processRuntimeConfig, argv = {}) {
+  // console.log({ env, operation, processRuntimeConfig })
+  const processEnv = {
+    process: {
+      runtime: env,
+    },
+  };
+  const configProcessEnv = Object.assign({}, processEnv);
+  configProcessEnv.process = Object.assign({}, configProcessEnv.process, {
+    cli: (argv.cli) ? true : false,
+    argv,
+  });
+  const processConfig = {
+    filepath: 'content/config/process/runtime.json', // environment: String,  // container: String,
+    config: processEnv,
+  };
+  this.config = Object.assign({}, this.config, configProcessEnv);
+  if (argv.debug) {
+    this.config.debug = (argv.debug === false || argv.debug === 'false') ? false : argv.debug;
+  }
+  // console.log('this.config', this.config);
+  if (operation === 'update') {
+    const updateDoc = Object.assign({}, processRuntimeConfig, processConfig);
+    // console.log({ updateDoc });
+    return this.configuration.update({ updatedoc: updateDoc, });
+  } else if (operation === 'create') {
+    return this.configuration.create({
+      newdoc: processConfig
+    });
+  } else return false;
+}
+
+/**
+ * sets the runtime environment correctly, there are multiple ways to set the runtime environment (via command line arguments, or via environment variables)
+ * It will prioritize loading via command line argument first, and then environment variables, and finally it will use the last runtime environment
+ * 
+ * @returns {Promise} configRuntimeEnvironment sets up application config db
+ */
+function configRuntimeEnvironment() {
+  const setAppEnv = setAppRunningEnv.bind(this);
+  return new Promise((resolve, reject) => {
+    try {
+      // console.log('process.argv', process.argv);
+      // console.log('configRuntimeEnvironment this.config', this.config);
+      const argv = require('minimist')(process.argv.slice(2));
+      const appEnv = this.config.environment || getEnv(argv);
+      let existingRuntimeEnv;
+      // if (this.config.configuration.type === 'db') {
+      this.configuration.load({ docid: 'filepath', query: 'content/config/process/runtime.json' })
+        .then(result => {
+          try {
+            existingRuntimeEnv = result.config.process.runtime;
+          } catch (e) {
+            existingRuntimeEnv = false;
+          }
+          // console.log({ result,appEnv,existingRuntimeEnv });
+          if (!result &amp;&amp; !appEnv &amp;&amp; !existingRuntimeEnv) {
+            throw new Error('A valid runtime environment is required');
+          }
+          if (result) {
+            if (result.toJSON &amp;&amp; typeof result.toJSON === 'function') {
+              result = result.toJSON();
+            }
+            if (existingRuntimeEnv === appEnv) {
+              resolve(setAppEnv(appEnv, undefined, undefined, argv));
+            } else {
+              resolve(setAppEnv(appEnv || existingRuntimeEnv, 'update', result, argv));
+            }
+          } else {
+            resolve(setAppEnv(appEnv, 'create', undefined, argv));
+          }
+        })
+        .catch(reject);
+      // } else { //eventually handle files again
+      // const __CONFIG_DIR = path.resolve(this.config.app_root, 'content/config');
+      // const __CONFIG_JSON_PATH = path.join(__CONFIG_DIR, 'config.json');
+      // }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+function completeInitialization(resolve, reject, e) {
+  if (e.message === 'Leave Promise Chain: CLI Process' ||
+    e.message === 'Leave Promise Chain: Forking Process') {
+    this.logger.info(e.message);
+    resolve(true);
+  } else {
+    this.logger.error('Could not initialize Periodic');
+    reject(e);
+  }
+}
+
+module.exports = {
+  configRuntimeEnvironment,
+  getEnv,
+  setAppRunningEnv,
+  completeInitialization,
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

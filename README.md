@@ -1,13 +1,18 @@
+Periodic is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
+===================================
 [![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs) [![Downloads Per Month](https://img.shields.io/npm/dm/periodicjs.svg?maxAge=2592000)](https://www.npmjs.com/package/periodicjs) [![npm](https://img.shields.io/npm/dt/periodicjs.svg?maxAge=2592000)]() [![Coverage Status](https://coveralls.io/repos/github/typesettin/periodicjs/badge.svg?branch=master)](https://coveralls.io/github/typesettin/periodicjs?branch=master) [![Join the chat at https://gitter.im/typesettin/periodicjs](https://badges.gitter.im/typesettin/periodicjs.svg)](https://gitter.im/typesettin/periodicjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Download Stats](https://nodei.co/npm/periodicjs.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/periodicjs)
 
-Periodic is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
-===================================
+## Getting Started
+
+Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide to start building with Periodic or 
+jump straight to the [How it works](https://github.com/typesettin/periodicjs/blob/master/doc/overview/01-how-it-works.md) documentation.
 
 ![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
 
-## About
+
+## Building scalable enterprise applications
 
 Periodic provides:
 *	A simple way to create a dynamic web application or app with well-structured routes, templates and models
@@ -16,9 +21,7 @@ Periodic provides:
 * Support for multiple protocols, websockets, REST, RPC and more
 *	Scaffolding for web integrations, ERP, ECM, CMS applications and more
 
-## Getting Started
 
-Read the [ Getting Started ](https://github.com/typesettin/periodicjs/blob/master/doc/getting_started.md) guide, to start building with Periodic.
 ### Community
 
 We have a friendly, growing community and welcome everyone to get involved.
