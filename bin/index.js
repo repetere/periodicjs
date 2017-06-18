@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 'use strict';
+//https://developer.atlassian.com/blog/2015/11/scripting-with-node/
 
 const program = require('commander');
 const path = require('path');
@@ -124,82 +125,95 @@ function setup(name) {
   });
 }
 
-// function toggleExtension(name) {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--toggleExtension', `--name=${name}`, ], function (err, text) {
-//         console.log(text.green.underline);
-//       });
-//       return resolve(true); 
-//     } catch (e) {
-//       return reject(e);
-//     }
-//   });
-// }
 function createContainer(name) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--createContainer', `--name=${name}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--createContainer', `--name=${name}`, ], function(err, text) {
         console.log(text.green.underline);
       });
-      return resolve(true); 
+      return resolve(true);
     } catch (e) {
       return reject(e);
     }
   });
 }
+
 function createExtension(name) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--createExtension', `--name=${name}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--createExtension', `--name=${name}`, ], function(err, text) {
         console.log(text.green.underline);
       });
-      return resolve(true); 
+      return resolve(true);
     } catch (e) {
       return reject(e);
     }
   });
 }
+
 function addExtension(name) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--addExtension', `--name=${name}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addExtension', `--name=${name}`, ], function(err, text) {
         console.log(text.green.underline);
       });
-      return resolve(true); 
+      return resolve(true);
     } catch (e) {
       return reject(e);
     }
   });
 }
+
 function removeExtension(name) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--removeExtension', `--name=${name}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--removeExtension', `--name=${name}`, ], function(err, text) {
         console.log(text.green.underline);
       });
-      return resolve(true); 
+      return resolve(true);
     } catch (e) {
       return reject(e);
     }
   });
 }
+
+function createConfig(type, name, environment, filepath) {
+  return new Promise((resolve, reject) => {
+    try {
+      run_cmd('node', [path.join(process_dir, 'index.js'),
+        '--cli',
+        '--createExtension',
+        `--name=${name}`,
+        `--type=${type}`,
+        `--environment=${environment}`,
+        `--filepath=${filepath}`,
+      ], function(err, text) {
+        console.log(text.green.underline);
+      });
+      return resolve(true);
+    } catch (e) {
+      return reject(e);
+    }
+  });
+}
+
 function addConfig(filepath) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--filepath=${filepath}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--filepath=${filepath}`, ], function(err, text) {
         console.log(text.green.underline);
       });
-      return resolve(true); 
+      return resolve(true);
     } catch (e) {
       return reject(e);
     }
   });
 }
+
 function removeConfig(id) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--id=${id}`, ], function (err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--id=${id}`, ], function(err, text) {
         console.log(text.green.underline);
       });
       return resolve(true);
@@ -271,17 +285,7 @@ program
       process.exit(0);
     }
   });
-// program
-//   .command('toggleExtension <name>')
-//   .description('toggle an extension enabled status in the extension database')
-//   .action(function(name) {
-//     try {
-//       toggleExtension(name);
-//     } catch (err) {
-//       console.log('Error running command - ', err);
-//       process.exit(0);
-//     }
-//   });
+
 program
   .command('createContainer <name>')
   .description('create a new container')
@@ -326,6 +330,19 @@ program
       process.exit(0);
     }
   });
+
+program
+  .command('createConfig <type> <name> <environment> <filepath>')
+  .description('create a new Config')
+  .action(function(type, name, environment, filepath) {
+    try {
+      createConfig(type, name, environment, filepath);
+    } catch (err) {
+      console.log('Error running command - ', err);
+      process.exit(0);
+    }
+  });
+
 program
   .command('addConfig <filepath>')
   .description('add an application configuration to the configuration database')
@@ -350,3 +367,28 @@ program
   });
 
 program.parse(process.argv);
+
+
+// function toggleExtension(name) {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       run_cmd('node', [ path.join(process_dir, 'index.js'), '--cli', '--toggleExtension', `--name=${name}`, ], function (err, text) {
+//         console.log(text.green.underline);
+//       });
+//       return resolve(true); 
+//     } catch (e) {
+//       return reject(e);
+//     }
+//   });
+// }
+// program
+//   .command('toggleExtension <name>')
+//   .description('toggle an extension enabled status in the extension database')
+//   .action(function(name) {
+//     try {
+//       toggleExtension(name);
+//     } catch (err) {
+//       console.log('Error running command - ', err);
+//       process.exit(0);
+//     }
+//   });
