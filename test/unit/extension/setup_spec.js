@@ -15,13 +15,25 @@ const testPathDir = path.resolve(__dirname, '../../mock/spec/periodic');
 const setupDir = path.join(testPathDir, 'ExtSetup');
 const initExtensionFiles = path.join(setupDir, '/my-example-app/node_modules/sample-extension/config/databases/standard/models');
 const initSettingsContainerFiles = path.join(setupDir, '/my-example-app/content/container/sample-container/config');
+const initEmptyContainerDir = path.join(setupDir, '/my-example-app/content/container/empty-container');
 const initSettingsExtensionFiles = path.join(setupDir, '/my-example-app/node_modules/sample-extension');
+const initContainerExtensionRouterDir = path.join(setupDir, '/my-example-app/content/container/sample-container/routers');
+const initContainerExtensionControllerDir = path.join(setupDir, '/my-example-app/content/container/sample-container/controllers');
+const initContainerExtensionUtilsDir = path.join(setupDir, '/my-example-app/content/container/sample-container/utilities');
+const initContainerExtensionCommandsDir = path.join(setupDir, '/my-example-app/content/container/sample-container/commands');
+const initContainerExtensionTransformsDir = path.join(setupDir, '/my-example-app/content/container/sample-container/transforms');
 const exampleJSFile = path.join(initExtensionFiles, '/sample_model.js');
 const settingsFile = path.join(initSettingsContainerFiles, '/settings.js');
 const settingsExtensionFile = path.join(initSettingsExtensionFiles, '/config/settings.js');
-const settingsRuntimeFile = path.resolve(setupDir, '/my-example-app/content/container/sample-container/test_runtime.json');
-const settingsRuntimeExtensionFile = path.resolve(setupDir, '/my-example-app/content/extension/sample-extension/test_runtime.json');
-
+const settingsRuntimeFile = path.join(setupDir, '/my-example-app/content/container/sample-container/test_runtime.json');
+const settingsRuntimeExtensionFile = path.join(setupDir, '/my-example-app/content/extension/sample-extension/test_runtime.json');
+const containerExtensionModuleFile = path.join(setupDir, '/my-example-app/content/container/sample-container/index.js');
+const containerEmptyExtensionModuleFile = path.join(setupDir, '/my-example-app/content/container/empty-container/index.js');
+const containerExtensionModuleRouterFile = path.join(setupDir, '/my-example-app/content/container/sample-container/routers/index.js');
+const containerExtensionModuleControllerFile = path.join(setupDir, '/my-example-app/content/container/sample-container/controllers/index.js');
+const containerExtensionModuleUtilFile = path.join(setupDir, '/my-example-app/content/container/sample-container/utilities/index.js');
+const containerExtensionModuleCommandsFile = path.join(setupDir, '/my-example-app/content/container/sample-container/commands/index.js');
+const containerExtensionModuleTransformsFile = path.join(setupDir, '/my-example-app/content/container/sample-container/transforms/index.js');
 
 describe('Periodic Extension setup', function() {
     this.timeout(10000);
@@ -30,6 +42,12 @@ describe('Periodic Extension setup', function() {
                 fs.ensureDir(initExtensionFiles),
                 fs.ensureDir(initSettingsContainerFiles),
                 fs.ensureDir(initSettingsExtensionFiles),
+                fs.ensureDir(initEmptyContainerDir),
+                fs.ensureDir(initContainerExtensionRouterDir),
+                fs.ensureDir(initContainerExtensionControllerDir),
+                fs.ensureDir(initContainerExtensionUtilsDir),
+                fs.ensureDir(initContainerExtensionCommandsDir),
+                fs.ensureDir(initContainerExtensionTransformsDir),
             ])
             .then((result) => {
                 return Promise.all([
@@ -47,8 +65,15 @@ describe('Periodic Extension setup', function() {
                     }),
                     fs.outputFile(settingsRuntimeExtensionFile, 'module.exports = {test: true}', function(jsFileCreated) {
                         return true;
-                    })
-                ])
+                    }),
+                    fs.outputFile(containerExtensionModuleFile, 'module.exports = function(){return true}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerExtensionModuleRouterFile, 'module.exports = {}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerExtensionModuleControllerFile, 'module.exports = {}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerExtensionModuleUtilFile, 'module.exports = {}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerExtensionModuleCommandsFile, 'module.exports = {}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerExtensionModuleTransformsFile, 'module.exports = { pre:{"DELETE":function(req, res, next){next()}}, post: {"GET":function(req, res, next){next()}}}', function(fileCreated) { return true; }),
+                    fs.outputFile(containerEmptyExtensionModuleFile, 'module.exports = function(){return true}', function(fileCreated) { return true; }),
+                ]);
             })
             .then((created) => {
                 done();
@@ -223,7 +248,8 @@ describe('Periodic Extension setup', function() {
                 },
                 logger: {
                     warn: warnSpy,
-                }
+                },
+                routers: new Map(),
             }
             const mockOptions = {
                 container: {
@@ -250,12 +276,16 @@ describe('Periodic Extension setup', function() {
 
     describe('assignExtensionResources', () => {
         it('should load resources for container', (done) => {
+            const warnSpy = sinon.spy();
             const mockThis = {
                 resources: { 
                     standard_models: [],
                     commands: {
                         container: new Map(),
                     }
+                },
+                logger: {
+                    warn: warnSpy,
                 },
                 transforms: {
                     pre: {
@@ -278,22 +308,79 @@ describe('Periodic Extension setup', function() {
             };
             const mockOptions = {
                 container: {
-                    type: 'local',
                     name: 'sample-container',
+                    type: 'local',
                 },
             };      
             setup.assignExtensionResources.call(mockThis, mockOptions)
-                .then((loadedResources) => {
+                .then((assignedResources) => {
                     //extensionModule file must export a function
-                    expect(loadedResources).to.be.true;
+                    expect(assignedResources).to.be.true;
+                    expect(warnSpy.called).to.be.false;
+                    expect(warnSpy.callCount).to.eql(0);
                     done();
                 })
                 .catch(e => {
+                    console.log({ e });
                     done();
                 });
         });
 
+
+        it('should log warnings if files don\'t exist', (done) => {
+            const warnSpy = sinon.spy();
+            const mockThis = {
+                resources: { 
+                    standard_models: [],
+                    commands: {
+                        container: new Map(),
+                    }
+                },
+                logger: {
+                    warn: warnSpy,
+                },
+                transforms: {
+                    pre: {
+
+                    },
+                    post: {
+
+                    }
+                },
+                config: {
+                    app_root: path.join(setupDir, '/my-example-app'),
+                    debug: true,
+                },
+                routers: new Map(),
+                controller: {
+                    container: new Map(),
+                },
+                locals: {
+                    container: new Map(),
+                }
+            };
+            const mockOptions = {
+                container: {
+                    name: 'empty-container',
+                    type: 'local',
+                },
+            };      
+            setup.assignExtensionResources.call(mockThis, mockOptions)
+                .then((assignedResources) => {
+                    //extensionModule file must export a function
+                    console.log({ assignedResources });
+                    expect(assignedResources).to.be.true;
+                    expect(warnSpy.called).to.be.true;
+                    expect(warnSpy.callCount).to.eql(4);
+                    done();
+                })
+                .catch(e => {
+                    console.log({ e });
+                    done();
+                });
+        });
     });
+
     describe('setupExtensions', () => {
 
     });

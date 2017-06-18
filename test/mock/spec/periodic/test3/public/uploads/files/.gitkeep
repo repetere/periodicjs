@@ -1,0 +1,26 @@
+{
+	"cron":{
+		"development":{
+			"replicationfrom":"qa",
+			"replicationcron":"59 2 * * * *"
+		},
+		"qa":{
+			"replicationfrom":"production",
+			"replicationcron":"59 3 * * * *"
+		}
+	},
+	"qa":{
+	  "host": "192.168.100.100",
+	  "port": 22,
+	  "username": "root",
+	  "password": "serverpassword",
+    "webAppPath" : "/var/www/mywebapp"
+	},
+	"production":{
+	  "host": "192.168.200.100",
+	  "port": 22,
+	  "privateKey": "path/to/private/key",
+	  "username": "sshusername",
+    "webAppPath" : "/var/www/mywebapp"
+	}
+}
