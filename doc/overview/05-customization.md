@@ -1,13 +1,20 @@
-# Overview
+# Customizing Your Application 
 
-The Periodic node module (`periodicjs`) is a javascript [singleton](http://www.dofactory.com/javascript/singleton-design-pattern) that provides a declarative framework for quickly building enterprise database agnostic applications.
+Periodic applications are comprised of three component features that can be customized:
 
-Periodic is extremely customizable and flexible. Periodic supports [polyglot persistence](http://www.jamesserra.com/archive/2015/07/what-is-polyglot-persistence/) (built in support for Mongo, Redis, SQL, Loki) and multiple transport mechanisms (REST, JSON-RPC, XML-RPC) over HTTP, HTTPS and WebSockets.
+1. Your Application
+2. Your Extensions
+3. Your Contianer
 
-The extreme flexibility is what enables Periodic to be used for various applications API Servers, Authentication Servers, E-Commerce platforms, Mobile application backends servers, microservices, Core banking platforms, advanced CMS replacements, CRMs, ERPs, ELPs, GRPs and ECMS.
+Periodic applications are configured per runtime environment, this means for example in a development environment you could use a disk based/ or memory based configuration with Lowkie, in QA and Staging you could use a document based configuration in Mongo or Redis, and in Production you could use a SQL based configuration.
 
-* [ The Periodic Singleton ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/03-singleton.md)
-* [ Initializing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/04-initialization.md)
-* [ Customizing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/05-customization.md)
+Configurations and Database connections are all instances of Core Data. Core Data allows you to have a heterogenious mix of resources from different databases (You could have your user, order, and transaction data in SQL, and your product catelog in Mongo).
 
-NEXT: [ The Periodic Singleton ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/03-singleton.md)
+The general configuration flow is to:
+1. Define where your configuration database
+2. Create environment specific configuration json documents for your application and extensions
+3. Add the configurations to your application's configuration database
+
+All Configurations settings are merged from a set of default configurations, environment specific configurations and finally override configurations.
+
+NEXT: [ Configuration ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/01-overview.md) 
