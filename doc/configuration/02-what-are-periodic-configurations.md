@@ -1,207 +1,419 @@
-# What are Periodic Extensions?
+# What are Periodic Configurations?
 
-Extensions have seven major features. Once an extension is initialized, the extension's features are availble in your periodic application.
-1. Commands
-2. Configurations
-3. Controllers
-4. Routers
-5. Transforms
-6. Utilities
-7. Views
-
-## 1. Commands - Asynchronous tasks available to Periodic's CLI
-
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
+Configurations are database records of settings for you application segreated by the runtime environment.
 
 ```javascript
-//You can access extensions commands from resources
-periodic.resources.commands.extensions; // Map of extenion commands
-
-//referencing a single command
-periodic.resources.commands.extensions.get('[name-of-extesion]')['name-of-command']; // this is a function that returns a promise
-
-//during the initialization process, when your application is loading extenstions it loads commands from your extensions command direcotry
-
-//for example the extension dbseed
-const dbseedCommands = require('periodicjs.ext.dbseed/commands/index'); //has an import and an export command
-periodic.resources.commands.extensions.set('periodicjs.ext.dbseed',dbseedCommands);
-
-//using a command
-periodic.resources.commands.extensions.get('periodicjs.ext.dbseed').export('path/to/some/seedfile.json')
-  .then(console.log)
-  .catch(console.error);
-```
-
-E.g. calling command from the CLI
-
-```
-$ periodicjs extension periodicjs.ext.dbseed export path/to/some/seedfile.json
-```
-E.g. calling command from the REPL
-
-```javascript
-$p.resources.commands.extensions.get('periodicjs.ext.dbseed').export('path/to/some/seedfile.json').then(console.log).catch(console.error);
-```
-
-## 1. Configurations - custom settings for extensions including custom databases
-
-Extension configurations are required to have two properties `settings` and `databases`
-
-Sample `settings.js`
-```javascript
-module.exports = {
-  settings: {
-  },
-  databases: {
-  },
-};
-```
-
-### Configuring extension settings
-
-```javascript
-// once initialized, extension settings are assigned to a name spaced property on your applications extensions setting property
-periodic.settings.extensions['name-of-extension'];
-```
-
-Just like your periodic application, extension settings are composed of default settings, environment settings and override settings
-```
-Default Settings -> Environment Settings -> Override Settings -> Extension Settings
-```
-
-The default settings for an extension are defined in the extensions `name-of-extension/config/settings.js` file.
-
-Environment settings are stored in the configuration database under the filepath `content/config/extension content/config/extension/[name-of-extension]/[runtime-environemnt].json`
-
-Override Settings are stored in your global override settings `content/config/config.json` under the `settings.extensions['name-of-extension']` property
-
-### Configuring custom extension databases
-
-In some situations, extensions need their own databases (e.g. for logging, for caching, shopping carts, etc)
-
-The databases setting property is identical to the database setting property in your periodic configuration .
-
-Custom database models are located in `name-of-extension/config/databases/[name-of-database]/models` directory
-
-Sample extension configuration with custom databases
-```javascript
-'use strict';
-module.exports = {
-  settings: {
-    use_logging:true,
-    validate_customers:true,
-    use_transaction_history:true,
-  },
-  databases: {
-    error_log_db: {
-      db: 'mongoose',
-      options: {
-        url: 'mongodb://localhost:27017/custom_db_logs',
-        mongoose_options: {},
+//sample database configuration for the dbseed extension
+{
+  "filepath": "content/config/extensions/periodicjs.ext.dbseed/development.json",
+  "environment": "development",
+  "config": {
+    "settings": {
+      "export": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ],
+        "split_count": 1000
       },
-      controller: {
-        default: {
-          protocol: {
-            adapter: 'http',
-            api: 'rest',
-          },
-          responder: {
-            adapter: 'json',
-          },
-        },
-      },
-      router: {
-        ignore_models: [],
-      },
+      "import": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ]
+      }
     },
-    transactions: {
-      db: 'sequelize',
-      options: {
-        database: 'store_orders_db',
-        username: '',
-        password: '',
-        connection_options: {
-          dialect: 'postgres',
-          port: 5432,
-          host: '127.0.0.1',
-          logging: true,
+  }
+}
+```
+
+Each database configuration record has three required properties (*filepath*,*environment*,*config*) and one optional property (*container*).
+
+```javascript
+{
+  filepath, //the filepath is the unique field generated for each configuration, this field is automatically generated. 
+  environment, // the runtime environment for the database configuration
+  config, // the configuration information
+  container,// optional - but if you want the configuration specific to a certain container
+}
+```
+
+The configuration database has two Core Data models instantiated, the configuration model and the configuration model. The configuration Core Data model handles CRUD operations in the configuration database.
+
+```javascript
+const periodicjs = require('periodicjs');
+
+periodicjs.dbs.get('configuration');// your connected configuration database
+periodicjs.datas.get('configuration');// your configuration core data model (in the configuration database)
+periodicjs.datas.get('configuration');// your configuration core data model (in the configuration database)
+```
+
+There are four different types of declarative Configurations:
+1. Application Configurations
+2. Extension Configurations
+3. Container Configurations
+4. Database Definition & Override Configurations
+
+
+## 1. Application Configurations
+
+Application configurations provide a mechanism to alter periodic's default functionality. 
+
+The filepath for application configurations conform to the following pattern.
+```javascript
+const ApplicationConfigFilepath = `content/config/environment/${periodicjs.config.process.runtime}.json`;
+//for example the configuration for your development environment would have the following filepath
+const developmentEnvironmentFilepath = 'content/config/environment/development.json';
+```
+
+```javascript
+//Sample Development configuration database record
+{
+  "filepath": "content/config/environment/development.json",
+  "environment": "development",
+  "config": {
+    "name": "My Application",
+    "application": {
+      "environment": "development",
+      "cluster_process": false,
+      "exit_on_invalid_extensions": false,
+      "check_for_updates": true,
+      "version": "10.1.0",
+      "server": {
+        "http": {
+          "port": 8786
         },
-      },
-      controller: {
-        default: {
-          protocol: {
-            adapter: 'http',
-            api: 'rest',
-          },
-          responder: {
-            adapter: 'json',
-          },
-        },
-      },
-      router: {
-        ignore_models: [],
-      },
+        "https": {
+          "port": 8787,
+          "ssl": {
+            "private_key": "node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_key.pem",
+            "certificate": "node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_cert.pem"
+          }
+        }
+      }
     },
-    shopping_cart: {
-      db: 'lowkie',
-      options: {
-        dbpath: 'content/config/settings/shopping-cart_db.json',
-        dboptions: {
-          verbose: true,
-        },
+    "logger": {
+      "use_winston_logger": true,
+      "winston_exit_on_error": false,
+      "use_standard_logging": true,
+      "custom_logger_file_path": false,
+      "custom_logger_node_modules": []
+    },
+    "express": {
+      "config": {
+        "trust_proxy": true,
+        "use_static_caching": false,
+        "use_compression": true,
+        "debug": true,
+        "csrf": true
       },
-        controller: {
-          default: {
-            protocol: {
-              adapter: 'http',
-              api: 'rest',
-            },
-            responder: {
-              adapter: 'json',
-            },
-          },
-        },
-        router: {
-          ignore_models: [],
-        },
+      "views": {
+        "template_engine": "ejs",
+        "lru_cache": true,
+        "lru": 100,
+        "engine": "ejs",
+        "package": "ejs",
+        "extension": "ejs",
+        "page_data": {
+          "title": "Web Application",
+          "version": "10.1.0",
+          "description": "App Description",
+          "author": "acme co"
+        }
       },
+      "response_time": {
+        "digits": 5
+      },
+      "use_flash": true,
+      "body_parser": {
+        "urlencoded": {
+          "limit": "1mb",
+          "extended": true
+        },
+        "json": {
+          "limit": "1mb"
+        }
+      },
+      "cookies": {
+        "cookie_parser": "defaultcookiejson"
+      },
+      "sessions": {
+        "enabled": true,
+        "type": "loki",
+        "config": {
+          "proxy": true,
+          "resave": false,
+          "saveUninitialized": false,
+          "secret": "defaultsessionsecret",
+          "cookie": {
+            "expires": 604800000,
+            "maxAge": 604800000,
+            "secure": "auto"
+          }
+        }
+      },
+      "routing": {
+        "data": "/data",
+        "extension": "/ext",
+        "container": "/"
+      }
+    },
+    "periodic": {
+      "version": "10.1.0",
+      "emails": {
+        "server_from_address": "Local Perodic App <hello@localhost>",
+        "notification_address": "Local Perodic App <hello@localhost>"
+      }
+    },
+    "databases": {
+      "standard": {
+        "db": "lowkie",
+        "options": {
+          "dbpath": "content/config/settings/standard_db.json",
+          "dboptions": {
+            "verbose": true
+          }
+        },
+        "controller": {
+          "default": {
+            "protocol": {
+              "adapter": "http",
+              "api": "rest"
+            },
+            "responder": {
+              "adapter": "json"
+            }
+          }
+        },
+        "router": {
+          "ignore_models": []
+        }
+      }
+    },
+    "extensions": {},
+    "container": {}
+  }
+}
+```
+
+## 2. Extension Configurations
+
+Extension configurations provide a mechanism to alter an Extensions's default functionality. 
+
+The filepath for extension configurations conform to the following pattern.
+```javascript
+const ExtensionConfigFilepath = `content/config/extensions/${extension.name}/${periodicjs.config.process.runtime}.json`;
+//for example the configuration for your development environment would have the following filepath
+const developmentEnvironmentFilepath = 'content/config/extensions/periodicjs.ext.dbseed/development.json';
+```
+
+Extension configurations require two properties, a *settings* property and a *database* property. 
+
+```javascript
+//Sample Development configuration database record
+{
+  "filepath": "content/config/extensions/periodicjs.ext.dbseed/development.json",
+  "environment": "development",
+  "config": {
+    "settings": {
+      "defaults": true,
+      "export": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ],
+        "split_count": 1000
+      },
+      "import": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ]
+      }
+    },
+    "databases": {}
+  }
+}
+```
+
+## 3. Container Configurations
+
+Container configurations provide a mechanism to alter a Container's default functionality. 
+
+The filepath for container configurations conform to the following pattern.
+```javascript
+const ContainerConfigFilepath = `content/config/container/${container.name}/${periodicjs.config.process.runtime}.json`;
+//for example the configuration for your development environment would have the following filepath
+const developmentEnvironmentFilepath = 'content/config/container/periodicjs.ext.dbseed/development.json';
+```
+
+Container configurations also require two properties, a *settings* property and a *database* property. 
+
+```javascript
+//Sample Development configuration database record
+{
+  "filepath": "content/config/container/my-shopping-site /development.json",
+  "environment": "development",
+  "config": {
+    "settings": {
+      "defaults": true,
+      "export": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ],
+        "split_count": 1000
+      },
+      "import": {
+        "ignore_core_datas": [
+          "configuration",
+          "extension"
+        ]
+      }
+    },
+    "databases": {}
+  }
+}
+```
+
+## 4. Database Definition & Override Configurations
+
+In order to customize your application, you must define the connection details to your configuration database. Your definition file must either be a json file, a javascript object, or an asychronous javascript function that resolves an object with connection details. 
+
+
+### Database Definition
+
+This gives you an extreme amount of flexility on where/how to store credentials. The definition file is either `app_root/content/config/config.json` or `app_root/content/config/config.js`
+
+```javascript
+//simple json file example - [app_root]/content/config/config.json
+{
+  "configuration": {
+    "type": "db",
+    "db": "lowkie",
+    "options": {
+      "dbpath": "content/config/settings/config_db.json",
+    },
   },
+  "settings":{
+    "name":"My Application"
+  }
+}
+//simple javascript file - [app_root]/content/config/config.js
+module.exports = {
+  configuration: {
+    type: 'db',
+    db: 'mongoose',
+    options: {
+      url: process.env.CONFIG_DB_CONNETION_URL,// 'mongodb://localhost:27017/config_db',
+      connection_options: {},
+    },
+  },
+  settings:{
+    name:'My Application'
+  }  
 };
+//advanced asynchronous javascript function
+module.exports = () => {
+  return new Promise ((resolve,reject)=>{
+    try{
+      someAsyncResource()
+        .then(connectionSettings=>{
+          resolve({
+            configuration: {
+              type: 'db',
+              db: 'sequelize',
+              options: {
+                database: 'configdb',
+                username: connectionSettings.username,
+                password: connectionSettings.password,
+                connection_options: {
+                  dialect: 'postgres',
+                  port: 5432,
+                  host: '127.0.0.1',
+                },
+              },
+            },
+            settings:{
+              name:'My Application'
+            } 
+          });
+        })
+        .catch(reject)
+    } catch(e){
+      reject(e);
+    }
+  });
+};
+
+//The configuration property holds the information for you application's configuration database (can also be file based)
+configuration.type = "db" // can be either filebased or database driven "file" {db|file} 
+configuration.db = "lowkie" // can be any valid core data orm adapter db {lowkie(loki)|mongoose(mongo)|sequelize(sql)|reddie(redis)}
+configuration.options = {/**/} //core data apadter connection options
 ```
 
-## 3. Controllers - milddleware functions
+### Override Configurations
 
-During initialization, an extension's controllers are 
+In the same configuration file; either `app_root/content/config/config.json` or `app_root/content/config/config.js`, you can define override configurations on the settings property.
+
+All settings for Periodic are on the `periodic.settings` property. The application settings are assigned by merging default settings, environment settings and override settings.
+
+Default Settings -> Environment Settings -> Override Settings -> Application Settings
 
 ```javascript
-//You can access extensions commands from resources
-periodic.controllers.extension; // Map of extension middleware controllers
+//app settings demonstration
+//in reality this happens during application start up, and is asynchronous (because configurations can be stored in files or databases)
+
+//default settings (cannot be modified) - periodicjs/lib/defaults/environment.js
+const defaultSettings = {
+  name:'default app name',
+  application:{
+    environment:'demo',
+    port:8786,
+  },
+  csrf: false,
+  cluster_process: false,
+  sessions:{
+    enabled:false,
+  },
+}
+
+//from configuration db - this.configuration.load({docid:'filepath',query:`content/config/environment/${this.config.process.runtime}.json`})
+const environmentSettings = {
+  application:{
+    environment:'staging',
+    port:8786,
+  },
+  sessions:{
+    enabled:true,
+    type:'redis',
+  },
+}
+
+const overrideSettings = {
+  name:'Accounting Pro',
+  crsf: true,
+  container: 'account_react_app@1.0.4',
+  author: 'ACME Co',
+}
+
+periodic.settings = Object.assign({},defaultSettings,environmentSettings,overrideSettings);
+/* if environment is staging
+periodic.settings = {
+  name:'Accounting Pro',
+  application:{
+    environment:'staging',
+    port:8786,
+  },
+  sessions:{
+    enabled:true,
+    type:'redis',
+  },
+  crsf: true,
+  container: 'account_react_app@1.0.4',
+  author: 'ACME Co',
+}
+*/
 ```
-Controllers are usually added to an express router, but many extensions export controllers that are intended to be used in custom routes (for example the passport extension)
 
-```javascript
-const requireAuthentication = periodic.controllers.extension.get('periodicjs.ext.passport').authenticationRequired;
-const myRouter = periodic.express.Router();
-
-myRouter.get('/auth-required',requireAuthentication,(req,res)=>{
-  res.send('you are logged in!');
-});
-```
-
-## 4. Routers - Express routers
-
-In periodic's initialization process
-
-## 5. Transforms - Asynchronous tasks available to Periodic's CLI
-
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
-
-## 6. Utilities - Asynchronous tasks available to Periodic's CLI
-
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
-
-## 7. Views - Asynchronous tasks available to Periodic's CLI
-
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
-
-NEXT: [ How do Periodic Configurations work? ](https://github.com/typesettin/periodicjs/blob/master/doc/configurations/03-how-do-periodic-configurations-work.md)
+NEXT: [ How are runtime environments configured? ](https://github.com/typesettin/periodicjs/blob/master/doc/configurations/03-how-are-runtime-environments-configured.md)
