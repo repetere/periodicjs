@@ -2,10 +2,12 @@
 const pluralize = periodic.viewHelper.pluralize;
 const capitalize = periodic.viewHelper.capitalize;
 const path = periodic.viewHelper.path;
+// console.log({locals},'items[pluralize(entitytype)]',items[pluralize(entitytype)])
+// console.log({items});
 const hasItems = (
   items && 
   items[pluralize(entitytype)] && 
-  items[pluralize(entitytype)][0].documents.length) ? true:false;
+  items[pluralize(entitytype)].documents.length) ? true:false;
 const entityName = {
   name: entitytype,
   plural: pluralize(entitytype),
@@ -13,12 +15,12 @@ const entityName = {
   pluralCapitalized: pluralize(capitalize(entitytype)),
 };
 const entityPage = {
-  count: (hasItems) ? items[`${entityName.plural}count`] : 0,
+  count: (hasItems) ? items[`${entityName.plural}total`] : 0,
   limit: (hasItems) ? items[`${entitytype}limit`] : 0,
-  totalpages: (hasItems) ? items[`${entitytype}pages`] : 1,
+  totalpages: (hasItems) ? items[`${entityName.plural}pages`] : 1,
   currentpage: (hasItems) ? items[`${entitytype}page_current`] : 1,
 }
-// console.log({locals},'request.parsed',request.parsed)
+// console.log({entityPage})
 %>
 <article>
   <section>
@@ -36,7 +38,7 @@ const entityPage = {
       </thead>
       <tbody>
       <% if(hasItems){
-        items[pluralize(entitytype)][0].documents.map(item=>{%>
+        items[pluralize(entitytype)].documents.map(item=>{%>
           <tr>
             <td><a href="<%- path.join(request.baseurl,request.parsed.pathname,item._id.toString()) %>"><%- item._id %></a></td>
             <td><%- item.title || item.name %></td>

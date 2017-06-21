@@ -2,11 +2,13 @@
 <%- include('../shared/nav') %>
 <% 
 const pluralize = periodic.viewHelper.pluralize;
-const entityFromURL = locals.request.originalurl.split('/')[locals.request.originalurl.split('/').length-1];
+const entityFromURL = locals.request.parsed.pathname.replace(/\//gi,'');// const entityFromURL = locals.request.originalurl.split('/')[locals.request.originalurl.split('/').length-1];
 const singularEntity = pluralize.singular(entityFromURL);
 %>
+
 <%- include('../shared/content',{
 	entitytype:singularEntity,
 	items: locals[entityFromURL],
-}) %>
+}); 
+%>
 <%- include('../shared/footer') %>
