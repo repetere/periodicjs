@@ -447,10 +447,10 @@ describe('Periodic Init Config', function() {
         });
     });
   });
-  // after('remove config test periodic dir', (done) => {
-  //   fs.remove(initTestPathDir)
-  //     .then(() => {
-  //       done();
-  //     }).catch(done);
-  // });
+  after('remove config test periodic dir', (done) => {
+    fs.remove(initTestPathDir)
+      .then(() => {
+        done();
+      }).catch(done);
+  });
 });
