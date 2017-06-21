@@ -87,8 +87,8 @@ describe('Periodic Init Config', function() {
           },
         },
       });
-      // expect(configPeriodic.config.configuration).to.eql(configTestJson.configuration);n
-      // expect(configPeriodic.settings.name).to.eql(configTestJson.settings.name);
+      expect(configPeriodic.config.configuration).to.eql(configTestJson.configuration);
+      expect(configPeriodic.settings.name).to.eql(configTestJson.settings.name);
     });
     it('should handle errors', () => {
       expect(config.loadConfiguration()).to.eventually.be.rejected;
@@ -447,10 +447,10 @@ describe('Periodic Init Config', function() {
         });
     });
   });
-  after('remove config test periodic dir', (done) => {
-    fs.remove(initTestPathDir)
-      .then(() => {
-        done();
-      }).catch(done);
-  });
+  // after('remove config test periodic dir', (done) => {
+  //   fs.remove(initTestPathDir)
+  //     .then(() => {
+  //       done();
+  //     }).catch(done);
+  // });
 });
