@@ -17,10 +17,10 @@ const entityName = {
 const entityPage = {
   count: (hasItems) ? items[`${entityName.plural}total`] : 0,
   limit: (hasItems) ? items[`${entitytype}limit`] : 0,
-  totalpages: (hasItems) ? items[`${entityName.plural}pages`] : 1,
+  totalpages: (hasItems) ? items[`${entityName.plural}totalpages`] : 1,
   currentpage: (hasItems) ? items[`${entitytype}page_current`] : 1,
 }
-// console.log({entityPage})
+// console.log({entityPage,items});
 %>
 <article>
   <section>
@@ -54,10 +54,18 @@ const entityPage = {
       </tbody>
       <tfoot>
         <tr>
-          <th><a href="?pagenum=<%- (entityPage.currentpage > 1) ? entityPage.currentpage-1 : 1 %>">Prev Page<a/></th>
-          <th>Page <%- entityPage.currentpage %> of <%- entityPage.totalpages %></th>
+          <th><% if(entityPage.currentpage > 1){%>
+          <a href="?pagenum=<%- entityPage.currentpage-1 %>&limit=<%-entityPage.count%>">Prev Page<a/>
+          <%} %>
+          </th>
+          <th>Page <%- entityPage.currentpage %> of <%- entityPage.totalpages %>
+          </th>
           <th>Showing <%- (entityPage.limit > entityPage.count)? entityPage.count: entityPage.limit %> of <%- entityPage.count %></th>
-          <th><a href="?pagenum=<%- (entityPage.currentpage < entityPage.totalpages -1) ? entityPage.currentpage+1 : entityPage.currentpage %>">Next Page</a></th>
+          <th>
+          <% if(entityPage.currentpage <= entityPage.totalpages -1){ %>
+            <a href="?pagenum=<%- entityPage.currentpage+1 %>&limit=<%-entityPage.count%>">Next Page</a>
+          <% } %>
+          </th>
         </tr>
       </tfoot>
     </table>
