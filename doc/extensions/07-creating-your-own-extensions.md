@@ -4,7 +4,6 @@ You can use the periodic CLI to create the scaffolding for a new extension. Inte
 
 ```console
 $ cd path/to/application_root
-$ npm i [name-of-extension]
 $ periodicjs createExtension [name-of-extension]
 $ #alternatively 
 $ node [path/to/app_root/]index.js --cli --crud=ext --crud_op=init --crud_arg=[name-of-extension] 
