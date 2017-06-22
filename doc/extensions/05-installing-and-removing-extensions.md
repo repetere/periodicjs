@@ -1,4 +1,4 @@
-# Installing extensions - `$ periodicjs removeExtension [name-of-extension]` 
+# Installing extensions - `$ periodicjs addExtension [name-of-extension]` 
 
 Periodic extensions are regular node modules, so to install a new extension use npm (or yarn) to install your extension and then add the extension to your application's extension database.
 
