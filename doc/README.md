@@ -30,6 +30,47 @@ NEXT: [ The Periodic Singleton ](https://github.com/typesettin/periodicjs/blob/m
 
 # Cheatsheet
 
+### Runtime options
+```
+$ node index.js development
+$ NODE_ENV=development node index.js
+$ ENV=development node index.js
+$ node index.js -e development
+$ node index.js --e=development
+```
+
+### Custom controller middleware view rendering
+```javascript
+const periodic = require('periodicjs');
+
+function someMiddleWareFunction(req, res){
+  const viewtemplate = 'user/profile';
+  const viewdata = req.user.profile;
+  periodic.core.controller.renderView(req, res, viewtemplate, viewdata);
+}
+```
+
+### Configurations
+```console
+$ periodicjs createConfig [type] [name] [environment] [filepath]
+---
+$ periodicjs createConfig ext periodicjs.ext.dbseed development ~/Desktop/dev.dbseed-config.json
+$ periodicjs createConfig app my-web-app development ~/Desktop/dev.application-config.json
+---
+$ periodicjs addConfig path/to/some/file.json
+$ periodicjs addConfig ~/my-documents/my-app-config.json
+---
+$ periodicjs removeConfig [id-of-db-config]
+$ periodicjs removeConfig 5914a3711a04c73349623be5
+```
+**[type]**
+ * app | application
+ * extension | ext
+ * extension-local | ext-local
+ * container | con
+ * container-local | con-local
+
+### Periodic Singleton Properties
 ```javascript
 //The Periodic Class - periodicjs/lib/periodicClass.js
 const periodic = require('periodicjs');
