@@ -55,7 +55,7 @@ const entityPage = {
       <tfoot>
         <tr>
           <th><% if(entityPage.currentpage > 1){%>
-          <a href="?pagenum=<%- entityPage.currentpage-1 %>&limit=<%-entityPage.count%>">Prev Page<a/>
+          <a href="?pagenum=<%- entityPage.currentpage-1 %>">Prev Page<a/>
           <%} %>
           </th>
           <th>Page <%- entityPage.currentpage %> of <%- entityPage.totalpages %>
@@ -63,7 +63,7 @@ const entityPage = {
           <th>Showing <%- (entityPage.limit > entityPage.count)? entityPage.count: entityPage.limit %> of <%- entityPage.count %></th>
           <th>
           <% if(entityPage.currentpage <= entityPage.totalpages -1){ %>
-            <a href="?pagenum=<%- entityPage.currentpage+1 %>&limit=<%-entityPage.count%>">Next Page</a>
+            <a href="?pagenum=<%- entityPage.currentpage+1 %>">Next Page</a>
           <% } %>
           </th>
         </tr>
