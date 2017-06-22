@@ -15,7 +15,7 @@ The extreme flexibility is what enables Periodic to be used for various applicat
 * [ Configuration ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/01-overview.md) 
 * [ Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md) 
 * ~~Containers (COMING SOON)~~
-* [ Command Line Interface & REPL ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/command-line-interface.md) 
+* [ Command Line Interface & REPL ](https://github.com/typesettin/periodicjs/blob/master/doc/cli/01-overview.md) 
 * ~~Advanced (COMING SOON)~~
   * [ Testing & Developing new Periodic features ](https://github.com/typesettin/periodicjs/blob/master/doc/advanced/00-testing-developing.md)
   * ~~Deploying your application (COMING SOON)~~
