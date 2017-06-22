@@ -40,4 +40,4 @@ You can add/update the database record in the configuration database for your sa
 }
 ```
 
-NEXT: [ Creating Configurations ](https://github.com/typesettin/periodicjs/blob/master/doc/configurations/04-creating-your-own-configurations.md)
+NEXT: [ Creating Configurations ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/04-creating-your-own-configurations.md)
