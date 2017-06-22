@@ -293,7 +293,12 @@ requestMethods.forEach(reqMethod => {
 
 ## 6. Utilities - Asynchronous tasks available to Periodic's CLI
 
-Each Extension has a utility property that provides a facility share properties across extensions. Utilities are loaded from `name-of-extension/utilities/index`and are mounted on `periodic.locals.extensions` (`periodic.locals.extensions.set(`${extension.name}`, require(`${extension.name}/utilities/index`))`) during initialization.
+Each Extension has a utility property that provides a facility share properties across extensions. Utilities are loaded from `name-of-extension/utilities/index`and are mounted on `periodic.locals.extensions` during initialization.
+
+Utilities are mounted onto the Periodic extension locals map
+```javascript
+periodic.locals.extensions.set(`${extension.name}`, require(`${extension.name}/utilities/index`));
+```
 
 ## 7. Views - Asynchronous tasks available to Periodic's CLI
 
