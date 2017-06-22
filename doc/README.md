@@ -182,6 +182,7 @@ const periodic = require('periodicjs');
     data, //helper module for dealing with database models
     communication, //helper module for dealing with sending mail/messages
     cache, //helper module for caching
+    controller, //generic controller helper functions
   } 
 }
 ```
