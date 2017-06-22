@@ -297,6 +297,16 @@ Each Extension has a utility property that provides a facility share properties 
 
 ## 7. Views - Asynchronous tasks available to Periodic's CLI
 
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
+Extensions have the capability to override default views, by using the same view path, and passing the extension name, when CoreController attempts to load the view, it'll first try to load `app_root/node_modules/views/user/profile` and then fallback to `app_root/app/views/user/profile`
 
+```javascript
+function someMiddleWareFunction(req, res){
+  const viewtemplate = {
+    viewname:'user/profile',
+    extname:'name-of-ext',
+  };
+  const viewdata = req.user.profile;
+  periodic.core.controller.renderView(req, res, viewtemplate, viewdata);
+}
+```
 NEXT: [ How do Periodic Extensions work? ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/03-how-are-extensions-loaded.md)
