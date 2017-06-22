@@ -288,7 +288,11 @@ describe('Periodic Crud Ext', function() {
           return CRUD_ext.remove.call(configPeriodic, 'periodicjs.ext.cloudupload');
         })
         .then(removedExt => {
-          expect(removedExt.name).to.eql('periodicjs.ext.cloudupload');
+          if (Array.isArray(removedExt)) {
+            expect(removedExt[0].name).to.eql('periodicjs.ext.cloudupload');
+          } else {
+            expect(removedExt.name).to.eql('periodicjs.ext.cloudupload');
+          }
           return configPeriodic.datas.get('extension').query();
         })
         .then(exts => {
@@ -389,11 +393,11 @@ describe('Periodic Crud Ext', function() {
             'utilities',
             'views'
           ]);
-          return fs.readJson(path.join(initTestPathDir, 'node_modules', extname,'package.json'));
+          return fs.readJson(path.join(initTestPathDir, 'node_modules', extname, 'package.json'));
         })
         .then(newextPackageJson => {
           expect(newextPackageJson.name).to.eql(extname);
-          return fs.readFile(path.join(initTestPathDir, 'node_modules', extname,'README.md'));
+          return fs.readFile(path.join(initTestPathDir, 'node_modules', extname, 'README.md'));
         })
         .then(readmeMarkDown => {
           expect(readmeMarkDown.toString().indexOf(extname) === -1).to.be.false;
@@ -409,7 +413,7 @@ describe('Periodic Crud Ext', function() {
       // fs.readFile(path.resolve(__dirname,'./newtestext.md'))
       //   .then(testMD => {
       //     expect(CRUD_ext.generateREADME({ extensionName: 'newtestext' })).to.eql(testMD.toString());
-          // done();
+      // done();
       //   })
       //   .catch(done);
     });

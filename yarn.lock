@@ -3381,9 +3381,9 @@ loud-rejection@^1.0.0:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
 
-lowkie@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/lowkie/-/lowkie-1.0.0.tgz#965d614119260838fddc3f4bd8492e7559773c7e"
+lowkie@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/lowkie/-/lowkie-1.0.2.tgz#14894c1d0819800fe568e89402f7926da44b79ba"
   dependencies:
     babel-polyfill "^6.23.0"
     flat "^2.0.1"
@@ -4030,13 +4030,13 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-periodicjs.core.controller@^10.6.3:
-  version "10.6.3"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.6.3.tgz#aeb5ec343042c3d1d45ec87a8d9d7f3c39e755b8"
+periodicjs.core.controller@^10.6.5:
+  version "10.6.5"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.controller/-/periodicjs.core.controller-10.6.5.tgz#f62e81ca29e797504713fd50a27c2e1d8d9b680a"
   dependencies:
     capitalize "^1.0.0"
     objectcompare "^0.2.0"
-    periodicjs.core.data "^0.6.2"
+    periodicjs.core.data "^0.6.4"
     periodicjs.core.protocols "^0.5.3"
     periodicjs.core.responder "~0.3.3"
     pluralize "^1.1.6"
@@ -4045,9 +4045,9 @@ periodicjs.core.controller@^10.6.3:
     valid-objectid "0.0.2"
     xss "^0.3.3"
 
-periodicjs.core.data@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.data/-/periodicjs.core.data-0.6.2.tgz#19c7a6613894e147a3f58225b639e80a0f5ca5f1"
+periodicjs.core.data@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.data/-/periodicjs.core.data-0.6.4.tgz#906060a64a4681f0b622904166e17978d8840d21"
   dependencies:
     flat "~2.0.1"
     jsondiffpatch "~0.2.4"

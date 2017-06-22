@@ -183,7 +183,11 @@ describe('Periodic Crud Config', function() {
           return CRUD_config.remove.call(configPeriodic, TEST_file_config._id);
         })
         .then(removedConf => {
-          expect(removedConf.filepath).to.eql(TEST_file_config.filepath);
+          if (Array.isArray(removedConf)) {
+            expect(removedConf[0].filepath).to.eql(TEST_file_config.filepath);
+          } else {
+            expect(removedConf.filepath).to.eql(TEST_file_config.filepath);
+          }
           return configPeriodic.datas.get('configuration').query();
         })
         .then(confs => {
