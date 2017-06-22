@@ -198,7 +198,7 @@ periodic.controllers.extension.set(`${extension.name}`, require(`${extension.nam
 Extension routers are express routers that are mounted from `name-of-extension/routers/index`, routers are mounted during the express intialization of the application and after all extension resources have been loaded.
 ```javascript
 //sample name-of-extension/routers/index.js
-const periodic = require('periodicjs);
+const periodic = require('periodicjs');
 const extensionRouter = periodic.express.Router();
 
 extensionRouter.all('/some-endpoint', (req, res) => {
