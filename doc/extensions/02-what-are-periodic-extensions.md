@@ -188,17 +188,112 @@ myRouter.get('/auth-required',requireAuthentication,(req,res)=>{
 });
 ```
 
+Controllers are mounted onto the Periodic controllers map
+```javascript
+periodic.controllers.extension.set(`${extension.name}`, require(`${extension.name}/controllers/index`));
+```
+
 ## 4. Routers - Express routers
 
-In periodic's initialization process
+Extension routers are express routers that are mounted from `name-of-extension/routers/index`, routers are mounted during the express intialization of the application and after all extension resources have been loaded.
+```javascript
+//sample name-of-extension/routers/index.js
+const periodic = require('periodicjs);
+const extensionRouter = periodic.express.Router();
+
+extensionRouter.all('/some-endpoint', (req, res) => {
+  res.send('hello world');
+});
+
+module.exports = extensionRouter;
+```
+
+Routers are mounted onto the Periodic routers map
+```javascript
+periodic.routers.set(`extension_${extension.name}`, {
+  type: 'extension',
+  router: require(`${extension.name}/routers/index`),
+})
+```
 
 ## 5. Transforms - Asynchronous tasks available to Periodic's CLI
 
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
+Transforms provide a facility to augment the parameters sent to Core Controller and Core Data, before information is queried from the database (Pre Transforms), and a facility to augment the response data before a request responds with information.
+
+Extension tranforms are loaded from  `name-of-extension/transforms/index` and are injected globally. The way transforms work are by piping the result of the request object into a series of tranform functions. 
+
+```javascript
+const transformedMiddleware = (req,res,next)=>{
+  Promisie.pipe([transform1,transform2,transform3])(req)
+  .then(transformedReq=>{
+    originalMiddleware(transformedReq,res,next)
+  }
+  .catch(next);
+}
+//promisie pipe = tranform1(req).then(updatedReq1 => transform2(updatedReq1)).then(updatedReq2 => transform3(updatedReq2));
+```
+
+For example, if you have a user route `/users/:id` for a profile page, and if you wanted to sanitize inputs and concatinate output, you could use tranforms.
+
+```javascript
+//sample name-of-extension/transforms/index.js
+'use strict';
+const periodic = require('periodicjs');
+function userPreTransform1(req) {
+  return new Promise((resolve, reject) => {
+    const updatedReq = Object.assign({},req,{firstname:req.firstname.toUpperCase()});
+    resolve(updatedReq);
+  });
+}
+function userPreTransform2(req) {
+  return new Promise((resolve, reject) => {
+    const updatedReq = Object.assign({},req,{lastname:req.lastname.toUpperCase()});
+    resolve(updatedReq);
+  });
+}
+function testPostTransform(req) {
+  return new Promise((resolve, reject) => {
+    req.user.fullname = `${req.user.firstname} ${req.user.lastname}`
+    resolve(req);
+  });
+}
+
+module.exports = {
+  pre: {
+    GET: {
+      '/user/:id':[userPreTransform1,userPreTransform2]
+    },
+    PUT: {
+    }
+  },
+  post: {
+    GET: {
+      '/user/:id':[testPostTransform]
+    },
+    PUT: {
+    }
+  }
+}
+```
+
+
+Transforms are mounted onto the Periodic transforms object
+```javascript
+const tranforms = require(`${extension.name}/transforms/index`);
+const requestMethods = ['CONNECT', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'POST'];
+requestMethods.forEach(reqMethod => {
+  if (transforms.pre) {
+    periodic.transforms.pre[reqMethod] = Object.assign({}, periodic.transforms.pre[reqMethod], transforms.pre[reqMethod]);
+  }
+  if (transforms.post) {
+    periodic.transforms.post[reqMethod] = Object.assign({}, periodic.transforms.post[reqMethod], transforms.post[reqMethod]);
+  }
+})
+```
 
 ## 6. Utilities - Asynchronous tasks available to Periodic's CLI
 
-A command is a function that is mounted to your periodic application during initialization. Commands are available as CLI tasks through periodic's CLI.
+Each Extension has a utility property that provides a facility share properties across extensions. Utilities are loaded from `name-of-extension/utilities/index`and are mounted on `periodic.locals.extensions` (`periodic.locals.extensions.set(`${extension.name}`, require(`${extension.name}/utilities/index`))`) during initialization.
 
 ## 7. Views - Asynchronous tasks available to Periodic's CLI
 
