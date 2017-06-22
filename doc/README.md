@@ -15,7 +15,7 @@ The extreme flexibility is what enables Periodic to be used for various applicat
 * [ Configuration ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/01-overview.md) 
 * [ Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md) 
 * ~~Containers (COMING SOON)~~
-* [ Command Line Interface & REPL ](https://github.com/typesettin/periodicjs/blob/master/doc/cli/01-overview.md) 
+* [ Command Line Interface & REPL ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/command-line-interface.md) 
 * ~~Advanced (COMING SOON)~~
   * [ Testing & Developing new Periodic features ](https://github.com/typesettin/periodicjs/blob/master/doc/advanced/00-testing-developing.md)
   * ~~Deploying your application (COMING SOON)~~
@@ -39,6 +39,8 @@ $ node index.js -e development
 $ node index.js --e=development
 ```
 
+
+
 ### Custom controller middleware view rendering
 ```javascript
 const periodic = require('periodicjs');
@@ -48,6 +50,20 @@ function someMiddleWareFunction(req, res){
   const viewdata = req.user.profile;
   periodic.core.controller.renderView(req, res, viewtemplate, viewdata);
 }
+```
+
+### Extensions / Containers
+```console
+$ periodicjs [extension|ext|container|con] [name] [task] [args]
+$ periodicjs extension periodicjs.ext.dbseed export path/to/some/seedfile.json
+---
+$ npm i [name-of-extension]
+$ periodicjs addExtension [name-of-extension]
+---
+$ npm rm [name-of-extension]
+$ periodicjs removeExtension [name-of-extension]
+---
+$ periodicjs createExtension [name-of-extension]
 ```
 
 ### Configurations
@@ -69,6 +85,14 @@ $ periodicjs removeConfig 5914a3711a04c73349623be5
  * extension-local | ext-local
  * container | con
  * container-local | con-local
+
+### Command Line Interface / Interactive Shell
+
+```console
+$ periodicjs repl
+$ #alternatively 
+$ node [path/to/app_root/]index.js --cli --repl 
+```
 
 ### Periodic Singleton Properties
 ```javascript
