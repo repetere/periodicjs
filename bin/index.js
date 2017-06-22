@@ -225,6 +225,7 @@ function removeConfig(id) {
 
 program
   .command('setup [name]')
+  .alias('init')
   .description('create a new periodic application')
   .action(function(name) {
     try {
@@ -249,6 +250,7 @@ program
 
 program
   .command('extension <ext> <func> [args]')
+  .alias('ext')
   .description('execute mounted extension asynchronous task')
   .action(function(ext, func, args) {
     try {
