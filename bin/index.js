@@ -182,7 +182,7 @@ function createConfig(type, name, environment, filepath) {
     try {
       run_cmd('node', [path.join(process_dir, 'index.js'),
         '--cli',
-        '--createExtension',
+        '--createConfig',
         `--name=${name}`,
         `--type=${type}`,
         `--environment=${environment}`,
@@ -213,7 +213,7 @@ function addConfig(filepath) {
 function removeConfig(id) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--addConfig', `--id=${id}`, ], function(err, text) {
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--removeConfig', `--id=${id}`, ], function(err, text) {
         console.log(text.green.underline);
       });
       return resolve(true);
