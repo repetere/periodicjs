@@ -42,11 +42,11 @@ describe('Periodic Util routing', function() {
     });
 
     describe('splitModelNameReducer', () => {
-        it('should return an updated object with key value pair of parent and array of children, given an object and a modelname', () => {
-            expect(routing.splitModelNameReducer({}, 'standard_user_group')).to.deep.equal({
-                'standard': ['user_group'],
-            });
-        });
+      it('should return an updated object with key value pair of parent and array of children, given an object and a modelname', () => {
+          expect(routing.splitModelNameReducer({}, 'standard_user_group')).to.deep.equal({
+              'standard': ['user_group'],
+          });
+      });
     });
 
     describe('regexModelNameReducer', () => {
@@ -55,6 +55,27 @@ describe('Periodic Util routing', function() {
                 'standard': ['user_group'],
             });
         });
+    });
+
+    describe('formatResponse', () => {
+      it('should return a formatted response', () => {
+          expect(routing.formatResponse()).to.eql({
+            result: 'success',
+            status: 200,
+            data: {},
+          });
+      });
+      it('should format response with 3 properties', () => {
+        const customProps = { some: 'random', props: 'should be in data' };
+        const formattedRes = routing.formatResponse(customProps);
+        expect(Object.keys(formattedRes).length).to.eql(3);
+        expect(formattedRes.data).to.eql(customProps);
+      });
+      it('should enforce data types of props', () => {
+        const formattedRes = routing.formatResponse({ result: 1203, status: '450' });
+        expect(formattedRes.result).to.be.a('string');
+        expect(formattedRes.status).to.be.a('number');
+      });
     });
 
 });
