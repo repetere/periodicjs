@@ -226,6 +226,7 @@ function removeConfig(id) {
 program
   .command('setup [name]')
   .alias('init')
+  .alias('s')
   .description('create a new periodic application')
   .action(function(name) {
     try {
@@ -238,6 +239,7 @@ program
 
 program
   .command('repl')
+  .alias('r')
   .description('start the periodic interactive shell')
   .action(function() {
     try {
@@ -264,6 +266,7 @@ program
 
 program
   .command('container <name> <func> [args]')
+  .alias('con')
   .description('execute mounted container asynchronous task')
   .action(function(name, func, args) {
     try {
@@ -290,6 +293,8 @@ program
 
 program
   .command('createContainer <name>')
+  .alias('createcontainer')
+  .alias('ccn')
   .description('create a new container')
   .action(function(name) {
     try {
@@ -301,6 +306,8 @@ program
   });
 program
   .command('createExtension <name>')
+  .alias('createextension')
+  .alias('cex')
   .description('create a new extension')
   .action(function(name) {
     try {
@@ -312,6 +319,8 @@ program
   });
 program
   .command('addExtension <name>')
+  .alias('addextension')
+  .alias('aex')
   .description('add an extension to the extension database')
   .action(function(name) {
     try {
@@ -323,6 +332,8 @@ program
   });
 program
   .command('removeExtension <name>')
+  .alias('removeextension')
+  .alias('rex')
   .description('remove an extension from the extension database')
   .action(function(name) {
     try {
@@ -335,6 +346,7 @@ program
 
 program
   .command('createConfig <type> <name> <environment> <filepath>')
+  .alias('cco')
   .description('create a new Config')
   .action(function(type, name, environment, filepath) {
     try {
@@ -347,6 +359,7 @@ program
 
 program
   .command('addConfig <filepath>')
+  .alias('aco')
   .description('add an application configuration to the configuration database')
   .action(function(filepath) {
     try {
@@ -358,6 +371,7 @@ program
   });
 program
   .command('removeConfig <id>')
+  .alias('rco')
   .description('remove an application configuration from the configuration database')
   .action(function(id) {
     try {
