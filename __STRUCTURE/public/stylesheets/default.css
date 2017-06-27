@@ -112,12 +112,48 @@ main main{
 main main article section{
   text-align:center;
 }
-main main article section p{
+main main article section p,
+main main article section form{
   max-width:20rem;
   margin:auto;
   text-align:justify;
   margin-bottom:1rem;
 }
+main main article section form{
+  flex-direction: column;
+}
+main main article section form section{
+  flex-direction: row;
+  flex: 1;
+  display:flex ;
+}
+main main article section form input,
+main main article section form input[type="submit"],
+main main article section form button{
+  display: flex;
+  flex:1;
+  margin-bottom:1rem;
+  font-size:1.25rem;
+  height:2rem;
+  border:1px solid lightgrey;
+  background: none;
+  color:black;
+}
+main main article section form a{
+  display: flex;
+  flex:1;
+  margin-bottom:1rem;
+  font-size:1.25rem;
+  height:2rem;
+  align-items: center;
+  text-align: center;
+}
+/*main main article section form input{
+  max-width:20rem;
+  margin:auto;
+  text-align:justify;
+  margin-bottom:1rem;
+}*/
 main main article section figure{
   text-align:center;
 }

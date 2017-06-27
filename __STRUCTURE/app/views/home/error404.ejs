@@ -2,20 +2,20 @@
 <%- include('../shared/nav') %>
 <% var errorTitle='';
 try{
-  errorTitle = error.toString().split('\n')[0];
+  errorTitle = locals.error.toString().split('\n')[0];
 } catch(e){
-  errorTitle = error.message;
+  errorTitle = locals.error.message;
 }
 %>
 <article>
   <section>
-    <% if(appenvironment!=='production'){%>
+    <% if(locals.appenvironment!=='production'){%>
     <details open="open">
       <summary>
         <%- errorTitle %>
       </summary>
       <div>
-        <pre><%- error.stack %></pre>
+        <pre><%- locals.error.stack %></pre>
       </div>
     </details>
     <%} 
