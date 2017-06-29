@@ -15,6 +15,22 @@ body {
 header nav{
   border-bottom:1px solid lightgrey;
   margin-bottom:1rem;
+  display:flex;
+}
+header nav h2{
+  display:flex;
+  flex:1;
+}
+header nav ul{
+  display:inline-flex;
+  flex:0;
+  align-items: center;
+}
+header nav li{
+  display:flex;
+  flex:0;
+  align-items: center;
+  margin-left:1rem;
 }
 footer nav{
   border-top:1px solid lightgrey;

@@ -1,0 +1,15 @@
+<header>
+  <nav>
+  <% if(locals && locals.periodic ){%>
+    <h2><%- locals.periodic.appname %></h2>
+  <%} else if(locals&&locals.error){%>
+    <h2>Error</h2>
+  <%}
+  if(locals&&locals.passportUser){%>
+    <ul>
+    <li><%- locals.passportUser.name %></li>
+    <li><a href="<%-locals.logoutLink||'/auth/logout'%>">logout</a></li>
+    </ul>
+  <%}%>
+  </nav>
+</header>

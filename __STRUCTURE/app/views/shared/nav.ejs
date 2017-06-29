@@ -1,12 +1,4 @@
-<header>
-  <nav>
-  <% if(locals && locals.periodic ){%>
-    <h2><%- locals.periodic.appname %></h2>
-  <%} else {%>
-    <h2>Error</h2>
-  <%}%>
-  </nav>
-</header>
+<%- include('./nav_header') %>
 <main>
 <%if(locals.periodic && locals.periodic.core_data_list){ 
 const pluralize = periodic.viewHelper.pluralize;
