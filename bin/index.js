@@ -15,31 +15,30 @@ program
   .option('-a, --all', 'all environments');
 
 
-var run_cmd = function(cmd, args, callback, env) {
+var run_cmd = function (cmd, args, callback, env, attach = false) {
   var spawn = require('child_process').spawn;
-
-  if (env) {
-    child = spawn(cmd, args, env);
+  var options = [cmd, args, {
+    env
+  }];
+  if (attach === true) {
+    options[2].stdio = [process.stdin, process.stdout, process.stderr];
+    child = spawn(...options);
   } else {
-    child = spawn(cmd, args);
+    child = spawn(...options);
+    child.stdout.on('error', err => {
+      console.error(err);
+      process.exit(1);
+    })
+      .on('data', data => {
+        console.log(data.toString());
+      });
   }
-
-  child.stdout.on('error', function(err) {
-    console.error(err);
-    process.exit(0);
-  });
-
-  child.stdout.on('data', function(buffer) {
-    console.log(buffer.toString());
-  });
-
-  child.stderr.on('data', function(buffer) {
-    console.error(buffer.toString());
-  });
-
-  child.on('exit', function() {
+  child.on('exit', () => {
     callback(null, 'command run: ' + cmd + ' ' + args);
     process.exit(0);
+  });
+  process.on('exit', () => {
+    child.kill();
   });
 };
 
@@ -80,7 +79,7 @@ function extension(ext, func, args) {
 function repl(args) {
   return new Promise((resolve, reject) => {
     try {
-      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--repl', ], function(err, text) { console.log(text.green.underline) });
+      run_cmd('node', [path.join(process_dir, 'index.js'), '--cli', '--repl', ], function(err, text) { console.log(text.green.underline) }, undefined, true);
       return resolve(true);
     } catch (err) {
       return reject();
