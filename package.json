@@ -14,7 +14,8 @@
     "email": "yaw.etse@gmail.com",
     "url": "http://about.me/yawjosephetse"
   },
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Vishnu Ravi",
       "email": "hello@vishnu.io",
       "url": "http://www.vishnu.io"
@@ -84,6 +85,7 @@
     "numeral": "^2.0.6",
     "periodicjs.core.controller": "^10.6.82",
     "periodicjs.core.data": "^0.6.4",
+    "periodicjs.core.mailer": "^10.0.0",
     "periodicjs.core.protocols": "^0.5.3",
     "periodicjs.core.utilities": "^6.1.1",
     "pluralize": "^4.0.0",
@@ -160,7 +162,8 @@
     "url": "https://github.com/typesettin/periodicjs/issues"
   },
   "homepage": "https://github.com/typesettin/periodicjs",
-  "maintainers": [{
+  "maintainers": [
+    {
       "name": "Yaw Etse",
       "email": "yaw.etse@gmail.com",
       "url": "https://github.com/yawetse"
