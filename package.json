@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is a rapid enterprise application framework for data driven web and mobile applications.",
-  "version": "10.3.12",
+  "version": "10.3.13",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
