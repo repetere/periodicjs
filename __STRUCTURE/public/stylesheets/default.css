@@ -86,7 +86,8 @@ table tfoot tr th{
   text-align:left;
   font-size:0.75rem;
 }
-table thead tr th{
+table thead tr th,
+table tbody tr td{
   text-align:left;
 }
 form{
@@ -177,4 +178,16 @@ main main article section figure img{
   max-width:10rem;
   height:auto;
   margin:auto;
+}
+main main article section div{
+  text-align:left;
+}
+code{
+  display: block;
+  font-size:80%;
+  padding:0.25rem;
+  background-color: whitesmoke;
+}
+code em{
+  color:lightslategrey;
 }
