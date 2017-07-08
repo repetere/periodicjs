@@ -1,193 +1,280 @@
-html{
-  height:100%;
+html {
+  height: 100%;
 }
+
 body {
   margin: 0;
   padding: 1rem;
   /*font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;*/
   /*font-family: 'freight-sans-pro', 'BlinkMacSystemFont', -apple-system, 'Roboto', 'Lucida Sans';*/
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  height:100%;
-  overflow-x:hidden;
-  font-size:14px;
-  box-sizing:border-box;
+  height: 100%;
+  overflow-x: hidden;
+  font-size: 14px;
+  box-sizing: border-box;
 }
-header nav{
-  border-bottom:1px solid lightgrey;
-  margin-bottom:1rem;
-  display:flex;
+
+header nav {
+  border-bottom: 1px solid lightgrey;
+  margin-bottom: 1rem;
+  display: flex;
 }
-header nav h2{
-  display:flex;
-  flex:1;
+
+header nav h2 {
+  display: flex;
+  flex: 1;
 }
-header nav ul{
-  display:inline-flex;
-  flex:0;
+
+header nav ul {
+  display: inline-flex;
+  flex: 0;
   align-items: center;
 }
-header nav li{
-  display:flex;
-  flex:0;
+
+header nav li {
+  display: flex;
+  flex: 0;
   align-items: center;
-  margin-left:1rem;
+  margin-left: 1rem;
 }
-footer nav{
-  border-top:1px solid lightgrey;
-  font-size:0.75rem;
-  margin-top:1rem;
-  text-align:center;
-  padding:1rem;
+
+footer nav {
+  border-top: 1px solid lightgrey;
+  font-size: 0.75rem;
+  margin-top: 1rem;
+  text-align: center;
+  padding: 1rem;
 }
-a{
-  color:black;
+
+a {
+  color: black;
 }
-a:visited{
-  color:darkgrey;
+
+a:visited {
+  color: darkgrey;
 }
-html, 
-body, 
-header, 
-footer, 
-nav, 
-section, 
-main, 
-article, 
-div, 
-details, summary, pre,
-p, tfoot, thead, tbody, tr, td, th 
-span{
-  box-sizing:border-box;
+
+html,
+body,
+header,
+footer,
+nav,
+section,
+main,
+article,
+div,
+details,
+summary,
+pre,
+p,
+tfoot,
+thead,
+tbody,
+tr,
+td,
+th span {
+  box-sizing: border-box;
 }
-pre{
+
+pre {
   border: 1px solid gainsboro;
-  overflow:auto;
+  overflow: auto;
   /*class=" ts-text-xs ts-padding-md" style="overflow:auto; word-wrap:break-word; border:1px solid black;"*/
 }
-table{
-  width:100%;
-border-spacing: 0;
-border-collapse: collapse;
-  border:1px solid whitesmoke;
+
+table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+  border: 1px solid whitesmoke;
 }
-table thead, table tfoot{
-  background:whitesmoke;
+
+table thead,
+table tfoot {
+  background: whitesmoke;
 }
-table tbody tr:nth-child(even){
+
+table tbody tr:nth-child(even) {
   /*background:snow;*/
 }
-table tbody td{
-  padding:0.25rem;
+
+table tbody td {
+  padding: 0.25rem;
 }
-table th{
-  padding:0.25rem;
+
+table th {
+  padding: 0.25rem;
 }
-table tfoot tr th{
-  text-align:left;
-  font-size:0.75rem;
+
+table tfoot tr th {
+  text-align: left;
+  font-size: 0.75rem;
 }
+
 table thead tr th,
-table tbody tr td{
-  text-align:left;
+table tbody tr td {
+  text-align: left;
 }
-form{
-  display:flex;
-}
-form aside, form input{
+
+form {
   display: flex;
-  flex:1;
-  margin-bottom:1rem;
-  font-size:1.25rem;
-  height:2rem;
-}
-main{
-  display:flex;
-  /* min-height:10rem; */
-}
-main > aside{
-  /*// flex: 1;*/
-  padding:0 1rem 0 0;
-}
-main > aside summary{
-  font-size:1.25rem;
-  padding: 0.3333rem 0;
-}
-main > article{
   flex: 1;
-  min-height:10rem;
-}
-main > article table{
-  min-height:5rem;
-}
-main > article > section > h3{
-  margin-top:0.25rem;
-  font-size:1.25rem;
-}
-main main{
-  flex:1;
-}
-main main article section{
-  text-align:center;
-}
-main main article section p,
-main main article section form{
-  max-width:20rem;
-  margin:auto;
-  text-align:justify;
-  margin-bottom:1rem;
-}
-main main article section form{
   flex-direction: column;
 }
-main main article section form section{
+
+form aside,
+form input {
+  display: flex;
+  flex: 1;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  height: 2rem;
+}
+
+main {
+  display: flex;
+  /* min-height:10rem; */
+}
+
+main>aside {
+  /*// flex: 1;*/
+  padding: 0 1rem 0 0;
+}
+
+main>aside summary {
+  font-size: 1.25rem;
+  padding: 0.3333rem 0;
+}
+
+main>article {
+  flex: 1;
+  min-height: 10rem;
+}
+
+main>article table {
+  min-height: 5rem;
+}
+
+main>article>section>h3 {
+  margin-top: 0.25rem;
+  font-size: 1.25rem;
+}
+
+main main {
+  flex: 1;
+  height: 100%;
+}
+
+main main article section {
+  text-align: center;
+}
+
+main main article section p,
+main main article section form {
+  max-width: 20rem;
+  margin: auto;
+  text-align: justify;
+  margin-bottom: 1rem;
+}
+
+main main article section form {
+  flex-direction: column;
+}
+
+main main article section form section {
   flex-direction: row;
   flex: 1;
-  display:flex ;
+  display: flex;
 }
+
 main main article section form input,
 main main article section form input[type="submit"],
-main main article section form button{
+main main article section form button {
   display: flex;
-  flex:1;
-  margin-bottom:1rem;
-  font-size:1.25rem;
-  height:2rem;
-  border:1px solid lightgrey;
+  flex: 1;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  height: 2rem;
+  border: 1px solid lightgrey;
   background: none;
-  color:black;
+  color: black;
 }
-main main article section form a{
+
+main main article section form a {
   display: flex;
-  flex:1;
-  margin-bottom:1rem;
-  font-size:1.25rem;
-  height:2rem;
+  flex: 1;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  height: 2rem;
   align-items: center;
   text-align: center;
 }
+
+
 /*main main article section form input{
   max-width:20rem;
   margin:auto;
   text-align:justify;
   margin-bottom:1rem;
 }*/
-main main article section figure{
-  text-align:center;
+
+main main article section figure {
+  text-align: center;
 }
-main main article section figure img{
-  max-width:10rem;
-  height:auto;
-  margin:auto;
+
+main main article section figure img {
+  max-width: 10rem;
+  height: auto;
+  margin: auto;
 }
-main main article section div{
-  text-align:left;
+
+main main article section div {
+  text-align: left;
 }
-code{
+
+code {
   display: block;
-  font-size:80%;
-  padding:0.25rem;
+  font-size: 80%;
+  padding: 0.25rem;
   background-color: whitesmoke;
 }
-code em{
-  color:lightslategrey;
+
+code em {
+  color: lightslategrey;
+}
+
+main article main form section {
+  flex-direction: row;
+  /*flex: 1;*/
+  display: flex;
+}
+
+main article main form input[type="submit"] {
+  align-self: center;
+  margin: 0;
+  border: 1px solid lightgrey;
+  color: black;
+  background: darkgrey;
+  flex: 0;
+}
+
+main form section textarea {
+  width: 100%;
+}
+
+main form section h3 {
+  flex: 1;
+}
+
+main form section div {
+  display: flex;
+  flex: 1;
+}
+
+main form section div textarea {
+  min-height: 25rem;
+}
+
+textarea {
+  border: lightgray 1px solid;
 }
