@@ -13,7 +13,7 @@ module.exports = () => {
       name: 'My Application',
     },
   });
-}
+};
 
 /**
  * Other sample configurations
@@ -24,7 +24,7 @@ module.exports = () => {
       'db': 'mongoose',
       'options': {
         'url': 'mongodb://localhost:27017/config_db',
-        'connection_options': {},
+        'mongoose_options': {},
       },
     },
  *-------MONGO CONFIGURATION DB --------
@@ -52,20 +52,19 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const flatten = require('flat');
 const defaultConfig = {
-  'configuration': {
-    'type': 'db',
-    'db': 'mongoose',
-    'options': {
-      'url': 'mongodb://localhost:27017/config_db',
-      'connection_options': {},
+  configuration: {
+    type: 'db',
+    db: 'lowkie',
+    options: {
+      dbpath: 'content/config/settings/config_db.json',
     },
   },
   settings: {
-    name: 'Sample App',
+    name: 'My Application',
   },
 };
 
-function appConfig(customProcess){
+function LoadConfiguration(customProcess){
   return new Promise((resolve, reject)=>{
     try {
       let useableProcess = customProcess || process;
@@ -90,6 +89,6 @@ function appConfig(customProcess){
     }
   }); 
 }
-module.exports = appConfig;
+module.exports = LoadConfiguration;
  *-------ENVIRONMENT VARIABLES --------
  */
