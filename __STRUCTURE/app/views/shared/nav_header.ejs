@@ -7,7 +7,7 @@
   <%}
   if(locals&&locals.passportUser){%>
     <ul>
-    <li><%- locals.passportUser.name %></li>
+    <li><%- locals.passportUser.name || locals.passportUser.email || locals.passportUser._id %></li>
     <li><a href="<%-locals.logoutLink||'/auth/logout'%>">logout</a></li>
     </ul>
   <%}%>
