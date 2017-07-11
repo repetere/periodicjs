@@ -4327,9 +4327,9 @@ periodicjs.core.data@^0.6.4:
     string-to-json "~0.1.0"
     xss "~0.2.13"
 
-periodicjs.core.mailer@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/periodicjs.core.mailer/-/periodicjs.core.mailer-10.0.0.tgz#7a4d06d4dbdadedbd6e0cf694cec5afc01c97e5c"
+periodicjs.core.mailer@^10.0.3:
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/periodicjs.core.mailer/-/periodicjs.core.mailer-10.0.3.tgz#923a32c7c33dac9d90f629681cb91cb061f0c883"
   dependencies:
     ejs "^2.5.6"
     nodemailer "^4.0.1"

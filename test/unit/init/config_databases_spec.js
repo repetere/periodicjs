@@ -96,6 +96,7 @@ describe('Periodic Init Config', function() {
       const mockThis = {
         dbs: new Map(),
         datas: new Map(),
+        models: new Map(),
         core: {
           data: {
             create: createSpy,
@@ -143,6 +144,7 @@ describe('Periodic Init Config', function() {
       const mockThis = {
         dbs: new Map(),
         datas: new Map(),
+        models: new Map(),
         core: {
           data: {
             create: createSpy,
@@ -186,6 +188,7 @@ describe('Periodic Init Config', function() {
       const mockThis = {
         dbs: new Map(),
         datas: new Map(),
+        models: new Map(),
         core: {
           data: {
             create: createSpy,
