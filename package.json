@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is a rapid enterprise application framework for data driven web and mobile applications.",
-  "version": "10.4.41",
+  "version": "10.5.0",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -74,7 +74,7 @@
     "flat": "^2.0.1",
     "fs-extra": "^3.0.1",
     "isomorphic-fetch": "^2.2.1",
-    "lowkie": "^1.0.2",
+    "lowkie": "^1.1.0",
     "lru-cache": "^4.0.2",
     "method-override": "^2.3.8",
     "minimist": "^1.2.0",
@@ -82,8 +82,9 @@
     "mongoose": "^4.9.7",
     "morgan": "^1.8.1",
     "numeral": "^2.0.6",
-    "periodicjs.core.controller": "^10.6.82",
-    "periodicjs.core.data": "^0.6.4",
+    "periodicjs.core.controller": "^10.7.1",
+    "periodicjs.core.data": "^0.7.1",
+    "periodicjs.core.files": "^1.0.0",
     "periodicjs.core.mailer": "^10.0.3",
     "periodicjs.core.protocols": "^0.5.3",
     "periodicjs.core.utilities": "^6.1.1",
