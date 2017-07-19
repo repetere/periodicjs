@@ -35,6 +35,9 @@ const scheme = {
   locationtype: {
     type: Sequelize.STRING,
   },
+  encrypted_client_side: {
+    type: Sequelize.STRING,
+  },
   description: {
     type: Sequelize.TEXT,
   },
