@@ -79,6 +79,7 @@ th span {
 pre {
   border: 1px solid gainsboro;
   overflow: auto;
+  white-space: pre-wrap;
   /*class=" ts-text-xs ts-padding-md" style="overflow:auto; word-wrap:break-word; border:1px solid black;"*/
 }
 
