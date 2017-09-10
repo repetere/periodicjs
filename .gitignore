@@ -15,6 +15,7 @@ lib-cov
 *.tempconf
 dump.rdb
 session-store.db
+package-lock.json
 
 # Logs
 !logs
