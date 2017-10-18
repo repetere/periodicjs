@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is a rapid enterprise application framework for data driven web and mobile applications.",
-  "version": "10.6.51",
+  "version": "10.6.52",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -56,7 +56,8 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "bcrypt": "^1.0.2",
+    "bcrypt": "^1.0.3",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.1",
     "capitalize": "^1.0.0",
     "colors": "^1.1.2",
