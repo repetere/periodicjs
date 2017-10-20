@@ -130,12 +130,13 @@ $ periodicjs removeExtension [name-of-extension]
 $ periodicjs createExtension [name-of-extension]
 ```
 
+
 ### Configurations
 ```console
 $ periodicjs createConfig [type] [name] [environment] [filepath]
 ---
-$ periodicjs createConfig ext periodicjs.ext.dbseed development ~/Desktop/dev.dbseed-config.json
-$ periodicjs createConfig app my-web-app development ~/Desktop/dev.application-config.json
+$ periodicjs createConfig extension periodicjs.ext.dbseed development ~/Desktop/dev.dbseed-config.json
+$ periodicjs createConfig application my-web-app development ~/Desktop/dev.application-config.json
 ---
 $ periodicjs addConfig path/to/some/file.json
 $ periodicjs addConfig ~/my-documents/my-app-config.json
@@ -144,11 +145,11 @@ $ periodicjs removeConfig [id-of-db-config]
 $ periodicjs removeConfig 5914a3711a04c73349623be5
 ```
 **[type]**
- * app | application
- * extension | ext
- * extension-local | ext-local
- * container | con
- * container-local | con-local
+ * application
+ * extension 
+ * extension-local 
+ * container 
+ * container-local 
 
 ### Command Line Interface / Interactive Shell
 
