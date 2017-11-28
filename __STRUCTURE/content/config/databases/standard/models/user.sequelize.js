@@ -68,10 +68,10 @@ const scheme = {
   //   type: Sequelize.INTEGER,
   // },
   location: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     // allowNull: false,
     get() {
-      return JSON.parse(this.getDataValue('location'));
+      return this.getDataValue('location') ? JSON.parse(this.getDataValue('location')) : {};
     },
     set(val) {
       this.setDataValue('location', JSON.stringify(val));
@@ -83,91 +83,99 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
-  // getterMethods:{
-  //   config: function () {
-  //     // // console.log('getterTHIS', this);
-  //     // console.log('this.dataValues.config', this.dataValues.config);
-  //     // // console.log('this.config', this.config);
-  //     // // console.log('this.config.toString()', this.config.toString());
-  //     // console.log('this.filepath', this.filepath);
-  //     return JSON.parse(this.dataValues.config);
-  //   },
-  // },
-  // setterMethods: {
-  //   config: function(value) {
-  //     this.setDataValue('config', JSON.stringify(value));
-  //   },
-  // },
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
   // {
-  //   source: 'asset',
-  //   association: 'hasOne',
   //   target: 'user',
+  //   association: 'hasOne',
+  //   source: 'asset',
   //   options: {
   //     as: 'primaryasset',
-  //   }
+  //     foreignKey: 'primaryasset',
+  //   },
   // },
   // {
-  //   source: 'asset',
-  //   association: 'hasOne',
   //   target: 'user',
+  //   association: 'hasOne',
+  //   source: 'asset',
   //   options: {
   //     as: 'coverimage',
-  //   }
-  // },
-  // {
-  //   source: 'user',
-  //   association: 'hasMany',
-  //   target: 'asset',
-  //   options: {
-  //     as: 'assets',
+  //     foreignKey: 'coverimage',
   //   },
   // },
-  // {
-  //   source: 'user',
-  //   association: 'hasMany',
-  //   target: 'asset',
-  //   options: {
-  //     as: 'coverimages',
-  //   },
-  // },
-  // {
-  //   source: 'userrole',
-  //   association: 'hasMany',
-  //   target: 'user',
-  //   options: {
-  //     as: 'userroles',
-  //   },
-  // },
-  // {
-  //   source: 'user',
-  //   association: 'hasMany',
-  //   target: 'tag',
-  //   options: {
-  //     as: 'tags',
-  //   },
-  // },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'category',
-  //   options: {
-  //     as: 'categories',
-  //   },
-  // },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'contenttype',
-  //   options: {
-  //     as: 'contenttypes',
-  //   },
-  // },
+  {
+    source: 'asset',
+    association: 'hasMany',
+    target: 'user',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'hasMany',
+    target: 'user',
+    options: {
+      as: 'coverimage',
+      foreignKey: 'coverimage',
+    },
+  },
+  {
+    source: 'user',
+    association: 'belongsToMany',
+    target: 'asset',
+    options: {
+      as: 'assets',
+      through: 'user_assets',
+    },
+  },
+  {
+    source: 'user',
+    association: 'belongsToMany',
+    target: 'asset',
+    options: {
+      as:'coverimages',
+      through: 'user_coverimages',
+    },
+  },
+  {
+    source: 'user',
+    association: 'belongsToMany',
+    target: 'userrole',
+    options: {
+      as:'userroles',
+      through: 'user_userroles',
+    },
+  },
+  {
+    source: 'user',
+    association: 'belongsToMany',
+    target: 'tag',
+    options: {
+      as:'tags',
+      through: 'user_tags',
+    },
+  },
+  {
+    source: 'user',
+    association: 'belongsToMany',
+    target: 'category',
+    options: {
+      as:'categories',
+      through: 'user_categories',
+    },
+  },
 ];
 
 module.exports = {
@@ -177,7 +185,7 @@ module.exports = {
   coreDataOptions: {
     docid: ['_id', 'name', ],
     sort: { createdat: -1, },
-    search: ['name', 'email', 'firstname', 'lastname', 'description'],
+    search: ['email', 'firstname', 'lastname', 'name', ],
     // limit: 500,
     // skip: 0,
     population: 'coverimage coverimages primaryasset assets userroles tags categories contenttypes',

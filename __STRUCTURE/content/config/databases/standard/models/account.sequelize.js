@@ -10,7 +10,7 @@ const scheme = {
   email: {
     type: Sequelize.STRING,
   },
-  firname: {
+  firstname: {
     type: Sequelize.STRING,
   },
   lastname: {
@@ -42,10 +42,10 @@ const scheme = {
     defaultValue: false,
   },
   location: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     // allowNull: false,
     get() {
-      return JSON.parse(this.getDataValue('location'));
+      return this.getDataValue('location') ? JSON.parse(this.getDataValue('location')) : {};
     },
     set(val) {
       this.setDataValue('location', JSON.stringify(val));
@@ -69,65 +69,97 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
-const associations = [{
-    source: 'account',
+const associations = [
+  // {
+  //   target: 'account',
+  //   association: 'hasOne',
+  //   source: 'asset',
+  //   options: {
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
+  //   },
+  // },
+  // {
+  //   target: 'account',
+  //   association: 'hasOne',
+  //   source: 'asset',
+  //   options: {
+  //     as: 'coverimage',
+  //     foreignKey: 'coverimage',
+  //   },
+  // },
+  {
+    source: 'asset',
     association: 'hasMany',
+    target: 'account',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'hasMany',
+    target: 'account',
+    options: {
+      as: 'coverimage',
+      foreignKey: 'coverimage',
+    },
+  },
+  {
+    source: 'account',
+    association: 'belongsToMany',
     target: 'asset',
     options: {
       as: 'assets',
-    }
-  },
-  {
-    source: 'account',
-    association: 'hasOne',
-    target: 'asset',
-    options: {
-      as: 'primaryasset',
+      through: 'account_assets',
     },
   },
   {
     source: 'account',
-    association: 'hasMany',
+    association: 'belongsToMany',
     target: 'asset',
     options: {
-      as: 'coverimages',
+      as:'coverimages',
+      through: 'account_coverimages',
     },
   },
   {
     source: 'account',
-    association: 'hasOne',
-    target: 'asset',
-    options: {
-      as: 'coverimage',
-    },
-  },
-  {
-    source: 'account',
-    association: 'hasMany',
+    association: 'belongsToMany',
     target: 'userrole',
     options: {
-      as: 'userroles',
+      as:'userroles',
+      through: 'account_userroles',
     },
   },
   {
     source: 'account',
-    association: 'hasMany',
+    association: 'belongsToMany',
     target: 'tag',
     options: {
-      as: 'tags',
+      as:'tags',
+      through: 'account_tags',
     },
   },
   {
     source: 'account',
-    association: 'hasMany',
+    association: 'belongsToMany',
     target: 'category',
     options: {
-      as: 'categories',
+      as:'categories',
+      through: 'account_categories',
     },
   },
 ];

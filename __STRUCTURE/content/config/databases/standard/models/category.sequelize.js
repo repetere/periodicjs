@@ -10,6 +10,9 @@ const scheme = {
   title: {
     type: Sequelize.STRING,
   },
+  author: {
+    type: Sequelize.STRING,
+  },
   name: {
     type: Sequelize.STRING,
     unique: true,
@@ -28,36 +31,45 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
   {
-    source: 'category',
-    association: 'hasOne',
-    target: 'user',
+    source: 'user',
+    association: 'hasMany',
+    target: 'category',
     options: {
       as: 'author',
-    }
+      foreignKey: 'author',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'hasMany',
+    target: 'category',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset',
+    },
   },
   {
     source: 'category',
-    association: 'belongsTo',
-    target: 'asset',
+    association: 'belongsToMany',
+    target: 'category',
     options: {
-      as: 'primaryasset',
+      as: 'parent',
+      through: 'category_parent',
     },
   },
-  // {
-  //   source: 'category',
-  //   association: 'hasMany',
-  //   target: 'category',
-  //   options: {
-  //     as: 'parents',
-  //   },
-  // },
 ];
 
 module.exports = {

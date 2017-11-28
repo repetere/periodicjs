@@ -31,33 +31,38 @@ const options = {
   indexes: [{
     fields: ['createdat'],
   }],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
   {
-    source: 'tag',
-    association: 'hasOne',
-    target: 'user',
+    source: 'user',
+    association: 'hasMany',
+    target: 'tag',
     options: {
       as: 'author',
-    }
+      foreignKey: 'author',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'hasMany',
+    target: 'tag',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset',
+    },
   },
   {
     source: 'tag',
-    association: 'belongsTo',
-    target: 'asset',
+    association: 'belongsToMany',
+    target: 'tag',
     options: {
-      as: 'primaryasset',
+      as: 'parent',
+      through: 'tag_parent',
     },
   },
-  // {
-  //   source: 'tag',
-  //   association: 'hasMany',
-  //   target: 'tag',
-  //   options: {
-  //     as: 'parents',
-  //   },
-  // },
 ];
 
 module.exports = {

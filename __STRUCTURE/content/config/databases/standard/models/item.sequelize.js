@@ -48,80 +48,74 @@ const options = {
   indexes: [{
     fields: ['createdat'],
   }],
-  // getterMethods:{
-  //   config: function () {
-  //     // // console.log('getterTHIS', this);
-  //     // console.log('this.dataValues.config', this.dataValues.config);
-  //     // // console.log('this.config', this.config);
-  //     // // console.log('this.config.toString()', this.config.toString());
-  //     // console.log('this.filepath', this.filepath);
-  //     return JSON.parse(this.dataValues.config);
-  //   },
-  // },
-  // setterMethods: {
-  //   config: function(value) {
-  //     this.setDataValue('config', JSON.stringify(value));
-  //   },
-  // },
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
-  // {
-  //   source: 'asset',
-  //   association: 'hasOne',
-  //   target: 'item',
-  //   options: {
-  //     as: 'primaryasset',
-  //   }
-  // },
-  {
-    source: 'user',
-    association: 'hasOne',
-    target: 'item',
-    options: {
-      as: 'primaryauthor',
-    },
-  },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'asset',
-  //   options: {
-  //     as: 'assets',
-  //   },
-  // },
   {
     source: 'user',
     association: 'hasMany',
     target: 'item',
     options: {
-      as: 'authors',
+      as: 'primaryauthor',
+      foreignKey: 'primaryauthor',
     },
   },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'tag',
-  //   options: {
-  //     as: 'tags',
-  //   },
-  // },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'category',
-  //   options: {
-  //     as: 'categories',
-  //   },
-  // },
-  // {
-  //   source: 'item',
-  //   association: 'hasMany',
-  //   target: 'contenttype',
-  //   options: {
-  //     as: 'contenttypes',
-  //   },
-  // },
+  {
+    target: 'item',
+    association: 'hasMany',
+    source: 'asset',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset',
+    },
+  },
+  {
+    source: 'item',
+    association: 'belongsToMany',
+    target: 'user',
+    options: {
+      as: 'authors',
+      through: 'item_authors',
+    },
+  },
+  {
+    source: 'item',
+    association: 'belongsToMany',
+    target: 'asset',
+    options: {
+      as: 'assets',
+      through: 'item_assets',
+    },
+  },
+  {
+    source: 'item',
+    association: 'belongsToMany',
+    target: 'tag',
+    options: {
+      as:'tags',
+      through: 'item_tags',
+    },
+  },
+  {
+    source: 'item',
+    association: 'belongsToMany',
+    target: 'category',
+    options: {
+      as:'categories',
+      through: 'item_categories',
+    },
+  },
+  {
+    source: 'item',
+    association: 'belongsToMany',
+    target: 'contenttype',
+    options: {
+      as:'contenttypes',
+      through: 'item_contenttypes',
+    },
+  },
 ];
 
 module.exports = {
@@ -134,7 +128,7 @@ module.exports = {
     search: ['name', 'title', 'dek', 'content', 'link', ],
     // limit: 500,
     // skip: 0,
-    // population: 'primaryauthor primaryasset asset assets authors tags categories contenttypes',
+    population: 'primaryauthor primaryasset asset assets authors tags categories contenttypes',
     // fields: {},
     // pagelength:15,
     // tract_changes:true,

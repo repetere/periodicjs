@@ -18,6 +18,9 @@ const scheme = {
   title: {
     type: Sequelize.STRING,
   },
+  // primaryauthor: {
+  //   type: Sequelize.STRING,
+  // },
   name: {
     type: Sequelize.STRING,
     unique: true,
@@ -33,34 +36,61 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
+  // {
+  //   target: 'data',
+  //   association: 'hasOne',
+  //   source: 'user',
+  //   options: {
+  //     as: 'primaryauthor',
+  //     // foreignKey: 'primaryauthor',
+  //   },
+  // },
   {
-    source: 'data',
+    source: 'user',
     association: 'hasMany',
-    target: 'tag',
+    target: 'data',
     options: {
-      as: 'tags',
-    }
-  },
-  {
-    source: 'data',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'categories',
+      as: 'primaryauthor',
+      foreignKey: 'primaryauthor',
     },
   },
   {
     source: 'data',
-    association: 'hasOne',
-    target: 'user',
+    association: 'belongsToMany',
+    target: 'asset',
     options: {
-      as: 'primaryauthor',
+      as: 'assets',
+      through: 'data_assets',
+    },
+  },
+  {
+    source: 'data',
+    association: 'belongsToMany',
+    target: 'tag',
+    options: {
+      as:'tags',
+      through: 'data_tags',
+    },
+  },
+  {
+    source: 'data',
+    association: 'belongsToMany',
+    target: 'category',
+    options: {
+      as:'categories',
+      through: 'data_categories',
     },
   },
 ];
@@ -73,6 +103,6 @@ module.exports = {
     docid: ['_id', 'name'],
     sort: { createdat: -1, },
     search: ['title', 'name', 'content'],
-    population: 'tags categories primaryauthor',
+    // population: 'tags categories primaryauthor',
   },
 };

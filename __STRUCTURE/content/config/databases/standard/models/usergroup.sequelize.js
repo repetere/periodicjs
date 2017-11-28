@@ -32,23 +32,36 @@ const options = {
   indexes: [{
     fields: ['createdat'],
   }],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
 };
 
 const associations = [
   {
-    source: 'usergroup',
+    source: 'user',
     association: 'hasMany',
-    target: 'userrole',
+    target: 'usergroup',
     options: {
-      as: 'roles',
-    }
+      as: 'author',
+      foreignKey: 'author',
+    },
+  },
+  {
+    source: 'account',
+    association: 'hasMany',
+    target: 'usergroup',
+    options: {
+      as: 'creator',
+      foreignKey: 'creator',
+    },
   },
   {
     source: 'usergroup',
-    association: 'hasOne',
-    target: 'user',
+    association: 'belongsToMany',
+    target: 'userrole',
     options: {
-      as: 'author',
+      as:'roles',
+      through: 'usergroup_userroles',
     },
   },
 ];
@@ -61,6 +74,6 @@ module.exports = {
     docid: ['_id', 'name'],
     sort: { createdat: -1, },
     search: ['title', 'name', 'description'],
-    population: 'roles author'
+    population: 'roles author creator'
   },
 };

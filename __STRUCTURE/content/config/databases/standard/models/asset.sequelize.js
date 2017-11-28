@@ -44,15 +44,26 @@ const scheme = {
   content: {
     type: Sequelize.TEXT,
   },
-  // filedata: {
-
-  // },
-  // attributes: {
-    
-  // },
-  // versions: {
-    
-  // },
+  filedata: {
+    type: Sequelize.TEXT,
+    // allowNull: false,
+    get() {
+      return this.getDataValue('filedata') ? JSON.parse(this.getDataValue('filedata')) : {};
+    },
+    set(val) {
+      this.setDataValue('filedata', JSON.stringify(val));
+    },
+  },
+  versions: {
+    type: Sequelize.TEXT,
+    // allowNull: false,
+    get() {
+      return this.getDataValue('versions') ? JSON.parse(this.getDataValue('versions')) : {};
+    },
+    set(val) {
+      this.setDataValue('versions', JSON.stringify(val));
+    },
+  },
   random: {
     type: Sequelize.FLOAT,
   },
@@ -61,52 +72,90 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
+  hooks: {
+    beforeCreate: (asset, options) => {
+      asset.attributes = asset._attributes;
+    },
+    beforeUpdate: (asset, options) => {
+      asset.attributes = asset._attributes;
+    },
+  },
+  // getterMethods: {
+  //   attributes() {
+  //     return this.getDataValue('attributes') ? JSON.parse(this.getDataValue('attributes')) : {};
+  //   },
+  // },
+  // setterMethods: {
+  //   attributes(val) {
+  //     this.setDataValue('attributes', JSON.stringify(val));
+  //   },
+  // },
 };
 
 const associations = [
-  {
-    source: 'asset',
-    association: 'hasOne',
-    target: 'user',
-    options: {
-      as: 'author',
-    }
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'user',
-    options: {
-      as: 'authors',
-    },
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'tag',
-    options: {
-      as: 'tags',
-    },
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'categories',
-    },
-  },
   // {
   //   source: 'asset',
   //   association: 'hasMany',
-  //   target: 'asset',
+  //   target: 'user',
   //   options: {
-  //     as: 'related_assets',
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
   //   },
   // },
+  // {
+  //   target: 'asset',
+  //   association: 'hasOne',
+  //   source: 'user',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
+  {
+    source: 'asset',
+    association: 'belongsToMany',
+    target: 'user',
+    options: {
+      as: 'authors',
+      through: 'asset_authors',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'belongsToMany',
+    target: 'tag',
+    options: {
+      as: 'tags',
+      through: 'asset_tags',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'belongsToMany',
+    target: 'category',
+    options: {
+      as: 'categories',
+      through: 'asset_categories',
+    },
+  },
+  {
+    source: 'asset',
+    association: 'belongsToMany',
+    target: 'asset',
+    options: {
+      as: 'related_assets',
+      through: 'asset_related_assets',
+    },
+  },
 ];
 
 module.exports = {

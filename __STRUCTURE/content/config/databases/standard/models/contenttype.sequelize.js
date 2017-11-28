@@ -19,26 +19,33 @@ const scheme = {
 const options = {
   underscored: true,
   timestamps: true,
-  indexes: [{
-    fields: ['createdat'],
-  }],
+  indexes: [
+    {
+      fields: [
+        'createdat',
+      ],
+    },
+  ],
+  createdAt: 'createdat',
+  updatedAt: 'updatedat',
+  hooks: {
+    beforeCreate: (asset, options) => {
+      asset.attributes = asset._attributes;
+    },
+    beforeUpdate: (asset, options) => {
+      asset.attributes = asset._attributes;
+    },
+  },
 };
 
 const associations = [
   {
-    source: 'contenttype',
+    target: 'contenttype',
     association: 'hasOne',
-    target: 'user',
+    source: 'user',
     options: {
       as: 'author',
-    }
-  },
-  {
-    source: 'contenttype',
-    association: 'hasMany',
-    target: 'attribute',
-    options: {
-      as: 'attributes',
+      foreignKey: 'author',
     },
   },
 ];
