@@ -18,6 +18,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
+    unique: 'item_name',
   },
   title: {
     type: Sequelize.STRING,
@@ -53,24 +54,24 @@ const options = {
 };
 
 const associations = [
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'item',
-    options: {
-      as: 'primaryauthor',
-      foreignKey: 'primaryauthor',
-    },
-  },
-  {
-    target: 'item',
-    association: 'hasMany',
-    source: 'asset',
-    options: {
-      as: 'primaryasset',
-      foreignKey: 'primaryasset',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'item',
+  //   options: {
+  //     as: 'primaryauthor',
+  //     foreignKey: 'primaryauthor',
+  //   },
+  // },
+  // {
+  //   target: 'item',
+  //   association: 'hasMany',
+  //   source: 'asset',
+  //   options: {
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
+  //   },
+  // },
   {
     source: 'item',
     association: 'belongsToMany',

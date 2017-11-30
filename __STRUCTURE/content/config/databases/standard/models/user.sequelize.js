@@ -10,6 +10,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
+    unique: 'user_name'
   },
   email: {
     type: Sequelize.STRING,
@@ -77,6 +78,14 @@ const scheme = {
       this.setDataValue('location', JSON.stringify(val));
     },
   },
+  // primaryasset: {
+  //   allowNull: true,
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     model: 'asset',
+  //     key:'_id',
+  //   },
+  // },
 };
 
 
@@ -95,15 +104,15 @@ const options = {
 };
 
 const associations = [
-  // {
-  //   target: 'user',
-  //   association: 'hasOne',
-  //   source: 'asset',
-  //   options: {
-  //     as: 'primaryasset',
-  //     foreignKey: 'primaryasset',
-  //   },
-  // },
+  {
+    target: 'asset',
+    association: 'belongsTo',
+    source: 'user',
+    options: {
+      as: 'primaryasset',
+      foreignKey: 'primaryasset_ufk',
+    },
+  },
   // {
   //   target: 'user',
   //   association: 'hasOne',
@@ -113,24 +122,24 @@ const associations = [
   //     foreignKey: 'coverimage',
   //   },
   // },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'user',
-    options: {
-      as: 'primaryasset',
-      foreignKey: 'primaryasset',
-    },
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'user',
-    options: {
-      as: 'coverimage',
-      foreignKey: 'coverimage',
-    },
-  },
+  // {
+  //   source: 'asset',
+  //   association: 'hasMany',
+  //   target: 'user',
+  //   options: {
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
+  //   },
+  // },
+  // {
+  //   source: 'asset',
+  //   association: 'hasMany',
+  //   target: 'user',
+  //   options: {
+  //     as: 'coverimage',
+  //     foreignKey: 'coverimage',
+  //   },
+  // },
   {
     source: 'user',
     association: 'belongsToMany',

@@ -23,7 +23,7 @@ const scheme = {
   // },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'data_name',
   },
   content: {
     type: Sequelize.TEXT,
@@ -57,15 +57,15 @@ const associations = [
   //     // foreignKey: 'primaryauthor',
   //   },
   // },
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'data',
-    options: {
-      as: 'primaryauthor',
-      foreignKey: 'primaryauthor',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'data',
+  //   options: {
+  //     as: 'primaryauthor',
+  //     foreignKey: 'primaryauthor',
+  //   },
+  // },
   {
     source: 'data',
     association: 'belongsToMany',

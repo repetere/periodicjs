@@ -12,6 +12,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
+    unique: 'asset_name',
   },
   status: {
     type: Sequelize.STRING,
@@ -81,14 +82,14 @@ const options = {
   ],
   createdAt: 'createdat',
   updatedAt: 'updatedat',
-  hooks: {
-    beforeCreate: (asset, options) => {
-      asset.attributes = asset._attributes;
-    },
-    beforeUpdate: (asset, options) => {
-      asset.attributes = asset._attributes;
-    },
-  },
+  // hooks: {
+  //   beforeCreate: (asset, options) => {
+  //     asset.attributes = asset._attributes;
+  //   },
+  //   beforeUpdate: (asset, options) => {
+  //     asset.attributes = asset._attributes;
+  //   },
+  // },
   // getterMethods: {
   //   attributes() {
   //     return this.getDataValue('attributes') ? JSON.parse(this.getDataValue('attributes')) : {};
@@ -120,6 +121,15 @@ const associations = [
   //     foreignKey: 'author',
   //   },
   // },
+  {
+    target: 'user',
+    association: 'belongsTo',
+    source: 'asset',
+    options: {
+      as: 'author',
+      foreignKey: 'author_asfk',
+    },
+  },
   {
     source: 'asset',
     association: 'belongsToMany',

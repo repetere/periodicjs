@@ -9,14 +9,14 @@ const scheme = {
   },
   userprivilegeid: {
     type: Sequelize.INTEGER,
-    unique: true,
+    unique: 'userprivilegeid_idx',
   },
   title: {
     type: Sequelize.STRING,
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'userprivilege_name',
   },
   description: {
     type: Sequelize.TEXT,
@@ -37,24 +37,24 @@ const options = {
 };
 
 const associations = [
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'userprivilege',
-    options: {
-      as: 'author',
-      foreignKey: 'author',
-    },
-  },
-  {
-    source: 'account',
-    association: 'hasMany',
-    target: 'userprivilege',
-    options: {
-      as: 'creator',
-      foreignKey: 'creator',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'userprivilege',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
+  // {
+  //   source: 'account',
+  //   association: 'hasMany',
+  //   target: 'userprivilege',
+  //   options: {
+  //     as: 'creator',
+  //     foreignKey: 'creator',
+  //   },
+  // },
 ];
 
 module.exports = {
@@ -65,6 +65,6 @@ module.exports = {
     docid: ['_id', 'name'],
     sort: { createdat: -1, },
     search: ['title', 'name', 'description'],
-    population: 'author creator',
+    // population: 'author creator',
   },
 };

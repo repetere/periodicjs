@@ -15,7 +15,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'category_name',
   },
   dek: {
     type: Sequelize.STRING,
@@ -43,24 +43,24 @@ const options = {
 };
 
 const associations = [
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'author',
-      foreignKey: 'author',
-    },
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'category',
-    options: {
-      as: 'primaryasset',
-      foreignKey: 'primaryasset',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'category',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
+  // {
+  //   source: 'asset',
+  //   association: 'hasMany',
+  //   target: 'category',
+  //   options: {
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
+  //   },
+  // },
   {
     source: 'category',
     association: 'belongsToMany',

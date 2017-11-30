@@ -12,7 +12,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'contenttype_name',
   },
 };
 
@@ -39,15 +39,15 @@ const options = {
 };
 
 const associations = [
-  {
-    target: 'contenttype',
-    association: 'hasOne',
-    source: 'user',
-    options: {
-      as: 'author',
-      foreignKey: 'author',
-    },
-  },
+  // {
+  //   target: 'user',
+  //   association: 'hasOne',
+  //   source: 'contenttype',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
 ];
 
 module.exports = {

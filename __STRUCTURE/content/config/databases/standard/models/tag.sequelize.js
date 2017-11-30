@@ -12,7 +12,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'tag_name',
   },
   dek: {
     type: Sequelize.STRING,
@@ -31,29 +31,27 @@ const options = {
   indexes: [{
     fields: ['createdat'],
   }],
-  createdAt: 'createdat',
-  updatedAt: 'updatedat',
 };
 
 const associations = [
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'tag',
-    options: {
-      as: 'author',
-      foreignKey: 'author',
-    },
-  },
-  {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'tag',
-    options: {
-      as: 'primaryasset',
-      foreignKey: 'primaryasset',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'tag',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
+  // {
+  //   source: 'asset',
+  //   association: 'hasMany',
+  //   target: 'tag',
+  //   options: {
+  //     as: 'primaryasset',
+  //     foreignKey: 'primaryasset',
+  //   },
+  // },
   {
     source: 'tag',
     association: 'belongsToMany',

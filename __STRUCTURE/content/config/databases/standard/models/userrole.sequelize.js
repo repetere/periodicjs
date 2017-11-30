@@ -9,14 +9,14 @@ const scheme = {
   },
   userroleid: {
     type: Sequelize.INTEGER,
-    unique: true,
+    unique: 'userroleid_idx',
   },
   title: {
     type: Sequelize.STRING,
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: 'userrole_name',
   },
   description: {
     type: Sequelize.TEXT,
@@ -37,24 +37,24 @@ const options = {
 };
 
 const associations = [
-  {
-    source: 'user',
-    association: 'hasMany',
-    target: 'userrole',
-    options: {
-      as: 'author',
-      foreignKey: 'author',
-    },
-  },
-  {
-    source: 'account',
-    association: 'hasMany',
-    target: 'userrole',
-    options: {
-      as: 'creator',
-      foreignKey: 'creator',
-    },
-  },
+  // {
+  //   source: 'user',
+  //   association: 'hasMany',
+  //   target: 'userrole',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author',
+  //   },
+  // },
+  // {
+  //   source: 'account',
+  //   association: 'hasMany',
+  //   target: 'userrole',
+  //   options: {
+  //     as: 'creator',
+  //     foreignKey: 'creator',
+  //   },
+  // },
   {
     source: 'userrole',
     association: 'belongsToMany',

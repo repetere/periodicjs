@@ -18,6 +18,7 @@ const scheme = {
   },
   name: {
     type: Sequelize.STRING,
+    unique: 'account_name',
   },
   password: {
     type: Sequelize.STRING,
@@ -63,7 +64,15 @@ const scheme = {
   },
   random: {
     type: Sequelize.FLOAT,
-  }
+  },
+  // primaryasset: {
+  //   allowNull: true,
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     model: 'asset',
+  //     key:'_id',
+  //   },
+  // },
 };
 
 const options = {
@@ -81,40 +90,22 @@ const options = {
 };
 
 const associations = [
-  // {
-  //   target: 'account',
-  //   association: 'hasOne',
-  //   source: 'asset',
-  //   options: {
-  //     as: 'primaryasset',
-  //     foreignKey: 'primaryasset',
-  //   },
-  // },
-  // {
-  //   target: 'account',
-  //   association: 'hasOne',
-  //   source: 'asset',
-  //   options: {
-  //     as: 'coverimage',
-  //     foreignKey: 'coverimage',
-  //   },
-  // },
   {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'account',
+    target: 'asset',
+    association: 'belongsTo',
+    source: 'account',
     options: {
       as: 'primaryasset',
-      foreignKey: 'primaryasset',
+      foreignKey: 'primaryasset_afk',
     },
   },
   {
-    source: 'asset',
-    association: 'hasMany',
-    target: 'account',
+    target: 'asset',
+    association: 'belongsTo',
+    source: 'account',
     options: {
       as: 'coverimage',
-      foreignKey: 'coverimage',
+      foreignKey: 'coverimage_afk',
     },
   },
   {
@@ -172,6 +163,16 @@ module.exports = {
     docid: ['_id', 'name'],
     sort: { createdat: -1, },
     search: ['email', 'firstname', 'lastname', 'name', ],
-    population: 'assets primaryasset coverimages userroles tags categories',
+    // population: 'assets primaryasset coverimages userroles tags categories',
+    population: [
+      {
+        model: 'asset',
+        as:'primaryasset',
+      },
+      {
+        model: 'account_assets',
+        // as:'assets',
+      },
+    ],
   },
 };
