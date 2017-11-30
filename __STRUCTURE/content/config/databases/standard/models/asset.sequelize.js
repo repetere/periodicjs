@@ -121,15 +121,15 @@ const associations = [
   //     foreignKey: 'author',
   //   },
   // },
-  {
-    target: 'user',
-    association: 'belongsTo',
-    source: 'asset',
-    options: {
-      as: 'author',
-      foreignKey: 'author_asfk',
-    },
-  },
+  // {
+  //   target: 'user',
+  //   association: 'belongsTo',
+  //   source: 'asset',
+  //   options: {
+  //     as: 'author',
+  //     foreignKey: 'author_asfk',
+  //   },
+  // },
   {
     source: 'asset',
     association: 'belongsToMany',
