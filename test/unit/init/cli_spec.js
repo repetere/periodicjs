@@ -130,7 +130,9 @@ describe('Periodic Init cli', function() {
           debug: debugSpy,
           error: console.error,
         },
-        config: {},
+        config: {
+          debug:true,
+        },
       };      
       mockThis.resources.commands.extensions.set('dbseed', {
         importData: (options) => {

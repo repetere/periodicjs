@@ -194,6 +194,9 @@ describe('Periodic Init Config', function() {
             create: createSpy,
           },
         },
+        config: {
+          debug:true,
+        },
       };
       const mockOptions = {
         resolve: (val) => {
@@ -207,12 +210,20 @@ describe('Periodic Init Config', function() {
         reject: done,
         periodic_db_name: 'default',
         dboptions: {},
-        db: sequelizeDB,
+        db: sequelizeDB || {
+          sync: () => new Promise((resolve, reject) => { })
+        },
         modelFiles: fs.readdirSync(testModelDir),
         modelDirPath: testModelDir,
       };
       // console.log(fs.readdirSync(path.join(initTestPathDir,'content/config/databases/standard/models')))
-      config.assignSequelizeModels.call(mockThis, mockOptions);
+      try {
+        
+        config.assignSequelizeModels.call(mockThis, mockOptions);
+      } catch (e) {
+        console.log('Cannot connect to Postgres')
+        done();
+      }
     });
   });
   describe('connectLowkieDB', () => {
