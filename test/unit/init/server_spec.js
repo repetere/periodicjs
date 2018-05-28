@@ -205,6 +205,9 @@ describe('Periodic Init server', function() {
             server: {},
           },
         },
+        status: {
+          emit:()=>{},
+        },
       };
       expect(server.initializeServers.call(mockThis)).to.be.a('promise');
     });

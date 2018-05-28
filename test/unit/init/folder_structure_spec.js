@@ -82,7 +82,7 @@ describe('Periodic Init Folder Structure', function() {
         .catch(done);
 
     });
-    it('should return a promise', () => {
+    it('should return a promise', (done) => {
       const testPeriodic = {
         config: {
           app_root: initStructTestPathDir,
@@ -90,6 +90,12 @@ describe('Periodic Init Folder Structure', function() {
       };
       const fsPromise = folderStructure.call(testPeriodic);
       expect(fsPromise).to.be.a('promise');
+      fsPromise
+        .then(status => {
+          expect(status).to.be.true;
+          done();
+        })
+        .catch(done);
     });
   });
 

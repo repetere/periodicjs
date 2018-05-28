@@ -15,43 +15,46 @@ chai.use(require('chai-as-promised'));
 describe('Periodic Init cli', function() {
   this.timeout(10000);
   describe('processArgv', () => {
-        // const crud_types = ['config', 'ext', 'con'];
-        // const crud_ops = ['create', 'remove', 'update', 'get', 'list'];
-        // const mockPeriodicThis = new periodicClass();
-        // mockPeriodicThis.datas.set('configuration', {
-        //   create: Promise.resolve(true),
-        //   delete: Promise.resolve(true),
-        //   update: Promise.resolve(true),
-        //   search: Promise.resolve(true),
-        // });
-        // mockPeriodicThis.datas.set('extension', {
-        //   create: Promise.resolve(true),
-        //   delete: Promise.resolve(true),
-        //   update: Promise.resolve(true),
-        //   search: Promise.resolve(true),
-        // });
-        // crud_types.forEach(crud_type => {
-        //   crud_ops.forEach(crud_op => {
-        //     it(`should handle cli $ node index.js --cli --crud=${crud_type} --crud_op=${crud_op}`, () => {
-        //       expect(cli.processArgv.call(mockPeriodicThis, {
-        //         process: {
-        //           exit: () => {},
-        //         },
-        //         argv: {
-        //           crud: crud_type,
-        //           crud_op,
-        //           crud_arg: {},
-        //         },
-        //       })).to.be.a('promise');
-        //     });
-        //   });
-        // });
+    // const crud_types = ['config', 'ext', 'con'];
+    // const crud_ops = ['create', 'remove', 'update', 'get', 'list'];
+    // const mockPeriodicThis = new periodicClass();
+    // mockPeriodicThis.datas.set('configuration', {
+    //   create: Promise.resolve(true),
+    //   delete: Promise.resolve(true),
+    //   update: Promise.resolve(true),
+    //   search: Promise.resolve(true),
+    // });
+    // mockPeriodicThis.datas.set('extension', {
+    //   create: Promise.resolve(true),
+    //   delete: Promise.resolve(true),
+    //   update: Promise.resolve(true),
+    //   search: Promise.resolve(true),
+    // });
+    // crud_types.forEach(crud_type => {
+    //   crud_ops.forEach(crud_op => {
+    //     it(`should handle cli $ node index.js --cli --crud=${crud_type} --crud_op=${crud_op}`, () => {
+    //       expect(cli.processArgv.call(mockPeriodicThis, {
+    //         process: {
+    //           exit: () => {},
+    //         },
+    //         argv: {
+    //           crud: crud_type,
+    //           crud_op,
+    //           crud_arg: {},
+    //         },
+    //       })).to.be.a('promise');
+    //     });
+    //   });
+    // });
     it('should output status', () => {
       const infoSpy = sinon.spy();
       const mockThis = {
         logger: {
           info: infoSpy,
           error: console.error,
+        },
+        status: {
+          emit:()=>{},
         },
       };
       const mockOptions = {
@@ -79,7 +82,10 @@ describe('Periodic Init cli', function() {
           error: console.error,
         },
         config: {},
-      };      
+        status: {
+          emit: () => { },
+        },
+      };     
       mockThis.resources.commands.extensions.set('dbseed', {
         importData: (options) => {
           return new Promise((resolve, reject) => {
@@ -160,6 +166,7 @@ describe('Periodic Init cli', function() {
       const debugSpy = sinon.spy();      
       const errorSpy = sinon.spy(); 
       const exitSpy = sinon.spy();     
+      let calledDone = 0;
       const mockThis = {
         resources: { 
           commands: {
@@ -194,7 +201,12 @@ describe('Periodic Init cli', function() {
         process: {
           exit: () => {
             expect(errorSpy.called).to.be.true;
-            done();
+            if (calledDone === 0) {
+              done();
+              calledDone++;
+            } else {
+              throw new Error(`Called DONE: ${calledDone} times`);
+            }
           },
         },
       };
@@ -208,13 +220,13 @@ describe('Periodic Init cli', function() {
         crud: {
           config: {
             create: () => {
-                            // console.log('calling crud', arguments)
+              // console.log('calling crud', arguments)
               return new Promise((resolve, reject) => {
-                                // console.log('in PROMISE')
-                                // expect(infoSpy.called).to.be.true;
-                  done();
-                  resolve(true);
-                });
+                // console.log('in PROMISE')
+                // expect(infoSpy.called).to.be.true;
+                done();
+                resolve(true);
+              });
             },
           },
         },
@@ -244,13 +256,13 @@ describe('Periodic Init cli', function() {
         crud: {
           config: {
             create: () => {
-                            // console.log('calling crud', arguments)
+              // console.log('calling crud', arguments)
               return new Promise((resolve, reject) => {
-                                // console.log('in PROMISE')
-                                // expect(infoSpy.called).to.be.true;
-                  done();
-                  resolve(true);
-                });
+                // console.log('in PROMISE')
+                // expect(infoSpy.called).to.be.true;
+                done();
+                resolve(true);
+              });
             },
           },
         },
@@ -277,16 +289,17 @@ describe('Periodic Init cli', function() {
     it('should handle a --crud command line arguments errors', (done) => {
       const debugSpy = sinon.spy();
       const errorSpy = sinon.spy();
+      let calledDone = 0;
       const mockThis = {
         crud: {
           config: {
             create: () => {
-                            // console.log('calling crud', arguments)
+              // console.log('calling crud', arguments)
               return new Promise((resolve, reject) => {
-                                // console.log('in PROMISE')
-                                // expect(infoSpy.called).to.be.true;
-                  reject(new Error('testing the reject'));
-                });
+                // console.log('in PROMISE')
+                // expect(infoSpy.called).to.be.true;
+                reject(new Error('testing the reject'));
+              });
             },
           },
         },
@@ -306,17 +319,27 @@ describe('Periodic Init cli', function() {
         process: {
           exit: () => {
             expect(errorSpy.called).to.be.true;
-            done();
+            if (calledDone === 0) {
+              done();
+              calledDone++;
+            } else {
+              throw new Error(`Called DONE: ${calledDone} times`);
+            }
           },
+        },
+        repl: {
+          
         },
       };
       cli.processArgv.call(mockThis, mockOptions);
     });
     it('should handle a --repl command line argument', (done) => {
       const writeSpy = sinon.spy();
+      const errorSpy = sinon.spy();
       const mockThis = {
         logger: {
-                    // info: infoSpy,
+          error: errorSpy,
+          // info: infoSpy,
         },
       };
       const mockOptions = {
@@ -327,13 +350,19 @@ describe('Periodic Init cli', function() {
           stdout: {
             write: writeSpy,
           },
+          exit: () => { },
+        },
+        
+        repl: {
+          start: () => ({ context: { }})
         },
       };
       cli.processArgv.call(mockThis, mockOptions);
       setTimeout(() => {
         expect(writeSpy.called).to.be.true;
+        expect(errorSpy.called).to.be.true;
         done();
-      }, 1000);
+      }, 1200);
     });
     it('should handle errors status', () => {
       const errorSpy = sinon.spy();
@@ -428,13 +457,13 @@ describe('Periodic Init cli', function() {
         },
       };
       cli.run.call(mockThis)
-                .then(result => {
-                  done(new Error('it should have rejected cli run'));
-                })
-                .catch(e => {
-                  expect(e.message).to.eql('Leave Promise Chain: CLI Process');
-                  done();
-                });
+        .then(result => {
+          done(new Error('it should have rejected cli run'));
+        })
+        .catch(e => {
+          expect(e.message).to.eql('Leave Promise Chain: CLI Process');
+          done();
+        });
     });
     it('should handle errors', () => {
       expect(cli.run()).to.eventually.be.rejected;

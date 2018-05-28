@@ -140,17 +140,28 @@ describe('Periodic Init logger', function() {
     // });
   });
   describe('catchProcessErrors', () => {
-    it('should catch errors', () => {
-      expect(logger.catchProcessErrors.call({ 
-        logger: { 
-          error: () => {},
-          warn:()=>{},
+    it('should catch errors', (done) => {
+      const processErrors = logger.catchProcessErrors.call({
+        logger: {
+          error: () => { },
+          warn: () => { },
         },
       }, {
-        process:{ on:(eventType)=>{
-          if(eventType==='warning')throw new Error('testing error');
-        }, },
-      })).to.eventually.be.fulfilled;
+          process: {
+            on: (eventType) => {
+              if (eventType === 'warning') throw new Error('testing error');
+            },
+          },
+        });
+      expect(processErrors).to.be.a('promise');
+      processErrors
+        .then(() => {
+          done(new Error('this shoudl never be called'));
+        })
+        .catch(e => {
+          expect(e).to.be.an('error');
+          done();
+        });
     });
     it('should handle errors', (done) => {
       logger.catchProcessErrors.call({

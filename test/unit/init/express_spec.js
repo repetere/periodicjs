@@ -666,7 +666,28 @@ describe('Periodic Init Express', function() {
       expect(express.expressRouting()).to.eventually.be.rejected;
     });
     it('should return a promise', () => {
-      expect(express.expressRouting.call({ app: {} })).to.eventually.be.fulfilled;
+      // this.settings.express.views.page_data
+      // this.app.locals.page_data
+      const mockThis = {
+        app: {
+          locals: {
+            page_data:{},
+          },
+          get:()=>{},
+        },
+        routers:[],
+        settings: {
+          express: {
+            views: {
+              page_data:{},
+            },
+          },
+        },
+      };
+      const expressPromise = express.expressRouting.call(mockThis);
+      expect(expressPromise).to.be.an.instanceof(Promise);
+      // console.log({ expressPromise });
+      expect(expressPromise).to.eventually.be.fulfilled;
     });
   });
   describe('expressStatus', () => {
