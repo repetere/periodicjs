@@ -107,7 +107,7 @@ describe('Periodic Init cli', function() {
         process: {
           exit: () => {
             expect(infoSpy.called).to.be.true;
-            expect(debugSpy.call).to.be.false;
+            expect(debugSpy.called).to.be.false;
             return;
           },
         },
@@ -127,13 +127,18 @@ describe('Periodic Init cli', function() {
         },
         logger: {
           info: infoSpy,
-          debug: debugSpy,
+          debug: (msg) => {
+            debugSpy();
+          },
           error: console.error,
         },
         config: {
           debug:true,
         },
-      };      
+        status: {
+          emit: () => { },
+        },
+      };
       mockThis.resources.commands.extensions.set('dbseed', {
         importData: (options) => {
           return new Promise((resolve, reject) => {
@@ -206,9 +211,10 @@ describe('Periodic Init cli', function() {
             if (calledDone === 0) {
               done();
               calledDone++;
-            } else {
-              throw new Error(`Called DONE: ${calledDone} times`);
             }
+            // else {
+            //   throw new Error(`Called DONE: ${calledDone} times`);
+            // }
           },
         },
       };
@@ -238,6 +244,9 @@ describe('Periodic Init cli', function() {
           error: console.error,
         },
         config: {},
+        status: {
+          emit:()=>{}
+        }
       };
       const mockOptions = {
         argv: {
@@ -274,6 +283,9 @@ describe('Periodic Init cli', function() {
           error: console.error,
         },
         config: {},
+        status: {
+          emit: () => { }
+        }
       };
       const mockOptions = {
         argv: {
@@ -324,9 +336,10 @@ describe('Periodic Init cli', function() {
             if (calledDone === 0) {
               done();
               calledDone++;
-            } else {
-              throw new Error(`Called DONE: ${calledDone} times`);
             }
+            // else {
+            //   throw new Error(`Called DONE: ${calledDone} times`);
+            // }
           },
         },
         repl: {
