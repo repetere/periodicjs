@@ -19,6 +19,7 @@ describe('Periodic Init server', function() {
     it('should add socketio server', (done) => {
       const infoSpy = sinon.spy();
       const setSpy = sinon.spy();
+      const getSpy = sinon.spy();
       const mockThis = {
         logger: {
           info: infoSpy,
@@ -32,7 +33,8 @@ describe('Periodic Init server', function() {
         },
         servers: {
           set: setSpy,
-        }
+          get: getSpy,
+        },
       };
       server.startSocketIOserver.call(mockThis)
         .then(result => {
