@@ -16,6 +16,8 @@ lib-cov
 dump.rdb
 session-store.db
 package-lock.json
+.vscode
+
 
 # Logs
 !logs

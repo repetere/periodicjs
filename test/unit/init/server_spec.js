@@ -18,16 +18,20 @@ describe('Periodic Init server', function() {
   describe('startSocketIOserver', () => {
     it('should add socketio server', (done) => {
       const infoSpy = sinon.spy();
+      const errorSpy = sinon.spy();
       const setSpy = sinon.spy();
       const getSpy = sinon.spy();
       const mockThis = {
         logger: {
           info: infoSpy,
+          error: errorSpy,
         },
         settings: {
           application: {
             server: {
-              socketio: true,
+              'socket.io': {
+                type: true,
+              },
             },
           },
         },
