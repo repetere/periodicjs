@@ -21,6 +21,7 @@ describe('Periodic Init cluster', function() {
         logger: {
           info: infoSpy,
         },
+        config: {},
       };
       const mockWorker = {
         process: {
@@ -110,6 +111,7 @@ describe('Periodic Init cluster', function() {
     it('should cluster fork process', (done) => {
       const infoSpy = sinon.spy();
       const eventEmitterSpy = sinon.spy();
+      const periodicEmitterSpy = sinon.spy();
       const forkSpy = sinon.spy();
       const clusterObj = {
         isMaster: false,
@@ -129,6 +131,13 @@ describe('Periodic Init cluster', function() {
           info: infoSpy,
         },
         cluster: clusterObj,
+        status: {
+          emit: periodicEmitterSpy,
+        },
+        nodeProcess: {
+          send: () => { },
+          on:()=>{},
+        }
       };
       cluster.forkProcess.call(mockThis)
         .then(result => {
