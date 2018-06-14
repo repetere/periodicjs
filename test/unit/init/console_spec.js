@@ -44,7 +44,7 @@ describe('Periodic Init Console Timer', function() {
       const mockThis = {
         config: {},
         logger: {
-          info: infoSpy,
+          verbose: infoSpy,
         },
       };
       consoleTimer.endTimer.call(mockThis)
