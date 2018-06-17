@@ -1,6 +1,0 @@
-{
-  "watch": [
-    "content/config/restart.json",
-    "content/config/database.js"
-  ]
-}
