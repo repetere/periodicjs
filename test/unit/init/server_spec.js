@@ -29,7 +29,7 @@ describe('Periodic Init server', function() {
         settings: {
           application: {
             server: {
-              'socket.io': {
+              socketio: {
                 type: true,
               },
             },
