@@ -214,6 +214,9 @@ describe('Periodic Init server', function() {
         status: {
           emit:()=>{},
         },
+        cluster: {
+          isMaster: true,
+        },
       };
       expect(server.initializeServers.call(mockThis)).to.be.a('promise');
     });

@@ -99,13 +99,13 @@ describe('Periodic Init cluster', function() {
       };
       cluster.forkProcess.call(mockThis)
         .then(result => {
-          done(new Error('FAILED cluster master test'));
+          expect(infoSpy.called).to.be.true;
+          expect(result).to.be.true;
+          done();
         })
         .catch(e => {
           // expect(mockThis.config.process.isClustered).to.be.true;
-          expect(infoSpy.called).to.be.true;
-          expect(e.message).to.eql('Leave Promise Chain: Forking Process');
-          done();
+          done(new Error('FAILED cluster master test'));
         });
     });
     it('should cluster fork process', (done) => {
