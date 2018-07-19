@@ -57,7 +57,7 @@
   "dependencies": {
     "@yawetse/socket.io-adapter-mongo": "^0.1.8",
     "babel-polyfill": "^6.23.0",
-    "bcrypt": "^1.0.3",
+    "bcrypt": "^3.0.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.1",
     "capitalize": "^1.0.0",
