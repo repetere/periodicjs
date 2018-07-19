@@ -1,6 +1,6 @@
 Periodic is a library for rapidily developing database agnostic enterprise  applications and APIs with express & node.js. 
 ===================================
-[![Build Status](https://travis-ci.org/typesettin/periodicjs.svg?branch=master)](https://travis-ci.org/typesettin/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs) [![Downloads Per Month](https://img.shields.io/npm/dm/periodicjs.svg?maxAge=2592000)](https://www.npmjs.com/package/periodicjs) [![npm](https://img.shields.io/npm/dt/periodicjs.svg?maxAge=2592000)]() [![Coverage Status](https://coveralls.io/repos/github/typesettin/periodicjs/badge.svg?branch=master)](https://coveralls.io/github/typesettin/periodicjs?branch=master) [![Join the chat at https://gitter.im/typesettin/periodicjs](https://badges.gitter.im/typesettin/periodicjs.svg)](https://gitter.im/typesettin/periodicjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/repetere/periodicjs.svg?branch=master)](https://travis-ci.org/repetere/periodicjs) [![NPM version](https://badge.fury.io/js/periodicjs.svg)](http://badge.fury.io/js/periodicjs) [![Downloads Per Month](https://img.shields.io/npm/dm/periodicjs.svg?maxAge=2592000)](https://www.npmjs.com/package/periodicjs) [![npm](https://img.shields.io/npm/dt/periodicjs.svg?maxAge=2592000)]() [![Coverage Status](https://coveralls.io/repos/github/repetere/periodicjs/badge.svg?branch=master)](https://coveralls.io/github/repetere/periodicjs?branch=master) [![Join the chat at https://gitter.im/repetere/periodicjs](https://badges.gitter.im/repetere/periodicjs.svg)](https://gitter.im/repetere/periodicjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Download Stats](https://nodei.co/npm/periodicjs.png?downloads=true&downloadRank=true)](https://www.npmjs.com/package/periodicjs)
 
@@ -8,7 +8,7 @@ Periodic is a library for rapidily developing database agnostic enterprise  appl
 
 
 
-![Getting started](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/getting-started/01-setup-install.gif)
+![Getting started](https://raw.githubusercontent.com/repetere/periodicjs/master/doc/images/getting-started/01-setup-install.gif)
 
 With Periodic 10, you can get up and running with periodic with zero configuration. It takes 30 seconds to create your first application server with periodic.
 
@@ -160,11 +160,11 @@ $ node [path/to/app_root/]index.js --cli --repl
 ```
 
 
-NEXT: [ How Periodic works ](https://github.com/typesettin/periodicjs/blob/master/doc/README.md)
+NEXT: [ How Periodic works ](https://github.com/repetere/periodicjs/blob/master/doc/README.md)
 
 
 
-![Periodic](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/white_logo_color_background.png)
+![Periodic](https://raw.githubusercontent.com/repetere/periodicjs/master/doc/images/white_logo_color_background.png)
 
 
 ## Building scalable enterprise applications
@@ -230,7 +230,7 @@ Periodic's development is led by [Yaw Etse](https://github.com/yawetse), [Jan Bi
 
 (The MIT License)
 
-Copyright (c) 2017 Typesettin
+Copyright (c) 2017 repetere
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

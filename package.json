@@ -47,7 +47,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/typesettin/periodicjs.git"
+    "url": "git://github.com/repetere/periodicjs.git"
   },
   "license": "MIT",
   "scripts": {
@@ -167,9 +167,9 @@
     "Periodic Decoupled Framework"
   ],
   "bugs": {
-    "url": "https://github.com/typesettin/periodicjs/issues"
+    "url": "https://github.com/repetere/periodicjs/issues"
   },
-  "homepage": "https://github.com/typesettin/periodicjs",
+  "homepage": "https://github.com/repetere/periodicjs",
   "maintainers": [
     {
       "name": "Yaw Etse",
