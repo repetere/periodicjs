@@ -30,7 +30,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const __STRUCTURE_DIR = path.resolve(__dirname, '../../__STRUCTURE');
-
+const clusterModule = require('cluster');
 
 /**
  * this will setup a periodic application folder structure if one doesnt exist, it will not overwrite existing configs
@@ -38,10 +38,49 @@ const __STRUCTURE_DIR = path.resolve(__dirname, '../../__STRUCTURE');
  * @returns Promise setUpFolderStructure will copy folders from the application __STRUCTURE directory to initialize the application
  */
 function setUpFolderStructure() {
-  return fs.copy(__STRUCTURE_DIR, this.config.app_root, {
-    overwrite: false,
-    clobber: false,
-    preserveTimestamps: true,
+  const cluster = this.cluster || clusterModule;
+  return new Promise((resolve, reject) => {
+    try {
+      if (cluster.isMaster===false) {
+        return resolve(true);
+      } else {
+        fs.copy(__STRUCTURE_DIR, this.config.app_root, {
+          overwrite: false,
+          clobber: false,
+          preserveTimestamps: true,
+        })
+          .then(() => { //check to make sure there arent two config files (both a json and a js file, if there are both, use the json file)
+            return Promise.all([
+              fs.copy(path.join(__STRUCTURE_DIR, 'public'), path.join(this.config.app_root, 'public'), {
+                overwrite: true,
+                clobber: true,
+                preserveTimestamps: true,
+                filter: (src, dest) => {
+                  return src.indexOf('favicon') === -1;
+                },
+              }),
+              fs.copy(path.join(__STRUCTURE_DIR, 'app'), path.join(this.config.app_root, 'app'), {
+                overwrite: true,
+                clobber: true,
+                preserveTimestamps: true,
+              }),
+            ]);
+          })  
+          .then(() => { //check to make sure there arent two config files (both a json and a js file, if there are both, use the json file)
+            return fs.readdir(path.join(this.config.app_root, 'content/config'));
+          })
+          .then(configFiles => {
+            if (configFiles.indexOf('config.json') !== -1 &amp;&amp; configFiles.indexOf('config.js') !== -1) {
+              resolve(fs.remove(path.join(this.config.app_root, 'content/config/config.js')));
+            } else {
+              resolve(true);
+            }
+          })
+          .catch(reject);
+      }
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 module.exports = setUpFolderStructure;</code></pre>
@@ -54,13 +93,13 @@ module.exports = setUpFolderStructure;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 23:08:12 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

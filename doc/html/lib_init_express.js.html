@@ -31,6 +31,7 @@
 require('isomorphic-fetch');
 const os = require('os');
 const path = require('path');
+const fs = require('fs-extra');
 const semver = require('semver');
 const express = require('express');
 const Sequelize = require('sequelize');
@@ -50,6 +51,7 @@ const connectMongo = require('connect-mongo');
 const connectSql = require('connect-sequelize');
 const connectRedis = require('connect-redis');
 const session = require('express-session');
+const crypto = require('crypto');
 
 /**
  * configure express view rendering options
@@ -90,7 +92,17 @@ function configureExpress() {
       this.app.use(bodyParser.json(this.settings.express.body_parser.json));
       this.app.use(methodOverride());
       this.app.use(methodOverride('_method'));
-      this.app.use(methodOverride('X-HTTP-Method'));
+      this.app.use(methodOverride('X-HTTP-Method')); // Microsoft 
+      this.app.use(methodOverride('X-HTTP-Method-Override')); // Google/GData 
+      this.app.use(methodOverride('X-Method-Override')); // IBM  
+      this.app.use(methodOverride(function(req, res) {
+        if (req.body &amp;&amp; typeof req.body === 'object' &amp;&amp; '_method' in req.body) {
+          // look in urlencoded POST bodies and delete it 
+          const method = req.body._method;
+          delete req.body._method;
+          return method;
+        }
+      }));
       this.app.use(cookieParser(this.settings.express.cookies.cookie_parser));
       this.app.use(favicon(path.resolve(this.config.app_root, 'public/favicon.png')));
 
@@ -155,6 +167,18 @@ function morganColors(req, res) {
   return '\x1b[' + color + 'm' + status + '\x1b[90m';
 }
 
+function morganLogger(req, res, next) {
+  return (req, res, next) => {
+    if (this.settings.express.config.skip_logging_paths.indexOf(req.path)>-1) {
+      return next();
+    } else {
+      return morgan('app', {
+        format: '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m',
+      })(req, res, next);
+    }
+  };
+}
+
 function logExpress() {
   return new Promise((resolve, reject) => {
     try {
@@ -162,9 +186,10 @@ function logExpress() {
         morgan.token('colorstatus', morganColors);
         morgan.format('app', '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m');
         // if (this.settings.application.status !== 'install') {
-        this.app.use(morgan('app', {
-          format: '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m',
-        }));
+        // this.app.use(morgan('app', {
+        //   format: '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m',
+        // }));
+        this.app.use(morganLogger.call(this));
         // } else {
         //   app.use(morgan('app', {
         //     format: '\x1b[90m:remote-addr :method \x1b[37m:url\x1b[90m :colorstatus \x1b[97m:response-time ms\x1b[90m :date :referrer :user-agent\x1b[0m'
@@ -202,6 +227,31 @@ function enabledSessionMiddleware(sessionMiddleware) {
   };
 }
 
+function enabledCSRFMiddleware(csrfMiddleware) {
+  return (req, res, next) => {
+    let skipSessionCheck = skipSessions({ req, });
+    if (skipSessionCheck) {
+      return next();
+    } else if (Array.isArray(this.settings.express.config.skip_csrf_header)) {
+      let skipCSRF = false;
+      this.settings.express.config.skip_csrf_header.forEach(skipHeader => {
+        if (req.headers[skipHeader]) {
+          skipCSRF = true;
+        }
+      });
+      if (skipCSRF || skipSessionCheck) {
+        next();
+      } else {
+        return csrfMiddleware(req, res, next);
+      }
+    } else if (req.headers[this.settings.express.config.skip_csrf_header]) {
+      return next();
+    } else {
+      return csrfMiddleware(req, res, next);
+    }
+  };
+}
+
 function expressSessions() {
   return new Promise((resolve, reject) => {
     try {
@@ -223,32 +273,33 @@ function expressSessions() {
         }, this.settings.express.sessions.config);
         // let store;
         switch (this.settings.express.sessions.type) {
-          case 'loki':
-            var LokiStore = connectLoki(session);
-            express_session_config.store = new LokiStore(this.settings.express.sessions.store_settings);
-            break;
-          case 'mongo':
-            var MongoStore = connectMongo(session);
-            express_session_config.store = new MongoStore(this.settings.express.sessions.store_settings);
-            break;
-          case 'sql':
-            var SequeliezeStore = connectSql(session);
-            var { db, options, modelName, } = this.settings.express.sessions.store_settings;
-            var sqldb = new Sequelize(...db);
-            express_session_config.store = new SequeliezeStore(sqldb, options, modelName);
-            break;
-          case 'redis':
-            var RedisStore = connectRedis(session);
-            express_session_config.store = new RedisStore(this.settings.express.sessions.store_settings);
-            break;
-          default:
-            reject(new Error('Invalid express session type'));
-            break;
+        case 'loki':
+          var LokiStore = connectLoki(session);
+          express_session_config.store = new LokiStore(this.settings.express.sessions.store_settings);
+          break;
+        case 'mongo':
+          var MongoStore = connectMongo(session);
+          express_session_config.store = new MongoStore(this.settings.express.sessions.store_settings);
+          break;
+        case 'sql':
+          var SequeliezeStore = connectSql(session);
+          var { db, options, modelName, } = this.settings.express.sessions.store_settings;
+          var sqldb = new Sequelize(...db);
+          express_session_config.store = new SequeliezeStore(sqldb, options, modelName);
+          break;
+        case 'redis':
+          var RedisStore = connectRedis(session);
+          express_session_config.store = new RedisStore(this.settings.express.sessions.store_settings);
+          break;
+        default:
+          reject(new Error('Invalid express session type'));
+          break;
         }
         const sessionMiddleware = session(express_session_config);
         this.app.use(enabledSessionMiddleware(sessionMiddleware));
+        const csrfMiddleWare = enabledCSRFMiddleware.bind(this);
         if (this.settings.express.config.csrf) {
-          this.app.use(csrf());
+          this.app.use(csrfMiddleWare(csrf()));
         }
         resolve(true);
       } else {
@@ -261,7 +312,7 @@ function expressSessions() {
 }
 
 function useCSRFMiddleware(req, res, next) {
-  res.locals.token = (this.settings.express.config.csrf) ?
+  res.locals.token = (this.settings.express.config.csrf &amp;&amp; req.csrfToken) ?
     req.csrfToken() :
     '';
   next();
@@ -280,12 +331,28 @@ function useLocalsMiddleware(req, res, next) {
   next();
 }
 
+function worker_index(ip, len) {
+  const hash = crypto.createHash('sha256');
+  hash.update(ip);
+  let hex = hash.digest('hex').substring(0, 8);
+  return parseInt(hex, 16).toString(10) % len;
+}
+
+function assignWorkersMiddleware(req, res, next) {
+  if (this.settings.application.cluster_process &amp;&amp; (this.settings.application.server.socketio ||this.settings.application.use_sticky_sessions)) {
+    let worker = this.workers[ worker_index(req._remoteAddress, this.numWorkers)];
+    worker.send('sticky-session:connection', req.connection.server);
+  }
+  next();
+}
+
 function expressLocals() {
   return new Promise((resolve, reject) => {
     try {
       this.app.locals.viewHelper = this.utilities.viewHelper;
       const useCSRFMiddlewareFunc = useCSRFMiddleware.bind(this);
       const useLocalsMiddlewareFunc = useLocalsMiddleware.bind(this);
+      const assignWorkersMiddlewareFunc = assignWorkersMiddleware.bind(this);
       let core_data_list = [];
       for (let key of this.datas.keys()) {
         if (key !== 'configuration' &amp;&amp; key !== 'extension') {
@@ -298,6 +365,7 @@ function expressLocals() {
       this.app.locals.additionalHTMLFunctions = [];
       this.app.use(useCSRFMiddlewareFunc);
       this.app.use(useLocalsMiddlewareFunc);
+      this.app.use(assignWorkersMiddlewareFunc); // for clustering and sockets to work together
       resolve(true);
     } catch (e) {
       reject(e);
@@ -323,19 +391,31 @@ function expressRouting() {
         }
         // else 
       });
-      this.app.get('*',(req, res) => {
-        const viewtemplate = 'home/error404';
-        const viewdata = Object.assign({},
-          {
-          periodic: {
-            appname: this.settings.name,
-            page_data: {
-              version: this.settings.application.version,
+      this.app.get('*', (req, res, next) => {
+        const skippable_routes = this.settings.express.views.skippable_routes;
+        const skip404 = skippable_routes.reduce((result, route) => {
+          if (req.path.indexOf(route) >= 0) {
+            result.push(route);
+          }
+          return result;
+        }, []);
+
+        if (skip404.length) {
+          next();
+        } else {
+          const viewtemplate = 'home/error404';
+          const viewdata = Object.assign({}, {
+            periodic: {
+              appname: this.settings.name,
+              page_data: {
+                version: this.settings.application.version,
+              },
             },
-          },
-          error: new Error('page not found'),
-        },this.app.locals);
-        this.core.controller.renderView(req, res, viewtemplate, viewdata);
+            error: new Error('page not found'),
+          }, this.app.locals);
+          res.status(404);
+          this.core.controller.renderView(req, res, viewtemplate, viewdata);
+        }
       });
       resolve(true);
     } catch (e) {
@@ -355,7 +435,7 @@ function displayOutOfDatePeriodic(options) {
   ======================================================
   |                                                    |
   |     Your instance of Periodic is out of date.      |
-  |  Your Version: ${this.settings.application.version}, Current Version: ${latestPeriodicVersion} |
+  |   Your Version: ${this.settings.application.version}, Current Version: ${latestPeriodicVersion}    |
   |                                                    |
   ======================================================
   `);
@@ -365,12 +445,69 @@ function handleLatestPeriodicVersionCheckError(error) {
   this.logger.warn('Could not check latest version of Periodic', error);
 }
 
+function extVersionReducer(result, key) {
+  result[key.name] = key.version;
+  return result;
+}
+
+function checkOutdatedExtensionVersions() {
+  const extensionNamesToFetch = Array.from(this.extensions.keys()).filter(ext => ext.indexOf('@') &lt; 0);
+  const extensions = Array.from(this.extensions.values()).filter(ext => ext.name.indexOf('@') &lt; 0);
+  const semverRegEx = RegExp(/[^0-9.]/g);
+
+  const registryExtensionFetchs = extensionNamesToFetch.map(extname => {
+    return new Promise((resolve, reject) => {
+      fetch(`https://registry.npmjs.org/${extname}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+        .then(this.utilities.fetchUtils.checkStatus)
+        .then(res => res.json())
+        .then(resolve)
+        .catch(reject);
+    });
+  });
+  const outOfDateExtensions = [];
+  fs.readJson(path.join(this.config.app_root, 'package.json')).then(packageJSON => {
+    const extensionVersionObj = Array.from(this.extensions.values()).reduce(extVersionReducer, {});
+    Object.keys(extensionVersionObj).forEach(extVer => {
+      if (packageJSON.dependencies[extVer]) {
+        const packageJsonExtVer = packageJSON.dependencies[extVer].replace(semverRegEx, '').split('.').slice(0, 3).join('.');
+        const extJsonVer = extensionVersionObj[extVer];
+        if (this.utilities.fetchUtils.isVersionUpToDate(packageJsonExtVer, extJsonVer) === false) {
+          this.logger.error(`${extVer}@${packageJsonExtVer} in package.json is out of date with version ${extJsonVer} in the configuration database`);
+        }
+      } else {
+        this.logger.error(`${extVer}@${extensionVersionObj[extVer]} from the configuration database in missing in your package.json file`);
+      }
+    });
+    return Promise.all(registryExtensionFetchs);
+  })
+    .then(extensionsFromNPM => {
+      extensionsFromNPM.forEach((extFromNPM, i) => {
+        const latestExtVersion = extFromNPM['dist-tags'].latest;
+        if (this.utilities.fetchUtils.isVersionUpToDate(extensions[i].version, latestExtVersion) === false) {
+          outOfDateExtensions.push({
+            name: extensions[i].name,
+            installed: extensions[i].version,
+            latest: latestExtVersion,
+          });
+        }
+      });
+      if (outOfDateExtensions.length) {
+        this.logger.verbose('Your current extensions are out of date: ', outOfDateExtensions);
+      }
+    })
+    .catch(this.logger.error);
+}
+
 function checkLatestPeriodicVersion() {
   fetch('https://registry.npmjs.org/periodicjs', {
-      headers: {
-        Accept: 'application/json',
-      },
-    })
+    headers: {
+      Accept: 'application/json',
+    },
+  })
     .then(this.utilities.fetchUtils.checkStatus)
     .then(res => res.json())
     .then(res => {
@@ -380,7 +517,7 @@ function checkLatestPeriodicVersion() {
           this.logger.debug(`Your version of Periodic[${this.settings.application.version}] is up to date with the current version [${latestPeriodicVersion}]`);
         }
       } else {
-        displayOutOfDatePeriodic.call(this, latestPeriodicVersion);
+        displayOutOfDatePeriodic.call(this, { latestPeriodicVersion, });
       }
     })
     .catch(handleLatestPeriodicVersionCheckError.bind(this));
@@ -394,6 +531,9 @@ function expressStatus() {
       }
       if (this.settings.application.check_for_updates) {
         checkLatestPeriodicVersion.call(this);
+      }
+      if (this.settings.application.check_for_outdated_extensions) {
+        checkOutdatedExtensionVersions.call(this);
       }
       resolve(true);
     } catch (e) {
@@ -437,6 +577,10 @@ const catchAllErrorMiddleware = function catchAllErrorMiddleware(err, req, res, 
   } else if (req.query.format === 'json' || req.is('json') || req.is('application/json')) {
     res.status(500);
     res.send({
+      result: 'error',
+      data: {
+        error:err.toString(),
+      },  
       error: err,
     });
   } else {
@@ -497,12 +641,14 @@ module.exports = {
   expressStatus,
   expressErrors,
   morganColors,
+  morganLogger,
   errorLogMiddleware,
   catchAllErrorMiddleware,
   checkLatestPeriodicVersion,
   useLocalsMiddleware,
   useCSRFMiddleware,
   skipSessions,
+  enabledCSRFMiddleware,
   enabledSessionMiddleware,
   handleLatestPeriodicVersionCheckError,
   displayOutOfDatePeriodic,
@@ -516,13 +662,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 23:08:12 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -61,6 +61,9 @@ It will prioritize loading via command line argument first, and then environment
 <dt><a href="#all_prefixes">all_prefixes(adminPath)</a> ⇒ <code>String</code></dt>
 <dd><p>short hand function to return all prefix types</p>
 </dd>
+<dt><a href="#formatResponse">formatResponse()</a> ⇒ <code>object</code></dt>
+<dd><p>Enforces the shape of an api response, by allow for three properties (result,status and data) all other properties are on data</p>
+</dd>
 </dl>
 
 <a name="module_periodic"></a>
@@ -215,4 +218,18 @@ short hand function to return all prefix types
 | Param | Type |
 | --- | --- |
 | adminPath | <code>String</code> | 
+
+<a name="formatResponse"></a>
+
+## formatResponse() ⇒ <code>object</code>
+Enforces the shape of an api response, by allow for three properties (result,status and data) all other properties are on data
+
+**Kind**: global function  
+**Returns**: <code>object</code> - with the shape {result,status,data}  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| options.result | <code>string</code> | result of request (usually sucess or error) |
+| options.status | <code>number</code> | http resonse code equivalent |
+| options.data | <code>object</code> | data for response |
 

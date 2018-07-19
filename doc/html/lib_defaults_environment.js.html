@@ -44,7 +44,10 @@ module.exports = () => {
       exit_on_invalid_extensions: false,
       // number_of_clusters:8, //defaults to number of CPU cores
       check_for_updates: true,
+      check_for_outdated_extensions: true,
       version: packageJson.version,
+      url: 'localhost:8787',
+      protocol: 'https://',
       server: {
         http: {
           port: 8786,
@@ -58,12 +61,21 @@ module.exports = () => {
             certificate: 'node_modules/periodicjs/lib/defaults/demo/certs/2017.testperiodic.ssl_cert.pem',
           },
         },
-        // socketio: {
-        //   type: 'redis',
-        //   config: {
-        //     url:'localhost'
-        //   }
-        // },
+        socketio: {
+          type: false, //'redis',
+          skip_tls_check: false,
+          //  port,
+          //  redis_config: {
+          //    url:'redis://localhost'
+          //    port,
+          //    host
+          //    url:'redis://localhost',
+          //    pass
+          //  },
+          //  mongo_config:{
+          //    url,
+          //  }
+        },
       },
 
     },
@@ -81,8 +93,13 @@ module.exports = () => {
         use_compression: true,
         debug: true,
         csrf: true,
+        skip_csrf_header: ['x-access-token', 'clientid', ],
+        skip_logging_paths: ['/healthcheck', ],
+        upload_directory: 'public/uploads/files',
+        asset_core_data: 'standard_asset',
       },
       views: {
+        skippable_routes: ['contentdata', ],
         template_engine: 'ejs',
         lru_cache: true,
         lru: 100,
@@ -159,7 +176,7 @@ module.exports = () => {
 
         db: 'lowkie',
         options: {
-          dbpath: 'content/config/settings/standard_db.json',
+          dbpath: 'content/data/db/standard_db.json',
           dboptions: {
             verbose: true,
           },
@@ -194,10 +211,21 @@ module.exports = () => {
         },
       },
     },
+    core: {
+      mailer: {
+        transport_config: {
+          type: 'stub',
+          transportoptions: {
+            debug: true,
+            args: ['-t', '-i', ],
+          },
+        },
+      },
+    },
     extensions: {},
     container: {
       name: 'periodicjs.container.default',
-      type:'local',  
+      type: 'local',
     },
   };
 };</code></pre>
@@ -210,13 +238,13 @@ module.exports = () => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 23:08:12 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

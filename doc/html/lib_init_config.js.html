@@ -36,34 +36,41 @@ const mongoose = require('mongoose');
 const Promisie = require('promisie');
 const Sequelize = require('sequelize');
 const CoreControllerModule = require('periodicjs.core.controller');
+const CoreMailerModule = require('periodicjs.core.mailer');
 const defaultSettings = require('../defaults');
 const schemas = require('../schemas');
+const flatten = require('flat');
 const schemeDefaults = require('../defaults/schema');
 mongoose.Promise = Promisie;
 const fullModelFilePath = '/___FULLPATH___';
 
 /**
  * configureLowkie creates a loki connection to store DB based configurations
- * 
+ *
  * @returns {Promise} connects to configuration db
  */
 function configureLowkie() {
   return new Promise((resolve, reject) => {
     try {
       const __CONFIG_DB = path.resolve(this.config.app_root, this.config.configuration.options.dbpath);
-
       lowkie.connect(__CONFIG_DB)
         .then((db) => {
           const configurationModel = lowkie.model('configuration', schemas.config.lowkie, {});
           const extensionModel = lowkie.model('extension', schemas.extension.lowkie, { unique: ['name', ], });
-          const CoreConfigDataAdapter = this.core.data.create({
-            adapter: 'loki',
-            model: configurationModel,
-          });
-          const CoreExtensionDataAdapter = this.core.data.create({
-            adapter: 'loki',
-            model: extensionModel,
-          });
+          const CoreConfigDataAdapter = this.core.data.create(
+            Object.assign({
+              adapter: 'loki',
+              model: configurationModel,
+              db_connection:db,
+            }, schemeDefaults.coreDataOptions.configuration)
+          );
+          const CoreExtensionDataAdapter = this.core.data.create(
+            Object.assign({
+              adapter: 'loki',
+              model: extensionModel,
+              db_connection:db,
+            }, schemeDefaults.coreDataOptions.extension)
+          );
           this.dbs.set('configuration', db);
           this.datas.set('configuration', CoreConfigDataAdapter);
           this.datas.set('extension', CoreExtensionDataAdapter);
@@ -79,7 +86,7 @@ function configureLowkie() {
 
 /**
  * configureMongoose creates a mongo connection to store DB based configurations
- * 
+ *
  * @returns {Promise} connects to configuration db
  */
 function configureMongoose() {
@@ -87,11 +94,24 @@ function configureMongoose() {
     try {
       //Basic usage (mongodb)
       const mongooseConfig = this.config.configuration.options;
+      // console.log({ mongooseConfig },'mongooseConfig.mongoose_options',mongooseConfig.mongoose_options)
       const configurationMongoose = mongoose.createConnection(mongooseConfig.url, mongooseConfig.mongoose_options);
       const configurationModel = configurationMongoose.model('configuration', schemas.config.mongoose);
       const extensionModel = configurationMongoose.model('extension', schemas.extension.mongoose);
-      const CoreConfigDataAdapter = this.core.data.create({ adapter: 'mongo', model: configurationModel, });
-      const CoreExtensionDataAdapter = this.core.data.create({ adapter: 'mongo', model: extensionModel, });
+      const CoreConfigDataAdapter = this.core.data.create(
+        Object.assign({
+          adapter: 'mongo',
+          db_connection:configurationMongoose,
+          model: configurationModel,
+        }, schemeDefaults.coreDataOptions.configuration)
+      );
+      const CoreExtensionDataAdapter = this.core.data.create(
+        Object.assign({
+          adapter: 'mongo',
+          db_connection:configurationMongoose,
+          model: extensionModel,
+        }, schemeDefaults.coreDataOptions.extension)
+      );
       // console.log({ CoreConfigDataAdapter, configurationMongoose });
       configurationMongoose.on('error', reject);
       configurationMongoose.on('connected', () => {
@@ -105,7 +125,11 @@ function configureMongoose() {
       configurationMongoose.on('disconnected', () => {
         this.logger.error('Mongoose default connection disconnected');
       });
-      // // If the Node process ends, close the Mongoose connection 
+
+      if (this.config.debug) {
+        mongoose.set('debug', true);
+      }
+      // // If the Node process ends, close the Mongoose connection
       // process.on('SIGINT', () => {
       //   configurationMongoose.close(() =>{
       //     this.logger.silly('Mongoose default connection disconnected through app termination');
@@ -120,7 +144,7 @@ function configureMongoose() {
 
 /**
  * configureSequelize creates a mongo connection to store DB based configurations
- * 
+ *
  * @returns {Promise} connects to configuration db
  */
 function configureSequelize() {
@@ -128,6 +152,9 @@ function configureSequelize() {
     try {
       // Basic usage (sql)
       const sqlConfig = this.config.configuration.options;
+      sqlConfig.connection_options = Object.assign({}, {
+        logging: this.config.debug, }, sqlConfig.connection_options);
+
       const configurationSQLdB = new Sequelize(sqlConfig.database, sqlConfig.username, sqlConfig.password, sqlConfig.connection_options);
       const configurationModel = configurationSQLdB.define('configuration', schemas.config.sequelize.scheme, schemas.config.sequelize.options);
       const extensionModel = configurationSQLdB.define('extension', schemas.extension.sequelize.scheme, schemas.extension.sequelize.options);
@@ -135,18 +162,22 @@ function configureSequelize() {
       configurationSQLdB.sync({})
         .then(_connection => _connection.authenticate())
         .then(() => {
-          const CoreConfigDataAdapter = this.core.data.create({
-            adapter: 'sql',
-            model: configurationModel,
-            db_connection: configurationSQLdB,
-            docid: '_id',
-          });
-          const CoreExtensionDataAdapter = this.core.data.create({
-            adapter: 'sql',
-            model: extensionModel,
-            db_connection: configurationSQLdB,
-            docid: '_id',
-          });
+          const CoreConfigDataAdapter = this.core.data.create(
+            Object.assign({
+              adapter: 'sql',
+              model: configurationModel,
+              db_connection: configurationSQLdB,
+              docid: '_id',
+            }, schemeDefaults.coreDataOptions.configuration)
+          );
+          const CoreExtensionDataAdapter = this.core.data.create(
+            Object.assign({
+              adapter: 'sql',
+              model: extensionModel,
+              db_connection: configurationSQLdB,
+              docid: '_id',
+            }, schemeDefaults.coreDataOptions.extension)
+          );
           this.datas.set('configuration', CoreConfigDataAdapter);
           this.datas.set('extension', CoreExtensionDataAdapter);
           this.dbs.set('configuration', configurationSQLdB);
@@ -161,11 +192,10 @@ function configureSequelize() {
 
 /**
  * reads content/config/(config.json||config.js) for  the configuration database
- * 
+ *
  * @returns Promise loadConfiguration sets up application config db
  */
 function loadConfiguration(customConfig) {
-
   return new Promise((resolve, reject) => {
     try {
       const __CONFIG_DIR = path.resolve(this.config.app_root, 'content/config');
@@ -183,20 +213,19 @@ function loadConfiguration(customConfig) {
           }
         })
         .then(app_configuration_settings => {
-          this.config.configuration = customConfig || app_configuration_settings.configuration;
+          this.config.configuration = (typeof customConfig === 'object' &amp;&amp; Object.keys(customConfig).length) ? customConfig : app_configuration_settings.configuration;
           this.settings = Object.assign({}, app_configuration_settings.settings);
-          // console.log('this.config', this.config);
           if (this.config.configuration.type === 'db') {
             switch (this.config.configuration.db) {
-              case 'lowkie':
-                return configureLowkie.call(this);
-              case 'mongoose':
-                return configureMongoose.call(this);
-              case 'sequelize':
-                return configureSequelize.call(this);
-              default:
-                reject(new Error('invalid configuration db'));
-                break;
+            case 'lowkie':
+              return configureLowkie.call(this);
+            case 'mongoose':
+              return configureMongoose.call(this);
+            case 'sequelize':
+              return configureSequelize.call(this);
+            default:
+              reject(new Error('invalid configuration db'));
+              break;
             }
           } else {
             reject(new Error('invalid configuration type'));
@@ -231,10 +260,23 @@ function loadAppSettings() {
       this.configuration.load({
         docid: 'filepath',
         query: envConfigFilePath,
-      }).then(envconfig => {
-        const updatedSettings = Object.assign({}, defaultSettings.environment, envconfig, this.settings);
+      }).then(dbenvconfig => {
+
+        const envconfigJSON = (dbenvconfig &amp;&amp; dbenvconfig.toJSON) ?
+          dbenvconfig.toJSON() :
+          dbenvconfig || {};
+        const envconfig = envconfigJSON.config;
+        const updatedSettings = flatten.unflatten(
+          Object.assign({},
+            flatten(defaultSettings.environment),
+            flatten(envconfig || {}),
+            flatten(this.settings || {}),
+            flatten(this.config.settings || {})
+          )
+        );
         this.settings = updatedSettings;
         this.status.emit('ready', true);
+
         resolve(updatedSettings);
       }).catch(reject);
     } catch (e) {
@@ -253,11 +295,11 @@ function assignControllers(options) {
     skip_protocol: true,
   });
   // console.log('this.transfor ms',this.transforms)
-  CoreController.initialize_responder(dboptions.controller[controller_name].responder);
-  CoreController.initialize_protocol(dboptions.controller[controller_name].protocol);
-  CoreController.db[modelName] = CoreConfigDataAdapter;
+  CoreController.initialize_responder(dboptions.controller[ controller_name ].responder);
+  CoreController.initialize_protocol(dboptions.controller[ controller_name ].protocol);
+  CoreController.db[ modelName ] = CoreConfigDataAdapter;
 
-  this.controllers.core.set(`${periodic_db_name}_${controller_name}_${modelName}`, CoreController.db[modelName]);
+  this.controllers.core.set(`${periodic_db_name}_${controller_name}_${modelName}`, CoreController);
   this.routers.set(`${periodic_db_name}_${controller_name}_${modelName}`, {
     type: 'data',
     router_base: `${periodic_db_name}_${controller_name}`,
@@ -290,7 +332,7 @@ function assignLowkieModels(options) {
     const modelpaths = modelFiles.filter(model => model.indexOf('lowkie') !== -1);
 
     modelpaths.forEach(modelFilePath => {
-      const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[0];
+      const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[ 0 ];
       const modelModule = (modelFilePath.indexOf(fullModelFilePath) !== -1) ?
         require(modelFilePath.replace(fullModelFilePath, '')) :
         require(path.join(modelDirPath, modelFilePath));
@@ -303,11 +345,13 @@ function assignLowkieModels(options) {
         Object.assign({
           adapter: 'loki',
           model: lowkieModel,
+          db_connection:db,
         }, modelModule.coreDataOptions));
       if (dboptions.controller) {
         Object.keys(dboptions.controller).forEach(controller_name => assignControllers.call(this, { dboptions, controller_name, modelName, CoreConfigDataAdapter, periodic_db_name, }));
       }
       this.datas.set(`${periodic_db_name}_${modelName}`, CoreConfigDataAdapter);
+      this.models.set(`${periodic_db_name}_${modelName}`, modelModule);
     });
     this.dbs.set(periodic_db_name, db);
     resolve(true);
@@ -326,7 +370,7 @@ function assignMongooseModels(options) {
     }
     const modelpaths = modelFiles.filter(model => model.indexOf('mongoose') !== -1);
     modelpaths.forEach(modelFilePath => {
-      const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[0];
+      const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[ 0 ];
       const modelModule = (modelFilePath.indexOf(fullModelFilePath) !== -1) ?
         require(modelFilePath.replace(fullModelFilePath, '')) :
         require(path.join(modelDirPath, modelFilePath));
@@ -334,6 +378,14 @@ function assignMongooseModels(options) {
         Object.assign({}, modelModule.scheme, schemeDefaults.mongoose(modelName)),
         modelModule.options
       );
+      if (modelModule.coreDataOptions &amp;&amp; modelModule.coreDataOptions.uniqueCompound) {
+        modelSchema.index(modelModule.coreDataOptions.uniqueCompound, { unique: true, });
+      }
+      if (modelModule.indexes) {
+        modelModule.indexes.forEach(newIndex => {
+          modelSchema.index(newIndex.keys, newIndex.options);
+        });
+      }
       const mongooseModel = db.model(
         capitalize(modelName), //modelname
         modelSchema);
@@ -342,10 +394,12 @@ function assignMongooseModels(options) {
         Object.assign({
           adapter: 'mongo',
           model: mongooseModel,
+          db_connection:db,
         }, modelModule.coreDataOptions));
       if (dboptions.controller) Object.keys(dboptions.controller).forEach(controller_name => assignControllers.call(this, { dboptions, controller_name, modelName, CoreConfigDataAdapter, periodic_db_name, }));
 
       this.datas.set(`${periodic_db_name}_${modelName}`, CoreConfigDataAdapter);
+      this.models.set(`${periodic_db_name}_${modelName}`, modelModule);
     });
 
     this.dbs.set(periodic_db_name, db);
@@ -355,84 +409,99 @@ function assignMongooseModels(options) {
   }
 }
 
+
 function assignSequelizeModels(options) {
   const { modelDirPath, periodic_db_name, db, resolve, reject, dboptions, } = options;
   let { modelFiles, } = options;
+  if (periodic_db_name === 'standard' &amp;&amp; this.resources.standard_models.length) {
+    modelFiles = modelFiles.concat(this.resources.standard_models);
+  }
   const modelpaths = modelFiles.filter(model => model.indexOf('sequelize') !== -1);
   const modelAssociations = [];
   const models = modelpaths.map(modelFilePath => {
-    const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[0];
-    const modelModule = (modelFilePath.indexOf(fullModelFilePath) !== -1) ?
-      require(modelFilePath.replace(fullModelFilePath, '')) :
-      require(path.join(modelDirPath, modelFilePath));
-    const modelSchema = Object.assign({},
-      modelModule.scheme,
-      schemeDefaults.sequelize(modelName)
-    );
-    const modelDefinition = db.define(
-      modelName,
-      modelSchema,
-      modelModule.options
-    );
-    modelAssociations.push(...modelModule.associations);
-    return {
-      name: modelName,
-      data: modelDefinition,
-      associations: modelModule.associations,
-      coreDataOptions: modelModule.coreDataOptions,
-    };
+    try {
+      const modelName = path.basename(modelFilePath.replace(fullModelFilePath, '')).split('.')[ 0 ];
+      const modelModule = (modelFilePath.indexOf(fullModelFilePath) !== -1) ?
+        require(modelFilePath.replace(fullModelFilePath, '')) :
+        require(path.join(modelDirPath, modelFilePath));
+
+      const modelSchema = Object.assign({},
+        modelModule.scheme,
+        schemeDefaults.sequelize(modelName)
+      );
+      const modelDefinition = db.define(
+        modelName,
+        modelSchema,
+        modelModule.options
+      );
+      modelAssociations.push(...modelModule.associations);
+      return {
+        name: modelName,
+        data: modelDefinition,
+        associations: modelModule.associations,
+        coreDataOptions: modelModule.coreDataOptions,
+        modelModule,
+      };
+    } catch (e) {
+      reject(e);
+    }
   });
   const modelObj = models.reduce((result, key, i) => {
-    result[key.name] = models[i].data;
+    result[ key.name ] = models[ i ].data;
     return result;
   }, {});
   // console.log({ modelObj, modelAssociations });
   /**
-   *modelObj: { item: item, user: user }
-   * [{
-    source: 'user',
-    association: 'hasOne',
-    target: 'item',
-    options: {
-      as: 'primaryauthor',
-    },
-  },{
-    source: 'item',
-    association: 'hasMany',
-    target: 'user',
-    options: {
-      as: 'authors',
-    },
-  },]
+		*modelObj: { item: item, user: user }
+		* [{
+		source: 'user',
+		association: 'hasOne',
+		target: 'item',
+		options: {
+			as: 'primaryauthor',
+		},
+	},{
+		source: 'item',
+		association: 'hasMany',
+		target: 'user',
+		options: {
+			as: 'authors',
+		},
+	},]
 
 
-  User.belongsTo(Company); // Will add company_uuid to user
-   */
+	User.belongsTo(Company); // Will add company_uuid to user
+		*/
   modelAssociations.forEach(modelAssoc => {
-    // console.log({ modelAssoc })
-    //item.hasOne(user,{as:primaryauthor})
-    modelObj[modelAssoc.source][modelAssoc.association](modelObj[modelAssoc.target], modelAssoc.options);
+    // console.log({ modelAssoc });
+    modelObj[ modelAssoc.source ][ modelAssoc.association ](modelObj[ modelAssoc.target ], modelAssoc.options);
   });
 
-  db.sync({})
+  db.sync(dboptions.options.sync || {
+    // alter: true,		
+  })
     .then(_connection => _connection.authenticate())
     .then(() => {
       // console.log({ _connection });
       models.forEach(model => {
+        // console.log('model.data', model.data);
         const CoreConfigDataAdapter = this.core.data.create(Object.assign({
           adapter: 'sql',
-          model: model.data,
+          model: model.name || model.data,
           db_connection: db,
           docid: '_id',
         }, model.coreDataOptions));
         if (dboptions.controller) Object.keys(dboptions.controller).forEach(controller_name => assignControllers.call(this, { dboptions, controller_name, modelName: model.name, CoreConfigDataAdapter, periodic_db_name, }));
 
         this.datas.set(`${periodic_db_name}_${model.name}`, CoreConfigDataAdapter);
+        this.models.set(`${periodic_db_name}_${model.name}`, model.modelModule);
       });
       this.dbs.set(periodic_db_name, db);
       resolve(true);
     })
-    .catch(reject);
+    .catch(e => {
+      reject(e);
+    });
 }
 
 function getContentDBModelDir(periodic_db_name) {
@@ -440,7 +509,7 @@ function getContentDBModelDir(periodic_db_name) {
 }
 
 function getExtensionDBModelDir(options) {
-  const { periodic_db_name, db_ext_name } = options;
+  const { periodic_db_name, db_ext_name, } = options;
   return path.join(this.config.app_root, `node_modules/${db_ext_name}/config/databases/${periodic_db_name}/models`);
 }
 
@@ -455,15 +524,15 @@ function getContainerDBModelDir(options) {
 
 function getDBModelDir(options) {
   const { db_config_type, periodic_db_name, db_ext_name, db_container_name, db_container_type, } = options;
-  // console.log('getDBModelDir',{ options });  
+  // console.log('getDBModelDir',{ options });
   switch (db_config_type) {
-    case 'container':
-      return getContainerDBModelDir.call(this, { db_container_name, db_container_type, periodic_db_name });
-    case 'extension':
-      return getExtensionDBModelDir.call(this, { db_ext_name, periodic_db_name });
-    case 'content':
-    default:
-      return getContentDBModelDir.call(this, periodic_db_name);
+  case 'container':
+    return getContainerDBModelDir.call(this, { db_container_name, db_container_type, periodic_db_name, });
+  case 'extension':
+    return getExtensionDBModelDir.call(this, { db_ext_name, periodic_db_name, });
+  case 'content':
+  default:
+    return getContentDBModelDir.call(this, periodic_db_name);
   }
 }
 
@@ -507,6 +576,7 @@ function connectMongooseDB(options) {
     try {
       const { periodic_db_name, db_config_type, } = options;
       const dboptions = options.options;
+      dboptions.mongoose_options = Object.assign({ config: { autoIndex: true, }, }, dboptions.mongoose_options);
       const mongooseDB = mongoose.createConnection(dboptions.url, dboptions.mongoose_options);
       mongooseDB.on('connected', () => {
         let modelDirPath = getDBModelDir.call(this, {
@@ -540,7 +610,7 @@ function connectSequelizeDB(options) {
     try {
       const { periodic_db_name, db_config_type, } = options;
       const dboptions = options.options;
-      // console.log({ dboptions });
+      dboptions.connection_options = Object.assign({}, { logging: this.config.debug, }, dboptions.connection_options);
       const sequelizeDB = new Sequelize(dboptions.database, dboptions.username, dboptions.password, dboptions.connection_options);
       const modelDirPath = getDBModelDir.call(this, {
         db_ext_name: options.extension,
@@ -570,18 +640,18 @@ function connectDB(dbsettings) {
   return new Promise((resolve, reject) => {
     try {
       switch (dbsettings.db) {
-        case 'lowkie':
-          resolve(connectLowkieDB.call(this, dbsettings));
-          break;
-        case 'mongoose':
-          resolve(connectMongooseDB.call(this, dbsettings));
-          break;
-        case 'sequelize':
-          resolve(connectSequelizeDB.call(this, dbsettings));
-          break;
-        default:
-          resolve(true);
-          break;
+      case 'lowkie':
+        resolve(connectLowkieDB.call(this, dbsettings));
+        break;
+      case 'mongoose':
+        resolve(connectMongooseDB.call(this, dbsettings));
+        break;
+      case 'sequelize':
+        resolve(connectSequelizeDB.call(this, dbsettings));
+        break;
+      default:
+        resolve(true);
+        break;
       }
     } catch (e) {
       reject(e);
@@ -594,24 +664,24 @@ function loadDatabases() {
     try {
       const databases = Object.keys(this.settings.databases).map(db => {
         return Object.assign({
-            periodic_db_name: db,
-            db_config_type: 'content',
-          },
-          this.settings.databases[db]);
+          periodic_db_name: db,
+          db_config_type: 'content',
+        },
+        this.settings.databases[ db ]);
       }) || [];
       const extension_databases = Object.keys(this.resources.databases.extensions).map(db => {
         return Object.assign({
-            periodic_db_name: db,
-            db_config_type: 'extension',
-          },
-          this.resources.databases.extensions[db]);
+          periodic_db_name: db,
+          db_config_type: 'extension',
+        },
+        this.resources.databases.extensions[ db ]);
       }) || [];
       const container_databases = Object.keys(this.resources.databases.container).map(db => {
         return Object.assign({
-            periodic_db_name: db,
-            db_config_type: 'container',
-          },
-          this.resources.databases.container[db]);
+          periodic_db_name: db,
+          db_config_type: 'container',
+        },
+        this.resources.databases.container[ db ]);
       }) || [];
       databases.push(...extension_databases);
       databases.push(...container_databases);
@@ -684,12 +754,48 @@ function loadExtensions() {
   });
 }
 
+function loadExternalRouters() {
+  return new Promise((resolve, reject) => {
+    try {
+      if (this.config.process.skip_external_resources) return resolve(true);
+      Array.from(this.extensions.values()).forEach(extension => {
+        try {
+          this.routers.set(`extension_${extension.name}`, {
+            type: 'extension',
+            router: require(`${extension.name}/routers/index`),
+          });
+        } catch (e) {
+          if (this.config.debug) {
+            this.logger.warn(`${extension.name} is missing a default router`, e);
+          }
+        }
+      });
+      if (this.settings.container &amp;&amp; this.settings.container.name) {
+        try {
+          this.routers.set(`container_${this.settings.container.name}`, {
+            type: 'container',
+            router: (this.settings.container.type === 'local') ?
+              require(`${this.config.app_root}/content/container/${this.settings.container.name}/routers/index`) : require(`${this.settings.container.name}/routers/index`),
+          });
+        } catch (e) {
+          if (this.config.debug) {
+            this.logger.warn(`${this.settings.container.name} is missing a default router`, e);
+          }
+        }
+      }
+      resolve(true);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 function setupGenericCoreController() {
   return new Promise((resolve, reject) => {
     try {
       const StandardCoreController = new CoreControllerModule(this, {
         compatibility: false,
-        responder_configuration: { adapter: 'html' },
+        responder_configuration: { adapter: 'html', },
         // skip_responder: true,
         skip_db: true,
         // skip_protocol: true,
@@ -697,6 +803,24 @@ function setupGenericCoreController() {
       // StandardCoreController.initialize_responder({ adapter:'html'});
       // StandardCoreController.initialize_protocol({});
       this.core.controller = StandardCoreController;
+      resolve(true);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+function setupGenericCoreMailer() {
+  return new Promise((resolve, reject) => {
+    try {
+      const StandardCoreMailer = new CoreMailerModule({
+        config: {
+          transportConfig: this.settings.core.mailer.transport_config,
+        },
+      });
+      // StandardCoreMailer.initialize_responder({ adapter:'html'});
+      // StandardCoreMailer.initialize_protocol({});
+      this.core.mailer = StandardCoreMailer;
       resolve(true);
     } catch (e) {
       reject(e);
@@ -712,6 +836,7 @@ module.exports = {
   loadAppSettings,
   loadExtensions,
   loadDatabases,
+  loadExternalRouters,
   connectDB,
   connectLowkieDB,
   connectSequelizeDB,
@@ -721,12 +846,15 @@ module.exports = {
   assignMongooseModels,
   assignLowkieModels,
   getContentDBModelDir,
+  getExtensionDBModelDir,
+  getContainerDBModelDir,
   checkExtensionDependencies,
   checkForRequiredExtensions,
   mapForExtensionDependencyName,
   filterRequiredDependencies,
   assignControllers,
   setupGenericCoreController,
+  setupGenericCoreMailer,
 };</code></pre>
         </article>
     </section>
@@ -737,13 +865,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-periodic.html">periodic</a></li></ul><h3>Classes</h3><ul><li><a href="Periodic.html">Periodic</a></li><li><a href="Periodic.Periodic.html">Periodic</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_admin_prefix">_admin_prefix</a></li><li><a href="global.html#_manifest_prefix">_manifest_prefix</a></li><li><a href="global.html#_route_prefix">_route_prefix</a></li><li><a href="global.html#all_prefixes">all_prefixes</a></li><li><a href="global.html#configRuntimeEnvironment">configRuntimeEnvironment</a></li><li><a href="global.html#configureLogger">configureLogger</a></li><li><a href="global.html#configureLowkie">configureLowkie</a></li><li><a href="global.html#configureMongoose">configureMongoose</a></li><li><a href="global.html#configureSequelize">configureSequelize</a></li><li><a href="global.html#configureViews">configureViews</a></li><li><a href="global.html#endTimer">endTimer</a></li><li><a href="global.html#formatResponse">formatResponse</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#initializeExpress">initializeExpress</a></li><li><a href="global.html#loadConfiguration">loadConfiguration</a></li><li><a href="global.html#setAppRunningEnv">setAppRunningEnv</a></li><li><a href="global.html#setUpFolderStructure">setUpFolderStructure</a></li><li><a href="global.html#startTimer">startTimer</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Jun 17 2017 15:35:27 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jul 18 2018 23:08:12 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
