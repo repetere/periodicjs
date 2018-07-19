@@ -17,6 +17,8 @@ dump.rdb
 session-store.db
 package-lock.json
 .vscode
+.nyc_output
+
 
 
 # Logs
