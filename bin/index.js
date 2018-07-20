@@ -14,8 +14,7 @@ program
   .version(require('../package').version)
   .option('-a, --all', 'all environments');
 
-
-var run_cmd = function (cmd, args, callback, env, attach = false) {
+var run_cmd = function (cmd, args, callback, env, attach = true) {
   var spawn = require('child_process').spawn;
   var options = [cmd, args, {
     env
