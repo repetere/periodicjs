@@ -21,9 +21,10 @@ module.exports = (customProcess) => {
     try {
       let useableProcess = customProcess || process;
       let cli_config = minimist(useableProcess.argv.slice(2));
+      const appDotEnv = process.env.APP_ENV || '.env';
       let env_filepath = (cli_config.envOptions && cli_config.envOptions.path)
         ? cli_config.envOptions.path
-        : path.join(process.cwd(), '.env');
+        : path.join(process.cwd(), appDotEnv);
       let appConfig = Object.assign({}, DEFAULT_CONFIG);
       if (cli_config.db_config) {
         appConfig = flatten.unflatten(Object.assign({}, flatten(DEFAULT_CONFIG), flatten(cli_config.db_config)));
@@ -31,6 +32,7 @@ module.exports = (customProcess) => {
         let envOptions = (cli_config.envOptions)
           ? cli_config.envOptions
           : {};
+        envOptions.path = env_filepath;
         dotenv.config(envOptions);
         let env_config = JSON.parse(process.env.DB_CONFIG);
         appConfig = flatten.unflatten(Object.assign({}, flatten(DEFAULT_CONFIG), flatten(env_config)));
