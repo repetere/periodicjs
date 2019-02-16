@@ -1,7 +1,7 @@
 {
   "name": "periodicjs",
   "description": "Periodic is a rapid enterprise application framework for data driven web and mobile applications.",
-  "version": "10.70.1",
+  "version": "10.70.2",
   "main": "index.js",
   "engines": {
     "node": "^6.x"
@@ -102,7 +102,7 @@
     "semver": "^5.6.0",
     "sequelize": "^4.23.2",
     "serve-favicon": "^2.5.0",
-    "simple-socket-router": "^0.9.1",
+    "simple-socket-router": "^0.9.2",
     "socket.io": "^2.2.0",
     "socket.io-redis": "^5.2.0",
     "winston": "^2.3.1"
