@@ -108,4 +108,4 @@ A good example is a login extension and another login extension that extends the
 
 Extensions will export configurations so they will be mounted in the extension map, this is used to add additional views in an admin ui for example.
 
-NEXT: [ What are some common Extensions? ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/04-what-are-some-common-extensions.md)
+NEXT: [ What are some common Extensions? ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/04-what-are-some-common-extensions.md)

@@ -55,4 +55,4 @@ $ cd /var/www/webapp
 $ periodicjs removeConfig 5914a3711a04c73349623be5
 ```
 
-NEXT: [ Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md) 
+NEXT: [ Extensions ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/01-overview.md) 

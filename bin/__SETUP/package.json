@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "index.js",
   "engines": {
-    "node": "^6.x"
+    "node": "^10.x"
   },
   "license": "MIT",
   "scripts": {
@@ -12,6 +12,6 @@
     "test": "mocha -R spec --recursive"
   },
   "dependencies": {
-    "periodicjs": "^10.0.0"
+    "periodicjs": "^10.70.54"
   }
 }

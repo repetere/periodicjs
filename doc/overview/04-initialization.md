@@ -154,4 +154,4 @@ asd
 asd
 
 
-NEXT: [ Customizing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/05-customization.md)
+NEXT: [ Customizing Your Application ](https://github.com/repetere/periodicjs/blob/master/doc/overview/05-customization.md)

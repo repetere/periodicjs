@@ -69,4 +69,4 @@ $ grunt doc
 $ jsdoc2md commands/**/*.js config/**/*.js controllers/**/*.js  transforms/**/*.js utilities/**/*.js index.js > doc/api.md
 ```
 ##Notes
-  * Check out https://github.com/typesettin/periodicjs for the full Periodic Documentation
+  * Check out https://github.com/repetere/periodicjs for the full Periodic Documentation

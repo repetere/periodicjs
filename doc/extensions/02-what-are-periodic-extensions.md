@@ -314,4 +314,4 @@ function someMiddleWareFunction(req, res){
   periodic.core.controller.renderView(req, res, viewtemplate, viewdata);
 }
 ```
-NEXT: [ How do Periodic Extensions work? ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/03-how-are-extensions-loaded.md)
+NEXT: [ How do Periodic Extensions work? ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/03-how-are-extensions-loaded.md)

@@ -6,18 +6,18 @@ Periodic is extremely customizable, and supports [polyglot persistence](http://w
 
 The extreme flexibility is what enables Periodic to be used for various applications API Servers, Authentication Servers, E-Commerce platforms, Mobile application backends servers, microservices, Core banking platforms, advanced CMS replacements, CRMs, ERPs, ELPs, GRPs and ECMS.
 
-* [ The Periodic Singleton ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/03-singleton.md)
-* [ Initializing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/04-initialization.md)
-* [ Customizing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/05-customization.md)
+* [ The Periodic Singleton ](https://github.com/repetere/periodicjs/blob/master/doc/overview/03-singleton.md)
+* [ Initializing Your Application ](https://github.com/repetere/periodicjs/blob/master/doc/overview/04-initialization.md)
+* [ Customizing Your Application ](https://github.com/repetere/periodicjs/blob/master/doc/overview/05-customization.md)
 
 # How Periodic Works
 
-* [ Configuration ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/01-overview.md) 
-* [ Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md) 
+* [ Configuration ](https://github.com/repetere/periodicjs/blob/master/doc/configuration/01-overview.md) 
+* [ Extensions ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/01-overview.md) 
 * ~~Containers (COMING SOON)~~
-* [ Command Line Interface & REPL ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/command-line-interface.md) 
+* [ Command Line Interface & REPL ](https://github.com/repetere/periodicjs/blob/master/doc/overview/command-line-interface.md) 
 * ~~Advanced (COMING SOON)~~
-  * [ Testing & Developing new Periodic features ](https://github.com/typesettin/periodicjs/blob/master/doc/advanced/00-testing-developing.md)
+  * [ Testing & Developing new Periodic features ](https://github.com/repetere/periodicjs/blob/master/doc/advanced/00-testing-developing.md)
   * ~~Deploying your application (COMING SOON)~~
   * ~~Migrating from legacy applications~~
     * ~~Wordpress~~
@@ -26,7 +26,7 @@ The extreme flexibility is what enables Periodic to be used for various applicat
     * ~~Adobe CQ5 / Experience Manager~~
   * ~~Glossary (COMING SOON)~~
 
-NEXT: [ The Periodic Singleton ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/03-singleton.md)
+NEXT: [ The Periodic Singleton ](https://github.com/repetere/periodicjs/blob/master/doc/overview/03-singleton.md)
 
 # Cheatsheet
 

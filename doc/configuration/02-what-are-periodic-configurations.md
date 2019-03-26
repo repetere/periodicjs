@@ -416,4 +416,4 @@ periodic.settings = {
 */
 ```
 
-NEXT: [ How are runtime environments configured? ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/03-how-are-runtime-environments-configured.md)
+NEXT: [ How are runtime environments configured? ](https://github.com/repetere/periodicjs/blob/master/doc/configuration/03-how-are-runtime-environments-configured.md)

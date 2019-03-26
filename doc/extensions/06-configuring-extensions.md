@@ -26,4 +26,4 @@ $ periodicjs removeConfig [id-of-db-config]
 $ periodicjs removeConfig 5914a3711a04c73349623be5
 ```
 
-NEXT: [ Creating Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/07-creating-your-own-extensions.md)
+NEXT: [ Creating Extensions ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/07-creating-your-own-extensions.md)

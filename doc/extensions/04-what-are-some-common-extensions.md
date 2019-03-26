@@ -19,4 +19,4 @@ In Periodic10 there are no restrictions on the naming convention for extensions,
 * periodicjs.ext.dbseed 
   * An export/import data extension for loading data into your application
 
-NEXT: [ Installing and Removing Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/05-installing-and-removing-extensions.md)
+NEXT: [ Installing and Removing Extensions ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/05-installing-and-removing-extensions.md)

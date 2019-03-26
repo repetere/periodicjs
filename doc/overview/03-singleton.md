@@ -105,4 +105,4 @@ const periodic = require('periodicjs');
 }
 ```
 
-NEXT: [ Initializing Your Application ](https://github.com/typesettin/periodicjs/blob/master/doc/overview/04-initialization.md) 
+NEXT: [ Initializing Your Application ](https://github.com/repetere/periodicjs/blob/master/doc/overview/04-initialization.md) 

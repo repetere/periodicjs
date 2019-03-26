@@ -1,7 +1,7 @@
 # Getting Started
 
 
-![Getting started](https://raw.githubusercontent.com/typesettin/periodicjs/master/doc/images/getting-started/01-setup-install.gif)
+![Getting started](https://raw.githubusercontent.com/repetere/periodicjs/master/doc/images/getting-started/01-setup-install.gif)
 
 With Periodic 10, you can get up and running with periodic with zero configuration. It takes 30 seconds to create your first application server with periodic.
 
@@ -84,4 +84,4 @@ $ npm start [name of environment]
 
 Periodic requires a runtime environment to be defined when your application starts. Your periodic application can have an unlimited number of environments all with different configuration settings. 
 
-NEXT: [ How Periodic works ](https://github.com/typesettin/periodicjs/blob/master/doc/README.md)
+NEXT: [ How Periodic works ](https://github.com/repetere/periodicjs/blob/master/doc/README.md)

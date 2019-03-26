@@ -21,7 +21,7 @@ The general configuration flow is to:
 
 Another way to customize your application is to extend the API/web application capability by adding extensions. Extensions are node modules that inject functionality into your application in predictable way (For example there are CMS extensions for building a bespoke Node-based CRM, there's a graph server extension to add GraphQL functionality to your application).
 
-You can read more about Extensions [ here ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/01-overview.md).
+You can read more about Extensions [ here ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/01-overview.md).
 
 ## 3. Your Containers
 
@@ -31,7 +31,7 @@ Functionally Containers are identical to Extensions, however, periodic will prio
 
 The prioritization of how resources are loaded are a result of how resources are mounted on the instance of Express that periodic exposes. Since Express routes match regexes in the order in which they are mounted on a router, your application will match Container routers, before Extension routes, and will finally match core data routes (if they exist).
 
-You can read more about Containers [here](https://github.com/typesettin/periodicjs/blob/master/doc/containers/01-overview.md).
+You can read more about Containers [here](https://github.com/repetere/periodicjs/blob/master/doc/containers/01-overview.md).
 
 ## 4. Your Front-end
 
@@ -55,4 +55,4 @@ function someMiddleWareFunction(req, res){
 
 All Configurations settings are merged from a set of default configurations, environment specific configurations and finally override configurations.
 
-NEXT: [ Configuration ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/01-overview.md) 
+NEXT: [ Configuration ](https://github.com/repetere/periodicjs/blob/master/doc/configuration/01-overview.md) 

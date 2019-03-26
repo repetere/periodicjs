@@ -1,7 +1,7 @@
 'use strict';
 /*
  * periodic
- * http://github.com/typesettin/periodic
+ * http://github.com/repetere/periodic
  *
  * Copyright (c) 2017 Yaw Joseph Etse. All rights reserved.
  */

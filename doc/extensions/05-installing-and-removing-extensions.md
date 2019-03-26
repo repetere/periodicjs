@@ -22,4 +22,4 @@ $ #alternatively
 $ node [path/to/app_root/]index.js --cli --crud=ext --crud_op=remove --crud_arg=[name-of-extension] 
 ```
 
-NEXT: [ Configuring Extensions ](https://github.com/typesettin/periodicjs/blob/master/doc/extensions/06-configuring-extensions.md)
+NEXT: [ Configuring Extensions ](https://github.com/repetere/periodicjs/blob/master/doc/extensions/06-configuring-extensions.md)

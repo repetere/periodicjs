@@ -187,4 +187,4 @@ $ periodicjs createConfig app my-web-app development ~/Desktop/dev.application-c
 
 ```
 
-NEXT: [ Adding and Removing Configurations ](https://github.com/typesettin/periodicjs/blob/master/doc/configuration/05-adding-and-removing-configurations.md)
+NEXT: [ Adding and Removing Configurations ](https://github.com/repetere/periodicjs/blob/master/doc/configuration/05-adding-and-removing-configurations.md)
