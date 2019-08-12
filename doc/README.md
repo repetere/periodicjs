@@ -187,3 +187,7 @@ const periodic = require('periodicjs');
 }
 ```
 
+## Notes
+
+- Use `this.config.skip_reconfig` to prevent folder structure generation
+- Use `--skip_cli_reconfig=true` flag during npm i for docker to prevent reconfiguration of config db, e.g. `npm i periodicjs.ext.oauth2server`
