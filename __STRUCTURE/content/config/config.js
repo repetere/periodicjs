@@ -35,7 +35,7 @@ module.exports = (customProcess) => {
         envOptions.path = env_filepath;
         dotenv.config(envOptions);
         let env_config = JSON.parse(process.env.DB_CONFIG);
-        appConfig = flatten.unflatten(Object.assign({}, flatten(DEFAULT_CONFIG), flatten(env_config)));
+        appConfig = flatten.unflatten(Object.assign({}, flatten(DEFAULT_CONFIG), flatten(cli_config), flatten(env_config)));
       } 
       resolve(appConfig); 
     } catch(e){
